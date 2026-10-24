@@ -1,9 +1,9 @@
 PYTHON ?= python3
 export PYTHONPATH := $(CURDIR)/scripts
 
-.PHONY: check hooks ci agents structure templates invariants mutations verify doctor latex
+.PHONY: check hooks ci agents structure templates invariants mutations verify doctor latex formal
 
-check: ci agents structure templates invariants mutations verify doctor latex
+check: ci agents structure templates invariants mutations verify doctor latex formal
 
 hooks:
 	git config core.hooksPath .githooks
@@ -45,3 +45,6 @@ doctor:
 
 latex:
 	bash scripts/compile-tex.sh
+
+formal:
+	bash verify/formal/run.sh

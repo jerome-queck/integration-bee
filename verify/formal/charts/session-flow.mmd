@@ -1,0 +1,163 @@
+---
+title: "Learner session"
+config:
+  markdownAutoWrap: false
+  state:
+    useMaxWidth: false
+---
+stateDiagram-v2
+%% tla-blob: fcb8397f65fe9bcd2f15fc54acf50c0b13987742
+  classDef group0 fill:#d6eaf8,stroke:#6b757c,color:#1b2631
+  classDef group1 fill:#fdebd0,stroke:#7f7668,color:#1b2631
+  classDef group2 fill:#d5f5e3,stroke:#6b7b72,color:#1b2631
+  classDef group3 fill:#e8daef,stroke:#746d78,color:#1b2631
+  classDef group4 fill:#f5b7b1,stroke:#7b5c59,color:#1b2631
+  state "Legend" as legend {
+    state "Practice" as legendGroup0
+    state "Review due" as legendGroup1
+    state "Skill solid" as legendGroup2
+    state "Photo" as legendGroup3
+    state "Mock" as legendGroup4
+  }
+  class legendGroup0 group0
+  class legendGroup1 group1
+  class legendGroup2 group2
+  class legendGroup3 group3
+  class legendGroup4 group4
+  state "Check missed, review due" as s0
+  state "Check missed, review due,<br/>cold mock asked" as s1
+  state "Cold mock asked" as s2
+  state "Cold mock running" as s3
+  state "Cold mock scored" as s4
+  state "Drill on the table" as s5
+  state "Drill on the table, cold<br/>mock asked" as s6
+  state "Miss recorded, review due" as s7
+  state "Miss recorded, review due,<br/>cold mock asked" as s8
+  state "Mock refused" as s9
+  state "Mock scored" as s10
+  state "Next drill, review due" as s11
+  state "Next drill, review due,<br/>cold mock asked" as s12
+  state "One drill correct" as s13
+  state "One drill correct, cold<br/>mock asked" as s14
+  state "One drill correct, review<br/>due" as s15
+  state "One drill correct, review<br/>due, cold mock asked" as s16
+  state "Photo on the table" as s17
+  state "Ready" as s18
+  state "Second drill on the table" as s19
+  state "Second drill on the table,<br/>cold mock asked" as s20
+  state "Second drill, review due" as s21
+  state "Second drill, review due,<br/>cold mock asked" as s22
+  state "Skill solid" as s23
+  state "Skill solid, review still<br/>due" as s24
+  state "Teaching" as s25
+  state "Teaching, cold mock asked" as s26
+  state "Teaching, mock refused" as s27
+  state "Timed mock running" as s28
+  state "Two drills correct" as s29
+  state "Two drills correct, cold<br/>mock asked" as s30
+  state "Two drills correct, review<br/>still due" as s31
+  state "Two drills correct, review<br/>still due, cold mock asked" as s32
+  [*] --> s18
+  s18 --> s25 : teach the concept
+  s18 --> s17 : read the photo
+  s18 --> s2 : ask for a cold mock
+  s18 --> s9 : refuse the mock
+  s25 --> s5 : put a drill on the table
+  s25 --> s17 : read the photo
+  s25 --> s26 : ask for a cold mock
+  s25 --> s27 : refuse the mock
+  s17 --> s7 : record the miss
+  s2 --> s26 : teach the concept
+  s2 --> s17 : read the photo
+  s2 --> s3 : start a cold mock
+  s9 --> s25 : teach the concept
+  s9 --> s17 : read the photo
+  s9 --> s2 : ask for a cold mock
+  s5 --> s13 : the answer matches
+  s5 --> s0 : the answer differs
+  s5 --> s6 : ask for a cold mock
+  s26 --> s6 : put a drill on the table
+  s26 --> s17 : read the photo
+  s26 --> s3 : start a cold mock
+  s27 --> s5 : put a drill on the table
+  s27 --> s17 : read the photo
+  s27 --> s26 : ask for a cold mock
+  s7 --> s8 : ask for a cold mock
+  s17 --> s8 : record the miss
+  s3 --> s4 : record the score
+  s13 --> s19 : put a drill on the table
+  s13 --> s14 : ask for a cold mock
+  s0 --> s11 : put a drill on the table
+  s0 --> s1 : ask for a cold mock
+  s6 --> s14 : the answer matches
+  s6 --> s1 : the answer differs
+  s7 --> s11 : put a drill on the table
+  s8 --> s3 : start a cold mock
+  s19 --> s29 : the answer matches
+  s19 --> s15 : the answer differs
+  s19 --> s20 : ask for a cold mock
+  s14 --> s20 : put a drill on the table
+  s14 --> s3 : start a cold mock
+  s11 --> s15 : the answer matches
+  s11 --> s12 : ask for a cold mock
+  s1 --> s12 : put a drill on the table
+  s1 --> s3 : start a cold mock
+  s11 --> s0 : the answer differs
+  s8 --> s12 : put a drill on the table
+  s29 --> s23 : mark the skill solid
+  s29 --> s30 : ask for a cold mock
+  s15 --> s21 : put a drill on the table
+  s15 --> s16 : ask for a cold mock
+  s20 --> s30 : the answer matches
+  s20 --> s16 : the answer differs
+  s12 --> s16 : the answer matches
+  s12 --> s1 : the answer differs
+  s23 --> s28 : start the timed mock
+  s30 --> s23 : mark the skill solid
+  s30 --> s3 : start a cold mock
+  s21 --> s31 : the answer matches
+  s21 --> s22 : ask for a cold mock
+  s16 --> s22 : put a drill on the table
+  s16 --> s3 : start a cold mock
+  s21 --> s15 : the answer differs
+  s28 --> s10 : record the score
+  s31 --> s24 : mark the skill solid
+  s31 --> s32 : ask for a cold mock
+  s22 --> s32 : the answer matches
+  s22 --> s16 : the answer differs
+  s24 --> s28 : start the timed mock
+  s32 --> s24 : mark the skill solid
+  s32 --> s3 : start a cold mock
+  class s0 group1
+  class s1 group1
+  class s2 group0
+  class s3 group4
+  class s4 group4
+  class s5 group0
+  class s6 group0
+  class s7 group3
+  class s8 group3
+  class s9 group0
+  class s10 group4
+  class s11 group1
+  class s12 group1
+  class s13 group0
+  class s14 group0
+  class s15 group1
+  class s16 group1
+  class s17 group3
+  class s18 group0
+  class s19 group0
+  class s20 group0
+  class s21 group1
+  class s22 group1
+  class s23 group2
+  class s24 group1
+  class s25 group0
+  class s26 group0
+  class s27 group0
+  class s28 group4
+  class s29 group0
+  class s30 group0
+  class s31 group1
+  class s32 group1

@@ -13,6 +13,7 @@ REQUIRED = (
     "verify",
     "doctor",
     "latex",
+    "formal",
 )
 
 
@@ -54,7 +55,7 @@ def sample_guard(text: str) -> str | None:
 def self_test() -> None:
     old = "check: agents structure templates invariants mutations verify doctor\n"
     missing = makefile_missing(old)
-    if "latex" not in missing or "ci" not in missing:
+    if "latex" not in missing or "ci" not in missing or "formal" not in missing:
         print(f"FAIL makefile self-test returned {missing!r}", file=sys.stderr)
         sys.exit(1)
     if makefile_missing("check: " + " ".join(REQUIRED) + "\n"):
