@@ -1,6 +1,6 @@
 ---
 name: verify-integration-bee
-description: Drive the Integration Bee CLI the way the companion does, and save a transcript. Use before claiming a change to doctor, practice, drills, progress, or verify.
+description: Drive the Integration Bee CLI the way the companion does, and save a transcript. Use before claiming a change to doctor, practice, drills, problems, progress, turn, or verify.
 ---
 
 # Verify Integration Bee

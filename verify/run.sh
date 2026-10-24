@@ -80,6 +80,13 @@ wc -l /tmp/ibe_practice.out
 echo "== all_rounds_check (Resource pack r1|r2|r3) =="
 "$PY" "$ROOT/verify/all_rounds_check.py" || fail=1
 
+echo "== problem catalog =="
+"$PY" "$ROOT/verify/catalog_check.py" || fail=1
+"$PY" "$ROOT/verify/catalog_check.py" --expect-fail invented-sympy || fail=1
+"$PY" "$ROOT/verify/catalog_check.py" --expect-fail missing-cite || fail=1
+"$PY" "$ROOT/verify/catalog_check.py" --expect-fail yang-invented || fail=1
+"$PY" "$ROOT/verify/catalog_check.py" --expect-fail dropped-record || fail=1
+
 echo "== turn contract =="
 "$PY" "$ROOT/verify/turn_contract_check.py" || fail=1
 

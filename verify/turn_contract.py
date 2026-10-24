@@ -200,7 +200,14 @@ def _indefinite(row: dict) -> bool:
     return limits in (None, [])
 
 
-def grade_problem(problem_id: str, submitted: str, verdict: str | None, drills: list[dict], feed: list[dict]):
+def grade_problem(
+    problem_id: str,
+    submitted: str,
+    verdict: str | None,
+    drills: list[dict],
+    feed: list[dict],
+    catalog_rows: list[dict] | None = None,
+):
     drill = find_drill(drills, problem_id)
     if drill is not None:
         try:
@@ -212,7 +219,24 @@ def grade_problem(problem_id: str, submitted: str, verdict: str | None, drills: 
         return {"correct": correct, "tags": tags, "display": display, "row": drill, "manual": False}, None
     feed_row = next((row for row in feed if row.get("id") == problem_id), None)
     if feed_row is None:
-        return None, f"unknown problem {problem_id}"
+        catalog_row = next((row for row in (catalog_rows or []) if row.get("id") == problem_id), None)
+        if catalog_row is None:
+            return None, f"unknown problem {problem_id}"
+        if catalog_row.get("answer_sympy") or catalog_row.get("integrand_latex"):
+            return None, "catalog problem is not sympy-checked"
+        if catalog_row.get("verify") != "manual" or not catalog_row.get("answer_plain"):
+            return None, "unchecked catalog problem has no printed answer"
+        if verdict not in {"correct", "incorrect"}:
+            return None, "manual problem needs verdict"
+        tags = list(catalog_row.get("technique_tags") or [])
+        tags.extend(catalog_row.get("yang") or [])
+        return {
+            "correct": verdict == "correct",
+            "tags": tags,
+            "display": catalog_row.get("answer_plain"),
+            "row": {"id": problem_id},
+            "manual": True,
+        }, None
     tags = list(feed_row.get("technique_tags") or [])
     if feed_row.get("answer_sympy"):
         try:
@@ -362,7 +386,17 @@ def gap_rows(graded: dict, problem_id: str, method_note: str) -> tuple[dict | No
     )
 
 
-def plan_mark(session, attempts, ticks, catalog, drills, feed, body: dict, updated: str) -> dict:
+def plan_mark(
+    session,
+    attempts,
+    ticks,
+    catalog,
+    drills,
+    feed,
+    body: dict,
+    updated: str,
+    catalog_rows: list[dict] | None = None,
+) -> dict:
     problem_id = body.get("problem_id")
     source = body.get("source")
     extract = body.get("extract") or {}
@@ -374,7 +408,7 @@ def plan_mark(session, attempts, ticks, catalog, drills, feed, body: dict, updat
     if not problem_id or submitted is None or str(submitted).strip() == "":
         return _fail(session, 2, "mark needs problem_id and extract.final_answer")
     submitted = str(submitted).strip()
-    graded, err = grade_problem(problem_id, submitted, verdict, drills, feed)
+    graded, err = grade_problem(problem_id, submitted, verdict, drills, feed, catalog_rows)
     if err:
         return _fail(session, 2, err)
     latest = _latest(attempts, problem_id)
