@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""SymPy-check official sample answers marked verify=sympy in answers_feed.json.
-
-manual rows are skipped. A pdf_answer_suspect row must still prove its stated
-antiderivative and must reject the PDF answer.
-"""
+"""SymPy-check official sample answers marked verify=sympy in answers_feed.json."""
 from __future__ import annotations
 
 import json

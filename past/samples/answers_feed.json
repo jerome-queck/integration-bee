@@ -246,7 +246,7 @@
     "answer_pdf_sympy": "exp(x)",
     "answer_display_pdf": "e^x+C",
     "answer_display_correct": "\\ln\\|\\ln x\\|+C",
-    "note": "Answers PDF appears to misprint Q17; true \u222b dx/(x ln x)=ln|ln x|+C. The PDF antiderivative is checked and rejected.",
+    "note": "Answers PDF appears to misprint Q17; true \u222b dx/(x ln x)=ln|ln x|+C.",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "du/u"

@@ -77,9 +77,7 @@ def _without_abs_sign(expr):
 
 
 def is_antiderivative(candidate, integrand) -> bool:
-    """True when candidate differs from an antiderivative by a constant.
-
-    log|u| and log(u) share a derivative where both are defined. SymPy's
+    """log|u| and log(u) share a derivative where both are defined. SymPy's
     derivative of log(Abs(u)) keeps sign and Abs, so those factors are
     removed only after differentiation.
     """
