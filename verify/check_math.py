@@ -70,6 +70,26 @@ def numeric_close(a, b, tol: float = 1e-7) -> bool:
         return False
 
 
+def _without_abs_sign(expr):
+    expr = expr.replace(sp.Abs, lambda value: value)
+    expr = expr.replace(sp.sign, lambda _value: sp.Integer(1))
+    return expr
+
+
+def is_antiderivative(candidate, integrand) -> bool:
+    """True when candidate differs from an antiderivative by a constant.
+
+    log|u| and log(u) share a derivative where both are defined. SymPy's
+    derivative of log(Abs(u)) keeps sign and Abs, so those factors are
+    removed only after differentiation.
+    """
+    x = NS["x"]
+    delta = sp.diff(candidate, x) - integrand
+    if sp.simplify(delta) == 0:
+        return True
+    return sp.simplify(_without_abs_sign(delta)) == 0
+
+
 def _integrate_worker(payload, q):
     try:
         expr, lo, hi = payload
@@ -121,7 +141,7 @@ def check_drill(d: dict) -> None:
             raise AssertionError(f"{d['id']}: numeric fallback failed: {e}") from e
         raise AssertionError(f"{d['id']}: got (symbolic/numeric mismatch) expected {ans}")
     elif kind == "indefinite":
-        if sp.simplify(sp.diff(ans, x) - expr) != 0:
+        if not is_antiderivative(ans, expr):
             raise AssertionError(f"{d['id']}: d/dx({ans}) != {expr}")
     else:
         raise AssertionError(f"{d['id']}: unknown kind {kind}")
@@ -132,6 +152,17 @@ def known_good_spotchecks() -> None:
     assert sp.simplify(sp.integrate(1 / (1 + x**2), (x, 0, 1)) - sp.pi / 4) == 0
     assert sp.simplify(sp.integrate(2 * x / (x**2 + 1), (x, 0, 1)) - sp.log(2)) == 0
     assert sp.simplify(sp.integrate(sp.sin(x), (x, -sp.pi, sp.pi))) == 0
+    u01 = (2 * x + 3) / (x**2 + 3 * x + 2)
+    assert is_antiderivative(sp.log(sp.Abs(x**2 + 3 * x + 2)), u01)
+    assert is_antiderivative(sp.log(sp.Abs(x**2 + 3 * x + 2)) + sp.symbols("C"), u01)
+    assert not is_antiderivative(sp.log(sp.Abs(x**2 + 3 * x + 2)) + x, u01)
+    assert is_antiderivative(sp.log(sp.Abs(sp.log(x))), 1 / (x * sp.log(x)))
+    assert not is_antiderivative(sp.exp(x), 1 / (x * sp.log(x)))
+    assert not is_antiderivative(sp.log(sp.Abs(x)) * sp.sign(x), 1 / x)
+    assert not is_antiderivative(3 * sp.log(sp.Abs(x)), 1 / x)
+    pf = 1 / (x**2 - 1)
+    assert is_antiderivative(sp.log(x - 1) / 2 - sp.log(x + 1) / 2, pf)
+    assert is_antiderivative(sp.Rational(1, 2) * sp.log(sp.Abs((x - 1) / (x + 1))), pf)
 
 
 def main() -> int:

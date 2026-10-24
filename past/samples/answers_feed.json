@@ -240,9 +240,13 @@
     "id": "SAMPLE-Q17",
     "verify": "manual",
     "pdf_answer_suspect": true,
+    "kind": "indefinite",
+    "sympy_expr": "1/(x*log(x))",
+    "answer_sympy": "log(Abs(log(x)))",
+    "answer_pdf_sympy": "exp(x)",
     "answer_display_pdf": "e^x+C",
     "answer_display_correct": "\\ln\\|\\ln x\\|+C",
-    "note": "Answers PDF appears to misprint Q17; true \u222b dx/(x ln x)=ln|ln x|+C. Do not sympy-lock PDF text.",
+    "note": "Answers PDF appears to misprint Q17; true \u222b dx/(x ln x)=ln|ln x|+C. The PDF antiderivative is checked and rejected.",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "du/u"
