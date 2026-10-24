@@ -93,17 +93,17 @@ These are findings. Do not delete them to make TLC pass. `make formal` expects e
 
 ### Bounds
 
-One node stands in for the Round 1 gate. `mock_block_reason` is all or nothing, so a second node would not change the gate shape. SymPy is an input, pass or miss. The model does not check algebra. Each writer begins at most one command. Finishing a mock that writer opened is a later step. Counts stop at 2. The streak write between the heatmap write and `project` is omitted. `learning` and `skipped` ticks are omitted. Journal notes are omitted. The model does not read gitignored learner files.
+One node stands in for the Round 1 gate. `mock_block_reason` is all or nothing, so a second node would not change the gate shape. SymPy is an input, pass or miss. The model does not check algebra. Each writer begins at most one command. Finishing a mock that writer opened is a later step. Counts stop at 2. The streak write between the heatmap write and `project` is omitted. `learning` and `skipped` ticks are omitted. Journal notes are omitted. The model does not read gitignored learner files. `session.json` phases stay with `session_problem`. `turn apply` records a mark by calling `record_attempt`, then writes the phase in `write_session`. The chart does not add a phase the CLI does not already store.
 
 ### Coverage
 
 | Spec | Code |
 |---|---|
-| `SessionFlow.tla` | `.cursor/skills/integration-bee-companion/SKILL.md` lines 18 to 36, `scripts/control-integration-bee` `practice check`, `progress mistake`, `progress tick`, `mock-start`, `mock-finish` |
-| `TrackerWrites.tla` | `record_attempt`, `write_json`, `project`, `cmd_tick`, `cmd_mock_start`, `cmd_mock_finish` in `scripts/control-integration-bee` |
+| `SessionFlow.tla` | `verify/turn_contract.py` `distinct_correct`, `.cursor/skills/integration-bee-companion/SKILL.md` teach, photo, and mock sections, `scripts/control-integration-bee` `practice check`, `progress mistake`, `turn apply`, `mock-start`, `mock-finish` |
+| `TrackerWrites.tla` | `record_attempt`, `write_json`, `project`, `cmd_tick`, `cmd_mock_start`, `cmd_mock_finish`, `finish_plan` in `scripts/control-integration-bee` |
 
-session_flow_blob: 8fbf31088265e9431864648a250aae10621cdc42
-tracker_writes_blob: 7a61e1a85315d2fb25664d1cfb9c33841961b224
+session_flow_blob: fcb8397f65fe9bcd2f15fc54acf50c0b13987742
+tracker_writes_blob: eb39ca7919c658137f0c57af267560cd2e026877
 
 Move a blob only after `make formal` passes on that file. `git hash-object` prints it. If the spec changes and the blob line does not, `make formal` fails.
 

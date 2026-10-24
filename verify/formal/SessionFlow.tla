@@ -2,11 +2,11 @@
 \* One companion session for one Round 1 node.
 \*
 \* The companion skill is the protocol. The CLI is the writer.
-\* A solid tick follows two correct drills (.cursor/skills/integration-bee-companion/SKILL.md:24).
-\* A photo miss goes through progress mistake (scripts/control-integration-bee:368).
+\* A solid tick follows two distinct correct drills (verify/turn_contract.py:398).
+\* A photo miss goes through turn apply, which calls record_attempt (scripts/control-integration-bee:579).
 \* A mock starts only when mock_block_reason allows it (verify/model.py:32,
-\* scripts/control-integration-bee:378), unless the learner asked for --cold.
-\* A score is stored by progress mock-finish (scripts/control-integration-bee:409).
+\* scripts/control-integration-bee:400), unless the learner asked for --cold.
+\* A score is stored by mock-finish (scripts/control-integration-bee:445).
 \*
 \* Assumptions:
 \*   One node stands in for the Round 1 gate. mock_block_reason is all-or-nothing.
@@ -86,7 +86,7 @@ Init ==
   /\ opened = FALSE
 
 Teach ==
-  /\ screen = "idle" \* .cursor/skills/integration-bee-companion/SKILL.md:18
+  /\ screen = "idle" \* .cursor/skills/integration-bee-companion/SKILL.md:22
   /\ ~taught
   /\ screen' = "teaching"
   /\ taught' = TRUE
@@ -94,30 +94,30 @@ Teach ==
   /\ UNCHANGED <<correct, weak, due, tickSolid, mock, coldAsked, coldUsed, mistakeRows, checkMisses, opened>>
 
 OfferDrill ==
-  /\ taught \* .cursor/skills/integration-bee-companion/SKILL.md:20
+  /\ taught \* .cursor/skills/integration-bee-companion/SKILL.md:24
   /\ screen \in {"teaching", "checked", "mistaken"}
   /\ screen # "checked" \/ correct < 2
   /\ screen' = "drilling"
   /\ UNCHANGED <<taught, correct, weak, due, tickSolid, mock, coldAsked, coldUsed, mistakeRows, checkMisses, refused, opened>>
 
 CheckPass ==
-  /\ screen = "drilling" \* scripts/control-integration-bee:286
+  /\ screen = "drilling" \* scripts/control-integration-bee:313
   /\ correct < 2
   /\ correct' = correct + 1
   /\ screen' = "checked"
   /\ UNCHANGED <<taught, weak, due, tickSolid, mock, coldAsked, coldUsed, mistakeRows, checkMisses, refused, opened>>
 
 CheckMiss ==
-  /\ screen = "drilling" \* scripts/control-integration-bee:286
+  /\ screen = "drilling" \* scripts/control-integration-bee:313
   /\ checkMisses = 0
   /\ checkMisses' = 1
-  /\ weak' = TRUE \* verify/model.py:145
-  /\ due' = TRUE \* verify/model.py:107
+  /\ weak' = TRUE \* verify/model.py:166
+  /\ due' = TRUE \* verify/model.py:127
   /\ screen' = "checked"
   /\ UNCHANGED <<taught, correct, tickSolid, mock, coldAsked, coldUsed, mistakeRows, refused, opened>>
 
 TickAfterTwo ==
-  /\ screen = "checked" \* .cursor/skills/integration-bee-companion/SKILL.md:24
+  /\ screen = "checked" \* verify/turn_contract.py:398
   /\ correct = 2
   /\ ~tickSolid
   /\ tickSolid' = TRUE
@@ -126,7 +126,7 @@ TickAfterTwo ==
 
 TickEarly ==
   /\ Break = "tick_early"
-  /\ taught \* .cursor/skills/integration-bee-companion/SKILL.md:24
+  /\ taught \* verify/turn_contract.py:398
   /\ ~tickSolid
   /\ screen \in {"teaching", "drilling", "checked"}
   /\ correct < 2
@@ -135,13 +135,13 @@ TickEarly ==
   /\ UNCHANGED <<taught, correct, weak, due, mock, coldAsked, coldUsed, mistakeRows, checkMisses, refused, opened>>
 
 MarkPhoto ==
-  /\ screen \in {"idle", "teaching"} \* .cursor/skills/integration-bee-companion/SKILL.md:27
+  /\ screen \in {"idle", "teaching"} \* .cursor/skills/integration-bee-companion/SKILL.md:28
   /\ mistakeRows = 0
   /\ screen' = "marking"
   /\ UNCHANGED <<taught, correct, weak, due, tickSolid, mock, coldAsked, coldUsed, mistakeRows, checkMisses, refused, opened>>
 
 RecordMistake ==
-  /\ screen = "marking" \* scripts/control-integration-bee:368
+  /\ screen = "marking" \* scripts/control-integration-bee:579
   /\ mistakeRows' = 1
   /\ weak' = IF Break = "forget_weak" THEN weak ELSE TRUE
   /\ due' = IF Break = "forget_weak" THEN due ELSE TRUE
@@ -149,7 +149,7 @@ RecordMistake ==
   /\ UNCHANGED <<taught, correct, tickSolid, mock, coldAsked, coldUsed, checkMisses, refused, opened>>
 
 AskCold ==
-  /\ ~coldAsked \* .cursor/skills/integration-bee-companion/SKILL.md:36
+  /\ ~coldAsked \* .cursor/skills/integration-bee-companion/SKILL.md:32
   /\ mock = "none"
   /\ screen \in {"idle", "teaching", "checked", "mistaken", "drilling"}
   /\ coldAsked' = TRUE
@@ -168,7 +168,7 @@ MockStartReady ==
   /\ UNCHANGED <<taught, correct, weak, due, tickSolid, coldAsked, mistakeRows, checkMisses>>
 
 MockStartCold ==
-  /\ coldAsked \* scripts/control-integration-bee:381
+  /\ coldAsked \* scripts/control-integration-bee:403
   /\ ~tickSolid
   /\ mock = "none"
   /\ screen \in {"idle", "teaching", "checked", "mistaken"}
@@ -194,7 +194,7 @@ MockStartUngated ==
 
 MockRefuse ==
   /\ Break # "mock_ungated"
-  /\ ~tickSolid \* scripts/control-integration-bee:383
+  /\ ~tickSolid \* scripts/control-integration-bee:406
   /\ ~coldAsked
   /\ mock = "none"
   /\ ~refused
@@ -203,7 +203,7 @@ MockRefuse ==
   /\ UNCHANGED <<screen, taught, correct, weak, due, tickSolid, mock, coldAsked, coldUsed, mistakeRows, checkMisses, opened>>
 
 MockScore ==
-  /\ mock = "open" \* scripts/control-integration-bee:417
+  /\ mock = "open" \* scripts/control-integration-bee:445
   /\ opened
   /\ mock' = "scored"
   /\ screen' = "mock_scored"
@@ -211,7 +211,7 @@ MockScore ==
 
 ScoreWithoutOpen ==
   /\ Break = "score_without_open"
-  /\ tickSolid \* scripts/control-integration-bee:417
+  /\ tickSolid \* scripts/control-integration-bee:445
   /\ mock = "none"
   /\ ~opened
   /\ mock' = "scored"
@@ -238,7 +238,7 @@ Next ==
 Spec == Init /\ [][Next]_vars
 
 \* A solid tick follows two correct drills for that node.
-\* .cursor/skills/integration-bee-companion/SKILL.md:24
+\* verify/turn_contract.py:398
 TwoCorrectBeforeSolid == tickSolid => correct = 2
 
 \* A stored mock was started with every Round 1 node solid, or with --cold.
@@ -246,15 +246,15 @@ TwoCorrectBeforeSolid == tickSolid => correct = 2
 MockGate == mock = "none" \/ tickSolid \/ coldUsed
 
 \* A photo miss appends a mistake and marks that tag weak and due.
-\* scripts/control-integration-bee:368
+\* scripts/control-integration-bee:579
 MistakeQueuesWeak == mistakeRows = 0 \/ (weak /\ due)
 
 \* An incorrect SymPy check marks the tag weak and puts the drill on the spaced queue.
-\* scripts/control-integration-bee:290
+\* scripts/control-integration-bee:313
 MissQueuesReview == checkMisses = 0 \/ (weak /\ due)
 
 \* A stored score follows an opened mock.
-\* scripts/control-integration-bee:413
+\* scripts/control-integration-bee:436
 ScoreAfterOpen == mock # "scored" \/ opened
 
 ====

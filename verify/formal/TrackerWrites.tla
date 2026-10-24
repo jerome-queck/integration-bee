@@ -4,14 +4,15 @@
 \* (AGENTS.md, docs/decisions/0001-tracker-files.md).
 \*
 \* record_attempt reads, then write_json replaces each file from that read
-\* (scripts/control-integration-bee:158, write_json at 82, attempts at 187,
-\* heatmap at 188, project at 190).
-\* The streak write at line 189 is omitted. No property here reads streaks.
+\* (scripts/control-integration-bee:171, write_json at 87, attempts at 209,
+\* heatmap at 210, project at 212).
+\* The streak write at line 211 is omitted. No property here reads streaks.
 \* project writes progress.local.json from the tick object captured at the read
-\* (record_attempt:190, mock-start:404).
-\* cmd_tick re-reads attempts at the project call (scripts/control-integration-bee:363).
-\* cmd_mock_finish re-reads ticks and attempts (scripts/control-integration-bee:427).
-\* mock-start returns the open session when its read already shows one (line 386).
+\* (record_attempt:212, mock-start:426). turn apply calls the same record_attempt
+\* from finish_plan (scripts/control-integration-bee:579).
+\* cmd_tick re-reads attempts at the project call (scripts/control-integration-bee:385).
+\* cmd_mock_finish re-reads ticks and attempts (scripts/control-integration-bee:449).
+\* mock-start returns the open session when its read already shows one (line 409).
 \*
 \* Assumptions:
 \*   Each writer begins at most one command. Finishing a mock that writer opened
@@ -139,7 +140,7 @@ AttemptSane == incorrect <= attempts
 NoLostMock == Idle => mockCommits <= openCount + scoredCount
 
 BeginRecord(w, miss) ==
-  /\ pc[w] = "idle" \* scripts/control-integration-bee:159
+  /\ pc[w] = "idle" \* scripts/control-integration-bee:179
   /\ ~begun[w]
   /\ attemptCommits < 2
   /\ begun' = [begun EXCEPT ![w] = TRUE]
@@ -159,7 +160,7 @@ BeginRecord(w, miss) ==
      >>
 
 WriteAttempts(w) ==
-  /\ pc[w] = "holdA" \* scripts/control-integration-bee:187
+  /\ pc[w] = "holdA" \* scripts/control-integration-bee:209
   /\ attempts' = snapA[w] + 1
   /\ incorrect' = snapI[w] + IF wantMiss[w] THEN 1 ELSE 0
   /\ attemptCommits' = attemptCommits + 1
@@ -172,7 +173,7 @@ WriteAttempts(w) ==
      >>
 
 WriteHeat(w) ==
-  /\ pc[w] = "wroteA" \* scripts/control-integration-bee:188
+  /\ pc[w] = "wroteA" \* scripts/control-integration-bee:210
   /\ heatAttempts' = snapHA[w] + 1
   /\ heatFails' = snapHF[w] + IF wantMiss[w] THEN 1 ELSE 0
   /\ pc' = [pc EXCEPT ![w] = "wroteH"]
@@ -185,7 +186,7 @@ WriteHeat(w) ==
      >>
 
 ProjectRecord(w) ==
-  /\ pc[w] = "wroteH" \* scripts/control-integration-bee:190
+  /\ pc[w] = "wroteH" \* scripts/control-integration-bee:212
   /\ projMistakes' = snapI[w] + IF wantMiss[w] THEN 1 ELSE 0
   /\ projTick' = snapTick[w]
   /\ pc' = [pc EXCEPT ![w] = "idle"]
@@ -224,7 +225,7 @@ Crash(w) ==
      >>
 
 BeginTick(w) ==
-  /\ pc[w] = "idle" \* scripts/control-integration-bee:357
+  /\ pc[w] = "idle" \* scripts/control-integration-bee:380
   /\ ~begun[w]
   /\ ~tickSolid
   /\ begun' = [begun EXCEPT ![w] = TRUE]
@@ -240,7 +241,7 @@ BeginTick(w) ==
      >>
 
 ProjectTick(w) ==
-  /\ pc[w] = "wroteTick" \* scripts/control-integration-bee:363
+  /\ pc[w] = "wroteTick" \* scripts/control-integration-bee:385
   /\ projTick' = TRUE
   /\ projMistakes' = incorrect
   /\ pc' = [pc EXCEPT ![w] = "idle"]
@@ -279,7 +280,7 @@ BeginMockReady(w) ==
      >>
 
 BeginMockCold(w) ==
-  /\ pc[w] = "idle" \* scripts/control-integration-bee:381
+  /\ pc[w] = "idle" \* scripts/control-integration-bee:403
   /\ ~begun[w]
   /\ ~tickSolid
   /\ mockCommits < 2
@@ -318,7 +319,7 @@ BeginMockUngated(w) ==
      >>
 
 WriteMockKeep(w) ==
-  /\ pc[w] = "holdM" \* scripts/control-integration-bee:386
+  /\ pc[w] = "holdM" \* scripts/control-integration-bee:409
   /\ snapOpen[w] >= 1
   /\ Break # "force_second_open"
   /\ pc' = [pc EXCEPT ![w] = "idle"]
@@ -339,7 +340,7 @@ WriteMockKeep(w) ==
      >>
 
 WriteMockAppend(w) ==
-  /\ pc[w] = "holdM" \* scripts/control-integration-bee:402
+  /\ pc[w] = "holdM" \* scripts/control-integration-bee:424
   /\ snapOpen[w] = 0 \/ Break = "force_second_open"
   /\ openCount' = IF snapOpen[w] >= 1 THEN snapOpen[w] + 1 ELSE 1
   /\ scoredCount' = snapScored[w]
@@ -361,7 +362,7 @@ WriteMockAppend(w) ==
      >>
 
 ProjectMock(w) ==
-  /\ pc[w] = "wroteM" \* scripts/control-integration-bee:404
+  /\ pc[w] = "wroteM" \* scripts/control-integration-bee:426
   /\ projTick' = snapTick[w]
   /\ projMistakes' = incorrect
   /\ pc' = [pc EXCEPT ![w] = "idle"]
@@ -381,7 +382,7 @@ ProjectMock(w) ==
      >>
 
 WriteFinish(w) ==
-  /\ pc[w] = "idle" \* scripts/control-integration-bee:419
+  /\ pc[w] = "idle" \* scripts/control-integration-bee:445
   /\ holder[w]
   /\ openCount >= 1
   /\ ~didFinish[w]
@@ -400,7 +401,7 @@ WriteFinish(w) ==
      >>
 
 ProjectFinish(w) ==
-  /\ pc[w] = "wroteFinish" \* scripts/control-integration-bee:427
+  /\ pc[w] = "wroteFinish" \* scripts/control-integration-bee:449
   /\ projTick' = tickSolid
   /\ projMistakes' = incorrect
   /\ pc' = [pc EXCEPT ![w] = "idle"]
