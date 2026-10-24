@@ -19,8 +19,8 @@ ENFORCERS = [
     ("Drill answers match SymPy, and a wrong answer fails", "verify/run.sh"),
     ("Past papers do not precede concept units", "verify/unit_order_check.py"),
     ("Tracker and readiness invariants hold", "verify/invariants.py"),
-    ("All-rounds indexes match, and PDFs match when fetched", "verify/all_rounds_check.py"),
-    ("Official contest PDFs stay out of git", ".gitignore"),
+    ("All-rounds indexes match, and the reference PDFs match", "verify/all_rounds_check.py"),
+    ("Official reference PDFs stay in git", "scripts/check_structure.py"),
     ("The Yang PDF stays in git", "sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf"),
     ("The check workflow still runs the pack targets", "scripts/check_ci.py"),
 ]
@@ -95,7 +95,7 @@ Run this before every pull request. CI runs the same command.
 make check
 ```
 
-`verify/all_rounds_check.py` passes when the fetched Round 1, Round 2, and Round 3 PDFs match `past/inventory.json`. When those PDFs are absent it skips the binary check and still checks the committed indexes.
+`verify/all_rounds_check.py` passes when the Round 1, Round 2, and Round 3 PDFs match `past/inventory.json`. The check requires the committed PDFs.
 
 {coverage()}
 
@@ -132,7 +132,7 @@ Regenerate this file with `python3 scripts/generate_agents_md.py` after you add 
 
 - Open a pull request for changes. Do not merge it, and do not force-push, unless the operator authorizes that merge.
 - Do not commit `progress.local.json`, `trackers/live/`, or `.venv/`.
-- Do not commit official contest PDFs. `sources/fetch.sh` downloads them into `sources/past/r1/`, `sources/past/r2/`, and `sources/past/r3/`.
+- The unpacked contest PDFs and the site PDFs are committed reference copies under `sources/past/` and `sources/`. `sources/fetch.sh` can still verify checksums. Do not commit `Resource_pack.zip`.
 - Do not commit a plaintext copy of the Yang guide. The committed copy is `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`.
 - Do not edit `AGENTS.md` by hand.
 

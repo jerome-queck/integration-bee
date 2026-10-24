@@ -1,9 +1,7 @@
-# Official contest binaries and site mirrors. fetch.sh writes these. Do not commit them.
-/sources/*.pdf
+# Zip, HTML, and txt mirrors stay untracked. PDFs under sources/ and sources/past/ are committed reference copies.
 /sources/*.zip
 /sources/*.html
 /sources/*.txt
-/sources/past/
 
 # User-supplied guides under sources/user/ ARE committed (Yang Topics Guide, inventory).
 

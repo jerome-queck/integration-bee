@@ -12,14 +12,31 @@ for _rule, rel in ENFORCERS:
         fail = 1
 
 def ignored(path: str) -> bool:
-    proc = subprocess.run(["git", "check-ignore", "-q", path], cwd=ROOT)
+    proc = subprocess.run(
+        ["git", "check-ignore", "-q", "--no-index", path],
+        cwd=ROOT,
+    )
     return proc.returncode == 0
 
 if not ignored("trackers/live/attempts.json"):
     print("FAIL trackers/live/attempts.json is not ignored")
     fail = 1
-if not ignored("sources/past/r1/2020/example.pdf"):
-    print("FAIL sources/past pdf is not ignored")
+problems = "sources/past/r1/2020/2020_Integration_Competition_Problems.pdf"
+if ignored(problems):
+    print(f"FAIL {problems} is ignored")
+    fail = 1
+if not (ROOT / problems).is_file():
+    print(f"FAIL {problems} missing from the tree")
+    fail = 1
+syllabus = "sources/UK_University_Integration_Bee_Syllabus.pdf"
+if ignored(syllabus):
+    print(f"FAIL {syllabus} is ignored")
+    fail = 1
+if not (ROOT / syllabus).is_file():
+    print(f"FAIL {syllabus} missing from the tree")
+    fail = 1
+if not ignored("sources/Resource_pack.zip"):
+    print("FAIL sources/Resource_pack.zip is not ignored")
     fail = 1
 if not ignored("progress.local.json"):
     print("FAIL progress.local.json is not ignored")

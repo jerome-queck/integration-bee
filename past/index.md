@@ -1,6 +1,6 @@
 # Past papers index (all rounds)
 
-Paths relative to repo root. Binaries under `sources/past/` are **gitignored**; run `sources/fetch.sh`.
+Paths relative to repo root. The reference PDFs under `sources/past/` are committed.
 
 Layout (locked): `sources/past/r1/YYYY/`, `r2/YYYY/` (with `uk/` + `sg/` when both exist), `r3/YYYY/`.
 

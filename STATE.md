@@ -4,7 +4,7 @@ Public status of the Integration Bee pack. Personal ticks stay in gitignored `pr
 
 ## Order
 
-Concept units come before past papers. Units 01 through 36 are concept units. After `sources/fetch.sh`, official PDFs land in `sources/past/r1/`, `sources/past/r2/`, and `sources/past/r3/`. The committed list is `past/inventory.json`.
+Concept units come before past papers. Units 01 through 36 are concept units. The reference PDFs are committed under `sources/past/r1/`, `sources/past/r2/`, and `sources/past/r3/`. Teaching text stays in the unit files. The contest list is `past/inventory.json`.
 
 ## Units
 
@@ -13,7 +13,7 @@ Concept units come before past papers. Units 01 through 36 are concept units. Af
 | 01–11 | Yang Chapter 1, Round 1 | ready |
 | 12–18 | Yang Chapter 2 | ready |
 | 19–36 | Yang Chapters 3–6 (inventory 3.1–6.9, 4.3 skipped) | ready |
-| past papers | after the concept units | index only until fetch |
+| past papers | after the concept units | reference PDFs committed |
 
 Receipt for chapters 1–2 template rewrap: `integration-bee-ch1-ch2-rewrap-2026-10-25`.
 

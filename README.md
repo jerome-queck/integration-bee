@@ -14,7 +14,7 @@ People changing this pack use the checks below. Learners do not.
 
 1. Install Python 3.11 or newer, SymPy, and PyYAML with `python3 -m pip install sympy pyyaml`.
 2. Run `make check` before a pull request. CI runs the same command. Details are in `AGENTS.md`.
-3. Official contest PDFs stay out of git. `sources/fetch.sh` downloads them. The committed list is `past/inventory.json`.
+3. The unpacked contest PDFs and the site PDFs are committed reference copies under `sources/past/` and `sources/`. The contest list is `past/inventory.json`. Do not commit `Resource_pack.zip`.
 4. Teach from `units/` with the files in `templates/`.
 5. The Yang Topics Guide, 2nd edition, is `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`. Attribution is in `sources/user/README.md`.
 

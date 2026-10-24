@@ -215,6 +215,40 @@ def record_attempt(
     return item
 
 
+def nonempty_file(path: Path) -> bool:
+    return path.is_file() and path.stat().st_size > 0
+
+
+def reference_pdf_status() -> str:
+    sums = ROOT / "sources" / "sha256sums"
+    inventory = ROOT / "past" / "inventory.json"
+    try:
+        lines = sums.read_text().splitlines()
+        artifacts = json.loads(inventory.read_text())["artifacts"]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError):
+        return "missing"
+    if not isinstance(artifacts, list):
+        return "missing"
+    for line in lines:
+        text = line.strip()
+        if not text or text.startswith("#"):
+            continue
+        parts = text.split(None, 1)
+        if len(parts) != 2 or not parts[1].endswith(".pdf"):
+            continue
+        if not nonempty_file(ROOT / "sources" / parts[1]):
+            return "missing"
+    for art in artifacts:
+        if not isinstance(art, dict):
+            return "missing"
+        if art.get("present") is False:
+            continue
+        rel = art.get("path")
+        if not isinstance(rel, str) or not nonempty_file(ROOT / rel):
+            return "missing"
+    return "ok"
+
+
 def cmd_doctor(fmt: str) -> int:
     try:
         import sympy
@@ -228,11 +262,6 @@ def cmd_doctor(fmt: str) -> int:
         n = int(unit.name.split("-", 1)[0])
         if not (ROOT / "verify" / f"drills_unit{n}.json").exists():
             missing_unit.append(unit.name)
-    official = [
-        "UK_University_Integration_Bee_Syllabus.pdf",
-        "Resource_pack.zip",
-    ]
-    missing_official = [name for name in official if not (ROOT / "sources" / name).is_file()]
     ok = bool(yang.is_file() and units and not missing_unit and drills)
     payload = {
         "ready": ok,
@@ -241,7 +270,7 @@ def cmd_doctor(fmt: str) -> int:
         "units": len(units),
         "drills": len(drills),
         "yang_pdf": "ok" if yang.is_file() else "missing",
-        "official_pdfs": "missing" if missing_official else "ok",
+        "official_pdfs": reference_pdf_status(),
         "data_dir": str(data_dir(None)),
     }
     if fmt == "json":

@@ -4,7 +4,7 @@
 
 The SHA-256 is in `sha256sums`. This PDF is a user-supplied copy so a clone can teach Chapter 1 and Chapter 2 without an extra download.
 
-Official UK University Integration Bee PDFs are not in git. `sources/fetch.sh` downloads them. See `sources/README.md`.
+The official contest PDFs and the site PDFs are committed reference copies under `sources/past/` and `sources/`. See `sources/README.md`.
 
 `yang-topics-inventory.md` lists topic ids from the guide. It is an index, not a substitute for the PDF.
 

@@ -11,6 +11,13 @@ need=(
   "$ROOT/STATE.md"
   "$ROOT/sources/sha256sums"
   "$ROOT/sources/fetch.sh"
+  "$ROOT/sources/UK_University_Integration_Bee_Syllabus.pdf"
+  "$ROOT/sources/UK_University_Integration_Bee_Techniques_Guide.pdf"
+  "$ROOT/sources/Integration_Competition_Sample_problems.pdf"
+  "$ROOT/sources/Virtual_integration_competition_sample_hints.pdf"
+  "$ROOT/sources/Integration_bee_sample_problems_answers.pdf"
+  "$ROOT/sources/UK_University_integration_bee_sample_problems_solutions.pdf"
+  "$ROOT/sources/Formula_sheet.pdf"
   "$ROOT/sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf"
   "$ROOT/sources/user/yang-topics-inventory.md"
   "$ROOT/units/01-foundations-substitution/meta.yaml"
@@ -37,14 +44,6 @@ for udir in "$ROOT"/units/[0-9][0-9]-*/; do
   if [[ ! -e "$dj" ]]; then echo "FAIL missing: $dj"; fail=1; else echo "OK $dj"; fi
 done
 shopt -u nullglob
-
-for f in \
-  UK_University_Integration_Bee_Syllabus.pdf \
-  UK_University_Integration_Bee_Techniques_Guide.pdf \
-  Integration_Competition_Sample_problems.pdf \
-  Resource_pack.zip; do
-  if [[ -s "$ROOT/sources/$f" ]]; then echo "OK sources/$f"; else echo "WARN sources/$f missing (run sources/fetch.sh)"; fi
-done
 
 echo "== yang 1.1–1.20 in syllabus-map =="
 for i in $(seq 1 20); do
