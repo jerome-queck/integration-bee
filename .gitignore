@@ -1,0 +1,43 @@
+# Official contest binaries and site mirrors. fetch.sh writes these. Do not commit them.
+/sources/*.pdf
+/sources/*.zip
+/sources/*.html
+/sources/*.txt
+/sources/past/
+
+# User-supplied guides under sources/user/ ARE committed (Yang Topics Guide, inventory).
+
+# Python / local
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.log
+
+# Personal / session progress (never commit)
+progress.local.json
+*.local.json
+runlog.md
+trackers/live/**
+!trackers/live/.gitkeep
+
+# Plaintext reconstruction of the Yang guide, and a duplicate of the committed PDF.
+sources/user/jerome-attached.txt
+sources/user/jerome-attached-20261024.pdf
+
+# LaTeX products
+.latex-aux/
+.latex-out/
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+units/**/*.pdf
+templates/round1-sim.pdf
+
+# Verify scratch
+artifacts/
+

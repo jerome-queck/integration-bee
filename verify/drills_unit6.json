@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U06-D01",
+    "technique": "intermediate-u-sub",
+    "kind": "definite",
+    "latex": "\\int_0^1 x^3 e^{x^4}\\,dx",
+    "sympy_expr": "x**3 * exp(x**4)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "(exp(1)-1)/4",
+    "answer_display": "(e-1)/4",
+    "technique_tags": [
+      "intermediate-u-sub",
+      "yang:1.11"
+    ],
+    "yang": [
+      "yang:1.11"
+    ],
+    "solution_note": "$u=x^4$.",
+    "unit": "06-intermediate-u-sub"
+  },
+  {
+    "id": "U06-D02",
+    "technique": "intermediate-u-sub",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2} \\sin x\\cos x\\, e^{\\sin^2 x}\\,dx",
+    "sympy_expr": "sin(x)*cos(x)*exp(sin(x)**2)",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "(exp(1)-1)/2",
+    "answer_display": "(e-1)/2",
+    "technique_tags": [
+      "intermediate-u-sub",
+      "yang:1.11"
+    ],
+    "yang": [
+      "yang:1.11"
+    ],
+    "solution_note": "$u=\\sin^2 x$.",
+    "unit": "06-intermediate-u-sub"
+  },
+  {
+    "id": "U06-D03",
+    "technique": "intermediate-u-sub",
+    "kind": "definite",
+    "latex": "\\int_e^{e^2} \\frac{1}{x\\ln x}\\,dx",
+    "sympy_expr": "1/(x*log(x))",
+    "limits": [
+      "E",
+      "E**2"
+    ],
+    "answer_sympy": "log(2)",
+    "answer_display": "\\ln 2",
+    "technique_tags": [
+      "intermediate-u-sub",
+      "yang:1.11"
+    ],
+    "yang": [
+      "yang:1.11"
+    ],
+    "solution_note": "$u=\\ln x$.",
+    "unit": "06-intermediate-u-sub"
+  },
+  {
+    "id": "U06-D04",
+    "technique": "intermediate-u-sub",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2} \\frac{\\cos x}{\\sin x+2}\\,dx",
+    "sympy_expr": "cos(x)/(sin(x)+2)",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "log(3)-log(2)",
+    "answer_display": "\\ln(3/2)",
+    "technique_tags": [
+      "intermediate-u-sub",
+      "yang:1.11"
+    ],
+    "yang": [
+      "yang:1.11"
+    ],
+    "solution_note": "$u=\\sin x+2$.",
+    "unit": "06-intermediate-u-sub"
+  },
+  {
+    "id": "U06-D05",
+    "technique": "intermediate-u-sub",
+    "kind": "definite",
+    "latex": "\\int_0^1 \\frac{2x}{(x^2+1)^2}\\,dx",
+    "sympy_expr": "2*x/(x**2+1)**2",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "1/2",
+    "answer_display": "1/2",
+    "technique_tags": [
+      "intermediate-u-sub",
+      "yang:1.11"
+    ],
+    "yang": [
+      "yang:1.11"
+    ],
+    "solution_note": "$u=x^2+1$.",
+    "unit": "06-intermediate-u-sub"
+  },
+  {
+    "id": "U06-D06",
+    "technique": "intermediate-u-sub",
+    "kind": "definite",
+    "latex": "\\int_1^e \\frac{\\ln x}{x}\\,dx",
+    "sympy_expr": "log(x)/x",
+    "limits": [
+      1,
+      "E"
+    ],
+    "answer_sympy": "1/2",
+    "answer_display": "1/2",
+    "technique_tags": [
+      "intermediate-u-sub",
+      "yang:1.11"
+    ],
+    "yang": [
+      "yang:1.11"
+    ],
+    "solution_note": "$u=\\ln x$.",
+    "unit": "06-intermediate-u-sub"
+  },
+  {
+    "id": "U06-D07",
+    "technique": "intermediate-u-sub",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/4} \\tan x\\sec^2 x\\,dx",
+    "sympy_expr": "tan(x)*sec(x)**2",
+    "limits": [
+      0,
+      "pi/4"
+    ],
+    "answer_sympy": "1/2",
+    "answer_display": "1/2",
+    "technique_tags": [
+      "intermediate-u-sub",
+      "yang:1.11"
+    ],
+    "yang": [
+      "yang:1.11"
+    ],
+    "solution_note": "$u=\\tan x$.",
+    "unit": "06-intermediate-u-sub"
+  },
+  {
+    "id": "U06-D08",
+    "technique": "intermediate-u-sub",
+    "kind": "definite",
+    "latex": "\\int_0^1 x\\sqrt{1+x^2}\\,dx",
+    "sympy_expr": "x*sqrt(1+x**2)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "(2*sqrt(2)-1)/3",
+    "answer_display": "(2\\sqrt{2}-1)/3",
+    "technique_tags": [
+      "intermediate-u-sub",
+      "yang:1.11"
+    ],
+    "yang": [
+      "yang:1.11"
+    ],
+    "solution_note": "$u=1+x^2$.",
+    "unit": "06-intermediate-u-sub"
+  }
+]

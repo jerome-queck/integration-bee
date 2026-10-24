@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U04-D01",
+    "technique": "trig-sub",
+    "kind": "definite",
+    "latex": "\\int_0^1 \\frac{1}{\\sqrt{1-x^2}}\\,dx",
+    "sympy_expr": "1/sqrt(1-x**2)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "pi/2",
+    "answer_display": "\\pi/2",
+    "technique_tags": [
+      "trig-sub",
+      "yang:1.7"
+    ],
+    "yang": [
+      "yang:1.7"
+    ],
+    "solution_note": "$\\arcsin$.",
+    "unit": "04-trig-sub-circle"
+  },
+  {
+    "id": "U04-D02",
+    "technique": "circle-area",
+    "kind": "definite",
+    "latex": "\\int_0^1 \\sqrt{1-x^2}\\,dx",
+    "sympy_expr": "sqrt(1-x**2)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "pi/4",
+    "answer_display": "\\pi/4",
+    "technique_tags": [
+      "circle-area",
+      "yang:1.9"
+    ],
+    "yang": [
+      "yang:1.9"
+    ],
+    "solution_note": "Quarter unit disk.",
+    "unit": "04-trig-sub-circle"
+  },
+  {
+    "id": "U04-D03",
+    "technique": "trig-sub",
+    "kind": "definite",
+    "latex": "\\int_0^2 \\frac{1}{\\sqrt{4-x^2}}\\,dx",
+    "sympy_expr": "1/sqrt(4-x**2)",
+    "limits": [
+      0,
+      2
+    ],
+    "answer_sympy": "pi/2",
+    "answer_display": "\\pi/2",
+    "technique_tags": [
+      "trig-sub",
+      "yang:1.7"
+    ],
+    "yang": [
+      "yang:1.7"
+    ],
+    "solution_note": "$x=2\\sin\\theta$.",
+    "unit": "04-trig-sub-circle"
+  },
+  {
+    "id": "U04-D04",
+    "technique": "circle-area",
+    "kind": "definite",
+    "latex": "\\int_0^2 \\sqrt{4-x^2}\\,dx",
+    "sympy_expr": "sqrt(4-x**2)",
+    "limits": [
+      0,
+      2
+    ],
+    "answer_sympy": "pi",
+    "answer_display": "\\pi",
+    "technique_tags": [
+      "circle-area",
+      "yang:1.9"
+    ],
+    "yang": [
+      "yang:1.9"
+    ],
+    "solution_note": "Quarter disk radius 2.",
+    "unit": "04-trig-sub-circle"
+  },
+  {
+    "id": "U04-D05",
+    "technique": "trig-sub",
+    "kind": "definite",
+    "latex": "\\int_0^{1/2} \\frac{x}{\\sqrt{1-x^2}}\\,dx",
+    "sympy_expr": "x/sqrt(1-x**2)",
+    "limits": [
+      0,
+      "1/2"
+    ],
+    "answer_sympy": "1-sqrt(3)/2",
+    "answer_display": "1-\\sqrt{3}/2",
+    "technique_tags": [
+      "trig-sub",
+      "yang:1.7"
+    ],
+    "yang": [
+      "yang:1.7"
+    ],
+    "solution_note": "$u=1-x^2$.",
+    "unit": "04-trig-sub-circle"
+  },
+  {
+    "id": "U04-D06",
+    "technique": "trig-sub",
+    "kind": "definite",
+    "latex": "\\int_0^2 \\frac{1}{x^2+4}\\,dx",
+    "sympy_expr": "1/(x**2+4)",
+    "limits": [
+      0,
+      2
+    ],
+    "answer_sympy": "pi/8",
+    "answer_display": "\\pi/8",
+    "technique_tags": [
+      "trig-sub",
+      "yang:1.7"
+    ],
+    "yang": [
+      "yang:1.7"
+    ],
+    "solution_note": "$(1/2)\\arctan(x/2)$.",
+    "unit": "04-trig-sub-circle"
+  },
+  {
+    "id": "U04-D07",
+    "technique": "trig-sub",
+    "kind": "definite",
+    "latex": "\\int_0^{1/\\sqrt{2}} \\frac{1}{\\sqrt{1-x^2}}\\,dx",
+    "sympy_expr": "1/sqrt(1-x**2)",
+    "limits": [
+      0,
+      "1/sqrt(2)"
+    ],
+    "answer_sympy": "pi/4",
+    "answer_display": "\\pi/4",
+    "technique_tags": [
+      "trig-sub",
+      "yang:1.7"
+    ],
+    "yang": [
+      "yang:1.7"
+    ],
+    "solution_note": "$\\arcsin(1/\\sqrt2)=\\pi/4$.",
+    "unit": "04-trig-sub-circle"
+  },
+  {
+    "id": "U04-D08",
+    "technique": "circle-area",
+    "kind": "definite",
+    "latex": "\\int_{-1}^{1} \\sqrt{1-x^2}\\,dx",
+    "sympy_expr": "sqrt(1-x**2)",
+    "limits": [
+      -1,
+      1
+    ],
+    "answer_sympy": "pi/2",
+    "answer_display": "\\pi/2",
+    "technique_tags": [
+      "circle-area",
+      "yang:1.9"
+    ],
+    "yang": [
+      "yang:1.9"
+    ],
+    "solution_note": "Upper semicircle.",
+    "unit": "04-trig-sub-circle"
+  }
+]

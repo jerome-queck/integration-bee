@@ -1,0 +1,29 @@
+unit_id: "10-inverse-kings"
+title: "Inverse Functions \& King's/Queen's Rule"
+order: 10
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U10-D"
+technique_tags:
+  - inverse-functions
+  - kings-rule
+yang_tags:
+  - "yang:1.17"
+  - "yang:1.18"
+syllabus_refs:
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 reflection property of integrals"
+  - source: UK_University_Integration_Bee_Techniques_Guide.pdf
+    section: "§1.2 Reflection Substitutions (p.7); §1.5 Integral of Inverse (p.14)"
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§§1.17 Inverse Functions, 1.18 King's/Queen's Rule"
+prerequisites:
+  - "02-symmetry-basic-trig"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit10.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

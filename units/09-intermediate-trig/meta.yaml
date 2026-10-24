@@ -1,0 +1,28 @@
+unit_id: "09-intermediate-trig"
+title: "Intermediate Trig Integrals \& Trig-Substitution"
+order: 9
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U09-D"
+technique_tags:
+  - intermediate-trig
+  - intermediate-trig-sub
+yang_tags:
+  - "yang:1.15"
+  - "yang:1.16"
+syllabus_refs:
+  - source: UK_University_Integration_Bee_Techniques_Guide.pdf
+    section: "§1.8 Trigonometric Identities (p.18)"
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§§1.15 Intermediate Trig Integrals, 1.16 Intermediate Trig-Substitution"
+prerequisites:
+  - "02-symmetry-basic-trig"
+  - "04-trig-sub-circle"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit9.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

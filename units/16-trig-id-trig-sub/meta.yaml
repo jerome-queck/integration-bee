@@ -1,0 +1,29 @@
+unit_id: "16-trig-id-trig-sub"
+title: "Trig Identities and Intermediate Trig-Sub"
+order: 16
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U16-D"
+technique_tags:
+  - trig-identities
+  - intermediate-trig-sub
+yang_tags:
+  - "yang:2.6"
+  - "yang:2.7"
+syllabus_refs:
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§§2.6 Trig-Identities Manipulation, 2.7 Intermediate Trig-Substitution"
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Integration Techniques (supporting)"
+prerequisites:
+  - "02-symmetry-basic-trig"
+  - "04-trig-sub-circle"
+  - "09-intermediate-trig"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit16.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

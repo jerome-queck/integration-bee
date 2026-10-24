@@ -1,0 +1,77 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 01:\\ Foundations \& Substitution}
+\author{UK Uni Integration Bee prep\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed §§1.1--1.2}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Status}
+Concept teaching only (easy drills). No past papers.
+Tags: \texttt{u-sub}, \texttt{linear-sub}, \texttt{du/u}, \texttt{odd-even}, \texttt{standard-arctan},
+\texttt{yang:1.1}, \texttt{yang:1.2}, light \texttt{yang:1.10}.
+
+\section{Official anchors}
+\begin{itemize}
+  \item Syllabus §1 --- A-Level/STEP substitution and parts
+        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}, p.1).
+  \item Techniques Guide Intro --- assumes A-Level substitution/parts
+        (\texttt{sources/UK\_University\_Integration\_Bee\_Techniques\_Guide.pdf}, p.2).
+  \item Yang Topics Guide 2nd Ed §§1.1 Basic Integration, 1.2 Basic U-Substitution
+        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}, Contents pp.7--8).
+\end{itemize}
+
+\section{Learning goals}
+\begin{enumerate}
+  \item Spot a substitution where a factor is the derivative of an inner expression.
+  \item Carry out linear and power substitutions on definite integrals (change limits).
+  \item Recognise a pure \(du/u\) form.
+  \item Use odd-on-symmetric-interval \(\Rightarrow 0\) (bridge to Guide §1.1 / Yang 1.3 later).
+\end{enumerate}
+
+\section{Pedagogy}
+Worked example \(\to\) faded example \(\to\) interleaved easy drills. See \texttt{pedagogy/README.md}.
+
+\section{Worked example A --- \texttt{U01-D01} (\texttt{yang:1.2})}
+\[
+\int_0^1 \frac{2x}{x^2+1}\,dx.
+\]
+Let \(u=x^2+1\), \(du=2x\,dx\). Limits \(1\to 2\):
+\[
+\int_1^2 u^{-1}\,du=\ln 2.
+\]
+
+\section{Worked example B --- \texttt{U01-D02} (\texttt{yang:1.2})}
+\[
+\int_0^{\pi/2}\sin x\cos x\,dx.
+\]
+Let \(u=\sin x\), \(du=\cos x\,dx\). Limits \(0\to 1\):
+\[
+\int_0^1 u\,du=\tfrac12.
+\]
+
+\section{Faded example --- \texttt{U01-D03} (\texttt{yang:1.2})}
+\[
+\int_0^1 x e^{x^2}\,dx.
+\]
+Scaffold: derivative of the exponent \(x^2\) is \(2x\). Set \(u=x^2\), then
+\(\frac12\int_0^1 e^u\,du=\frac{e-1}{2}\).
+
+\section{Standard warmup --- \texttt{U01-D08} (\texttt{yang:1.1})}
+\[
+\int_0^1\frac{1}{1+x^2}\,dx=\arctan x\Big|_0^1=\frac\pi4.
+\]
+
+\section{Odd-function bridge --- \texttt{U01-D07} (\texttt{yang:1.1})}
+If \(f\) is odd and the interval is symmetric about 0 (integral exists),
+\[
+\int_{-a}^{a}f(x)\,dx=0.
+\]
+Example: \(\int_{-1}^{1}x^3\,dx=0\). Full symmetry = Yang 1.3 (later unit).
+
+\section{Practice}
+Attempt \texttt{U01-D01}\ldots\texttt{U01-D08} in \texttt{drills.tex}.
+Machine check: \texttt{verify/run.sh}. CLI tags/answers: \texttt{drills.md}, \texttt{verify/drills\_unit1.json}.
+
+\section{Skips (later)}
+DUTIS, Weierstrass, series, Gamma/Beta/zeta, floor, Yang 1.3--1.20 full units, past Round 1 papers.
+\end{document}

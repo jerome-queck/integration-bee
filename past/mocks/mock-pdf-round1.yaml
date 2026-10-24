@@ -1,0 +1,53 @@
+# Full past Round-1 papers as PDF mocks (local binaries via sources/fetch.sh).
+# Bot starts a 2h (or year-appropriate) clock; Jerome works from the PDF;
+# marks against mark scheme / solutions (typed finals or photo).
+
+id: mock-pdf-round1
+kind: pdf-timed
+default_duration_minutes: 120
+gate: "units 01–11 concept ready"
+papers:
+  - year: 2025
+    problems: sources/past/r1/2025/2025_Online_Round_1.pdf
+    mark_scheme: sources/past/r1/2025/2025_Online_Round_1_Mark_Scheme.pdf
+    solutions: sources/past/r1/2025/2025_Round_1_Solutions.pdf
+    count: 30
+    duration_minutes: 120
+  - year: 2024
+    problems: sources/past/r1/2024/2024_Round_1_UK_University_Integration_Bee.pdf
+    mark_scheme: sources/past/r1/2024/Mark_Scheme_2024_Round_1_UK_University_Integration_Bee.pdf
+    solutions: sources/past/r1/2024/Solutions_2024_Round_1_UK_University_Integration_Bee_Solutions.pdf
+    count: 30
+    duration_minutes: 120
+  - year: 2023
+    problems: sources/past/r1/2023/2023_Round_1_UK_University_Integration_Bee.pdf
+    mark_scheme: sources/past/r1/2023/Mark_Scheme_2023_Round_1_UK_University_Integration_Bee.pdf
+    solutions: sources/past/r1/2023/2023_Round_1_Worked_Answers_UK_University_Integration_Bee.pdf
+    count: 30
+    duration_minutes: 120
+  - year: 2022
+    problems: sources/past/r1/2022/2022_Round_1_UK_University_Integration_Bee.pdf
+    mark_scheme: sources/past/r1/2022/Mark_Scheme_2022_Round_1_UK_University_Integration_Bee_(2).pdf
+    solutions: sources/past/r1/2022/Solutions_2022_R1_UK_University_Integration_Bee.pdf
+    count: 30
+    duration_minutes: 120
+  - year: 2021
+    problems: sources/past/r1/2021/2021_Round_1_UK_University_Integration_Bee.pdf
+    mark_scheme: sources/past/r1/2021/Mark_Scheme_UK_University_Integration_Bee_2021_Round_1.pdf
+    solutions: sources/past/r1/2021/Solutions_2021_UK_University_Integration_Bee_Round_1.pdf
+    count: 40
+    duration_minutes: 120
+    note: "40-problem paper — keep 2h or agree a longer window in chat"
+  - year: 2020
+    problems: sources/past/r1/2020/2020_Integration_Competition_Problems.pdf
+    mark_scheme: sources/past/r1/2020/Virtual_integration_competition_answers.pdf
+    solutions: sources/past/r1/2020/2020_Virtual_Worked_Answers_UK_University_Integration_Bee.pdf
+    count: 40
+    duration_minutes: 120
+    note: "40-problem virtual competition"
+
+chat_protocol: |
+  1. Confirm year (default newest available locally: 2025).
+  2. Start clock; point Jerome at the local problems PDF path (or describe Qs if PDF unavailable).
+  3. Accept batch photos / typed finals; score vs mark scheme (never invent).
+  4. After time: teach top gaps; append mistakes to progress.local.json.

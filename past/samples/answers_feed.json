@@ -1,0 +1,296 @@
+[
+  {
+    "id": "SAMPLE-Q01",
+    "verify": "manual",
+    "answer_display": "\\ln 6",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "dutis"
+    ],
+    "yang": [
+      "yang:1.20"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q02",
+    "verify": "manual",
+    "answer_display": "\\pi/2",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "dirichlet"
+    ],
+    "yang": [
+      "yang:1.20"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q03",
+    "verify": "sympy",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2} \\frac{\\sqrt{\\sin x}}{\\sqrt{\\sin x}+\\sqrt{\\cos x}}\\,dx",
+    "sympy_expr": "sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x)))",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "pi/4",
+    "answer_display": "\\pi/4",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "kings-rule",
+      "reflection"
+    ],
+    "yang": [
+      "yang:1.18"
+    ],
+    "note": "King's rule; SymPy may be slow \u2014 checker uses closed answer match via numerical/heuristic path if integrate hangs"
+  },
+  {
+    "id": "SAMPLE-Q04",
+    "verify": "sympy",
+    "kind": "definite",
+    "latex": "\\int_0^{\\infty} \\frac{\\ln x}{x^2+1}\\,dx",
+    "sympy_expr": "log(x)/(x**2+1)",
+    "limits": [
+      0,
+      "oo"
+    ],
+    "answer_sympy": "0",
+    "answer_display": "0",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "u-sub",
+      "odd-even"
+    ],
+    "yang": [
+      "yang:1.11"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q05",
+    "verify": "manual",
+    "answer_display": "\\pi\\ln 2/8",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "trig-sub"
+    ],
+    "yang": [
+      "yang:1.7"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q06",
+    "verify": "manual",
+    "answer_display": "-\\pi^2/6",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "series"
+    ],
+    "yang": [
+      "yang:1.14"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q07",
+    "verify": "manual",
+    "answer_display": "\\Gamma(n)=(n-1)!",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "gamma",
+      "parts"
+    ],
+    "yang": [
+      "yang:1.6"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q08",
+    "verify": "manual",
+    "answer_display": "\\Gamma(s)\\zeta(s)",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "series",
+      "gamma-zeta"
+    ],
+    "yang": [
+      "yang:1.14"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q09",
+    "verify": "manual",
+    "answer_display": "1/2 - \\zeta(3)/3",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "floor"
+    ],
+    "yang": [
+      "yang:1.20"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q10",
+    "verify": "sympy",
+    "kind": "definite",
+    "latex": "\\int_{-2}^{2}\\left(x^3\\cos\\frac{x}{2}+\\frac12\\sqrt{4-x^2}\\right)dx",
+    "sympy_expr": "x**3*cos(x/2) + (1/2)*sqrt(4-x**2)",
+    "limits": [
+      -2,
+      2
+    ],
+    "answer_sympy": "pi",
+    "answer_display": "\\pi",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "odd-even",
+      "partial-circle"
+    ],
+    "yang": [
+      "yang:1.3",
+      "yang:1.9"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q11",
+    "verify": "sympy",
+    "kind": "indefinite",
+    "latex": "\\int \\frac{dx}{1+\\tan x}",
+    "sympy_expr": "1/(1+tan(x))",
+    "answer_sympy": "(1/2)*(x + log(sin(x)+cos(x)))",
+    "answer_display": "\\frac12(x+\\ln(\\sin x+\\cos x))+C",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "trig-identities"
+    ],
+    "yang": [
+      "yang:1.5"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q12",
+    "verify": "sympy",
+    "kind": "indefinite",
+    "latex": "\\int \\frac{\\sqrt{\\tan x}}{\\sin(2x)}\\,dx",
+    "sympy_expr": "sqrt(tan(x))/sin(2*x)",
+    "answer_sympy": "sqrt(tan(x))",
+    "answer_display": "\\sqrt{\\tan x}+C",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "reverse-product",
+      "trig"
+    ],
+    "yang": [
+      "yang:1.13",
+      "yang:1.5"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q13",
+    "verify": "sympy",
+    "kind": "indefinite",
+    "latex": "\\int \\frac{dx}{1+e^x}",
+    "sympy_expr": "1/(1+exp(x))",
+    "answer_sympy": "-log(1+exp(-x))",
+    "answer_display": "-\\ln(1+e^{-x})+C",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "basic-exp"
+    ],
+    "yang": [
+      "yang:1.4"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q14",
+    "verify": "manual",
+    "answer_display": "(1/\\sqrt{2})\\arctan(\\sqrt{2}\\tan(\\ln x))+C",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "intermediate-u-sub"
+    ],
+    "yang": [
+      "yang:1.11"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q15",
+    "verify": "manual",
+    "answer_display": "see answers PDF",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "partial-fractions"
+    ],
+    "yang": [
+      "yang:1.8"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q16",
+    "verify": "manual",
+    "answer_display": "see answers PDF (Weierstrass form)",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "weierstrass"
+    ],
+    "yang": [
+      "yang:1.16"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q17",
+    "verify": "manual",
+    "pdf_answer_suspect": true,
+    "answer_display_pdf": "e^x+C",
+    "answer_display_correct": "\\ln\\|\\ln x\\|+C",
+    "note": "Answers PDF appears to misprint Q17; true \u222b dx/(x ln x)=ln|ln x|+C. Do not sympy-lock PDF text.",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "du/u"
+    ],
+    "yang": [
+      "yang:1.2"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q18",
+    "verify": "sympy",
+    "kind": "indefinite",
+    "latex": "\\int \\frac{dx}{1-\\sin x}",
+    "sympy_expr": "1/(1-sin(x))",
+    "answer_sympy": "sec(x)+tan(x)",
+    "answer_display": "\\sec x+\\tan x+C",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "trig-identities"
+    ],
+    "yang": [
+      "yang:1.5",
+      "yang:1.15"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q19",
+    "verify": "manual",
+    "answer_display": "see answers PDF",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "trig-sub"
+    ],
+    "yang": [
+      "yang:1.7"
+    ]
+  },
+  {
+    "id": "SAMPLE-Q20",
+    "verify": "manual",
+    "answer_display": "see answers PDF",
+    "source": "Integration_bee_sample_problems_answers.pdf",
+    "technique_tags": [
+      "basic-exp",
+      "algebra"
+    ],
+    "yang": [
+      "yang:1.4"
+    ]
+  }
+]

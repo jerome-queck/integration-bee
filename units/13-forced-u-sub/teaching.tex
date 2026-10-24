@@ -1,0 +1,42 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 13:\\ Basic Forced U-Substitutions}
+\author{UK Uni Integration Bee prep\\ Yang Topics Guide 2nd Ed §2.3 Basic Forced U-Substitutions}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Status}
+Yang Chapter 2 concept unit (easy drills only; no past papers).
+Tags: \texttt{yang:2.3}, \texttt{forced-u-sub}.
+
+\section{Official anchors}
+\begin{itemize}
+  \item Yang Topics Guide 2nd Ed §2.3 Basic Forced U-Substitutions
+        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
+  \item Syllabus §1 techniques support
+        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\end{itemize}
+
+\section{Learning goals}
+\begin{enumerate}
+  \item Solve for $x$ in terms of $u$ when $du$ is missing (e.g.\ $u=\sqrt{x}\Rightarrow x=u^{2}$, $dx=2u\,du$).
+  \item Integrate $e^{\sqrt{x}}$, $\sin(\ln x)$, $\cos(\sqrt{x})$ after a forced sub.
+  \item Evaluate easy definite forced-$u$ integrals on $[0,1]$ or $[0,4]$.
+\end{enumerate}
+
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
+
+\section{Worked example --- \texttt{U13-D01} (\texttt{yang:2.3})}
+\[
+\int e^{\sqrt{x}}\,dx.
+\]
+Let $u=\sqrt{x}$, so $x=u^{2}$, $dx=2u\,du$: $\int 2u e^{u}\,du=2e^{u}(u-1)+C=2e^{\sqrt{x}}(\sqrt{x}-1)+C$.
+
+\section{Faded example}
+Try U13-D04: $\int\cos\sqrt{x}\,dx$ with the same $u=\sqrt{x}$ forced pattern.
+
+\section{Drill pointers}
+See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit13.json}.
+
+\end{document}

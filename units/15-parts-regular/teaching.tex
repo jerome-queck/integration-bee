@@ -1,0 +1,42 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 15:\\ Integration by Parts (Regular Round)}
+\author{UK Uni Integration Bee prep\\ Yang Topics Guide 2nd Ed §2.5 Integration by Parts}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Status}
+Yang Chapter 2 concept unit (easy drills only; no past papers).
+Tags: \texttt{yang:2.5}, \texttt{parts}.
+
+\section{Official anchors}
+\begin{itemize}
+  \item Yang Topics Guide 2nd Ed §2.5 Integration by Parts
+        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
+  \item Syllabus §1 techniques support
+        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\end{itemize}
+
+\section{Learning goals}
+\begin{enumerate}
+  \item Choose $u$/$dv$ on slightly trickier regular-round parts.
+  \item Handle $\int x\ln(x+1)$, $\int e^{x}\sin x$, and $\int(\ln x)^{2}/x^{3}$.
+  \item Evaluate one-step definite parts cleanly.
+\end{enumerate}
+
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
+
+\section{Worked example --- \texttt{U15-D01} (\texttt{yang:2.5})}
+\[
+\int_{0}^{1}x\ln(x+1)\,dx.
+\]
+Parts with $u=\ln(x+1)$, $dv=x\,dx$ (or expand series). Value $1/4$.
+
+\section{Faded example}
+Try U15-D03: $\int_{0}^{\pi}e^{x}\sin x\,dx$.
+
+\section{Drill pointers}
+See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit15.json}.
+
+\end{document}

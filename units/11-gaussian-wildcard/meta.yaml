@@ -1,0 +1,28 @@
+unit_id: "11-gaussian-wildcard"
+title: "Gaussian Integrals \& Special Wildcard"
+order: 11
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U11-D"
+technique_tags:
+  - gaussian
+  - wildcard
+yang_tags:
+  - "yang:1.19"
+  - "yang:1.20"
+syllabus_refs:
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§2 Gamma-related / special forms (adjacent)"
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§§1.19 Gaussian Integrals, 1.20 Special Wildcard"
+prerequisites:
+  - "03-exponential-parts"
+  - "02-symmetry-basic-trig"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit11.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

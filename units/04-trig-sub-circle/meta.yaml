@@ -1,0 +1,27 @@
+unit_id: "04-trig-sub-circle"
+title: "Basic Trig-Substitution \& Partial Circle Area"
+order: 4
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U04-D"
+technique_tags:
+  - trig-sub
+  - circle-area
+yang_tags:
+  - "yang:1.7"
+  - "yang:1.9"
+syllabus_refs:
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 A-Level/STEP trig substitution; geometric area"
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§§1.7 Basic Trig-Substitution, 1.9 Area of a Partial Circle"
+prerequisites:
+  - "02-symmetry-basic-trig"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit4.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

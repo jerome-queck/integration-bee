@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U10-D01",
+    "technique": "inverse-functions",
+    "kind": "definite",
+    "latex": "\\int_0^1\\arcsin x\\,dx",
+    "sympy_expr": "asin(x)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "pi/2 - 1",
+    "answer_display": "\\pi/2-1",
+    "technique_tags": [
+      "inverse-functions",
+      "yang:1.17"
+    ],
+    "yang": [
+      "yang:1.17"
+    ],
+    "solution_note": "Parts.",
+    "unit": "10-inverse-kings"
+  },
+  {
+    "id": "U10-D02",
+    "technique": "inverse-functions",
+    "kind": "definite",
+    "latex": "\\int_0^1\\arctan x\\,dx",
+    "sympy_expr": "atan(x)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "pi/4 - log(2)/2",
+    "answer_display": "\\pi/4-(\\ln 2)/2",
+    "technique_tags": [
+      "inverse-functions",
+      "yang:1.17"
+    ],
+    "yang": [
+      "yang:1.17"
+    ],
+    "solution_note": "Parts.",
+    "unit": "10-inverse-kings"
+  },
+  {
+    "id": "U10-D03",
+    "technique": "inverse-functions",
+    "kind": "definite",
+    "latex": "\\int_0^1\\arccos x\\,dx",
+    "sympy_expr": "acos(x)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "inverse-functions",
+      "yang:1.17"
+    ],
+    "yang": [
+      "yang:1.17"
+    ],
+    "solution_note": "Parts.",
+    "unit": "10-inverse-kings"
+  },
+  {
+    "id": "U10-D04",
+    "technique": "kings-rule",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2}\\frac{\\sin x}{\\sin x+\\cos x}\\,dx",
+    "sympy_expr": "sin(x)/(sin(x)+cos(x))",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "pi/4",
+    "answer_display": "\\pi/4",
+    "technique_tags": [
+      "kings-rule",
+      "yang:1.18"
+    ],
+    "yang": [
+      "yang:1.18"
+    ],
+    "solution_note": "King.",
+    "unit": "10-inverse-kings"
+  },
+  {
+    "id": "U10-D05",
+    "technique": "kings-rule",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2}\\frac{\\cos x}{\\sin x+\\cos x}\\,dx",
+    "sympy_expr": "cos(x)/(sin(x)+cos(x))",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "pi/4",
+    "answer_display": "\\pi/4",
+    "technique_tags": [
+      "kings-rule",
+      "yang:1.18"
+    ],
+    "yang": [
+      "yang:1.18"
+    ],
+    "solution_note": "King.",
+    "unit": "10-inverse-kings"
+  },
+  {
+    "id": "U10-D06",
+    "technique": "kings-rule",
+    "kind": "definite",
+    "latex": "\\int_0^1\\frac{x}{1+x}\\,dx",
+    "sympy_expr": "x/(1+x)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "1-log(2)",
+    "answer_display": "1-\\ln 2",
+    "technique_tags": [
+      "kings-rule",
+      "yang:1.18"
+    ],
+    "yang": [
+      "yang:1.18"
+    ],
+    "solution_note": "Direct/King.",
+    "unit": "10-inverse-kings"
+  },
+  {
+    "id": "U10-D07",
+    "technique": "kings-rule",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2}\\sin^2 x\\,dx",
+    "sympy_expr": "sin(x)**2",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "pi/4",
+    "answer_display": "\\pi/4",
+    "technique_tags": [
+      "kings-rule",
+      "yang:1.18"
+    ],
+    "yang": [
+      "yang:1.18"
+    ],
+    "solution_note": "King + cos^2.",
+    "unit": "10-inverse-kings"
+  },
+  {
+    "id": "U10-D08",
+    "technique": "inverse-functions",
+    "kind": "definite",
+    "latex": "\\int_0^{1/2}\\arcsin x\\,dx",
+    "sympy_expr": "asin(x)",
+    "limits": [
+      0,
+      "1/2"
+    ],
+    "answer_sympy": "pi/12 + sqrt(3)/2 - 1",
+    "answer_display": "\\pi/12+\\sqrt{3}/2-1",
+    "technique_tags": [
+      "inverse-functions",
+      "yang:1.17"
+    ],
+    "yang": [
+      "yang:1.17"
+    ],
+    "solution_note": "Parts.",
+    "unit": "10-inverse-kings"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "schema": "integration-bee-mocks/v1",
+  "example": true,
+  "sessions": [
+    {
+      "id": "mock01",
+      "started": "2026-10-24T15:00:00+08:00",
+      "ended": null,
+      "score": null,
+      "out_of": 30,
+      "missed": []
+    }
+  ]
+}

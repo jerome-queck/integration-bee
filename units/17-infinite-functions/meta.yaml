@@ -1,0 +1,26 @@
+unit_id: "17-infinite-functions"
+title: "Infinite Functions"
+order: 17
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U17-D"
+technique_tags:
+  - infinite-functions
+yang_tags:
+  - "yang:2.8"
+syllabus_refs:
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§2.8 Infinite Functions"
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Integration Techniques (supporting)"
+prerequisites:
+  - "08-basic-series"
+  - "01-foundations-substitution"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit17.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

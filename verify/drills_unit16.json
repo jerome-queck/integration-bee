@@ -1,0 +1,170 @@
+[
+  {
+    "id": "U16-D01",
+    "unit": "16-trig-id-trig-sub",
+    "technique": "trig-identities",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\sin^{2}x\\cos^{2}x\\,dx",
+    "sympy_expr": "sin(x)**2 * cos(x)**2",
+    "answer_sympy": "pi/16",
+    "answer_display": "\\pi/16",
+    "hint": "(sin 2x)^2/4.",
+    "technique_tags": [
+      "trig-identities",
+      "yang:2.6"
+    ],
+    "yang": [
+      "yang:2.6"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ]
+  },
+  {
+    "id": "U16-D02",
+    "unit": "16-trig-id-trig-sub",
+    "technique": "trig-identities",
+    "kind": "indefinite",
+    "latex": "\\int\\sin^{3}x\\,dx",
+    "sympy_expr": "sin(x)**3",
+    "answer_sympy": "cos(x)**3/3 - cos(x)",
+    "answer_display": "-\\cos x+\\dfrac{\\cos^{3}x}{3}+C",
+    "hint": "sin^2=1-cos^2; u=cos.",
+    "technique_tags": [
+      "trig-identities",
+      "yang:2.6"
+    ],
+    "yang": [
+      "yang:2.6"
+    ]
+  },
+  {
+    "id": "U16-D03",
+    "unit": "16-trig-id-trig-sub",
+    "technique": "trig-identities",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi}\\sin^{2}x\\,dx",
+    "sympy_expr": "sin(x)**2",
+    "answer_sympy": "pi/2",
+    "answer_display": "\\pi/2",
+    "hint": "(1-cos 2x)/2.",
+    "technique_tags": [
+      "trig-identities",
+      "yang:2.6"
+    ],
+    "yang": [
+      "yang:2.6"
+    ],
+    "limits": [
+      0,
+      "pi"
+    ]
+  },
+  {
+    "id": "U16-D04",
+    "unit": "16-trig-id-trig-sub",
+    "technique": "trig-identities",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\frac{dx}{1+\\cos x}",
+    "sympy_expr": "1/(1+cos(x))",
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "hint": "1+cos=2 cos^2(x/2).",
+    "technique_tags": [
+      "trig-identities",
+      "yang:2.6"
+    ],
+    "yang": [
+      "yang:2.6"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ]
+  },
+  {
+    "id": "U16-D05",
+    "unit": "16-trig-id-trig-sub",
+    "technique": "intermediate-trig-sub",
+    "kind": "definite",
+    "latex": "\\int_{0}^{2}\\sqrt{4-x^{2}}\\,dx",
+    "sympy_expr": "sqrt(4-x**2)",
+    "answer_sympy": "pi",
+    "answer_display": "\\pi",
+    "hint": "Quarter circle radius 2.",
+    "technique_tags": [
+      "intermediate-trig-sub",
+      "yang:2.7"
+    ],
+    "yang": [
+      "yang:2.7"
+    ],
+    "limits": [
+      0,
+      2
+    ]
+  },
+  {
+    "id": "U16-D06",
+    "unit": "16-trig-id-trig-sub",
+    "technique": "intermediate-trig-sub",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{x^{2}}{\\sqrt{1-x^{2}}}\\,dx",
+    "sympy_expr": "x**2 / sqrt(1-x**2)",
+    "answer_sympy": "pi/4",
+    "answer_display": "\\pi/4",
+    "hint": "x=sin \u03b8.",
+    "technique_tags": [
+      "intermediate-trig-sub",
+      "yang:2.7"
+    ],
+    "yang": [
+      "yang:2.7"
+    ],
+    "limits": [
+      0,
+      1
+    ]
+  },
+  {
+    "id": "U16-D07",
+    "unit": "16-trig-id-trig-sub",
+    "technique": "intermediate-trig-sub",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{dx}{x^{2}+4}",
+    "sympy_expr": "1/(x**2+4)",
+    "answer_sympy": "atan(x/2)/2",
+    "answer_display": "\\dfrac{1}{2}\\arctan(x/2)+C",
+    "hint": "x=2 tan \u03b8.",
+    "technique_tags": [
+      "intermediate-trig-sub",
+      "yang:2.7"
+    ],
+    "yang": [
+      "yang:2.7"
+    ]
+  },
+  {
+    "id": "U16-D08",
+    "unit": "16-trig-id-trig-sub",
+    "technique": "intermediate-trig-sub",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{dx}{\\sqrt{x^{2}+1}}",
+    "sympy_expr": "1/sqrt(x**2+1)",
+    "answer_sympy": "log(1+sqrt(2))",
+    "answer_display": "\\ln(1+\\sqrt{2})",
+    "hint": "x=tan \u03b8 or sinh.",
+    "technique_tags": [
+      "intermediate-trig-sub",
+      "yang:2.7"
+    ],
+    "yang": [
+      "yang:2.7"
+    ],
+    "limits": [
+      0,
+      1
+    ]
+  }
+]

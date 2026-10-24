@@ -1,0 +1,183 @@
+[
+  {
+    "id": "U03-D01",
+    "technique": "basic-exp",
+    "kind": "definite",
+    "latex": "\\int_0^1 e^x\\,dx",
+    "sympy_expr": "exp(x)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "E-1",
+    "answer_display": "e-1",
+    "hint": "Standard.",
+    "technique_tags": [
+      "basic-exp",
+      "yang:1.4"
+    ],
+    "yang": [
+      "yang:1.4"
+    ],
+    "solution_note": "Standard exponential.",
+    "unit": "03-exponential-parts"
+  },
+  {
+    "id": "U03-D02",
+    "technique": "basic-exp",
+    "kind": "definite",
+    "latex": "\\int_0^1 e^{2x}\\,dx",
+    "sympy_expr": "exp(2*x)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "(exp(2)-1)/2",
+    "answer_display": "(e^2-1)/2",
+    "hint": "Chain rule factor 1/2.",
+    "technique_tags": [
+      "basic-exp",
+      "yang:1.4"
+    ],
+    "yang": [
+      "yang:1.4"
+    ],
+    "solution_note": "$u=2x$.",
+    "unit": "03-exponential-parts"
+  },
+  {
+    "id": "U03-D03",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_0^1 x e^x\\,dx",
+    "sympy_expr": "x*exp(x)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "hint": "Parts: u=x.",
+    "technique_tags": [
+      "parts",
+      "yang:1.6"
+    ],
+    "yang": [
+      "yang:1.6"
+    ],
+    "solution_note": "Parts $u=x$.",
+    "unit": "03-exponential-parts"
+  },
+  {
+    "id": "U03-D04",
+    "technique": "parts",
+    "kind": "indefinite",
+    "latex": "\\int x e^x\\,dx",
+    "sympy_expr": "x*exp(x)",
+    "limits": null,
+    "answer_sympy": "exp(x)*(x-1)",
+    "answer_display": "e^x(x-1)+C",
+    "hint": "Parts.",
+    "technique_tags": [
+      "parts",
+      "yang:1.6"
+    ],
+    "yang": [
+      "yang:1.6"
+    ],
+    "solution_note": "Indefinite parts.",
+    "unit": "03-exponential-parts"
+  },
+  {
+    "id": "U03-D05",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_1^{e} \\ln x\\,dx",
+    "sympy_expr": "log(x)",
+    "limits": [
+      1,
+      "E"
+    ],
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "hint": "Parts u=ln x.",
+    "technique_tags": [
+      "parts",
+      "yang:1.6"
+    ],
+    "yang": [
+      "yang:1.6"
+    ],
+    "solution_note": "Parts $u=\\ln x$.",
+    "unit": "03-exponential-parts"
+  },
+  {
+    "id": "U03-D06",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2} e^x\\sin x\\,dx",
+    "sympy_expr": "exp(x)*sin(x)",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "(exp(pi/2)+1)/2",
+    "answer_display": "(e^{\\pi/2}+1)/2",
+    "hint": "Parts twice.",
+    "technique_tags": [
+      "parts",
+      "yang:1.6"
+    ],
+    "yang": [
+      "yang:1.6"
+    ],
+    "solution_note": "Parts twice; solve for $I$.",
+    "unit": "03-exponential-parts"
+  },
+  {
+    "id": "U03-D07",
+    "technique": "basic-exp",
+    "kind": "definite",
+    "latex": "\\int_0^1 2^x\\,dx",
+    "sympy_expr": "2**x",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "1/log(2)",
+    "answer_display": "1/\\ln 2",
+    "hint": "2^x = e^{x ln 2}.",
+    "technique_tags": [
+      "basic-exp",
+      "yang:1.4"
+    ],
+    "yang": [
+      "yang:1.4"
+    ],
+    "solution_note": "$2^x/\\ln 2$.",
+    "unit": "03-exponential-parts"
+  },
+  {
+    "id": "U03-D08",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_1^{e} x\\ln x\\,dx",
+    "sympy_expr": "x*log(x)",
+    "limits": [
+      1,
+      "E"
+    ],
+    "answer_sympy": "(exp(2)+1)/4",
+    "answer_display": "(e^2+1)/4",
+    "hint": "Parts u=ln x.",
+    "technique_tags": [
+      "parts",
+      "yang:1.6"
+    ],
+    "yang": [
+      "yang:1.6"
+    ],
+    "solution_note": "Parts $u=\\ln x$.",
+    "unit": "03-exponential-parts"
+  }
+]

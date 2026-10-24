@@ -1,0 +1,134 @@
+[
+  {
+    "id": "U17-D01",
+    "unit": "17-infinite-functions",
+    "technique": "infinite-functions",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1/2}\\frac{dx}{1-x}",
+    "sympy_expr": "1/(1-x)",
+    "answer_sympy": "log(2)",
+    "answer_display": "\\ln 2",
+    "hint": "Closed form of sum x^n on [0,1/2].",
+    "technique_tags": [
+      "infinite-functions",
+      "yang:2.8"
+    ],
+    "yang": [
+      "yang:2.8"
+    ],
+    "limits": [
+      0,
+      "1/2"
+    ]
+  },
+  {
+    "id": "U17-D02",
+    "unit": "17-infinite-functions",
+    "technique": "infinite-functions",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{e^{-x}}{1+e^{-x}}\\,dx",
+    "sympy_expr": "exp(-x)/(1+exp(-x))",
+    "answer_sympy": "log(2)",
+    "answer_display": "\\ln 2",
+    "hint": "Geometric in e^{-x}; or u=e^{-x}.",
+    "technique_tags": [
+      "infinite-functions",
+      "yang:2.8"
+    ],
+    "yang": [
+      "yang:2.8"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ]
+  },
+  {
+    "id": "U17-D03",
+    "unit": "17-infinite-functions",
+    "technique": "infinite-functions",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1/2}\\frac{dx}{1-x^{2}}",
+    "sympy_expr": "1/(1-x**2)",
+    "answer_sympy": "log(3)/2",
+    "answer_display": "\\dfrac{\\ln 3}{2}",
+    "hint": "sum x^{2n}.",
+    "technique_tags": [
+      "infinite-functions",
+      "yang:2.8"
+    ],
+    "yang": [
+      "yang:2.8"
+    ],
+    "limits": [
+      0,
+      "1/2"
+    ]
+  },
+  {
+    "id": "U17-D04",
+    "unit": "17-infinite-functions",
+    "technique": "infinite-functions",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}e^{x}\\,dx",
+    "sympy_expr": "exp(x)",
+    "answer_sympy": "-1+E",
+    "answer_display": "e-1",
+    "hint": "Termwise int of Taylor e^x.",
+    "technique_tags": [
+      "infinite-functions",
+      "yang:2.8"
+    ],
+    "yang": [
+      "yang:2.8"
+    ],
+    "limits": [
+      0,
+      1
+    ]
+  },
+  {
+    "id": "U17-D05",
+    "unit": "17-infinite-functions",
+    "technique": "infinite-functions",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\Bigl(x+\\frac{x}{\\sqrt{1-x^{2}}}\\Bigr)\\,dx",
+    "sympy_expr": "x + x/sqrt(1-x**2)",
+    "answer_sympy": "3/2",
+    "answer_display": "3/2",
+    "hint": "Yang 2.8 nested/trig-sub style worked pattern.",
+    "technique_tags": [
+      "infinite-functions",
+      "yang:2.8"
+    ],
+    "yang": [
+      "yang:2.8"
+    ],
+    "limits": [
+      0,
+      1
+    ]
+  },
+  {
+    "id": "U17-D06",
+    "unit": "17-infinite-functions",
+    "technique": "infinite-functions",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}(e^{x}-1)\\,dx",
+    "sympy_expr": "exp(x)-1",
+    "answer_sympy": "E-2",
+    "answer_display": "e-2",
+    "hint": "Strip the series kernel (e^x-1); easy definite.",
+    "technique_tags": [
+      "infinite-functions",
+      "yang:2.8"
+    ],
+    "yang": [
+      "yang:2.8"
+    ],
+    "limits": [
+      0,
+      1
+    ]
+  }
+]

@@ -1,0 +1,32 @@
+unit_id: "01-foundations-substitution"
+title: "Foundations & Substitution"
+order: 1
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U01-D"
+technique_tags:
+  - u-sub
+  - linear-sub
+  - du/u
+  - odd-even
+  - standard-arctan
+yang_tags:
+  - "yang:1.1"
+  - "yang:1.2"
+  - "yang:1.10"
+syllabus_refs:
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Integration Techniques"
+  - source: UK_University_Integration_Bee_Techniques_Guide.pdf
+    section: "Introduction (p.2); §1.1 Odd and Even (Contents p.3)"
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§§1.1 Basic Integration, 1.2 Basic U-Substitution (Contents pp.7–8); light 1.10"
+prerequisites: []
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit1.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

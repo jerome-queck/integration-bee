@@ -1,0 +1,46 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 06:\\ Intermediate U-Substitution}
+\author{UK Uni Integration Bee prep\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Status}
+Concept teaching only (easy drills). No past papers.
+Tags: \texttt{intermediate-u-sub}, \texttt{yang:1.11}.
+
+\section{Official anchors}
+\begin{itemize}
+  \item Syllabus §1 substitution (beyond linear).
+  \item Yang §1.11 Intermediate U-Substitution.
+\end{itemize}
+
+\section{Learning goals}
+\begin{enumerate}
+  \item Substitute composite powers/exponentials ($u=x^4$, $u=\sin^2 x$).
+  \item Handle $\int dx/(x\ln x)$ and similar log-chain forms.
+\end{enumerate}
+
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved easy drills. See \texttt{pedagogy/README.md}.
+
+
+\section{Worked --- \texttt{U06-D01} (\texttt{yang:1.11})}
+\[
+\int_0^1 x^3 e^{x^4}\,dx,\quad u=x^4\Rightarrow \frac14\int_0^1 e^u\,du=\frac{e-1}{4}.
+\]
+
+\section{Faded --- \texttt{U06-D03}}
+\[
+\int_e^{e^2}\frac{1}{x\ln x}\,dx.
+\]
+Scaffold: $u=\ln x$, $du=dx/x$.
+
+
+\section{Practice}
+Attempt \texttt{U06-D01}\ldots\texttt{U06-D08} in \texttt{drills.tex}.
+Machine check: \texttt{verify/run.sh}.
+
+\section{Skips (later)}
+Past Round 1 papers until Yang Ch.1 concept units exist.
+\end{document}

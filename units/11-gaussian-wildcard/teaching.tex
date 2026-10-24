@@ -1,0 +1,40 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 11:\\ Gaussian Integrals \& Special Wildcard}
+\author{UK Uni Integration Bee prep\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed}
+\date{}
+\begin{document}
+\maketitle
+\section*{Status}
+Concept teaching only. Tags: \texttt{gaussian}, \texttt{wildcard}, \texttt{yang:1.19}, \texttt{yang:1.20}.
+\section{Official anchors}
+\begin{itemize}
+  \item Yang §§1.19 Gaussian Integrals, 1.20 Special Wildcard.
+  \item Syllabus §2 Gamma (related); treat $\int_{-\infty}^{\infty}e^{-x^2}=\sqrt\pi$ as known.
+\end{itemize}
+\section{Learning goals}
+\begin{enumerate}
+  \item Evaluate elementary Gaussian cousins.
+  \item Quote the full Gaussian integral.
+  \item Mix easy openers (wildcard).
+\end{enumerate}
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved. See \texttt{pedagogy/README.md}.
+
+\section{Worked --- \texttt{U11-D01} (\texttt{yang:1.19})}
+\[
+\int_0^1 x e^{-x^2}\,dx = \frac{1-e^{-1}}{2}.
+\]
+
+\section{Known identity --- \texttt{U11-D03}}
+\[
+\int_{-\infty}^{\infty}e^{-x^2}\,dx=\sqrt\pi.
+\]
+
+\section{Wildcard --- \texttt{U11-D05} (\texttt{yang:1.20})}
+\[
+\int_{-1}^{1}\frac{1}{1+x^2}\,dx=\frac\pi2.
+\]
+
+\section{Practice}
+\texttt{U11-D01}\ldots\texttt{U11-D08} in \texttt{drills.tex}; \texttt{verify/run.sh}.
+\end{document}

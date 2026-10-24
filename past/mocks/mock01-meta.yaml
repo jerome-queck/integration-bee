@@ -1,0 +1,87 @@
+# mock01 — first timed Round-1-shaped practice
+# Honesty: NOT a full past paper. 20 official sample Qs + 10 concept-drill fillers
+# to reach the contest shape of 30 / 2h. Full 30-Q past papers use mock-pdf-round1.yaml.
+
+id: mock01
+title: "Sample bridge mock (20 official + 10 concept fillers)"
+kind: chat-timed
+duration_minutes: 120
+target_count: 30
+contest_shape: "Round 1: 30 problems / 2 hours (homepage)"
+honesty: |
+  Included: SAMPLE-Q01…Q20 from Integration_Competition_Sample_problems.pdf
+  (answers cited from Integration_bee_sample_problems_answers.pdf).
+  Plus 10 easy concept drills from units 01–03 / 10 to pad to 30.
+  NOT included: any full past Round-1 paper (2020–2025). Use mock-pdf-round1 for those.
+gate: "units 01–11 concept ready (Yang Ch.1)"
+scoring: "1 point per correct final answer; photo or typed OK"
+serve_mode: "one-by-one or batches of 5 (bot choice / learner preference)"
+
+problems:
+  # --- 20 official samples ---
+  - id: SAMPLE-Q01
+    source: sample
+  - id: SAMPLE-Q02
+    source: sample
+  - id: SAMPLE-Q03
+    source: sample
+  - id: SAMPLE-Q04
+    source: sample
+  - id: SAMPLE-Q05
+    source: sample
+  - id: SAMPLE-Q06
+    source: sample
+  - id: SAMPLE-Q07
+    source: sample
+  - id: SAMPLE-Q08
+    source: sample
+  - id: SAMPLE-Q09
+    source: sample
+  - id: SAMPLE-Q10
+    source: sample
+  - id: SAMPLE-Q11
+    source: sample
+  - id: SAMPLE-Q12
+    source: sample
+  - id: SAMPLE-Q13
+    source: sample
+  - id: SAMPLE-Q14
+    source: sample
+  - id: SAMPLE-Q15
+    source: sample
+  - id: SAMPLE-Q16
+    source: sample
+  - id: SAMPLE-Q17
+    source: sample
+    note: "PDF answer suspect — mark ln|ln x|+C as correct"
+  - id: SAMPLE-Q18
+    source: sample
+  - id: SAMPLE-Q19
+    source: sample
+  - id: SAMPLE-Q20
+    source: sample
+  # --- 10 concept fillers (easier; clearly tagged) ---
+  - id: U01-D01
+    source: concept-drill
+  - id: U01-D02
+    source: concept-drill
+  - id: U01-D07
+    source: concept-drill
+  - id: U02-D01
+    source: concept-drill
+  - id: U02-D05
+    source: concept-drill
+  - id: U03-D01
+    source: concept-drill
+  - id: U03-D03
+    source: concept-drill
+  - id: U05-D01
+    source: concept-drill
+  - id: U08-D01
+    source: concept-drill
+  - id: U10-D04
+    source: concept-drill
+
+feeds:
+  samples: past/samples/answers_feed.json
+  drills: verify/drills_unit*.json

@@ -1,0 +1,551 @@
+#!/usr/bin/env python3
+"""Agent CLI for Integration Bee. Learners talk to the companion, not this program."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import subprocess
+import sys
+from datetime import datetime
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "verify"))
+
+import check_math  # noqa: E402
+import model  # noqa: E402
+
+TZ = ZoneInfo("Asia/Singapore")
+COMMANDS = [
+    {"path": "doctor", "summary": "Report whether this checkout can run."},
+    {"path": "practice list", "summary": "List drills without answers."},
+    {"path": "practice next", "summary": "Print one due drill or the next unit drill."},
+    {"path": "practice check", "summary": "Compare one answer with SymPy and record the attempt."},
+    {"path": "progress show", "summary": "Print ticks, attempts, due reviews, streak, and weak topics."},
+    {"path": "progress tick", "summary": "Set a skill-tree node to learning, solid, or skipped."},
+    {"path": "progress mistake", "summary": "Record a diagnosed miss."},
+    {"path": "progress mock-start", "summary": "Open a timed mock when Round 1 nodes are solid, or with --cold."},
+    {"path": "progress mock-finish", "summary": "Store a mock score."},
+    {"path": "progress journal", "summary": "Store a technique note."},
+    {"path": "progress streak", "summary": "Count today as a study day."},
+    {"path": "drills list", "summary": "List drill ids. Includes the display answer."},
+    {"path": "verify", "summary": "Run verify/run.sh."},
+]
+
+
+def now_iso() -> str:
+    return datetime.now(TZ).replace(microsecond=0).isoformat()
+
+
+def today():
+    return datetime.now(TZ).date()
+
+
+def data_dir(arg: str | None) -> Path:
+    raw = arg or os.environ.get("IB_DATA_DIR") or str(ROOT / "trackers" / "live")
+    return Path(raw)
+
+
+def catalog() -> list[dict]:
+    return json.loads((ROOT / "trackers" / "catalog.json").read_text())["nodes"]
+
+
+def load_drills() -> list[dict]:
+    rows = []
+    for path in sorted((ROOT / "verify").glob("drills_unit*.json")):
+        rows.extend(json.loads(path.read_text()))
+    return rows
+
+
+def empty(name: str) -> dict:
+    blanks = {
+        "attempts": {"schema": "integration-bee-attempts/v1", "items": []},
+        "heatmap": {"schema": "integration-bee-heatmap/v1", "topics": {}},
+        "mocks": {"schema": "integration-bee-mocks/v1", "sessions": []},
+        "journal": {"schema": "integration-bee-journal/v1", "notes": []},
+        "streaks": {"schema": "integration-bee-streaks/v1", "days": [], "current": 0, "best": 0},
+        "skill-ticks": {"schema": "integration-bee-skill-ticks/v1", "ticks": {}},
+    }
+    return blanks[name]
+
+
+def read_json(directory: Path, name: str) -> dict:
+    path = directory / f"{name}.json"
+    if not path.exists():
+        return empty(name)
+    return json.loads(path.read_text())
+
+
+def write_json(directory: Path, name: str, doc: dict) -> None:
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f"{name}.json"
+    tmp = path.with_suffix(".json.tmp")
+    tmp.write_text(json.dumps(doc, indent=2) + "\n")
+    tmp.replace(path)
+
+
+def project(directory: Path, ticks: dict, attempts: dict, mocks: dict) -> None:
+    mistakes = []
+    for item in attempts["items"]:
+        if item.get("correct") is False and item.get("note"):
+            mistakes.append(
+                {
+                    "ts": item["ts"],
+                    "problem_id": item["problem_id"],
+                    "tags": item.get("tags") or [],
+                    "note": item["note"],
+                }
+            )
+    doc = {
+        "schema": "integration-bee-progress/v1",
+        "skill_ticks": ticks["ticks"],
+        "mistakes": mistakes,
+        "mocks": mocks["sessions"],
+    }
+    default = (ROOT / "trackers" / "live").resolve()
+    target = ROOT / "progress.local.json" if directory.resolve() == default else directory / "progress.local.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(doc, indent=2) + "\n")
+
+
+def emit(payload, fmt: str) -> None:
+    if fmt == "json":
+        print(json.dumps(payload, indent=2))
+    else:
+        if isinstance(payload, str):
+            print(payload)
+        else:
+            print(json.dumps(payload, indent=2))
+
+
+def die(msg: str, code: int = 1) -> None:
+    print(msg, file=sys.stderr)
+    raise SystemExit(code)
+
+
+def public_drill(row: dict) -> dict:
+    return {
+        "id": row["id"],
+        "unit": row["unit"],
+        "technique": row.get("technique"),
+        "latex": row.get("latex"),
+        "kind": row.get("kind"),
+        "yang": row.get("yang") or [],
+        "hint": row.get("hint") or "",
+    }
+
+
+def find_drill(drill_id: str) -> dict | None:
+    for row in load_drills():
+        if row["id"] == drill_id:
+            return row
+    return None
+
+
+def grade(row: dict, answer: str) -> bool:
+    ns = dict(check_math.NS)
+    ns["ln"] = ns["log"]
+    import sympy as sp
+
+    ans = sp.sympify(row["answer_sympy"], locals=ns)
+    got = sp.sympify(answer, locals=ns)
+    return sp.simplify(got - ans) == 0
+
+
+def record_attempt(directory: Path, row: dict, correct: bool, note: str, tags: list[str]) -> dict:
+    attempts = read_json(directory, "attempts")
+    heat = read_json(directory, "heatmap")
+    streaks = read_json(directory, "streaks")
+    ticks = read_json(directory, "skill-ticks")
+    mocks = read_json(directory, "mocks")
+    prev = None
+    for item in attempts["items"]:
+        if item.get("problem_id") == row["id"]:
+            prev = item
+    srs = model.next_srs(prev, correct, today())
+    item = {
+        "ts": now_iso(),
+        "problem_id": row["id"],
+        "correct": correct,
+        "tags": tags,
+        "note": note,
+        **srs,
+    }
+    err = model.attempt_problem(item)
+    if err:
+        die(err)
+    attempts["items"].append(item)
+    heat["topics"] = model.bump_heatmap(heat.get("topics") or {}, tags, correct)
+    heat_err = model.heatmap_problem(heat["topics"])
+    if heat_err:
+        die(heat_err)
+    touched = model.touch_streak(streaks.get("days") or [], today())
+    streaks.update(touched)
+    write_json(directory, "attempts", attempts)
+    write_json(directory, "heatmap", heat)
+    write_json(directory, "streaks", streaks)
+    project(directory, ticks, attempts, mocks)
+    return item
+
+
+def cmd_doctor(fmt: str) -> int:
+    try:
+        import sympy
+    except ImportError:
+        die("sympy missing. python3 -m pip install sympy")
+    yang = ROOT / "sources" / "user" / "Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf"
+    units = sorted(p for p in (ROOT / "units").glob("[0-9][0-9]-*") if p.is_dir())
+    drills = load_drills()
+    missing_unit = []
+    for unit in units:
+        n = int(unit.name.split("-", 1)[0])
+        if not (ROOT / "verify" / f"drills_unit{n}.json").exists():
+            missing_unit.append(unit.name)
+    official = [
+        "UK_University_Integration_Bee_Syllabus.pdf",
+        "Resource_pack.zip",
+    ]
+    missing_official = [name for name in official if not (ROOT / "sources" / name).is_file()]
+    ok = bool(yang.is_file() and units and not missing_unit and drills)
+    payload = {
+        "ready": ok,
+        "root": str(ROOT),
+        "sympy": sympy.__version__,
+        "units": len(units),
+        "drills": len(drills),
+        "yang_pdf": "ok" if yang.is_file() else "missing",
+        "official_pdfs": "missing" if missing_official else "ok",
+        "data_dir": str(data_dir(None)),
+    }
+    if fmt == "json":
+        emit(payload, fmt)
+    else:
+        print("READY integration-bee" if ok else "NOT_READY integration-bee")
+        for key, value in payload.items():
+            print(f"{key}={value}")
+    return 0 if ok else 1
+
+
+def cmd_practice_list(args) -> int:
+    rows = []
+    for row in load_drills():
+        if args.unit and not str(row["unit"]).startswith(f"{args.unit:02d}-"):
+            continue
+        if args.tag:
+            bag = set(row.get("technique_tags") or [])
+            bag.add(row.get("technique"))
+            bag.update(row.get("yang") or [])
+            if not any(tag in bag for tag in args.tag):
+                continue
+        rows.append(public_drill(row))
+    if args.limit:
+        rows = rows[: args.limit]
+    emit({"drills": rows}, args.format)
+    return 0
+
+
+def cmd_practice_next(args) -> int:
+    directory = data_dir(args.data_dir)
+    attempts = read_json(directory, "attempts")
+    due = model.due_ids(attempts.get("items") or [], today())
+    drills = {row["id"]: row for row in load_drills()}
+    chosen = None
+    for drill_id in due:
+        if drill_id in drills:
+            chosen = drills[drill_id]
+            break
+    if chosen is None:
+        ticks = read_json(directory, "skill-ticks")["ticks"]
+        unit = None
+        for node in catalog():
+            if node.get("gate") != "round1":
+                continue
+            status = (ticks.get(node["id"]) or {}).get("status")
+            if status != "solid":
+                unit = node.get("unit")
+                break
+        for row in load_drills():
+            if unit and row["unit"] != unit:
+                continue
+            chosen = row
+            break
+    if chosen is None:
+        die("no drill")
+    emit(public_drill(chosen), args.format)
+    return 0
+
+
+def cmd_practice_check(args) -> int:
+    row = find_drill(args.id)
+    if row is None:
+        die(f"unknown drill {args.id}")
+    try:
+        correct = grade(row, args.answer)
+    except Exception as exc:
+        die(f"answer did not parse: {exc}", 2)
+    tags = list(row.get("technique_tags") or [])
+    note = "final answer matched" if correct else "final answer differed"
+    item = record_attempt(data_dir(args.data_dir), row, correct, note, tags)
+    emit(
+        {
+            "id": row["id"],
+            "correct": correct,
+            "expected_display": row.get("answer_display"),
+            "next_due": item["next_due"],
+        },
+        args.format,
+    )
+    return 0 if correct else 1
+
+
+def cmd_drills_list(args) -> int:
+    rows = []
+    for row in load_drills():
+        if args.unit and not str(row["unit"]).startswith(f"{args.unit:02d}-"):
+            continue
+        if args.id and row["id"] != args.id:
+            continue
+        view = public_drill(row)
+        view["answer_display"] = row.get("answer_display")
+        rows.append(view)
+    emit({"drills": rows}, args.format)
+    return 0 if rows else 1
+
+
+def cmd_progress_show(args) -> int:
+    directory = data_dir(args.data_dir)
+    ticks = read_json(directory, "skill-ticks")
+    attempts = read_json(directory, "attempts")
+    heat = read_json(directory, "heatmap")
+    streaks = read_json(directory, "streaks")
+    topics = heat.get("topics") or {}
+    weak = sorted(
+        ({"tag": tag, **row} for tag, row in topics.items() if row.get("fails", 0) > 0),
+        key=lambda row: (-row.get("fails", 0), row["tag"]),
+    )
+    nxt = None
+    for node in catalog():
+        if node.get("gate") != "round1":
+            continue
+        status = (ticks["ticks"].get(node["id"]) or {}).get("status")
+        if status != "solid":
+            nxt = node["id"]
+            break
+    emit(
+        {
+            "ticks": ticks["ticks"],
+            "attempts": [
+                {"problem_id": item.get("problem_id"), "correct": item.get("correct")}
+                for item in attempts.get("items") or []
+            ],
+            "due": model.due_ids(attempts.get("items") or [], today()),
+            "streak": {"current": streaks.get("current", 0), "best": streaks.get("best", 0)},
+            "weak": weak,
+            "next_node": nxt,
+        },
+        args.format,
+    )
+    return 0
+
+
+def cmd_tick(args) -> int:
+    directory = data_dir(args.data_dir)
+    ids = {node["id"] for node in catalog()}
+    ticks = read_json(directory, "skill-ticks")
+    ticks["ticks"][args.node] = {"status": args.status, "ts": now_iso()}
+    err = model.tick_problem(ticks["ticks"], ids)
+    if err:
+        die(err)
+    write_json(directory, "skill-ticks", ticks)
+    project(directory, ticks, read_json(directory, "attempts"), read_json(directory, "mocks"))
+    emit({"node": args.node, "status": args.status}, args.format)
+    return 0
+
+
+def cmd_mistake(args) -> int:
+    row = find_drill(args.id) or {"id": args.id, "technique_tags": args.tag}
+    record_attempt(data_dir(args.data_dir), row, False, args.note, args.tag)
+    emit({"id": args.id, "recorded": True}, args.format)
+    return 0
+
+
+def cmd_mock_start(args) -> int:
+    directory = data_dir(args.data_dir)
+    ticks = read_json(directory, "skill-ticks")
+    reason = model.mock_block_reason(
+        ticks["ticks"],
+        [node["id"] for node in catalog() if node.get("gate") == "round1"],
+        args.cold,
+    )
+    if reason:
+        die(reason, 2)
+    mocks = read_json(directory, "mocks")
+    for session in mocks["sessions"]:
+        if session.get("score") is None:
+            emit(session, args.format)
+            return 0
+    session = {
+        "id": args.id or now_iso(),
+        "started": now_iso(),
+        "ended": None,
+        "score": None,
+        "out_of": args.out_of,
+        "missed": [],
+        "cold": bool(args.cold),
+    }
+    err = model.mock_session_problem(session)
+    if err:
+        die(err)
+    mocks["sessions"].append(session)
+    write_json(directory, "mocks", mocks)
+    project(directory, ticks, read_json(directory, "attempts"), mocks)
+    emit(session, args.format)
+    return 0
+
+
+def cmd_mock_finish(args) -> int:
+    directory = data_dir(args.data_dir)
+    mocks = read_json(directory, "mocks")
+    found = None
+    for session in mocks["sessions"]:
+        if session.get("id") == args.id:
+            found = session
+            break
+    if found is None:
+        die(f"unknown mock {args.id}")
+    found["score"] = args.score
+    found["out_of"] = args.out_of
+    found["ended"] = now_iso()
+    found["missed"] = args.missed
+    err = model.mock_session_problem(found)
+    if err:
+        die(err)
+    write_json(directory, "mocks", mocks)
+    project(directory, read_json(directory, "skill-ticks"), read_json(directory, "attempts"), mocks)
+    emit(found, args.format)
+    return 0
+
+
+def cmd_journal(args) -> int:
+    directory = data_dir(args.data_dir)
+    journal = read_json(directory, "journal")
+    note = {"ts": now_iso(), "technique": args.technique, "note": args.note}
+    err = model.journal_problem(note)
+    if err:
+        die(err)
+    journal["notes"].append(note)
+    streaks = read_json(directory, "streaks")
+    streaks.update(model.touch_streak(streaks.get("days") or [], today()))
+    write_json(directory, "journal", journal)
+    write_json(directory, "streaks", streaks)
+    emit(note, args.format)
+    return 0
+
+
+def cmd_streak(args) -> int:
+    directory = data_dir(args.data_dir)
+    streaks = read_json(directory, "streaks")
+    streaks.update(model.touch_streak(streaks.get("days") or [], today()))
+    write_json(directory, "streaks", streaks)
+    emit(streaks, args.format)
+    return 0
+
+
+def cmd_verify() -> int:
+    proc = subprocess.run(["bash", str(ROOT / "verify" / "run.sh")], cwd=ROOT)
+    return proc.returncode
+
+
+def build_parser() -> argparse.ArgumentParser:
+    shared = argparse.ArgumentParser(add_help=False)
+    shared.add_argument("--data-dir", default=argparse.SUPPRESS)
+    shared.add_argument("--format", choices=("text", "json"), default=argparse.SUPPRESS)
+    parser = argparse.ArgumentParser(prog="control-integration-bee")
+    parser.add_argument("--commands-json", action="store_true")
+    parser.add_argument("--data-dir", default=None)
+    parser.add_argument("--format", choices=("text", "json"), default="text")
+    sub = parser.add_subparsers(dest="cmd")
+    sub.add_parser("doctor", parents=[shared])
+    sub.add_parser("verify", parents=[shared])
+    practice = sub.add_parser("practice", parents=[shared])
+    psub = practice.add_subparsers(dest="practice_cmd")
+    plist = psub.add_parser("list", parents=[shared])
+    plist.add_argument("--tag", action="append", default=[])
+    plist.add_argument("--unit", type=int)
+    plist.add_argument("--limit", type=int, default=0)
+    psub.add_parser("next", parents=[shared])
+    pcheck = psub.add_parser("check", parents=[shared])
+    pcheck.add_argument("--id", required=True)
+    pcheck.add_argument("--answer", required=True)
+    progress = sub.add_parser("progress", parents=[shared])
+    g = progress.add_subparsers(dest="progress_cmd")
+    g.add_parser("show", parents=[shared])
+    tick = g.add_parser("tick", parents=[shared])
+    tick.add_argument("--node", required=True)
+    tick.add_argument("--status", required=True, choices=("learning", "solid", "skipped"))
+    mistake = g.add_parser("mistake", parents=[shared])
+    mistake.add_argument("--id", required=True)
+    mistake.add_argument("--tag", action="append", required=True)
+    mistake.add_argument("--note", required=True)
+    mock_start = g.add_parser("mock-start", parents=[shared])
+    mock_start.add_argument("--id", default=None)
+    mock_start.add_argument("--cold", action="store_true")
+    mock_start.add_argument("--out-of", type=int, default=30)
+    mock_finish = g.add_parser("mock-finish", parents=[shared])
+    mock_finish.add_argument("--id", required=True)
+    mock_finish.add_argument("--score", type=int, required=True)
+    mock_finish.add_argument("--out-of", type=int, default=30)
+    mock_finish.add_argument("--missed", action="append", default=[])
+    journal = g.add_parser("journal", parents=[shared])
+    journal.add_argument("--technique", required=True)
+    journal.add_argument("--note", required=True)
+    g.add_parser("streak", parents=[shared])
+    drills = sub.add_parser("drills", parents=[shared])
+    dsub = drills.add_subparsers(dest="drills_cmd")
+    dlist = dsub.add_parser("list", parents=[shared])
+    dlist.add_argument("--unit", type=int)
+    dlist.add_argument("--id")
+    return parser
+
+
+def main() -> int:
+    if "--commands-json" in sys.argv:
+        print(json.dumps(COMMANDS, indent=2))
+        return 0
+    parser = build_parser()
+    args = parser.parse_args()
+    if args.cmd == "doctor":
+        return cmd_doctor(args.format)
+    if args.cmd == "verify":
+        return cmd_verify()
+    if args.cmd == "practice" and args.practice_cmd == "list":
+        return cmd_practice_list(args)
+    if args.cmd == "practice" and args.practice_cmd == "next":
+        return cmd_practice_next(args)
+    if args.cmd == "practice" and args.practice_cmd == "check":
+        return cmd_practice_check(args)
+    if args.cmd == "drills" and args.drills_cmd == "list":
+        return cmd_drills_list(args)
+    if args.cmd == "progress" and args.progress_cmd == "show":
+        return cmd_progress_show(args)
+    if args.cmd == "progress" and args.progress_cmd == "tick":
+        return cmd_tick(args)
+    if args.cmd == "progress" and args.progress_cmd == "mistake":
+        return cmd_mistake(args)
+    if args.cmd == "progress" and args.progress_cmd == "mock-start":
+        return cmd_mock_start(args)
+    if args.cmd == "progress" and args.progress_cmd == "mock-finish":
+        return cmd_mock_finish(args)
+    if args.cmd == "progress" and args.progress_cmd == "journal":
+        return cmd_journal(args)
+    if args.cmd == "progress" and args.progress_cmd == "streak":
+        return cmd_streak(args)
+    parser.print_help()
+    return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

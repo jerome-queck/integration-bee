@@ -1,0 +1,7 @@
+{
+  "schema": "integration-bee-streaks/v1",
+  "example": true,
+  "days": ["2026-10-24"],
+  "current": 1,
+  "best": 1
+}

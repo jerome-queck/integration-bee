@@ -1,0 +1,11 @@
+{
+  "schema": "integration-bee-journal/v1",
+  "example": true,
+  "notes": [
+    {
+      "ts": "2026-10-24T15:00:00+08:00",
+      "technique": "u-sub",
+      "note": "Look for a factor that is the derivative of the inside."
+    }
+  ]
+}

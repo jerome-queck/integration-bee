@@ -1,0 +1,30 @@
+unit_id: "02-symmetry-basic-trig"
+title: "Symmetry & Basic Trig Integrals"
+order: 2
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U02-D"
+technique_tags:
+  - odd-even
+  - symmetry
+  - basic-trig
+yang_tags:
+  - "yang:1.3"
+  - "yang:1.5"
+syllabus_refs:
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Odd and even functions; A-Level trig integration"
+  - source: UK_University_Integration_Bee_Techniques_Guide.pdf
+    section: "§1.1 Odd and Even (Contents p.3 / body p.3); §1.8 Trigonometric Identities (Contents p.18)"
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§§1.3 Symmetry, 1.5 Basic Trig Integrals (Contents / Ch.1)"
+prerequisites:
+  - "01-foundations-substitution"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit2.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

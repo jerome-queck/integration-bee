@@ -1,0 +1,35 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 08:\\ Basic Series}
+\author{UK Uni Integration Bee prep\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed}
+\date{}
+\begin{document}
+\maketitle
+\section*{Status}
+Concept teaching only. Tags: \texttt{basic-series}, \texttt{yang:1.14}.
+\section{Official anchors}
+\begin{itemize}
+  \item Syllabus §1 --- infinite series; swapping sum and integral (convergence ignored in contest guideline).
+  \item Yang §1.14 Basic Series.
+\end{itemize}
+\section{Learning goals}
+\begin{enumerate}
+  \item Integrate polynomial truncations of geometric series termwise.
+  \item Connect $\int_0^{1/2}1/(1-x)\,dx$ to the geometric sum idea.
+\end{enumerate}
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved. See \texttt{pedagogy/README.md}.
+
+\section{Worked termwise --- \texttt{U08-D01} (\texttt{yang:1.14})}
+\[
+\int_0^1(1+x+x^2+x^3)\,dx = 1+\tfrac12+\tfrac13+\tfrac14=\tfrac{25}{12}.
+\]
+
+\section{Geometric motivation --- \texttt{U08-D02}}
+\[
+\int_0^{1/2}\frac{1}{1-x}\,dx=\ln 2
+\]
+(same value as summing $\int_0^{1/2}x^n\,dx$ over $n\ge0$).
+
+\section{Practice}
+\texttt{U08-D01}\ldots\texttt{U08-D06} in \texttt{drills.tex}; \texttt{verify/run.sh}.
+\end{document}
