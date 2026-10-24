@@ -37,14 +37,18 @@ text = skill.read_text()
 marker = "last_confirmed: "
 line = next((ln for ln in text.splitlines() if ln.startswith(marker)), "")
 recorded = line[len(marker):].strip()
-last = subprocess.run(
-    ["git", "log", "-1", "--format=%H", "--", "verify/model.py"],
+blob = subprocess.run(
+    ["git", "rev-parse", "HEAD:verify/model.py"],
     cwd=ROOT,
     capture_output=True,
     text=True,
-).stdout.strip()
-if last and recorded != last:
-    print(f"FAIL formal sync {recorded} != {last}")
+)
+blob_id = blob.stdout.strip()
+if blob.returncode != 0 or not blob_id:
+    print("FAIL formal sync could not read verify/model.py")
+    fail = 1
+elif recorded != blob_id:
+    print(f"FAIL formal sync {recorded} != {blob_id}")
     fail = 1
 
 if fail:

@@ -38,8 +38,8 @@ The plain command exits 0 on the real tree. Each `--expect-fail` exits 0 only wh
 | `mock_block_reason` | `verify/model.py`, called from `scripts/control-integration-bee` |
 | `tick_problem`, `attempt_problem`, `heatmap_problem`, `streak_problem` | `verify/model.py` |
 
-last_confirmed: 85615c62d64fc04fc8bc1ed62b9694ff9068aa19
+last_confirmed: aaed9845360fbf76124b24c16829d3c950f9e35d
 
-Move `last_confirmed` to the current `git log -1 --format=%H -- verify/model.py` only after you rerun the commands above and they still describe that file. If `verify/model.py` changes and the hash does not, rerun the checks before trusting them.
+Move `last_confirmed` to `git rev-parse HEAD:verify/model.py` only after you rerun the commands above and they still describe that file. That command prints the blob id of `verify/model.py`. A shallow pull-request checkout and a later merge keep the same id when the file bytes do not change. If `verify/model.py` changes and the id does not, rerun the checks before trusting them.
 
 `/maintain-formal-verification-skill` is the update path when the code moves and this file was not rechecked.
