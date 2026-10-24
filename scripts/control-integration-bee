@@ -631,9 +631,6 @@ def start_mock_record(directory: Path, body: dict, pack: str, out_of: int, year)
     if reason:
         die(reason, 2)
     mocks = read_json(directory, "mocks")
-    for existing in mocks["sessions"]:
-        if existing.get("score") is None:
-            return existing
     session = {
         "id": body.get("id") or now_iso(),
         "started": now_iso(),

@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Drive the turn contract on a throwaway data directory."""
-
 from __future__ import annotations
 
 import json

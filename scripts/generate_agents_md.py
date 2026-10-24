@@ -75,10 +75,10 @@ This repository is the public study pack for the UK University Integration Bee. 
 
 ## Setup
 
-Install Python 3.11 or newer and SymPy.
+Install Python 3.11 or newer, SymPy, and PyYAML.
 
 ```bash
-python3 -m pip install sympy
+python3 -m pip install sympy pyyaml
 ```
 
 Install `latexmk` and `pdflatex` when you build PDFs. Point Git at the drift hook once.

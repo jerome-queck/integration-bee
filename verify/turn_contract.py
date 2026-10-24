@@ -1,14 +1,9 @@
-"""Pure turn planner. The CLI parses JSON, applies effects, and writes trackers."""
-
 from __future__ import annotations
 
 import check_math
 import model
-
-try:
-    import sympy as sp
-except ImportError:
-    sp = None
+import sympy as sp
+import yaml
 
 PHASE_IDLE = "idle"
 PHASE_AWAITING = "awaiting_answer"
@@ -198,20 +193,6 @@ def expressions_match(answer: str, submitted: str, indefinite: bool) -> bool:
     return sp.simplify(sp.diff(got - ans, ns["x"])) == 0
 
 
-def q17_match(submitted: str) -> bool:
-    """The answers PDF prints e^x+C for SAMPLE-Q17. The integral of dx/(x ln x) is ln|ln x|+C."""
-    ns = _mark_namespace()
-    got = sp.sympify(submitted, locals=ns)
-    targets = ("log(Abs(log(x)))", "log(log(Abs(x)))", "log(Abs(log(Abs(x))))")
-    for text in targets:
-        ans = sp.sympify(text, locals=ns)
-        if sp.simplify(got - ans) == 0:
-            return True
-        if sp.simplify(sp.diff(got - ans, ns["x"])) == 0:
-            return True
-    return False
-
-
 def _indefinite(row: dict) -> bool:
     if row.get("kind") == "indefinite":
         return True
@@ -233,30 +214,13 @@ def grade_problem(problem_id: str, submitted: str, verdict: str | None, drills: 
     if feed_row is None:
         return None, f"unknown problem {problem_id}"
     tags = list(feed_row.get("technique_tags") or [])
-    if problem_id == "SAMPLE-Q17":
-        try:
-            correct = q17_match(submitted)
-        except Exception as exc:
-            return None, f"answer did not parse: {exc}"
-        return {
-            "correct": correct,
-            "tags": tags,
-            "display": feed_row.get("answer_display_correct"),
-            "row": feed_row,
-            "manual": False,
-        }, None
-    if feed_row.get("verify") == "sympy" and feed_row.get("answer_sympy"):
+    if feed_row.get("answer_sympy"):
         try:
             correct = expressions_match(feed_row["answer_sympy"], submitted, _indefinite(feed_row))
         except Exception as exc:
             return None, f"answer did not parse: {exc}"
-        return {
-            "correct": correct,
-            "tags": tags,
-            "display": feed_row.get("answer_display"),
-            "row": feed_row,
-            "manual": False,
-        }, None
+        display = feed_row.get("answer_display_correct") or feed_row.get("answer_display")
+        return {"correct": correct, "tags": tags, "display": display, "row": feed_row, "manual": False}, None
     if verdict not in {"correct", "incorrect"}:
         return None, "manual problem needs verdict"
     return {
@@ -507,42 +471,24 @@ def _fail(session, code: int, error: str) -> dict:
 
 
 def parse_mock01(text: str) -> list[dict]:
-    rows = []
-    in_problems = False
-    for line in text.splitlines():
-        if line.startswith("problems:"):
-            in_problems = True
-            continue
-        if not in_problems:
-            continue
-        if line.startswith("  - id:"):
-            rows.append({"id": line.split(":", 1)[1].strip(), "source": None})
-        elif line.startswith("    source:") and rows:
-            rows[-1]["source"] = line.split(":", 1)[1].strip()
-    return rows
+    doc = yaml.safe_load(text)
+    return [{"id": row["id"], "source": row.get("source")} for row in doc["problems"]]
 
 
 def parse_papers(text: str) -> list[dict]:
+    doc = yaml.safe_load(text)
     papers = []
-    cur = None
-    for line in text.splitlines():
-        if line.startswith("chat_protocol:"):
-            break
-        if line.startswith("  - year:"):
-            if cur:
-                papers.append(cur)
-            cur = {"year": int(line.split(":", 1)[1].strip())}
-            continue
-        if cur is None or not line.startswith("    ") or line.strip().startswith("#"):
-            continue
-        key, _, val = line.strip().partition(":")
-        val = val.strip().strip('"')
-        if key in {"count", "duration_minutes", "year"}:
-            cur[key] = int(val)
-        elif key != "note":
-            cur[key] = val
-    if cur:
-        papers.append(cur)
+    for row in doc["papers"]:
+        papers.append(
+            {
+                "year": int(row["year"]),
+                "count": int(row["count"]),
+                "duration_minutes": int(row.get("duration_minutes") or 120),
+                "problems": row.get("problems"),
+                "mark_scheme": row.get("mark_scheme"),
+                "solutions": row.get("solutions"),
+            }
+        )
     return papers
 
 
