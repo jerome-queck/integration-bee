@@ -1,4 +1,3 @@
-# Zip, HTML, and txt mirrors stay untracked. PDFs under sources/ and sources/past/ are committed reference copies.
 /sources/*.zip
 /sources/*.html
 /sources/*.txt

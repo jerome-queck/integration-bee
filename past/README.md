@@ -19,7 +19,7 @@ Committed here:
 past/
   README.md           # this file
   index.md            # human inventory table
-  inventory.json      # machine inventory of the committed PDFs
+  inventory.json
   samples/            # Round-1 sample bridge (Q tags + answers_feed)
   mocks/              # timed / PDF mock metas (Round 1 first)
 ```
