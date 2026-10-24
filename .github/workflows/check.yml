@@ -13,7 +13,7 @@ jobs:
           python-version: "3.12"
       - name: Install SymPy and TeX
         run: |
-          python -m pip install sympy
+          python -m pip install sympy pyyaml
           sudo apt-get update
           sudo apt-get install -y latexmk texlive-latex-recommended texlive-fonts-recommended default-jre-headless
       - name: make check

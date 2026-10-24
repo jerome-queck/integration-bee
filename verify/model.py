@@ -103,6 +103,27 @@ def mock_session_problem(session: dict) -> str | None:
     return None
 
 
+SESSION_PHASES = {"idle", "awaiting_answer", "mock_open", "mock_awaiting"}
+
+
+def session_problem(doc: dict) -> str | None:
+    phase = doc.get("phase")
+    if phase not in SESSION_PHASES:
+        return "bad session phase"
+    problem = doc.get("problem_id")
+    mock = doc.get("mock_id")
+    node = doc.get("node")
+    if phase == "idle" and (problem or mock or node):
+        return "idle session still open"
+    if phase == "awaiting_answer" and (not problem or not node or mock):
+        return "awaiting session needs a node and a problem"
+    if phase == "mock_open" and (not mock or problem):
+        return "mock session needs a mock id"
+    if phase == "mock_awaiting" and (not mock or not problem):
+        return "mock question needs a mock and a problem"
+    return None
+
+
 def next_srs(prev: dict | None, correct: bool, today: date) -> dict:
     ease = float((prev or {}).get("ease", 2.5))
     reps = int((prev or {}).get("reps", 0))

@@ -15,6 +15,7 @@ These predicates are not a state machine. `verify/unit_order_check.py` calls `un
 - A catalog with past-paper units and no concept unit is rejected.
 - A timed Round 1 mock is blocked until every `gate: round1` node is `solid`, unless the caller passes `--cold`.
 - A tick name must be in `trackers/catalog.json`. An attempt interval cannot be negative. Heatmap fails cannot exceed attempts. Streak days cannot repeat.
+- A session phase is `idle`, `awaiting_answer`, `mock_open`, or `mock_awaiting`. Idle has no open problem or mock. An answer phase names a problem. A mock phase names a mock.
 
 ```bash
 python3 verify/invariants.py
@@ -26,6 +27,7 @@ python3 verify/invariants.py --expect-fail negative-interval
 python3 verify/invariants.py --expect-fail heatmap-fails-exceed
 python3 verify/invariants.py --expect-fail mock-before-ready
 python3 verify/invariants.py --expect-fail duplicate-streak-day
+python3 verify/invariants.py --expect-fail bad-session-phase
 ```
 
 The plain command exits 0 on the real tree. Each `--expect-fail` exits 0 only when the planted break is caught.
@@ -35,8 +37,9 @@ The plain command exits 0 on the real tree. Each `--expect-fail` exits 0 only wh
 | `unit01_problem`, `concept_gap` | `verify/model.py`, called from `verify/unit_order_check.py` |
 | `mock_block_reason` | `verify/model.py`, called from `scripts/control-integration-bee` |
 | `tick_problem`, `attempt_problem`, `heatmap_problem`, `streak_problem` | `verify/model.py` |
+| `session_problem` | `verify/model.py`, called before `scripts/control-integration-bee` writes `session.json` |
 
-last_confirmed: aaed9845360fbf76124b24c16829d3c950f9e35d
+last_confirmed: 8ef99ddff0fadf3363dae65c978abd4154952178
 
 Move `last_confirmed` to `git rev-parse HEAD:verify/model.py` only after you rerun the commands above and they still describe that file. That command prints the blob id of `verify/model.py`. A shallow pull-request checkout and a later merge keep the same id when the file bytes do not change. If `verify/model.py` changes and the id does not, rerun the checks before trusting them.
 

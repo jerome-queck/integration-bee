@@ -18,5 +18,11 @@
       "score": null,
       "out_of": 30
     }
-  ]
+  ],
+  "session": {
+    "phase": "idle",
+    "node": null,
+    "problem_id": null,
+    "mock_id": null
+  }
 }

@@ -26,7 +26,7 @@ ENFORCERS = [
 ]
 
 SCENARIOS = [
-    ("You change what doctor, practice, drills, progress, or verify prints or records", ".cursor/skills/verify-integration-bee"),
+    ("You change what doctor, practice, drills, progress, turn, or verify prints or records", ".cursor/skills/verify-integration-bee"),
     ("You change unit order, mock readiness, or tracker writes", ".cursor/skills/formal-verify-integration-bee"),
     ("You teach, mark a photo, or answer an empty message", ".cursor/skills/integration-bee-companion"),
     ("The same mistake shows up twice", "pstack skill `correct`"),
@@ -75,10 +75,10 @@ This repository is the public study pack for the UK University Integration Bee. 
 
 ## Setup
 
-Install Python 3.11 or newer and SymPy.
+Install Python 3.11 or newer, SymPy, and PyYAML.
 
 ```bash
-python3 -m pip install sympy
+python3 -m pip install sympy pyyaml
 ```
 
 Install `latexmk` and `pdflatex` when you build PDFs. Point Git at the drift hook once.

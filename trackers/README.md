@@ -10,6 +10,7 @@ Committed files are examples. Live files are written by `scripts/control-integra
 | `journal.example.json` | `trackers/live/journal.json` | Technique notes |
 | `streaks.example.json` | `trackers/live/streaks.json` | Study days |
 | `skill-ticks.example.json` | `trackers/live/skill-ticks.json` | Skill-tree ticks |
+| `session.example.json` | `trackers/live/session.json` | Teach, mark, and mock phase |
 
 `catalog.json` lists every skill-tree node. Personal ticks are not stored in `skill-tree.md`.
 
