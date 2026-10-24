@@ -1,0 +1,48 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 18:\\ Sneaky Symmetry \& Sneaky Product Rule}
+\author{UK Uni Integration Bee prep\\ Yang Topics Guide 2nd Ed §§2.9 Sneaky Symmetry, 2.10 Sneaky Product Rule}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Status}
+Yang Chapter 2 concept unit (easy drills only; no past papers).
+Tags: \texttt{yang:2.9}, \texttt{yang:2.10}, \texttt{sneaky-symmetry}, \texttt{sneaky-product-rule}.
+
+\section{Official anchors}
+\begin{itemize}
+  \item Yang Topics Guide 2nd Ed §§2.9 Sneaky Symmetry, 2.10 Sneaky Product Rule
+        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
+  \item Syllabus §1 techniques support
+        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\end{itemize}
+
+\section{Learning goals}
+\begin{enumerate}
+  \item Center an ugly product with $u=x-a$ so an odd integrand cancels.
+  \item Spot $f'g+fg'$ hiding as a sum of scary-looking terms.
+  \item Differentiate proposed answers mentally before grinding parts.
+\end{enumerate}
+
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
+
+\section{Worked example --- \texttt{U18-D01} (\texttt{yang:2.9})}
+\[
+\int_{2}^{4}(x-1)(x-2)(x-3)(x-4)(x-5)\,dx.
+\]
+$u=x-3$ makes an odd integrand on $[-1,1]$ $\Rightarrow 0$.
+
+\section{Worked example --- \texttt{U18-D05} (\texttt{yang:2.10})}
+\[
+\int\bigl(\sec^{3}x+\sec x\tan^{2}x\bigr)\,dx.
+\]
+Rewrite as $\sec\cdot\sec^{2}+(\sec\tan)\tan=\frac{d}{dx}(\sec\tan)$.
+
+\section{Faded example}
+Try U18-D07: $\int e^{x}(\sin x-\cos x)\,dx=-\,e^{x}\cos x+C$.
+
+\section{Drill pointers}
+See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit18.json}.
+
+\end{document}

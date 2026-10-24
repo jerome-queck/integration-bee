@@ -1,0 +1,26 @@
+unit_id: "14-gamma"
+title: "Gamma Function Integral"
+order: 14
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U14-D"
+technique_tags:
+  - gamma
+yang_tags:
+  - "yang:2.4"
+syllabus_refs:
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§2.4 Gamma Function Integral"
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Integration Techniques (supporting)"
+prerequisites:
+  - "03-exponential-parts"
+  - "11-gaussian-wildcard"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit14.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

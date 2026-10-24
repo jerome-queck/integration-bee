@@ -1,0 +1,41 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 07:\\ Absolute Values \& Reverse Product Rule}
+\author{UK Uni Integration Bee prep\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed}
+\date{}
+\begin{document}
+\maketitle
+\section*{Status}
+Concept teaching only. Tags: \texttt{absolute-value}, \texttt{reverse-product}, \texttt{yang:1.12}, \texttt{yang:1.13}.
+\section{Official anchors}
+\begin{itemize}
+  \item Yang §§1.12 Absolute Values, 1.13 Reverse Product Rule.
+  \item Related to parts / product rule (Syllabus §1).
+\end{itemize}
+\section{Learning goals}
+\begin{enumerate}
+  \item Split absolute-value integrands at zeros.
+  \item Spot integrands that are exactly $(fg)'$.
+\end{enumerate}
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved. See \texttt{pedagogy/README.md}.
+
+\section{Worked abs --- \texttt{U07-D01} (\texttt{yang:1.12})}
+\[
+\int_{-1}^{1}|x|\,dx = 2\int_0^1 x\,dx = 1.
+\]
+
+\section{Worked reverse product --- \texttt{U07-D04} (\texttt{yang:1.13})}
+\[
+\int_0^{\pi/2}(\sin x + x\cos x)\,dx = \big[x\sin x\big]_0^{\pi/2}=\frac\pi2.
+\]
+(Recognise derivative of $x\sin x$.)
+
+\section{Faded --- \texttt{U07-D05}}
+\[
+\int_0^{\pi/2} e^x(\sin x+\cos x)\,dx.
+\]
+Scaffold: derivative of $e^x\sin x$.
+
+\section{Practice}
+\texttt{U07-D01}\ldots\texttt{U07-D08} in \texttt{drills.tex}; \texttt{verify/run.sh}.
+\end{document}

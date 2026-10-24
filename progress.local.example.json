@@ -1,0 +1,22 @@
+{
+  "schema": "integration-bee-progress/v1",
+  "note": "Copy to progress.local.json (gitignored). Never commit personal data.",
+  "skill_ticks": {},
+  "mistakes": [
+    {
+      "ts": "2026-10-24T15:00:00+08:00",
+      "problem_id": "SAMPLE-Q03",
+      "tags": ["kings-rule", "yang:1.18"],
+      "note": "Forgot reflection substitution x → π/2 − x"
+    }
+  ],
+  "mocks": [
+    {
+      "id": "mock01",
+      "started": "2026-10-24T15:00:00+08:00",
+      "ended": null,
+      "score": null,
+      "out_of": 30
+    }
+  ]
+}

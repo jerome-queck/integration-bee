@@ -1,0 +1,36 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 10:\\ Inverse Functions \& King's/Queen's Rule}
+\author{UK Uni Integration Bee prep\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed}
+\date{}
+\begin{document}
+\maketitle
+\section*{Status}
+Concept teaching only. Tags: \texttt{inverse-functions}, \texttt{kings-rule}, \texttt{yang:1.17}, \texttt{yang:1.18}.
+\section{Official anchors}
+\begin{itemize}
+  \item Syllabus §1 --- reflection property $\int_a^b f(x)\,dx=\int_a^b f(a+b-x)\,dx$.
+  \item Guide §1.2 Reflection (p.7); §1.5 Integral of Inverse (Contents p.14).
+  \item Yang §§1.17 Inverse Functions, 1.18 King's/Queen's Rule.
+\end{itemize}
+\section{Learning goals}
+\begin{enumerate}
+  \item Integrate standard inverse trig on easy intervals.
+  \item Apply King's substitution $x\mapsto a-x$ (esp.\ on $[0,\pi/2]$).
+\end{enumerate}
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved. See \texttt{pedagogy/README.md}.
+
+\section{Worked inverse --- \texttt{U10-D01} (\texttt{yang:1.17})}
+\[
+\int_0^1\arcsin x\,dx = \frac\pi2-1.
+\]
+
+\section{Worked King --- \texttt{U10-D04} (\texttt{yang:1.18})}
+\[
+I=\int_0^{\pi/2}\frac{\sin x}{\sin x+\cos x}\,dx.
+\]
+King $x\mapsto\pi/2-x$ swaps $\sin/\cos$, so $2I=\pi/2$ and $I=\pi/4$.
+
+\section{Practice}
+\texttt{U10-D01}\ldots\texttt{U10-D08} in \texttt{drills.tex}; \texttt{verify/run.sh}.
+\end{document}

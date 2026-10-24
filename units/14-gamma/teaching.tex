@@ -1,0 +1,42 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 14:\\ Gamma Function Integral}
+\author{UK Uni Integration Bee prep\\ Yang Topics Guide 2nd Ed §2.4 Gamma Function Integral}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Status}
+Yang Chapter 2 concept unit (easy drills only; no past papers).
+Tags: \texttt{yang:2.4}, \texttt{gamma}.
+
+\section{Official anchors}
+\begin{itemize}
+  \item Yang Topics Guide 2nd Ed §2.4 Gamma Function Integral
+        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
+  \item Syllabus §1 techniques support
+        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\end{itemize}
+
+\section{Learning goals}
+\begin{enumerate}
+  \item Use $n!=\int_{0}^{\infty}x^{n}e^{-x}\,dx$ on easy integer $n$.
+  \item Convert $\int_{0}^{1}(\ln x)^{n}\,dx=(-1)^{n}n!$ by $x=e^{-t}$.
+  \item Recognise Gamma-shaped integrals after a short $u$-sub.
+\end{enumerate}
+
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
+
+\section{Worked example --- \texttt{U14-D01} (\texttt{yang:2.4})}
+\[
+\int_{0}^{\infty}x^{5}e^{-x}\,dx.
+\]
+By the factorial formula: $5!=120$.
+
+\section{Faded example}
+Try U14-D03: $\int_{0}^{1}(\ln x)^{3}\,dx=(-1)^{3}3!=-6$.
+
+\section{Drill pointers}
+See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit14.json}.
+
+\end{document}

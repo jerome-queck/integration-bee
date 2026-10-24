@@ -1,0 +1,34 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 09:\\ Intermediate Trig Integrals \& Trig-Substitution}
+\author{UK Uni Integration Bee prep\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed}
+\date{}
+\begin{document}
+\maketitle
+\section*{Status}
+Concept teaching only. Tags: \texttt{intermediate-trig}, \texttt{intermediate-trig-sub}, \texttt{yang:1.15}, \texttt{yang:1.16}.
+\section{Official anchors}
+\begin{itemize}
+  \item Guide §1.8 Trigonometric Identities (Contents p.18).
+  \item Yang §§1.15, 1.16.
+\end{itemize}
+\section{Learning goals}
+\begin{enumerate}
+  \item Use power-reduction / Pythagorean identities on $\sin^2,\tan^2$.
+  \item Integrate $\sqrt{x^2+1}$ and $1/\sqrt{x^2+1}$ (hyperbolic/trig-sub).
+\end{enumerate}
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved. See \texttt{pedagogy/README.md}.
+
+\section{Worked power-reduce --- \texttt{U09-D01} (\texttt{yang:1.15})}
+\[
+\int_0^{\pi}\sin^2 x\,dx = \int_0^{\pi}\frac{1-\cos 2x}{2}\,dx=\frac\pi2.
+\]
+
+\section{Worked hyp/trig-sub --- \texttt{U09-D05} (\texttt{yang:1.16})}
+\[
+\int_0^1\frac{1}{\sqrt{x^2+1}}\,dx=\operatorname{arsinh}1=\ln(1+\sqrt2).
+\]
+
+\section{Practice}
+\texttt{U09-D01}\ldots\texttt{U09-D08} in \texttt{drills.tex}; \texttt{verify/run.sh}.
+\end{document}

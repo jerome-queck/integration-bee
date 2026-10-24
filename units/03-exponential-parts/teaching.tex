@@ -1,0 +1,63 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 03:\\ Basic Exponential \& Integration by Parts}
+\author{UK Uni Integration Bee prep\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Status}
+Concept teaching only (easy drills). No past papers.
+Tags: \texttt{basic-exp}, \texttt{parts}, \texttt{yang:1.4}, \texttt{yang:1.6}.
+
+\section{Official anchors}
+\begin{itemize}
+  \item Syllabus §1 --- A-Level/STEP parts and standard exponential forms
+        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}, p.1).
+  \item Techniques Guide Intro --- assumes A-Level substitution/parts (p.2).
+  \item Yang §§1.4 Basic Exponential Functions, 1.6 Basic Integration by Parts.
+\end{itemize}
+
+\section{Learning goals}
+\begin{enumerate}
+  \item Integrate $e^{ax}$, $a^x$ on easy definite intervals.
+  \item Apply one-step integration by parts ($uv-\int v\,du$).
+  \item Recognise $\int x e^x$ and $\int \ln x$ as parts templates.
+\end{enumerate}
+
+\section{Pedagogy}
+Worked example $\to$ faded example $\to$ interleaved easy drills. See \texttt{pedagogy/README.md}.
+
+
+\section{Worked exponential --- \texttt{U03-D01} (\texttt{yang:1.4})}
+\[
+\int_0^1 e^x\,dx = e-1.
+\]
+
+\section{Worked parts --- \texttt{U03-D03} (\texttt{yang:1.6})}
+\[
+\int_0^1 x e^x\,dx.
+\]
+$u=x$, $dv=e^x\,dx$ $\Rightarrow$ $du=dx$, $v=e^x$:
+\[
+\big[x e^x\big]_0^1 - \int_0^1 e^x\,dx = e - (e-1) = 1.
+\]
+
+\section{Faded parts --- \texttt{U03-D05} (\texttt{yang:1.6})}
+\[
+\int_1^{e}\ln x\,dx.
+\]
+Scaffold: $u=\ln x$, $dv=dx$ $\Rightarrow$ $du=dx/x$, $v=x$. Finish to get $1$.
+
+\section{Faded exponential base --- \texttt{U03-D07} (\texttt{yang:1.4})}
+\[
+\int_0^1 2^x\,dx = \frac{2^x}{\ln 2}\Big|_0^1 = \frac{1}{\ln 2}.
+\]
+
+
+\section{Practice}
+Attempt \texttt{U03-D01}\ldots\texttt{U03-D08} in \texttt{drills.tex}.
+Machine check: \texttt{verify/run.sh}. CLI: \texttt{drills.md}, \texttt{verify/drills\_unit3.json}.
+
+\section{Skips (later)}
+Past Round 1 papers until Yang Ch.1 concept units exist.
+\end{document}

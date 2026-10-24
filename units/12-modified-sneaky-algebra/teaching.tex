@@ -1,0 +1,52 @@
+\input{technique-note.tex}
+\title{Integration Bee --- Unit 12:\\ Modified Textbook \& Sneaky Algebra}
+\author{UK Uni Integration Bee prep\\ Yang Topics Guide 2nd Ed §§2.1--2.2}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Status}
+First Yang Chapter 2 concept unit (after Ch.1 units 01--11 and the \texttt{past/} pack).
+Tags: \texttt{yang:2.1}, \texttt{yang:2.2}.
+
+\section{Official anchors}
+\begin{itemize}
+  \item Yang Topics Guide 2nd Ed §§2.1--2.2
+        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
+  \item Syllabus §1 algebra / substitution support
+        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\end{itemize}
+
+\section{Learning goals}
+\begin{enumerate}
+  \item Take a textbook skeleton and modify it (square a denominator; hide a $u$-sub inside parts).
+  \item Factor cleverly (difference of squares under a radical denominator).
+  \item Absorb polynomial factors into a single $u$-power.
+  \item Center a product integral with a shift $u=x-a$.
+\end{enumerate}
+
+\section{Pedagogy}
+Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
+
+\section{Worked example A --- \texttt{U12-D01} (\texttt{yang:2.1})}
+\[
+\int e^{x}\,e^{e^{x}}\,dx.
+\]
+Let $u=e^{x}$, $du=e^{x}\,dx$: $\int e^{u}\,du=e^{e^{x}}+C$.
+
+\section{Worked example B --- \texttt{U12-D05} (\texttt{yang:2.2})}
+\[
+\int_0^1 \frac{x-4}{\sqrt{x}-2}\,dx.
+\]
+Factor $x-4=(\sqrt{x}-2)(\sqrt{x}+2)$, so the integrand is $\sqrt{x}+2$ on $[0,1]$:
+\[
+\int_0^1(\sqrt{x}+2)\,dx=\Bigl[\tfrac23 x^{3/2}+2x\Bigr]_0^1=\tfrac83.
+\]
+
+\section{Faded example}
+Try \texttt{U12-D08}: absorb $x^{2}$ against $(x^{3}+1)^{2}$ via $u=x^{3}+1$.
+
+\section{Drill pointers}
+See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit12.json}.
+
+\end{document}
