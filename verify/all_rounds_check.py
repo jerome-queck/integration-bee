@@ -70,9 +70,8 @@ def main() -> int:
         print("FAIL all_rounds_check")
         return 1
     if present_n == 0:
-        print("SKIP round PDFs absent. Indexes match the committed inventory. Run sources/fetch.sh to check binaries.")
-        print("PASS all_rounds_check (no local PDFs)")
-        return 0
+        print("FAIL reference PDFs are missing from sources/past/")
+        return 1
     if present_n != len(expected_lines):
         print(f"FAIL partial fetch: {present_n} of {len(expected_lines)} PDFs on disk")
         fail = 1

@@ -33,7 +33,7 @@ scripts/control-integration-bee doctor >"$IB_EVIDENCE/doctor.txt" 2>"$IB_EVIDENC
 echo "doctor_exit:$?"
 ```
 
-Require `doctor_exit:0`, `READY integration-bee`, `yang_pdf=ok`, and an empty `doctor.err`. `official_pdfs` reports the syllabus PDF and `Resource_pack.zip` under `sources/`. Contest PDFs under `sources/past/` do not change the exit code. Do not pipe doctor into `tee`. That pipe reports `tee`'s status.
+Require `doctor_exit:0`, `READY integration-bee`, `yang_pdf=ok`, and an empty `doctor.err`. `official_pdfs` is `ok` when every `.pdf` name in `sources/sha256sums` and every present artifact in `past/inventory.json` is a non-empty file. A missing reference PDF does not change the exit code. Do not pipe doctor into `tee`. That pipe reports `tee`'s status.
 
 ## Drive
 

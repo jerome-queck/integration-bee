@@ -1,9 +1,6 @@
-# Official contest binaries and site mirrors. fetch.sh writes these. Do not commit them.
-/sources/*.pdf
 /sources/*.zip
 /sources/*.html
 /sources/*.txt
-/sources/past/
 
 # User-supplied guides under sources/user/ ARE committed (Yang Topics Guide, inventory).
 

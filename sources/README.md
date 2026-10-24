@@ -2,13 +2,15 @@
 
 Upstream: https://integration.soc.srcf.net/
 
-## Official binaries (gitignored)
+## Reference copies
+
+The PDFs in this directory and under `past/` are committed reference copies. `Resource_pack.zip`, `index.html`, and `pastcomp.html` stay untracked. `fetch.sh` can still verify the checksums in `sha256sums`.
 
 ```bash
 ./sources/fetch.sh
 ```
 
-Checksums: `sha256sums` (SHA-256 of copies pulled 2026-10-24 Asia/Singapore).
+Checksums in `sha256sums` are SHA-256 of the copies pulled on 2026-10-24 in Asia/Singapore.
 
 | File | Upstream |
 |---|---|

@@ -25,10 +25,10 @@ Send `{"kind":"teach"}`. Teach from `drill.teaching` in chat. Give the worked ex
 
 ## Photo
 
-Read the image. Set `source` to `photo` and put the expression you read in `extract.final_answer`. If the value matches and the method does not, put the gap in `extract.method_note`. `turn apply` stores that gap as one mark row with `answer_ok` true and `method_ok` false, and as one technique card. It still appends the journal note. If the problem has no SymPy answer, set `verdict` from `past/samples/answers_feed.json` or from the solutions PDF named in the mock result. If `on_disk` is false, say so and mark a concept drill. You may run `sources/fetch.sh`. Do not ask the learner to.
+Read the image. Set `source` to `photo` and put the expression you read in `extract.final_answer`. If the value matches and the method does not, put the gap in `extract.method_note`. `turn apply` stores that gap as one mark row with `answer_ok` true and `method_ok` false, and as one technique card. It still appends the journal note. If the problem has no SymPy answer, set `verdict` from `past/samples/answers_feed.json` or from the solutions PDF named in the mock result. If `on_disk` is false, say so and mark a concept drill. Do not ask the learner to.
 
 ## Timed mock
 
 Send `{"kind":"mock-start"}`. If it exits 2 and the learner asked for a cold paper, send the same turn with `"cold": true`. Use `mock.started` and `duration_minutes` as the clock in Asia/Singapore. Remind the learner near 60 minutes and near 10 minutes left. Mark each problem with a mark turn. Finish with `mock-finish`.
 
-Do not pretend a missing PDF is loaded.
+The round PDFs are already under `sources/past/r1/`, `r2/`, and `r3/`. Do not pretend a missing PDF is loaded.

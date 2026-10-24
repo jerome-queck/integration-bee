@@ -246,7 +246,7 @@ def main() -> int:
         pdf = apply(data, {"kind": "mock-start", "pack": "pdf-round1", "year": 2021, "id": "mock-2021"})
         pdf_doc = load(pdf)
         check(pdf.returncode == 0 and pdf_doc["problems"][0]["year"] == 2021, "a year selects the 2021 paper")
-        check(pdf_doc["problems"][0]["count"] == 40 and pdf_doc["problems"][0]["on_disk"] is False, "2021 stays a 40-question paper when the PDF is absent")
+        check(pdf_doc["problems"][0]["count"] == 40 and pdf_doc["problems"][0]["on_disk"] is True, "2021 is a 40-question paper and the committed PDF is on disk")
         check("repository" not in pdf_doc["say"], "the mock line does not mention the repository")
 
         projection = json.loads((data / "progress.local.json").read_text())

@@ -23,7 +23,7 @@ From `sources/index.html`:
 | `sources/Virtual_integration_competition_sample_hints.pdf` | Hints |
 | `sources/Integration_bee_sample_problems_answers.pdf` | Answers |
 | `sources/UK_University_integration_bee_sample_problems_solutions.pdf` | Solutions |
-| `sources/Resource_pack.zip` | Full pack (fetch.sh) |
+| `sources/Resource_pack.zip` | Full pack. Untracked. `sources/fetch.sh` can download it. |
 | `sources/Formula_sheet.pdf` | From Resource pack |
 | `sources/past/r1/2020` through `r1/2025/` | Round 1 papers (from Resource pack) |
 | `sources/past/r2/` | Round 2 papers, with `uk` and `sg` under 2025 |
@@ -31,7 +31,7 @@ From `sources/index.html`:
 | `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf` | **Yang Topics Guide 2nd Ed (committed)** |
 | `sources/user/yang-topics-inventory.md` | Yang topic id inventory |
 
-Fetch official binaries: `sources/fetch.sh` + `sources/sha256sums`.
+The site PDFs and the contest PDFs under `sources/past/` are committed reference copies. `sources/fetch.sh` checks `sources/sha256sums`.
 
 ---
 

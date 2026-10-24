@@ -1,6 +1,6 @@
 # Past papers pedagogy pack (all rounds)
 
-Machine-consumable layer over official contest PDFs. Binaries live under `sources/past/` (**not committed** — run `sources/fetch.sh`).
+Machine-consumable layer over official contest PDFs. The reference copies under `sources/past/` are committed.
 
 ## Layout (locked)
 
@@ -19,18 +19,20 @@ Committed here:
 past/
   README.md           # this file
   index.md            # human inventory table
-  inventory.json      # machine inventory (disk truth after fetch)
+  inventory.json
   samples/            # Round-1 sample bridge (Q tags + answers_feed)
   mocks/              # timed / PDF mock metas (Round 1 first)
 ```
 
 ## Fetch
 
+A clone already has the reference PDFs. `sources/fetch.sh` can refresh the pack and check `sources/sha256sums`.
+
 ```bash
 ./sources/fetch.sh
 ```
 
-Pulls homepage PDFs + `Resource pack.zip`, migrates any legacy `sources/past/YYYY/` into `r1/YYYY/`, extracts **all** Round 1/2/3 PDFs. Nested `Resource pack 2025.zip` inside the outer zip is skipped (older subset).
+The script pulls the homepage PDFs and `Resource pack.zip`, moves any legacy `sources/past/YYYY/` tree into `r1/YYYY/`, and extracts the Round 1, Round 2, and Round 3 PDFs. Nested `Resource pack 2025.zip` inside the outer zip is an older subset. The script skips it.
 
 ## Honesty rules
 
