@@ -1,0 +1,170 @@
+[
+  {
+    "id": "U29-D01",
+    "technique": "advanced-trig-integrals",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\sin^{6}x\\,dx",
+    "sympy_expr": "sin(x)**6",
+    "answer_sympy": "5*pi/32",
+    "answer_display": "\\frac{5 \\pi}{32}",
+    "technique_tags": [
+      "advanced-trig-integrals",
+      "yang:5.2"
+    ],
+    "yang": [
+      "yang:5.2"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "29-advanced-trig",
+    "solution_note": "Wallis."
+  },
+  {
+    "id": "U29-D02",
+    "technique": "advanced-trig-integrals",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/4}\\tan^{2}x\\,dx",
+    "sympy_expr": "tan(x)**2",
+    "answer_sympy": "1-pi/4",
+    "answer_display": "1 - \\frac{\\pi}{4}",
+    "technique_tags": [
+      "advanced-trig-integrals",
+      "yang:5.2"
+    ],
+    "yang": [
+      "yang:5.2"
+    ],
+    "limits": [
+      0,
+      "pi/4"
+    ],
+    "unit": "29-advanced-trig",
+    "solution_note": "sec\u00b2-1."
+  },
+  {
+    "id": "U29-D03",
+    "technique": "advanced-trig-integrals",
+    "kind": "indefinite",
+    "latex": "\\int\\tan x\\sec^{2}x\\,dx",
+    "sympy_expr": "tan(x)*sec(x)**2",
+    "answer_sympy": "tan(x)**2/2",
+    "answer_display": "\\frac{\\tan^{2}{\\left(x \\right)}}{2}+C",
+    "technique_tags": [
+      "advanced-trig-integrals",
+      "yang:5.2"
+    ],
+    "yang": [
+      "yang:5.2"
+    ],
+    "unit": "29-advanced-trig",
+    "solution_note": "u=tan."
+  },
+  {
+    "id": "U29-D04",
+    "technique": "advanced-trig-integrals",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\sin x\\cos^{5}x\\,dx",
+    "sympy_expr": "sin(x)*cos(x)**5",
+    "answer_sympy": "Rational(1,6)",
+    "answer_display": "\\frac{1}{6}",
+    "technique_tags": [
+      "advanced-trig-integrals",
+      "yang:5.2"
+    ],
+    "yang": [
+      "yang:5.2"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "29-advanced-trig",
+    "solution_note": "u=cos."
+  },
+  {
+    "id": "U29-D05",
+    "technique": "advanced-trig-integrals",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/3}\\sec x\\,dx",
+    "sympy_expr": "sec(x)",
+    "answer_sympy": "log(2+sqrt(3))",
+    "answer_display": "\\log{\\left(\\sqrt{3} + 2 \\right)}",
+    "technique_tags": [
+      "advanced-trig-integrals",
+      "yang:5.2"
+    ],
+    "yang": [
+      "yang:5.2"
+    ],
+    "limits": [
+      0,
+      "pi/3"
+    ],
+    "unit": "29-advanced-trig",
+    "solution_note": "std."
+  },
+  {
+    "id": "U29-D06",
+    "technique": "advanced-trig-integrals",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\cos^{2}x\\sin^{4}x\\,dx",
+    "sympy_expr": "cos(x)**2*sin(x)**4",
+    "answer_sympy": "pi/32",
+    "answer_display": "\\frac{\\pi}{32}",
+    "technique_tags": [
+      "advanced-trig-integrals",
+      "yang:5.2"
+    ],
+    "yang": [
+      "yang:5.2"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "29-advanced-trig",
+    "solution_note": "Wallis product."
+  },
+  {
+    "id": "U29-D07",
+    "technique": "advanced-trig-integrals",
+    "kind": "indefinite",
+    "latex": "\\int\\sin(2x)\\cos(2x)\\,dx",
+    "sympy_expr": "sin(2*x)*cos(2*x)",
+    "answer_sympy": "sin(2*x)**2/4",
+    "answer_display": "\\frac{\\sin^{2}{\\left(2 x \\right)}}{4}+C",
+    "technique_tags": [
+      "advanced-trig-integrals",
+      "yang:5.2"
+    ],
+    "yang": [
+      "yang:5.2"
+    ],
+    "unit": "29-advanced-trig",
+    "solution_note": "double."
+  },
+  {
+    "id": "U29-D08",
+    "technique": "advanced-trig-integrals",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/4}\\sec^{2}x\\,dx",
+    "sympy_expr": "sec(x)**2",
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "advanced-trig-integrals",
+      "yang:5.2"
+    ],
+    "yang": [
+      "yang:5.2"
+    ],
+    "limits": [
+      0,
+      "pi/4"
+    ],
+    "unit": "29-advanced-trig",
+    "solution_note": "tan."
+  }
+]

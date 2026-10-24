@@ -40,4 +40,5 @@ templates/round1-sim.pdf
 
 # Verify scratch
 artifacts/
+.audit/
 

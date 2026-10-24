@@ -1,0 +1,174 @@
+[
+  {
+    "id": "U26-D01",
+    "technique": "weierstrass",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\frac{1}{1+\\sin x}\\,dx",
+    "sympy_expr": "1/(1+sin(x))",
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "weierstrass",
+      "yang:4.5"
+    ],
+    "yang": [
+      "yang:4.5"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "26-weierstrass",
+    "solution_note": "t-sub."
+  },
+  {
+    "id": "U26-D02",
+    "technique": "weierstrass",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi}\\frac{1}{2+\\cos x}\\,dx",
+    "sympy_expr": "1/(2+cos(x))",
+    "answer_sympy": "pi/sqrt(3)",
+    "answer_display": "\\frac{\\sqrt{3} \\pi}{3}",
+    "technique_tags": [
+      "weierstrass",
+      "yang:4.5"
+    ],
+    "yang": [
+      "yang:4.5"
+    ],
+    "limits": [
+      0,
+      "pi"
+    ],
+    "unit": "26-weierstrass",
+    "solution_note": "std."
+  },
+  {
+    "id": "U26-D03",
+    "technique": "weierstrass",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi}\\frac{1}{3+2\\cos x}\\,dx",
+    "sympy_expr": "1/(3+2*cos(x))",
+    "answer_sympy": "pi/sqrt(5)",
+    "answer_display": "\\frac{\\sqrt{5} \\pi}{5}",
+    "technique_tags": [
+      "weierstrass",
+      "yang:4.5"
+    ],
+    "yang": [
+      "yang:4.5"
+    ],
+    "limits": [
+      0,
+      "pi"
+    ],
+    "unit": "26-weierstrass",
+    "solution_note": "formula."
+  },
+  {
+    "id": "U26-D04",
+    "technique": "weierstrass",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{1}{1+\\sin x}\\,dx",
+    "sympy_expr": "1/(1+sin(x))",
+    "answer_sympy": "tan(x)-sec(x)",
+    "answer_display": "\\tan{\\left(x \\right)} - \\sec{\\left(x \\right)}+C",
+    "technique_tags": [
+      "weierstrass",
+      "yang:4.5"
+    ],
+    "yang": [
+      "yang:4.5"
+    ],
+    "unit": "26-weierstrass",
+    "solution_note": "t."
+  },
+  {
+    "id": "U26-D05",
+    "technique": "weierstrass",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi}\\frac{1}{5+4\\cos x}\\,dx",
+    "sympy_expr": "1/(5+4*cos(x))",
+    "answer_sympy": "pi/3",
+    "answer_display": "\\frac{\\pi}{3}",
+    "technique_tags": [
+      "weierstrass",
+      "yang:4.5"
+    ],
+    "yang": [
+      "yang:4.5"
+    ],
+    "limits": [
+      0,
+      "pi"
+    ],
+    "unit": "26-weierstrass",
+    "solution_note": "a=5."
+  },
+  {
+    "id": "U26-D06",
+    "technique": "weierstrass",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\frac{1}{1+\\cos x+\\sin x}\\,dx",
+    "sympy_expr": "1/(1+cos(x)+sin(x))",
+    "answer_sympy": "log(2)",
+    "answer_display": "\\log{\\left(2 \\right)}",
+    "technique_tags": [
+      "weierstrass",
+      "yang:4.5"
+    ],
+    "yang": [
+      "yang:4.5"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "26-weierstrass",
+    "solution_note": "wei."
+  },
+  {
+    "id": "U26-D07",
+    "technique": "weierstrass",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/3}\\frac{1}{2+\\cos x}\\,dx",
+    "sympy_expr": "1/(2+cos(x))",
+    "answer_sympy": "2*sqrt(3)*atan(Rational(1,3))/3",
+    "answer_display": "\\frac{2 \\sqrt{3} \\operatorname{atan}{\\left(\\frac{1}{3} \\right)}}{3}",
+    "technique_tags": [
+      "weierstrass",
+      "yang:4.5"
+    ],
+    "yang": [
+      "yang:4.5"
+    ],
+    "limits": [
+      0,
+      "pi/3"
+    ],
+    "unit": "26-weierstrass",
+    "solution_note": "scaled."
+  },
+  {
+    "id": "U26-D08",
+    "technique": "weierstrass",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\frac{1}{2+\\sin x}\\,dx",
+    "sympy_expr": "1/(2+sin(x))",
+    "answer_sympy": "sqrt(3)*pi/9",
+    "answer_display": "\\frac{\\sqrt{3} \\pi}{9}",
+    "technique_tags": [
+      "weierstrass",
+      "yang:4.5"
+    ],
+    "yang": [
+      "yang:4.5"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "26-weierstrass",
+    "solution_note": "wei."
+  }
+]

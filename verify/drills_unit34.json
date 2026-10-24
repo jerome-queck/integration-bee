@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U34-D01",
+    "technique": "frullani",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{e^{-ax}-e^{-bx}}{x}\\,dx",
+    "sympy_expr": "(exp(-x)-exp(-2*x))/x",
+    "answer_sympy": "log(2)",
+    "answer_display": "\\log{\\left(2 \\right)}",
+    "technique_tags": [
+      "frullani",
+      "yang:6.6"
+    ],
+    "yang": [
+      "yang:6.6"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "34-frullani-feynman",
+    "solution_note": "Frullani ln(b/a)."
+  },
+  {
+    "id": "U34-D02",
+    "technique": "frullani",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{e^{-x}-e^{-3x}}{x}\\,dx",
+    "sympy_expr": "(exp(-x)-exp(-3*x))/x",
+    "answer_sympy": "log(3)",
+    "answer_display": "\\log{\\left(3 \\right)}",
+    "technique_tags": [
+      "frullani",
+      "yang:6.6"
+    ],
+    "yang": [
+      "yang:6.6"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "34-frullani-feynman",
+    "solution_note": "Frullani."
+  },
+  {
+    "id": "U34-D03",
+    "technique": "frullani",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{\\cos x-\\cos(2x)}{x}\\,dx",
+    "sympy_expr": "(cos(x)-cos(2*x))/x",
+    "answer_sympy": "log(2)",
+    "answer_display": "\\log{\\left(2 \\right)}",
+    "technique_tags": [
+      "frullani",
+      "yang:6.6"
+    ],
+    "yang": [
+      "yang:6.6"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "34-frullani-feynman",
+    "solution_note": "Frullani trig."
+  },
+  {
+    "id": "U34-D04",
+    "technique": "feynman",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{x^{a}-1}{\\ln x}\\,dx",
+    "sympy_expr": "(x**2-1)/log(x)",
+    "answer_sympy": "log(3)",
+    "answer_display": "\\log{\\left(3 \\right)}",
+    "technique_tags": [
+      "feynman",
+      "yang:6.7"
+    ],
+    "yang": [
+      "yang:6.7"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "34-frullani-feynman",
+    "solution_note": "Feynman I(a)."
+  },
+  {
+    "id": "U34-D05",
+    "technique": "feynman",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}x^{2}\\ln x\\,dx",
+    "sympy_expr": "x**2*log(x)",
+    "answer_sympy": "-Rational(1,9)",
+    "answer_display": "- \\frac{1}{9}",
+    "technique_tags": [
+      "feynman",
+      "yang:6.7"
+    ],
+    "yang": [
+      "yang:6.7"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "34-frullani-feynman",
+    "solution_note": "param."
+  },
+  {
+    "id": "U34-D06",
+    "technique": "feynman",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}e^{-ax}\\sin x\\,dx",
+    "sympy_expr": "exp(-x)*sin(x)",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "feynman",
+      "yang:6.7"
+    ],
+    "yang": [
+      "yang:6.7"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "34-frullani-feynman",
+    "solution_note": "I(a)."
+  },
+  {
+    "id": "U34-D07",
+    "technique": "feynman",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{\\ln(1+x)}{1+x}\\,dx",
+    "sympy_expr": "log(1+x)/(1+x)",
+    "answer_sympy": "log(2)**2/2",
+    "answer_display": "\\frac{\\log{\\left(2 \\right)}^{2}}{2}",
+    "technique_tags": [
+      "feynman",
+      "yang:6.7"
+    ],
+    "yang": [
+      "yang:6.7"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "34-frullani-feynman",
+    "solution_note": "u=1+x."
+  },
+  {
+    "id": "U34-D08",
+    "technique": "feynman",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}x e^{-x}\\,dx",
+    "sympy_expr": "x*exp(-x)",
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "feynman",
+      "yang:6.7"
+    ],
+    "yang": [
+      "yang:6.7"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "34-frullani-feynman",
+    "solution_note": "\u0393'."
+  }
+]

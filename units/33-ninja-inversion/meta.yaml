@@ -1,0 +1,28 @@
+unit_id: "33-ninja-inversion"
+title: "Ninja Substitution and Inversion"
+order: 33
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U33-D"
+technique_tags:
+  - ninja-substitution
+  - inversion
+yang_tags:
+  - "yang:6.4"
+  - "yang:6.5"
+syllabus_refs:
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§§6.4 Ninja Substitution, 6.5 Inversion"
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Integration Techniques (supporting)"
+prerequisites:
+  - "13-forced-u-sub"
+  - "18-sneaky-symmetry-product"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit33.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

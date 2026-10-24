@@ -212,6 +212,174 @@
       "status": "ready"
     },
     {
+      "id": "power-substitution",
+      "yang": "3.1",
+      "unit": "19-power-sneaky-usub",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "sneaky-u-sub",
+      "yang": "3.2",
+      "unit": "19-power-sneaky-usub",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "advanced-trig-substitution",
+      "yang": "3.4",
+      "unit": "21-advanced-trig-sub",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "awkward-parts",
+      "yang": "3.5",
+      "unit": "22-awkward-parts-pf",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "intermediate-partial-fractions",
+      "yang": "3.6",
+      "unit": "22-awkward-parts-pf",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "periodicity",
+      "yang": "3.7",
+      "unit": "23-periodicity-speed",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "speed-bashing",
+      "yang": "3.8",
+      "unit": "23-periodicity-speed",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "undertow",
+      "yang": "4.1",
+      "unit": "24-undertow-square",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "square-square",
+      "yang": "4.2",
+      "unit": "24-undertow-square",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "advanced-kings-queens",
+      "yang": "4.4",
+      "unit": "25-advanced-kings",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "reverse-quotient",
+      "yang": "4.6",
+      "unit": "27-reverse-quotient",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "semi-parts",
+      "yang": "5.1",
+      "unit": "28-semi-parts",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "advanced-trig-integrals",
+      "yang": "5.2",
+      "unit": "29-advanced-trig",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "advanced-gaussian",
+      "yang": "5.3",
+      "unit": "30-gaussian-dirichlet",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "dirichlet",
+      "yang": "5.4",
+      "unit": "30-gaussian-dirichlet",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "inverse-jailbreaking",
+      "yang": "6.1",
+      "unit": "31-inverse-jailbreak",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "taylor-series",
+      "yang": "6.2",
+      "unit": "32-taylor-complex",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "complexifying",
+      "yang": "6.3",
+      "unit": "32-taylor-complex",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "ninja-substitution",
+      "yang": "6.4",
+      "unit": "33-ninja-inversion",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "inversion",
+      "yang": "6.5",
+      "unit": "33-ninja-inversion",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "frullani",
+      "yang": "6.6",
+      "unit": "34-frullani-feynman",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "feynman",
+      "yang": "6.7",
+      "unit": "34-frullani-feynman",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "modified-famous",
+      "yang": "6.8",
+      "unit": "35-modified-famous",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "unique-tricks",
+      "yang": "6.9",
+      "unit": "36-unique-tricks",
+      "gate": null,
+      "status": "ready"
+    },
+    {
       "id": "dutis",
       "yang": null,
       "unit": null,
@@ -220,10 +388,10 @@
     },
     {
       "id": "weierstrass",
-      "yang": null,
-      "unit": null,
+      "yang": "4.5",
+      "unit": "26-weierstrass",
       "gate": null,
-      "status": "deferred"
+      "status": "ready"
     },
     {
       "id": "vector-calc",
@@ -255,10 +423,10 @@
     },
     {
       "id": "wallis",
-      "yang": null,
-      "unit": null,
+      "yang": "3.3",
+      "unit": "20-wallis",
       "gate": null,
-      "status": "deferred"
+      "status": "ready"
     },
     {
       "id": "euler-mascheroni",

@@ -1,0 +1,10 @@
+# Unit 28 solutions
+
+- `U28-D01`: $\left(x - 1\right) e^{x}+C$
+- `U28-D02`: $- x \cos{\left(x \right)} + \sin{\left(x \right)}+C$
+- `U28-D03`: $x \sin{\left(x \right)} + \cos{\left(x \right)}+C$
+- `U28-D04`: $\frac{x^{2} \log{\left(x \right)}}{2} - \frac{x^{2}}{4}+C$
+- `U28-D05`: $\frac{1}{2} + \frac{e^{\pi}}{2}$
+- `U28-D06`: $x \log{\left(x \right)} - x+C$
+- `U28-D07`: $1$
+- `U28-D08`: $- x^{2} \cos{\left(x \right)} + 2 x \sin{\left(x \right)} + 2 \cos{\left(x \right)}+C$

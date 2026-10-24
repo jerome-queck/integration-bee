@@ -90,27 +90,58 @@ Syllabus §2 (p.2): Gamma Q7; Beta —; zeta Q6/Q8/Q9; floor Q9; Wallis Guide §
 
 Guide Contents: §1.1 Odd/Even p.3 → §1.2 Reflection p.7 → §1.3 Recurrence p.11 → §1.4 Wallis* p.13 → §1.5 Inverse p.14 → §1.6 T-sub p.15 → §1.7 Floor p.17 → §1.8 Trig p.18 → §1.9 Constants p.21 → §1.10 Exercises p.22.
 
-## Yang Chapter 2 (started)
+## Yang Chapter 2 (complete 2.1–2.10)
 
 | yang id | Topic | Unit status |
 |---|---|---|
 | `yang:2.1` | Modified Textbook Problems | **Unit 12** (`U12-D01`…`D04`) |
 | `yang:2.2` | Sneaky Algebra Manipulation | **Unit 12** (`U12-D05`…`D08`) |
+| `yang:2.3` | Basic Forced U-Substitutions | **Unit 13** (`U13-D01`…`D08`) |
+| `yang:2.4` | Gamma Function Integral | **Unit 14** (`U14-D01`…`D08`) |
+| `yang:2.5` | Integration by Parts | **Unit 15** (`U15-D01`…`D08`) |
+| `yang:2.6` | Trig-Identities Manipulation | **Unit 16** (`U16-D01`…`D04`) |
+| `yang:2.7` | Intermediate Trig-Substitution | **Unit 16** (`U16-D05`…`D08`) |
+| `yang:2.8` | Infinite Functions | **Unit 17** (`U17-D01`…`D06`) |
+| `yang:2.9` | Sneaky Symmetry | **Unit 18** (`U18-D01`…`D04`) |
+| `yang:2.10` | Sneaky Product Rule | **Unit 18** (`U18-D05`…`D08`) |
 
-Remaining `yang:2.3`…`yang:2.10` still deferred.
+## Yang Chapters 3–6 — full 3.1–6.9 (skip inventory 4.3)
 
-## Deferred — Yang Ch.2+ (after Ch.1 solid)
+| yang id | Topic | Unit status |
+|---|---|---|
+| `yang:3.1` | Power Substitution | **Unit 19** (`U19-D01`…`D08`) |
+| `yang:3.2` | Sneaky U-Sub Tricks | **Unit 19** (`U19-D01`…`D08`) |
+| `yang:3.3` | Wallis' Trick | **Unit 20** (`U20-D01`…`D08`) |
+| `yang:3.4` | Advanced Trig-Substitution | **Unit 21** (`U21-D01`…`D08`) |
+| `yang:3.5` | Awkward & Advanced Parts | **Unit 22** (`U22-D01`…`D08`) |
+| `yang:3.6` | Intermediate Partial Fractions | **Unit 22** (`U22-D01`…`D08`) |
+| `yang:3.7` | Basic Periodicity | **Unit 23** (`U23-D01`…`D08`) |
+| `yang:3.8` | Speed Bashing | **Unit 23** (`U23-D01`…`D08`) |
+| `yang:4.1` | Undertow Technique | **Unit 24** (`U24-D01`…`D08`) |
+| `yang:4.2` | Square-Square Technique | **Unit 24** (`U24-D01`…`D08`) |
+| `yang:4.4` | Advanced King's/Queen's Rule | **Unit 25** (`U25-D01`…`D08`) |
+| `yang:4.5` | Weierstrass Substitution | **Unit 26** (`U26-D01`…`D08`) |
+| `yang:4.6` | Reverse Quotient Rule | **Unit 27** (`U27-D01`…`D08`) |
+| `yang:5.1` | Semi-Integration by Parts | **Unit 28** (`U28-D01`…`D08`) |
+| `yang:5.2` | Advanced Trig Integrals | **Unit 29** (`U29-D01`…`D08`) |
+| `yang:5.3` | Advanced Gaussian Integral | **Unit 30** (`U30-D01`…`D08`) |
+| `yang:5.4` | Dirichlet Integral | **Unit 30** (`U30-D01`…`D08`) |
+| `yang:6.1` | Inverse Jailbreaking | **Unit 31** (`U31-D01`…`D08`) |
+| `yang:6.2` | Taylor Series | **Unit 32** (`U32-D01`…`D08`) |
+| `yang:6.3` | Complexifying the Integral | **Unit 32** (`U32-D01`…`D08`) |
+| `yang:6.4` | Ninja Substitution | **Unit 33** (`U33-D01`…`D08`) |
+| `yang:6.5` | Inversion | **Unit 33** (`U33-D01`…`D08`) |
+| `yang:6.6` | Frullani Integrals | **Unit 34** (`U34-D01`…`D08`) |
+| `yang:6.7` | Feynman Technique | **Unit 34** (`U34-D01`…`D08`) |
+| `yang:6.8` | Modified Famous Integrals | **Unit 35** (`U35-D01`…`D08`) |
+| `yang:6.9` | Unique Tricks | **Unit 36** (`U36-D01`…`D08`) |
 
-Do **not** build units yet. Listed for tracker only (inventory):
-
-- Ch.2 Regular: `yang:2.3`…`yang:2.10` remaining (`2.1`/`2.2` in Unit 12; incl. Gamma `2.4`, sneaky symmetry `2.9`)
-- Ch.3 Intermediate: `yang:3.1`…`yang:3.8` (Wallis trick `3.3`, periodicity `3.7`)
-- Ch.4 Advanced-lite: `yang:4.1`…`yang:4.6` (Weierstrass `4.5`, advanced King’s `4.4`)
-- Ch.5 Advanced: `yang:5.1`…`yang:5.4` (Dirichlet `5.4`)
-- Ch.6 Very advanced: `yang:6.1`…`yang:6.9` (Feynman `6.7`, Frullani `6.6`, Taylor `6.2`)
+**Done:** Units 19–36 cover inventory `yang:3.1`…`yang:6.9` (4.3 skipped). Official syllabus nodes without a Yang unit stay deferred on `skill-tree.md`.
 
 ## Pedagogy order (Round 1)
 
 1. Units 01–11 → full Yang Ch.1 (`yang:1.1`…`yang:1.20`)
-2. Official sample Q1–Q20 in teaching order
-3. Past Round 1 papers only after concept units exist (`verify/unit_order_check.py`)
+2. Units 12–18 → full Yang Ch.2 (`yang:2.1`…`yang:2.10`)
+3. Units 19–36 → Yang Ch.3–6 (`yang:3.1`…`yang:6.9`, skip 4.3)
+4. Official sample Q1–Q20 in teaching order
+5. Past Round 1 papers only after concept units exist (`verify/unit_order_check.py`)

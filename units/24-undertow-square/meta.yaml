@@ -1,0 +1,28 @@
+unit_id: "24-undertow-square"
+title: "Undertow and Square-Square"
+order: 24
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U24-D"
+technique_tags:
+  - undertow
+  - square-square
+yang_tags:
+  - "yang:4.1"
+  - "yang:4.2"
+syllabus_refs:
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§§4.1 Undertow, 4.2 Square-Square (inventory skips 4.3)"
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Integration Techniques (supporting)"
+prerequisites:
+  - "06-intermediate-u-sub"
+  - "18-sneaky-symmetry-product"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit24.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

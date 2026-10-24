@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U30-D01",
+    "technique": "advanced-gaussian",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}e^{-x^{2}}\\,dx",
+    "sympy_expr": "exp(-x**2)",
+    "answer_sympy": "sqrt(pi)/2",
+    "answer_display": "\\frac{\\sqrt{\\pi}}{2}",
+    "technique_tags": [
+      "advanced-gaussian",
+      "yang:5.3"
+    ],
+    "yang": [
+      "yang:5.3"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "30-gaussian-dirichlet",
+    "solution_note": "half Gauss."
+  },
+  {
+    "id": "U30-D02",
+    "technique": "advanced-gaussian",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}x e^{-x^{2}}\\,dx",
+    "sympy_expr": "x*exp(-x**2)",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "advanced-gaussian",
+      "yang:5.3"
+    ],
+    "yang": [
+      "yang:5.3"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "30-gaussian-dirichlet",
+    "solution_note": "u=x\u00b2."
+  },
+  {
+    "id": "U30-D03",
+    "technique": "advanced-gaussian",
+    "kind": "definite",
+    "latex": "\\int_{-\\infty}^{\\infty}e^{-x^{2}}\\,dx",
+    "sympy_expr": "exp(-x**2)",
+    "answer_sympy": "sqrt(pi)",
+    "answer_display": "\\sqrt{\\pi}",
+    "technique_tags": [
+      "advanced-gaussian",
+      "yang:5.3"
+    ],
+    "yang": [
+      "yang:5.3"
+    ],
+    "limits": [
+      "-oo",
+      "oo"
+    ],
+    "unit": "30-gaussian-dirichlet",
+    "solution_note": "full."
+  },
+  {
+    "id": "U30-D04",
+    "technique": "advanced-gaussian",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}e^{-x^{2}}x^{2}\\,dx",
+    "sympy_expr": "exp(-x**2)*x**2",
+    "answer_sympy": "sqrt(pi)/4",
+    "answer_display": "\\frac{\\sqrt{\\pi}}{4}",
+    "technique_tags": [
+      "advanced-gaussian",
+      "yang:5.3"
+    ],
+    "yang": [
+      "yang:5.3"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "30-gaussian-dirichlet",
+    "solution_note": "\u0393 related."
+  },
+  {
+    "id": "U30-D05",
+    "technique": "dirichlet",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{\\sin x}{x}\\,dx",
+    "sympy_expr": "sin(x)/x",
+    "answer_sympy": "pi/2",
+    "answer_display": "\\frac{\\pi}{2}",
+    "technique_tags": [
+      "dirichlet",
+      "yang:5.4"
+    ],
+    "yang": [
+      "yang:5.4"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "30-gaussian-dirichlet",
+    "solution_note": "Dirichlet."
+  },
+  {
+    "id": "U30-D06",
+    "technique": "dirichlet",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{\\sin^{2}x}{x^{2}}\\,dx",
+    "sympy_expr": "sin(x)**2/x**2",
+    "answer_sympy": "pi/2",
+    "answer_display": "\\frac{\\pi}{2}",
+    "technique_tags": [
+      "dirichlet",
+      "yang:5.4"
+    ],
+    "yang": [
+      "yang:5.4"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "30-gaussian-dirichlet",
+    "solution_note": "parts/Feynman."
+  },
+  {
+    "id": "U30-D07",
+    "technique": "dirichlet",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}e^{-x}\\sin x\\,dx",
+    "sympy_expr": "exp(-x)*sin(x)",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "dirichlet",
+      "yang:5.4"
+    ],
+    "yang": [
+      "yang:5.4"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "30-gaussian-dirichlet",
+    "solution_note": "Im Laplace."
+  },
+  {
+    "id": "U30-D08",
+    "technique": "dirichlet",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}e^{-x}\\cos x\\,dx",
+    "sympy_expr": "exp(-x)*cos(x)",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "dirichlet",
+      "yang:5.4"
+    ],
+    "yang": [
+      "yang:5.4"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "30-gaussian-dirichlet",
+    "solution_note": "Re Laplace."
+  }
+]

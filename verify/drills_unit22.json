@@ -1,0 +1,150 @@
+[
+  {
+    "id": "U22-D01",
+    "technique": "awkward-parts",
+    "kind": "indefinite",
+    "latex": "\\int(\\ln x)^{2}\\,dx",
+    "sympy_expr": "log(x)**2",
+    "answer_sympy": "x*log(x)**2-2*x*log(x)+2*x",
+    "answer_display": "x \\log{\\left(x \\right)}^{2} - 2 x \\log{\\left(x \\right)} + 2 x+C",
+    "technique_tags": [
+      "awkward-parts",
+      "yang:3.5"
+    ],
+    "yang": [
+      "yang:3.5"
+    ],
+    "unit": "22-awkward-parts-pf",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U22-D02",
+    "technique": "awkward-parts",
+    "kind": "indefinite",
+    "latex": "\\int\\arctan x\\,dx",
+    "sympy_expr": "atan(x)",
+    "answer_sympy": "x*atan(x)-log(1+x**2)/2",
+    "answer_display": "x \\operatorname{atan}{\\left(x \\right)} - \\frac{\\log{\\left(x^{2} + 1 \\right)}}{2}+C",
+    "technique_tags": [
+      "awkward-parts",
+      "yang:3.5"
+    ],
+    "yang": [
+      "yang:3.5"
+    ],
+    "unit": "22-awkward-parts-pf",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U22-D03",
+    "technique": "awkward-parts",
+    "kind": "indefinite",
+    "latex": "\\int x^{2}e^{x}\\,dx",
+    "sympy_expr": "x**2*exp(x)",
+    "answer_sympy": "exp(x)*(x**2-2*x+2)",
+    "answer_display": "\\left(x^{2} - 2 x + 2\\right) e^{x}+C",
+    "technique_tags": [
+      "awkward-parts",
+      "yang:3.5"
+    ],
+    "yang": [
+      "yang:3.5"
+    ],
+    "unit": "22-awkward-parts-pf",
+    "solution_note": "tabular."
+  },
+  {
+    "id": "U22-D04",
+    "technique": "awkward-parts",
+    "kind": "indefinite",
+    "latex": "\\int\\arcsin x\\,dx",
+    "sympy_expr": "asin(x)",
+    "answer_sympy": "x*asin(x)+sqrt(1-x**2)",
+    "answer_display": "x \\operatorname{asin}{\\left(x \\right)} + \\sqrt{1 - x^{2}}+C",
+    "technique_tags": [
+      "awkward-parts",
+      "yang:3.5"
+    ],
+    "yang": [
+      "yang:3.5"
+    ],
+    "unit": "22-awkward-parts-pf",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U22-D05",
+    "technique": "awkward-parts",
+    "kind": "indefinite",
+    "latex": "\\int e^{x}\\sin x\\,dx",
+    "sympy_expr": "exp(x)*sin(x)",
+    "answer_sympy": "exp(x)*(sin(x)-cos(x))/2",
+    "answer_display": "\\frac{\\left(\\sin{\\left(x \\right)} - \\cos{\\left(x \\right)}\\right) e^{x}}{2}+C",
+    "technique_tags": [
+      "awkward-parts",
+      "yang:3.5"
+    ],
+    "yang": [
+      "yang:3.5"
+    ],
+    "unit": "22-awkward-parts-pf",
+    "solution_note": "parts\u00d72."
+  },
+  {
+    "id": "U22-D06",
+    "technique": "intermediate-partial-fractions",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{x}{(x+1)(x+2)(x+3)}\\,dx",
+    "sympy_expr": "x/((x+1)*(x+2)*(x+3))",
+    "answer_sympy": "-log(x+1)/2+2*log(x+2)-3*log(x+3)/2",
+    "answer_display": "- \\frac{\\log{\\left(x + 1 \\right)}}{2} + 2 \\log{\\left(x + 2 \\right)} - \\frac{3 \\log{\\left(x + 3 \\right)}}{2}+C",
+    "technique_tags": [
+      "intermediate-partial-fractions",
+      "yang:3.6"
+    ],
+    "yang": [
+      "yang:3.6"
+    ],
+    "unit": "22-awkward-parts-pf",
+    "solution_note": "cover-up."
+  },
+  {
+    "id": "U22-D07",
+    "technique": "intermediate-partial-fractions",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{1}{x^{2}(x+1)}\\,dx",
+    "sympy_expr": "1/(x**2*(x+1))",
+    "answer_sympy": "-1/x-log(x)+log(x+1)",
+    "answer_display": "- \\log{\\left(x \\right)} + \\log{\\left(x + 1 \\right)} - \\frac{1}{x}+C",
+    "technique_tags": [
+      "intermediate-partial-fractions",
+      "yang:3.6"
+    ],
+    "yang": [
+      "yang:3.6"
+    ],
+    "unit": "22-awkward-parts-pf",
+    "solution_note": "PF."
+  },
+  {
+    "id": "U22-D08",
+    "technique": "intermediate-partial-fractions",
+    "kind": "definite",
+    "latex": "\\int_{1}^{2}\\frac{1}{x^{2}(x+1)}\\,dx",
+    "sympy_expr": "1/(x**2*(x+1))",
+    "answer_sympy": "Rational(1,2)+log(Rational(3,4))",
+    "answer_display": "\\log{\\left(\\frac{3}{4} \\right)} + \\frac{1}{2}",
+    "technique_tags": [
+      "intermediate-partial-fractions",
+      "yang:3.6"
+    ],
+    "yang": [
+      "yang:3.6"
+    ],
+    "limits": [
+      1,
+      2
+    ],
+    "unit": "22-awkward-parts-pf",
+    "solution_note": "eval."
+  }
+]

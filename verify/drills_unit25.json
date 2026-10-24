@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U25-D01",
+    "technique": "advanced-kings-queens",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\frac{\\sin x}{\\sin x+\\cos x}\\,dx",
+    "sympy_expr": "sin(x)/(sin(x)+cos(x))",
+    "answer_sympy": "pi/4",
+    "answer_display": "\\frac{\\pi}{4}",
+    "technique_tags": [
+      "advanced-kings-queens",
+      "yang:4.4"
+    ],
+    "yang": [
+      "yang:4.4"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "25-advanced-kings",
+    "solution_note": "king."
+  },
+  {
+    "id": "U25-D02",
+    "technique": "advanced-kings-queens",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\frac{\\cos x}{\\sin x+\\cos x}\\,dx",
+    "sympy_expr": "cos(x)/(sin(x)+cos(x))",
+    "answer_sympy": "pi/4",
+    "answer_display": "\\frac{\\pi}{4}",
+    "technique_tags": [
+      "advanced-kings-queens",
+      "yang:4.4"
+    ],
+    "yang": [
+      "yang:4.4"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "25-advanced-kings",
+    "solution_note": "pair."
+  },
+  {
+    "id": "U25-D03",
+    "technique": "advanced-kings-queens",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{e^{x}}{e^{x}+e^{1-x}}\\,dx",
+    "sympy_expr": "exp(x)/(exp(x)+exp(1-x))",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "advanced-kings-queens",
+      "yang:4.4"
+    ],
+    "yang": [
+      "yang:4.4"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "25-advanced-kings",
+    "solution_note": "x\u21921-x."
+  },
+  {
+    "id": "U25-D04",
+    "technique": "advanced-kings-queens",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/4}\\frac{1}{1+\\tan x}\\,dx",
+    "sympy_expr": "1/(1+tan(x))",
+    "answer_sympy": "pi/8+log(2)/4",
+    "answer_display": "\\frac{\\log{\\left(2 \\right)}}{4} + \\frac{\\pi}{8}",
+    "technique_tags": [
+      "advanced-kings-queens",
+      "yang:4.4"
+    ],
+    "yang": [
+      "yang:4.4"
+    ],
+    "limits": [
+      0,
+      "pi/4"
+    ],
+    "unit": "25-advanced-kings",
+    "solution_note": "\u03c0/4-x; ans \u03c0/8+log2/4."
+  },
+  {
+    "id": "U25-D05",
+    "technique": "advanced-kings-queens",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\frac{\\sin^{3}x}{\\sin^{3}x+\\cos^{3}x}\\,dx",
+    "sympy_expr": "sin(x)**3/(sin(x)**3+cos(x)**3)",
+    "answer_sympy": "pi/4",
+    "answer_display": "\\frac{\\pi}{4}",
+    "technique_tags": [
+      "advanced-kings-queens",
+      "yang:4.4"
+    ],
+    "yang": [
+      "yang:4.4"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "25-advanced-kings",
+    "solution_note": "king."
+  },
+  {
+    "id": "U25-D06",
+    "technique": "advanced-kings-queens",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi}\\frac{x}{1+\\sin x}\\,dx",
+    "sympy_expr": "x/(1+sin(x))",
+    "answer_sympy": "pi",
+    "answer_display": "\\pi",
+    "technique_tags": [
+      "advanced-kings-queens",
+      "yang:4.4"
+    ],
+    "yang": [
+      "yang:4.4"
+    ],
+    "limits": [
+      0,
+      "pi"
+    ],
+    "unit": "25-advanced-kings",
+    "solution_note": "\u03c0-x."
+  },
+  {
+    "id": "U25-D07",
+    "technique": "advanced-kings-queens",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{x}{1+x}\\,dx",
+    "sympy_expr": "x/(1+x)",
+    "answer_sympy": "1-log(2)",
+    "answer_display": "1 - \\log{\\left(2 \\right)}",
+    "technique_tags": [
+      "advanced-kings-queens",
+      "yang:4.4"
+    ],
+    "yang": [
+      "yang:4.4"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "25-advanced-kings",
+    "solution_note": "warmup."
+  },
+  {
+    "id": "U25-D08",
+    "technique": "advanced-kings-queens",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\sin x\\cos x\\,dx",
+    "sympy_expr": "sin(x)*cos(x)",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "advanced-kings-queens",
+      "yang:4.4"
+    ],
+    "yang": [
+      "yang:4.4"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "25-advanced-kings",
+    "solution_note": "u=sin."
+  }
+]

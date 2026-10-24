@@ -1,0 +1,26 @@
+unit_id: "20-wallis"
+title: "Wallis' Trick"
+order: 20
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U20-D"
+technique_tags:
+  - wallis
+yang_tags:
+  - "yang:3.3"
+syllabus_refs:
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§3.3 Wallis' Trick"
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Integration Techniques (supporting)"
+prerequisites:
+  - "02-symmetry-basic-trig"
+  - "09-intermediate-trig"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit20.json
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

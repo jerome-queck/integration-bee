@@ -1,0 +1,177 @@
+[
+  {
+    "id": "U33-D01",
+    "technique": "ninja-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{x}{1+x^{2}}\\,dx",
+    "sympy_expr": "x/(1+x**2)",
+    "answer_sympy": "log(2)/2",
+    "answer_display": "\\frac{\\log{\\left(2 \\right)}}{2}",
+    "technique_tags": [
+      "ninja-substitution",
+      "yang:6.4"
+    ],
+    "yang": [
+      "yang:6.4"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "33-ninja-inversion",
+    "solution_note": "u=1+x\u00b2."
+  },
+  {
+    "id": "U33-D02",
+    "technique": "ninja-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\frac{1}{1+\\sin^{2}x}\\,dx",
+    "sympy_expr": "1/(1+sin(x)**2)",
+    "answer_sympy": "pi/(2*sqrt(2))",
+    "answer_display": "\\frac{\\sqrt{2} \\pi}{4}",
+    "technique_tags": [
+      "ninja-substitution",
+      "yang:6.4"
+    ],
+    "yang": [
+      "yang:6.4"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "verify_mode": "numeric",
+    "unit": "33-ninja-inversion",
+    "solution_note": "ninja/t."
+  },
+  {
+    "id": "U33-D03",
+    "technique": "ninja-substitution",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{1}{x\\sqrt{x^{2}-1}}\\,dx",
+    "sympy_expr": "1/(x*sqrt(x**2-1))",
+    "answer_sympy": "atan(sqrt(x**2-1))",
+    "answer_display": "\\operatorname{atan}{\\left(\\sqrt{x^{2} - 1} \\right)}+C",
+    "technique_tags": [
+      "ninja-substitution",
+      "yang:6.4"
+    ],
+    "yang": [
+      "yang:6.4"
+    ],
+    "unit": "33-ninja-inversion",
+    "solution_note": "sec/ninja."
+  },
+  {
+    "id": "U33-D04",
+    "technique": "ninja-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{\\ln(1+x)}{1+x^{2}}\\,dx",
+    "sympy_expr": "log(1+x)/(1+x**2)",
+    "answer_sympy": "pi*log(2)/8",
+    "answer_display": "\\frac{\\pi \\log{\\left(2 \\right)}}{8}",
+    "technique_tags": [
+      "ninja-substitution",
+      "yang:6.4"
+    ],
+    "yang": [
+      "yang:6.4"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "verify_mode": "numeric",
+    "unit": "33-ninja-inversion",
+    "solution_note": "ninja."
+  },
+  {
+    "id": "U33-D05",
+    "technique": "inversion",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{1}{1+x^{2}}\\,dx",
+    "sympy_expr": "1/(1+x**2)",
+    "answer_sympy": "pi/2",
+    "answer_display": "\\frac{\\pi}{2}",
+    "technique_tags": [
+      "inversion",
+      "yang:6.5"
+    ],
+    "yang": [
+      "yang:6.5"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "33-ninja-inversion",
+    "solution_note": "x\u21921/x same."
+  },
+  {
+    "id": "U33-D06",
+    "technique": "inversion",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{1}{(1+x^{2})(1+x)}\\,dx",
+    "sympy_expr": "1/((1+x**2)*(1+x))",
+    "answer_sympy": "pi/4",
+    "answer_display": "\\frac{\\pi}{4}",
+    "technique_tags": [
+      "inversion",
+      "yang:6.5"
+    ],
+    "yang": [
+      "yang:6.5"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "verify_mode": "numeric",
+    "unit": "33-ninja-inversion",
+    "solution_note": "x\u21921/x."
+  },
+  {
+    "id": "U33-D07",
+    "technique": "inversion",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{\\ln x}{1+x^{2}}\\,dx",
+    "sympy_expr": "log(x)/(1+x**2)",
+    "answer_sympy": "0",
+    "answer_display": "0",
+    "technique_tags": [
+      "inversion",
+      "yang:6.5"
+    ],
+    "yang": [
+      "yang:6.5"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "33-ninja-inversion",
+    "solution_note": "x\u21921/x \u21d20."
+  },
+  {
+    "id": "U33-D08",
+    "technique": "inversion",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{x}{(1+x^{2})^{2}}\\,dx",
+    "sympy_expr": "x/(1+x**2)**2",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "inversion",
+      "yang:6.5"
+    ],
+    "yang": [
+      "yang:6.5"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "33-ninja-inversion",
+    "solution_note": "u=1+x\u00b2."
+  }
+]

@@ -1,0 +1,154 @@
+[
+  {
+    "id": "U28-D01",
+    "technique": "semi-parts",
+    "kind": "indefinite",
+    "latex": "\\int x e^{x}\\,dx",
+    "sympy_expr": "x*exp(x)",
+    "answer_sympy": "exp(x)*(x-1)",
+    "answer_display": "\\left(x - 1\\right) e^{x}+C",
+    "technique_tags": [
+      "semi-parts",
+      "yang:5.1"
+    ],
+    "yang": [
+      "yang:5.1"
+    ],
+    "unit": "28-semi-parts",
+    "solution_note": "semi."
+  },
+  {
+    "id": "U28-D02",
+    "technique": "semi-parts",
+    "kind": "indefinite",
+    "latex": "\\int x\\sin x\\,dx",
+    "sympy_expr": "x*sin(x)",
+    "answer_sympy": "-x*cos(x)+sin(x)",
+    "answer_display": "- x \\cos{\\left(x \\right)} + \\sin{\\left(x \\right)}+C",
+    "technique_tags": [
+      "semi-parts",
+      "yang:5.1"
+    ],
+    "yang": [
+      "yang:5.1"
+    ],
+    "unit": "28-semi-parts",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U28-D03",
+    "technique": "semi-parts",
+    "kind": "indefinite",
+    "latex": "\\int x\\cos x\\,dx",
+    "sympy_expr": "x*cos(x)",
+    "answer_sympy": "x*sin(x)+cos(x)",
+    "answer_display": "x \\sin{\\left(x \\right)} + \\cos{\\left(x \\right)}+C",
+    "technique_tags": [
+      "semi-parts",
+      "yang:5.1"
+    ],
+    "yang": [
+      "yang:5.1"
+    ],
+    "unit": "28-semi-parts",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U28-D04",
+    "technique": "semi-parts",
+    "kind": "indefinite",
+    "latex": "\\int x\\ln x\\,dx",
+    "sympy_expr": "x*log(x)",
+    "answer_sympy": "x**2*log(x)/2-x**2/4",
+    "answer_display": "\\frac{x^{2} \\log{\\left(x \\right)}}{2} - \\frac{x^{2}}{4}+C",
+    "technique_tags": [
+      "semi-parts",
+      "yang:5.1"
+    ],
+    "yang": [
+      "yang:5.1"
+    ],
+    "unit": "28-semi-parts",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U28-D05",
+    "technique": "semi-parts",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi}e^{x}\\sin x\\,dx",
+    "sympy_expr": "exp(x)*sin(x)",
+    "answer_sympy": "(1+exp(pi))/2",
+    "answer_display": "\\frac{1}{2} + \\frac{e^{\\pi}}{2}",
+    "technique_tags": [
+      "semi-parts",
+      "yang:5.1"
+    ],
+    "yang": [
+      "yang:5.1"
+    ],
+    "limits": [
+      0,
+      "pi"
+    ],
+    "unit": "28-semi-parts",
+    "solution_note": "parts\u00d72."
+  },
+  {
+    "id": "U28-D06",
+    "technique": "semi-parts",
+    "kind": "indefinite",
+    "latex": "\\int\\ln x\\,dx",
+    "sympy_expr": "log(x)",
+    "answer_sympy": "x*log(x)-x",
+    "answer_display": "x \\log{\\left(x \\right)} - x+C",
+    "technique_tags": [
+      "semi-parts",
+      "yang:5.1"
+    ],
+    "yang": [
+      "yang:5.1"
+    ],
+    "unit": "28-semi-parts",
+    "solution_note": "classic."
+  },
+  {
+    "id": "U28-D07",
+    "technique": "semi-parts",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}x e^{x}\\,dx",
+    "sympy_expr": "x*exp(x)",
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "semi-parts",
+      "yang:5.1"
+    ],
+    "yang": [
+      "yang:5.1"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "28-semi-parts",
+    "solution_note": "eval."
+  },
+  {
+    "id": "U28-D08",
+    "technique": "semi-parts",
+    "kind": "indefinite",
+    "latex": "\\int x^{2}\\sin x\\,dx",
+    "sympy_expr": "x**2*sin(x)",
+    "answer_sympy": "-x**2*cos(x)+2*x*sin(x)+2*cos(x)",
+    "answer_display": "- x^{2} \\cos{\\left(x \\right)} + 2 x \\sin{\\left(x \\right)} + 2 \\cos{\\left(x \\right)}+C",
+    "technique_tags": [
+      "semi-parts",
+      "yang:5.1"
+    ],
+    "yang": [
+      "yang:5.1"
+    ],
+    "unit": "28-semi-parts",
+    "solution_note": "tabular."
+  }
+]

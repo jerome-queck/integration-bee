@@ -1,0 +1,166 @@
+[
+  {
+    "id": "U31-D01",
+    "technique": "inverse-jailbreaking",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\arcsin x\\,dx",
+    "sympy_expr": "asin(x)",
+    "answer_sympy": "-1+pi/2",
+    "answer_display": "-1 + \\frac{\\pi}{2}",
+    "technique_tags": [
+      "inverse-jailbreaking",
+      "yang:6.1"
+    ],
+    "yang": [
+      "yang:6.1"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "31-inverse-jailbreak",
+    "solution_note": "parts/geo."
+  },
+  {
+    "id": "U31-D02",
+    "technique": "inverse-jailbreaking",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\arctan x\\,dx",
+    "sympy_expr": "atan(x)",
+    "answer_sympy": "pi/4-log(2)/2",
+    "answer_display": "- \\frac{\\log{\\left(2 \\right)}}{2} + \\frac{\\pi}{4}",
+    "technique_tags": [
+      "inverse-jailbreaking",
+      "yang:6.1"
+    ],
+    "yang": [
+      "yang:6.1"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "31-inverse-jailbreak",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U31-D03",
+    "technique": "inverse-jailbreaking",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\arccos x\\,dx",
+    "sympy_expr": "acos(x)",
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "inverse-jailbreaking",
+      "yang:6.1"
+    ],
+    "yang": [
+      "yang:6.1"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "31-inverse-jailbreak",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U31-D04",
+    "technique": "inverse-jailbreaking",
+    "kind": "indefinite",
+    "latex": "\\int\\arctan x\\,dx",
+    "sympy_expr": "atan(x)",
+    "answer_sympy": "x*atan(x)-log(1+x**2)/2",
+    "answer_display": "x \\operatorname{atan}{\\left(x \\right)} - \\frac{\\log{\\left(x^{2} + 1 \\right)}}{2}+C",
+    "technique_tags": [
+      "inverse-jailbreaking",
+      "yang:6.1"
+    ],
+    "yang": [
+      "yang:6.1"
+    ],
+    "unit": "31-inverse-jailbreak",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U31-D05",
+    "technique": "inverse-jailbreaking",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1/2}\\arcsin x\\,dx",
+    "sympy_expr": "asin(x)",
+    "answer_sympy": "-1+pi/12+sqrt(3)/2",
+    "answer_display": "-1 + \\frac{\\pi}{12} + \\frac{\\sqrt{3}}{2}",
+    "technique_tags": [
+      "inverse-jailbreaking",
+      "yang:6.1"
+    ],
+    "yang": [
+      "yang:6.1"
+    ],
+    "limits": [
+      0,
+      "Rational(1,2)"
+    ],
+    "unit": "31-inverse-jailbreak",
+    "solution_note": "eval."
+  },
+  {
+    "id": "U31-D06",
+    "technique": "inverse-jailbreaking",
+    "kind": "indefinite",
+    "latex": "\\int x\\arctan x\\,dx",
+    "sympy_expr": "x*atan(x)",
+    "answer_sympy": "(x**2+1)*atan(x)/2-x/2",
+    "answer_display": "- \\frac{x}{2} + \\frac{\\left(x^{2} + 1\\right) \\operatorname{atan}{\\left(x \\right)}}{2}+C",
+    "technique_tags": [
+      "inverse-jailbreaking",
+      "yang:6.1"
+    ],
+    "yang": [
+      "yang:6.1"
+    ],
+    "unit": "31-inverse-jailbreak",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U31-D07",
+    "technique": "inverse-jailbreaking",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}x\\arcsin x\\,dx",
+    "sympy_expr": "x*asin(x)",
+    "answer_sympy": "pi/8",
+    "answer_display": "\\frac{\\pi}{8}",
+    "technique_tags": [
+      "inverse-jailbreaking",
+      "yang:6.1"
+    ],
+    "yang": [
+      "yang:6.1"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "31-inverse-jailbreak",
+    "solution_note": "parts."
+  },
+  {
+    "id": "U31-D08",
+    "technique": "inverse-jailbreaking",
+    "kind": "indefinite",
+    "latex": "\\int\\arcsin x\\,dx",
+    "sympy_expr": "asin(x)",
+    "answer_sympy": "x*asin(x)+sqrt(1-x**2)",
+    "answer_display": "x \\operatorname{asin}{\\left(x \\right)} + \\sqrt{1 - x^{2}}+C",
+    "technique_tags": [
+      "inverse-jailbreaking",
+      "yang:6.1"
+    ],
+    "yang": [
+      "yang:6.1"
+    ],
+    "unit": "31-inverse-jailbreak",
+    "solution_note": "parts."
+  }
+]

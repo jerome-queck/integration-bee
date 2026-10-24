@@ -1,0 +1,166 @@
+[
+  {
+    "id": "U32-D01",
+    "technique": "taylor-series",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{1}{1+x}\\,dx",
+    "sympy_expr": "1/(1+x)",
+    "answer_sympy": "log(2)",
+    "answer_display": "\\log{\\left(2 \\right)}",
+    "technique_tags": [
+      "taylor-series",
+      "yang:6.2"
+    ],
+    "yang": [
+      "yang:6.2"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "32-taylor-complex",
+    "solution_note": "geom series."
+  },
+  {
+    "id": "U32-D02",
+    "technique": "taylor-series",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}1-x^{2}+x^{4}/2-x^{6}/6\\,dx",
+    "sympy_expr": "1-x**2+x**4/2-x**6/6",
+    "answer_sympy": "1-Rational(1,3)+Rational(1,10)-Rational(1,42)",
+    "answer_display": "\\frac{26}{35}",
+    "technique_tags": [
+      "taylor-series",
+      "yang:6.2"
+    ],
+    "yang": [
+      "yang:6.2"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "32-taylor-complex",
+    "solution_note": "Taylor truncate."
+  },
+  {
+    "id": "U32-D03",
+    "technique": "taylor-series",
+    "kind": "indefinite",
+    "latex": "\\int e^{x^{2}}x\\,dx",
+    "sympy_expr": "x*exp(x**2)",
+    "answer_sympy": "exp(x**2)/2",
+    "answer_display": "\\frac{e^{x^{2}}}{2}+C",
+    "technique_tags": [
+      "taylor-series",
+      "yang:6.2"
+    ],
+    "yang": [
+      "yang:6.2"
+    ],
+    "unit": "32-taylor-complex",
+    "solution_note": "series/u."
+  },
+  {
+    "id": "U32-D04",
+    "technique": "taylor-series",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}x^{3}\\,dx",
+    "sympy_expr": "x**3",
+    "answer_sympy": "Rational(1,4)",
+    "answer_display": "\\frac{1}{4}",
+    "technique_tags": [
+      "taylor-series",
+      "yang:6.2"
+    ],
+    "yang": [
+      "yang:6.2"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "32-taylor-complex",
+    "solution_note": "warmup term."
+  },
+  {
+    "id": "U32-D05",
+    "technique": "complexifying",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}e^{-x}\\cos x\\,dx",
+    "sympy_expr": "exp(-x)*cos(x)",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "complexifying",
+      "yang:6.3"
+    ],
+    "yang": [
+      "yang:6.3"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "32-taylor-complex",
+    "solution_note": "Re e^{-(1-i)x}."
+  },
+  {
+    "id": "U32-D06",
+    "technique": "complexifying",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}e^{-x}\\sin x\\,dx",
+    "sympy_expr": "exp(-x)*sin(x)",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "complexifying",
+      "yang:6.3"
+    ],
+    "yang": [
+      "yang:6.3"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "32-taylor-complex",
+    "solution_note": "Im."
+  },
+  {
+    "id": "U32-D07",
+    "technique": "complexifying",
+    "kind": "indefinite",
+    "latex": "\\int e^{x}\\cos x\\,dx",
+    "sympy_expr": "exp(x)*cos(x)",
+    "answer_sympy": "exp(x)*(cos(x)+sin(x))/2",
+    "answer_display": "\\frac{\\left(\\sin{\\left(x \\right)} + \\cos{\\left(x \\right)}\\right) e^{x}}{2}+C",
+    "technique_tags": [
+      "complexifying",
+      "yang:6.3"
+    ],
+    "yang": [
+      "yang:6.3"
+    ],
+    "unit": "32-taylor-complex",
+    "solution_note": "Re e^{(1+i)x}."
+  },
+  {
+    "id": "U32-D08",
+    "technique": "complexifying",
+    "kind": "indefinite",
+    "latex": "\\int e^{x}\\sin x\\,dx",
+    "sympy_expr": "exp(x)*sin(x)",
+    "answer_sympy": "exp(x)*(sin(x)-cos(x))/2",
+    "answer_display": "\\frac{\\left(\\sin{\\left(x \\right)} - \\cos{\\left(x \\right)}\\right) e^{x}}{2}+C",
+    "technique_tags": [
+      "complexifying",
+      "yang:6.3"
+    ],
+    "yang": [
+      "yang:6.3"
+    ],
+    "unit": "32-taylor-complex",
+    "solution_note": "Im."
+  }
+]

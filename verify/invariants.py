@@ -46,8 +46,16 @@ def live_problems() -> list[str]:
     in_tree = skill_tree_ids(tree)
     if ids != in_tree:
         problems.append(f"catalog ids != skill-tree ids: {sorted(ids ^ in_tree)}")
-    for major, stop in ((1, 20), (2, 10)):
-        for minor in range(1, stop + 1):
+    chapters = {
+        1: range(1, 21),
+        2: range(1, 11),
+        3: range(1, 9),
+        4: (1, 2, 4, 5, 6),
+        5: range(1, 5),
+        6: range(1, 10),
+    }
+    for major, minors in chapters.items():
+        for minor in minors:
             token = f"| {major}.{minor} |"
             if token not in tree:
                 problems.append(f"skill-tree missing {token}")

@@ -1,0 +1,146 @@
+[
+  {
+    "id": "U27-D01",
+    "technique": "reverse-quotient",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{x\\cos x-\\sin x}{x^{2}}\\,dx",
+    "sympy_expr": "(x*cos(x)-sin(x))/x**2",
+    "answer_sympy": "sin(x)/x",
+    "answer_display": "\\frac{\\sin{\\left(x \\right)}}{x}+C",
+    "technique_tags": [
+      "reverse-quotient",
+      "yang:4.6"
+    ],
+    "yang": [
+      "yang:4.6"
+    ],
+    "unit": "27-reverse-quotient",
+    "solution_note": "sin/x."
+  },
+  {
+    "id": "U27-D02",
+    "technique": "reverse-quotient",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{e^{x}(x-1)}{x^{2}}\\,dx",
+    "sympy_expr": "exp(x)*(x-1)/x**2",
+    "answer_sympy": "exp(x)/x",
+    "answer_display": "\\frac{e^{x}}{x}+C",
+    "technique_tags": [
+      "reverse-quotient",
+      "yang:4.6"
+    ],
+    "yang": [
+      "yang:4.6"
+    ],
+    "unit": "27-reverse-quotient",
+    "solution_note": "e^x/x."
+  },
+  {
+    "id": "U27-D03",
+    "technique": "reverse-quotient",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{1-\\ln x}{x^{2}}\\,dx",
+    "sympy_expr": "(1-log(x))/x**2",
+    "answer_sympy": "log(x)/x",
+    "answer_display": "\\frac{\\log{\\left(x \\right)}}{x}+C",
+    "technique_tags": [
+      "reverse-quotient",
+      "yang:4.6"
+    ],
+    "yang": [
+      "yang:4.6"
+    ],
+    "unit": "27-reverse-quotient",
+    "solution_note": "ln/x."
+  },
+  {
+    "id": "U27-D04",
+    "technique": "reverse-quotient",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{\\sin x-x\\cos x}{\\sin^{2}x}\\,dx",
+    "sympy_expr": "(sin(x)-x*cos(x))/sin(x)**2",
+    "answer_sympy": "x/sin(x)",
+    "answer_display": "\\frac{x}{\\sin{\\left(x \\right)}}+C",
+    "technique_tags": [
+      "reverse-quotient",
+      "yang:4.6"
+    ],
+    "yang": [
+      "yang:4.6"
+    ],
+    "unit": "27-reverse-quotient",
+    "solution_note": "x/sin."
+  },
+  {
+    "id": "U27-D05",
+    "technique": "reverse-quotient",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{\\ln x-1}{x^{2}}\\,dx",
+    "sympy_expr": "(log(x)-1)/x**2",
+    "answer_sympy": "-log(x)/x",
+    "answer_display": "- \\frac{\\log{\\left(x \\right)}}{x}+C",
+    "technique_tags": [
+      "reverse-quotient",
+      "yang:4.6"
+    ],
+    "yang": [
+      "yang:4.6"
+    ],
+    "unit": "27-reverse-quotient",
+    "solution_note": "sign twin."
+  },
+  {
+    "id": "U27-D06",
+    "technique": "reverse-quotient",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{(x+1)e^{x}-e^{x}}{(x+1)^{2}}\\,dx",
+    "sympy_expr": "((x+1)*exp(x)-exp(x))/(x+1)**2",
+    "answer_sympy": "exp(x)/(x+1)",
+    "answer_display": "\\frac{e^{x}}{x + 1}+C",
+    "technique_tags": [
+      "reverse-quotient",
+      "yang:4.6"
+    ],
+    "yang": [
+      "yang:4.6"
+    ],
+    "unit": "27-reverse-quotient",
+    "solution_note": "e^x/(x+1)."
+  },
+  {
+    "id": "U27-D07",
+    "technique": "reverse-quotient",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{x\\sec^{2}x-\\tan x}{x^{2}}\\,dx",
+    "sympy_expr": "(x*sec(x)**2-tan(x))/x**2",
+    "answer_sympy": "tan(x)/x",
+    "answer_display": "\\frac{\\tan{\\left(x \\right)}}{x}+C",
+    "technique_tags": [
+      "reverse-quotient",
+      "yang:4.6"
+    ],
+    "yang": [
+      "yang:4.6"
+    ],
+    "unit": "27-reverse-quotient",
+    "solution_note": "tan/x."
+  },
+  {
+    "id": "U27-D08",
+    "technique": "reverse-quotient",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{x^{2}\\cos x-2x\\sin x}{x^{4}}\\,dx",
+    "sympy_expr": "(x**2*cos(x)-2*x*sin(x))/x**4",
+    "answer_sympy": "sin(x)/x**2",
+    "answer_display": "\\frac{\\sin{\\left(x \\right)}}{x^{2}}+C",
+    "technique_tags": [
+      "reverse-quotient",
+      "yang:4.6"
+    ],
+    "yang": [
+      "yang:4.6"
+    ],
+    "unit": "27-reverse-quotient",
+    "solution_note": "sin/x\u00b2."
+  }
+]

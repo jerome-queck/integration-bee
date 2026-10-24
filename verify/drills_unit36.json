@@ -1,0 +1,172 @@
+[
+  {
+    "id": "U36-D01",
+    "technique": "unique-tricks",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{x-1}{\\ln x}\\,dx",
+    "sympy_expr": "(x-1)/log(x)",
+    "answer_sympy": "log(2)",
+    "answer_display": "\\log{\\left(2 \\right)}",
+    "technique_tags": [
+      "unique-tricks",
+      "yang:6.9"
+    ],
+    "yang": [
+      "yang:6.9"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "36-unique-tricks",
+    "solution_note": "sophomore-adjacent."
+  },
+  {
+    "id": "U36-D02",
+    "technique": "unique-tricks",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\ln(\\sin x)\\,dx",
+    "sympy_expr": "log(sin(x))",
+    "answer_sympy": "-pi*log(2)/2",
+    "answer_display": "- \\frac{\\pi \\log{\\left(2 \\right)}}{2}",
+    "technique_tags": [
+      "unique-tricks",
+      "yang:6.9"
+    ],
+    "yang": [
+      "yang:6.9"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "verify_mode": "numeric",
+    "unit": "36-unique-tricks",
+    "solution_note": "famous twin."
+  },
+  {
+    "id": "U36-D03",
+    "technique": "unique-tricks",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{\\arctan x}{x}\\,dx",
+    "sympy_expr": "atan(x)/x",
+    "answer_sympy": "Catalan",
+    "answer_display": "G",
+    "technique_tags": [
+      "unique-tricks",
+      "yang:6.9"
+    ],
+    "yang": [
+      "yang:6.9"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "verify_mode": "numeric",
+    "unit": "36-unique-tricks",
+    "solution_note": "Catalan."
+  },
+  {
+    "id": "U36-D04",
+    "technique": "unique-tricks",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{1}{x\\ln x}\\,dx",
+    "sympy_expr": "1/(x*log(x))",
+    "answer_sympy": "log(log(x))",
+    "answer_display": "\\log{\\left(\\log{\\left(x \\right)} \\right)}+C",
+    "technique_tags": [
+      "unique-tricks",
+      "yang:6.9"
+    ],
+    "yang": [
+      "yang:6.9"
+    ],
+    "unit": "36-unique-tricks",
+    "solution_note": "u=lnx."
+  },
+  {
+    "id": "U36-D05",
+    "technique": "unique-tricks",
+    "kind": "definite",
+    "latex": "\\int_{2}^{4}\\frac{1}{x\\ln x}\\,dx",
+    "sympy_expr": "1/(x*log(x))",
+    "answer_sympy": "log(2)",
+    "answer_display": "\\log{\\left(2 \\right)}",
+    "technique_tags": [
+      "unique-tricks",
+      "yang:6.9"
+    ],
+    "yang": [
+      "yang:6.9"
+    ],
+    "limits": [
+      2,
+      4
+    ],
+    "unit": "36-unique-tricks",
+    "solution_note": "u=ln."
+  },
+  {
+    "id": "U36-D06",
+    "technique": "unique-tricks",
+    "kind": "definite",
+    "latex": "\\int_{e}^{e^{e}}\\frac{1}{x\\ln x}\\,dx",
+    "sympy_expr": "1/(x*log(x))",
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "unique-tricks",
+      "yang:6.9"
+    ],
+    "yang": [
+      "yang:6.9"
+    ],
+    "limits": [
+      "E",
+      "exp(E)"
+    ],
+    "unit": "36-unique-tricks",
+    "solution_note": "u=ln x \u2192 ln|ln x|."
+  },
+  {
+    "id": "U36-D07",
+    "technique": "unique-tricks",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{x^{2}-1}{\\ln x}\\,dx",
+    "sympy_expr": "(x**2-1)/log(x)",
+    "answer_sympy": "log(3)",
+    "answer_display": "\\log{\\left(3 \\right)}",
+    "technique_tags": [
+      "unique-tricks",
+      "yang:6.9"
+    ],
+    "yang": [
+      "yang:6.9"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "36-unique-tricks",
+    "solution_note": "Feynman twin."
+  },
+  {
+    "id": "U36-D08",
+    "technique": "unique-tricks",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{\\ln x}{x}\\,dx",
+    "sympy_expr": "log(x)/x",
+    "answer_sympy": "log(x)**2/2",
+    "answer_display": "\\frac{\\log{\\left(x \\right)}^{2}}{2}+C",
+    "technique_tags": [
+      "unique-tricks",
+      "yang:6.9"
+    ],
+    "yang": [
+      "yang:6.9"
+    ],
+    "unit": "36-unique-tricks",
+    "solution_note": "u=ln."
+  }
+]
