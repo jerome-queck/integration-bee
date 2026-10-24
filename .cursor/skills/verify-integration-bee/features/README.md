@@ -15,17 +15,21 @@ Read this index, then follow one feature file. The operator is the companion age
 - Start from the baseline unless the feature says otherwise.
 - Treat each command as literal.
 - `--format json` is the stable output for a recorded result.
+- Redirect stdout and stderr into `$IB_EVIDENCE`. Record the CLI exit code from that process. A pipe into `tee` reports `tee`'s status.
 
 ## Proof and skip reporting
 
 - Capture the command and the resulting state.
-- A save status is not enough. Read the value back with `progress show`.
+- A save status is not enough. Read the value back with `progress show`, or read the JSON file the command writes when `progress show` does not echo it.
 - Record the feature id with the artifact.
 - If a precondition is missing, report the command and the gap. Do not swap in another path and call it verified.
 
 ## Features
 
-- [Doctor](./doctor.md) checks the checkout without writing learner state.
-- [Practice](./practice.md) serves a drill and records a SymPy check.
-- [Drills](./drills.md) lists ids and display answers.
-- [Progress](./progress.md) stores a tick and shows it back.
+Each command from `scripts/control-integration-bee --commands-json` belongs to one file.
+
+- [Doctor](./doctor.md) is `doctor`.
+- [Practice](./practice.md) is `practice list`, `practice next`, and `practice check`.
+- [Drills](./drills.md) is `drills list`.
+- [Progress](./progress.md) is `progress show`, `progress tick`, `progress mistake`, `progress mock-start`, `progress mock-finish`, `progress journal`, and `progress streak`.
+- [Verify](./verify.md) is `verify`.

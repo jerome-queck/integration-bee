@@ -1,5 +1,24 @@
+use Cwd qw(abs_path);
+# latexmk evals this file, so __FILE__ is "(eval N)", not the rc path.
+my $template_dir = '';
+for my $rc (@rc_files_read) {
+    my $abs = abs_path($rc);
+    next unless defined $abs;
+    my $dir = $abs;
+    $dir =~ s{/[^/]+\z}{};
+    if (-f "$dir/ib-common.tex") {
+        $template_dir = $dir;
+    }
+}
+if ($template_dir eq '') {
+    die "templates/latexmkrc could not find ib-common.tex beside the rc file\n";
+}
+my $prior = $ENV{'TEXINPUTS'} // '';
+if ($prior ne '' && substr($prior, -1) ne ':') {
+    $prior .= ':';
+}
+$ENV{'TEXINPUTS'} = $template_dir . ':' . $prior;
 $pdf_mode = 1;
 $interaction = 'nonstopmode';
 $aux_dir = '.latex-aux';
 $out_dir = '.latex-out';
-$ENV{'TEXINPUTS'} = 'templates:' . ($ENV{'TEXINPUTS'} // '');
