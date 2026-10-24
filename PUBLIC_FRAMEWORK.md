@@ -31,4 +31,4 @@ Human never touches the repo. Only talks to the LLM (Integration Bee bot / compa
 Two primary flows:
 1. Learn a new concept (LLM teaches from unit packs / skill-tree).
 2. Get an integral → solve on paper → send photo of solution → LLM checks, teaches gaps, records mistakes into local trackers.
-All trackers, verify, skill-tree, CLI are agent/behind-the-scenes. Keep the clone simple; no human "run these 12 commands" ritual.
+The companion sends those flows as one JSON turn (`turn apply`). The CLI writes the trackers. All trackers, verify, skill-tree, and the CLI stay behind the companion. A fresh clone has no personal progress and no list of commands for the learner to run.

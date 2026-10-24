@@ -86,6 +86,7 @@ def live_problems() -> list[str]:
         "skill-ticks": ("ticks", None),
         "journal": ("notes", None),
         "mocks": ("sessions", None),
+        "session": ("phase", None),
     }
     for name in examples:
         doc = json.loads((ROOT / "trackers" / f"{name}.example.json").read_text())
@@ -119,6 +120,8 @@ def validate_doc(name: str, doc: dict, ids: set[str]) -> str | None:
             err = model.mock_session_problem(session)
             if err:
                 return err
+    elif name == "session":
+        return model.session_problem(doc)
     return None
 
 
@@ -153,6 +156,10 @@ def caught(name: str) -> str | None:
             return err
     elif name == "duplicate-streak-day":
         err = model.streak_problem(["2026-10-24", "2026-10-24"])
+        if err:
+            return err
+    elif name == "bad-session-phase":
+        err = model.session_problem({"phase": "teaching", "node": None, "problem_id": None, "mock_id": None})
         if err:
             return err
     else:
