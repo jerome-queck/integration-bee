@@ -93,12 +93,7 @@ def main() -> int:
     drills = load_all_drills(args.drills)
     if args.mutate_wrong:
         drills = [dict(d) for d in drills]
-        drills[0]["answer_sympy"] = "0"  # wrong for first drill (U01-D01)
-        # If somehow first is already 0, force a different wrong value
-        if drills[0].get("id") == "U01-D01":
-            drills[0]["answer_sympy"] = "0"
-        else:
-            drills[0]["answer_sympy"] = "999"
+        drills[0]["answer_sympy"] = "0"
     try:
         for d in drills:
             check_drill(d)

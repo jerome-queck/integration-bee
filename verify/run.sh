@@ -24,7 +24,6 @@ for f in "${need[@]}"; do
   if [[ ! -e "$f" ]]; then echo "FAIL missing: $f"; fail=1; else echo "OK $f"; fi
 done
 
-# Every units/NN-*/ must have shape + drills_unitN.json
 echo "== concept unit shape =="
 shopt -s nullglob
 for udir in "$ROOT"/units/[0-9][0-9]-*/; do

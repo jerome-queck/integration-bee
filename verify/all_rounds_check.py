@@ -11,7 +11,6 @@ INV = ROOT / "past" / "inventory.json"
 EXPECTED = ROOT / "verify" / "all_rounds_expected.txt"
 PAST = ROOT / "sources" / "past"
 
-# Minimum presence keys (must exist after fetch) — one per year/round cluster
 KEY_FILES = [
     "sources/past/r1/2020/2020_Integration_Competition_Problems.pdf",
     "sources/past/r1/2021/2021_Round_1_UK_University_Integration_Bee.pdf",
@@ -101,7 +100,6 @@ def main() -> int:
     else:
         print(f"OK all {len(expected_lines)} expected PDFs present")
 
-    # Key files
     for rel in KEY_FILES:
         p = ROOT / rel
         if not p.is_file():
@@ -110,7 +108,6 @@ def main() -> int:
         else:
             print(f"OK key {rel}")
 
-    # Inventory paths must match disk when present flag true
     for a in arts:
         if not a.get("present", True):
             continue

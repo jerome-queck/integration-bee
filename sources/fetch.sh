@@ -1,11 +1,5 @@
 #!/usr/bin/env bash
-# Fetch official UK University Integration Bee public materials.
-# Extracts ALL rounds from Resource_pack.zip into:
-#   sources/past/r1/YYYY/
-#   sources/past/r2/YYYY/          (flat years)
-#   sources/past/r2/2025/uk|sg/    (regional when both exist)
-#   sources/past/r3/YYYY/
-# Idempotent. Migrates legacy sources/past/YYYY -> r1/YYYY if present.
+# Fetch official UK University Integration Bee public materials into sources/past/r1|r2|r3.
 set -euo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
 BASE="https://integration.soc.srcf.net"
@@ -43,7 +37,6 @@ else
   echo "WARN: sha256sum not found; skipped checksum verify"
 fi
 
-# Migrate legacy past/YYYY -> past/r1/YYYY
 if [[ -d past ]]; then
   for yd in past/[0-9][0-9][0-9][0-9]; do
     [[ -d "$yd" ]] || continue

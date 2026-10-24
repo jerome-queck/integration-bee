@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""Seed practice generator from all unit drills (yang / technique tags).
-
-Not the main CLI (Code owns that). Emits a shuffled drill list for a tag filter.
-"""
+"""Seed practice generator from all unit drills (yang / technique tags)."""
 from __future__ import annotations
 
 import argparse

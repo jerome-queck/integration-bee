@@ -459,76 +459,53 @@ def cmd_verify() -> int:
     return proc.returncode
 
 
-def hoist_globals(argv: list[str]) -> list[str]:
-    """Move --format and --data-dir in front of the subcommand.
-
-    The feature map writes them after the subcommand. Argparse only accepts
-    parent options before the first subcommand, so this puts them where the
-    top-level parser can see them.
-    """
-    flags = ("--format", "--data-dir")
-    hoisted: list[str] = []
-    rest: list[str] = []
-    i = 0
-    while i < len(argv):
-        token = argv[i]
-        if token in flags and i + 1 < len(argv):
-            hoisted.extend((token, argv[i + 1]))
-            i += 2
-            continue
-        if any(token.startswith(flag + "=") for flag in flags):
-            hoisted.append(token)
-            i += 1
-            continue
-        rest.append(token)
-        i += 1
-    return hoisted + rest
-
-
 def build_parser() -> argparse.ArgumentParser:
+    shared = argparse.ArgumentParser(add_help=False)
+    shared.add_argument("--data-dir", default=argparse.SUPPRESS)
+    shared.add_argument("--format", choices=("text", "json"), default=argparse.SUPPRESS)
     parser = argparse.ArgumentParser(prog="control-integration-bee")
     parser.add_argument("--commands-json", action="store_true")
     parser.add_argument("--data-dir", default=None)
     parser.add_argument("--format", choices=("text", "json"), default="text")
     sub = parser.add_subparsers(dest="cmd")
-    sub.add_parser("doctor")
-    sub.add_parser("verify")
-    practice = sub.add_parser("practice")
+    sub.add_parser("doctor", parents=[shared])
+    sub.add_parser("verify", parents=[shared])
+    practice = sub.add_parser("practice", parents=[shared])
     psub = practice.add_subparsers(dest="practice_cmd")
-    plist = psub.add_parser("list")
+    plist = psub.add_parser("list", parents=[shared])
     plist.add_argument("--tag", action="append", default=[])
     plist.add_argument("--unit", type=int)
     plist.add_argument("--limit", type=int, default=0)
-    psub.add_parser("next")
-    pcheck = psub.add_parser("check")
+    psub.add_parser("next", parents=[shared])
+    pcheck = psub.add_parser("check", parents=[shared])
     pcheck.add_argument("--id", required=True)
     pcheck.add_argument("--answer", required=True)
-    progress = sub.add_parser("progress")
+    progress = sub.add_parser("progress", parents=[shared])
     g = progress.add_subparsers(dest="progress_cmd")
-    g.add_parser("show")
-    tick = g.add_parser("tick")
+    g.add_parser("show", parents=[shared])
+    tick = g.add_parser("tick", parents=[shared])
     tick.add_argument("--node", required=True)
     tick.add_argument("--status", required=True, choices=("learning", "solid", "skipped"))
-    mistake = g.add_parser("mistake")
+    mistake = g.add_parser("mistake", parents=[shared])
     mistake.add_argument("--id", required=True)
     mistake.add_argument("--tag", action="append", required=True)
     mistake.add_argument("--note", required=True)
-    mock_start = g.add_parser("mock-start")
+    mock_start = g.add_parser("mock-start", parents=[shared])
     mock_start.add_argument("--id", default=None)
     mock_start.add_argument("--cold", action="store_true")
     mock_start.add_argument("--out-of", type=int, default=30)
-    mock_finish = g.add_parser("mock-finish")
+    mock_finish = g.add_parser("mock-finish", parents=[shared])
     mock_finish.add_argument("--id", required=True)
     mock_finish.add_argument("--score", type=int, required=True)
     mock_finish.add_argument("--out-of", type=int, default=30)
     mock_finish.add_argument("--missed", action="append", default=[])
-    journal = g.add_parser("journal")
+    journal = g.add_parser("journal", parents=[shared])
     journal.add_argument("--technique", required=True)
     journal.add_argument("--note", required=True)
-    g.add_parser("streak")
-    drills = sub.add_parser("drills")
+    g.add_parser("streak", parents=[shared])
+    drills = sub.add_parser("drills", parents=[shared])
     dsub = drills.add_subparsers(dest="drills_cmd")
-    dlist = dsub.add_parser("list")
+    dlist = dsub.add_parser("list", parents=[shared])
     dlist.add_argument("--unit", type=int)
     dlist.add_argument("--id")
     return parser
@@ -539,7 +516,7 @@ def main() -> int:
         print(json.dumps(COMMANDS, indent=2))
         return 0
     parser = build_parser()
-    args = parser.parse_args(hoist_globals(sys.argv[1:]))
+    args = parser.parse_args()
     if args.cmd == "doctor":
         return cmd_doctor(args.format)
     if args.cmd == "verify":

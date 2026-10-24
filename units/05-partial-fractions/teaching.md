@@ -1,4 +1,4 @@
 # Unit 05 teaching (pointer)
 
-Canonical teaching content: **`teaching.tex`** (TODO shared `templates/`).
+Canonical teaching content: **`teaching.tex`**.
 CLI metadata: `meta.yaml`. Drill tags/answers: `drills.md`.

@@ -47,19 +47,15 @@ def main() -> int:
 
     chat = (ROOT / "CHAT_FLOWS.md").read_text()
     for needle in ("Flow 2", "Flow 3", "timed mock", "photo", "progress.local.json"):
-        if needle.lower() not in chat.lower() and needle not in chat:
-            # allow case variants already handled; check raw
-            if needle not in chat:
-                print(f"FAIL CHAT_FLOWS.md missing mention of {needle!r}")
-                fail = 1
+        if needle.lower() not in chat.lower():
+            print(f"FAIL CHAT_FLOWS.md missing mention of {needle!r}")
+            fail = 1
 
-    # skill-tree past-paper nodes
     st = (ROOT / "skill-tree.md").read_text()
     if "past-paper" not in st.lower() and "sample-bridge" not in st.lower():
         print("FAIL skill-tree.md missing past-paper / sample-bridge practice nodes")
         fail = 1
 
-    # unit_order still: concept units exist
     if not (ROOT / "units" / "01-foundations-substitution" / "meta.yaml").exists():
         print("FAIL concept unit 01 missing (past pack requires concept-before-papers)")
         fail = 1

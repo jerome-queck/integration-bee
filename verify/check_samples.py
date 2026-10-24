@@ -42,12 +42,8 @@ def check_one(d: dict) -> None:
     if kind == "definite":
         lo = sp.sympify(d["limits"][0], locals=NS)
         hi = sp.sympify(d["limits"][1], locals=NS)
-        # SAMPLE-Q03: avoid slow symbolic integrate; numerical check vs closed form
-        if d["id"] == "SAMPLE-Q03":
-            num = float(sp.N(sp.Integral(expr, (x, lo, hi)), 10))
-            target = float(ans)
-            if abs(num - target) > 1e-5:
-                raise AssertionError(f"{d['id']}: numeric {num} != {target}")
+        partner = sp.simplify(expr + expr.subs(x, lo + hi - x))
+        if partner == 1 and sp.simplify(ans - (hi - lo) / 2) == 0:
             return
         val = sp.integrate(expr, (x, lo, hi)).simplify()
         if sp.simplify(val - ans) != 0:
