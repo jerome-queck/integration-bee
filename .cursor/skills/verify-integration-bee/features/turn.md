@@ -32,5 +32,6 @@ Preconditions:
 - A second `teach` while a drill is open repeats that drill.
 - An unparsable answer and a manual problem with no `verdict` exit 2 and write nothing.
 - `mock-start` with `"cold": true` bypasses the Round 1 gate. The blocked proof must omit `cold`.
+- `mock-start` with `pack` `pdf-round1` and `year` 2021 reports `count` 40 and `on_disk` true. The problems PDF is `sources/past/r1/2021/2021_Round_1_UK_University_Integration_Bee.pdf`.
 - `verify/turn_contract_check.py` drives this contract, including sample grades. `make check` runs it from `verify/run.sh`.
 - A correct mark with `method_note` writes `marks.json` (`method_ok` false) and `stickies.json` (one card, no stored strength). A repeat of that same answer while the problem is still open does not append a second attempt. A wrong final answer does not invent `method_ok`.
