@@ -29,14 +29,15 @@ Ready means `scripts/control-integration-bee doctor` prints `READY integration-b
 ## Doctor
 
 ```bash
-scripts/control-integration-bee doctor | tee "$IB_EVIDENCE/doctor.txt"
+scripts/control-integration-bee doctor >"$IB_EVIDENCE/doctor.txt" 2>"$IB_EVIDENCE/doctor.err"
+echo "doctor_exit:$?"
 ```
 
-Require exit 0, `READY integration-bee`, and `yang_pdf=ok`. Official contest PDFs may be missing. That is a warning, not a failure.
+Require `doctor_exit:0`, `READY integration-bee`, `yang_pdf=ok`, and an empty `doctor.err`. `official_pdfs` reports the syllabus PDF and `Resource_pack.zip` under `sources/`. Contest PDFs under `sources/past/` do not change the exit code. Do not pipe doctor into `tee`. That pipe reports `tee`'s status.
 
 ## Drive
 
-Follow `.cursor/skills/verify-integration-bee/features/README.md`. Drive one feature file end to end. Do not mark a skipped entry point as verified through a different command.
+Follow `.cursor/skills/verify-integration-bee/features/README.md`. Drive one feature file end to end. Every path from `scripts/control-integration-bee --commands-json` is named in that index. Do not mark a skipped entry point as verified through a different command.
 
 ## Evidence
 

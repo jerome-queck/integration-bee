@@ -36,6 +36,7 @@ The map is `.cursor/skills/verify-integration-bee/features/`.
 - `drills.md`
 - `practice.md`
 - `progress.md`
+- `verify.md`
 
 ## Agent CLI
 
