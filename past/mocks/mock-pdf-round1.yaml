@@ -50,4 +50,4 @@ chat_protocol: |
   1. Confirm year (default newest available locally: 2025).
   2. Start clock; point Jerome at the local problems PDF path (or describe Qs if PDF unavailable).
   3. Accept batch photos / typed finals; score vs mark scheme (never invent).
-  4. After time: teach top gaps; append mistakes to progress.local.json.
+  4. After time: teach top gaps. Record each mark with turn apply. The CLI writes progress.local.json.
