@@ -15,6 +15,8 @@ Concept units come before past papers. Units 01 through 36 are concept units. Af
 | 19–36 | Yang Chapters 3–6 (inventory 3.1–6.9, 4.3 skipped) | ready |
 | past papers | after the concept units | index only until fetch |
 
+Receipt for chapters 1–2 template rewrap: `integration-bee-ch1-ch2-rewrap-2026-10-25`.
+
 Receipt for chapters 3–6: `integration-bee-yang-ch3-6-pr-2026-10-25`.
 
 This file is not a learner record.
