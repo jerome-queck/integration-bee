@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-"""SymPy-check official sample answers marked verify=sympy in answers_feed.json.
-
-manual / pdf_answer_suspect rows are skipped (still must exist in the feed).
-"""
+"""SymPy-check official sample answers marked verify=sympy in answers_feed.json."""
 from __future__ import annotations
 
 import json
@@ -14,6 +11,8 @@ try:
 except ImportError:
     sys.stderr.write("FAIL: sympy missing\n")
     sys.exit(2)
+
+import check_math
 
 ROOT = Path(__file__).resolve().parent.parent
 FEED = ROOT / "past" / "samples" / "answers_feed.json"
@@ -49,10 +48,26 @@ def check_one(d: dict) -> None:
         if sp.simplify(val - ans) != 0:
             raise AssertionError(f"{d['id']}: got {val}, expected {ans}")
     elif kind == "indefinite":
-        if sp.simplify(sp.diff(ans, x) - expr) != 0:
+        if not check_math.is_antiderivative(ans, expr):
             raise AssertionError(f"{d['id']}: d/dx({ans}) != {expr}")
     else:
         raise AssertionError(f"{d['id']}: unknown kind {kind}")
+
+
+def check_suspect(d: dict) -> None:
+    needed = ("sympy_expr", "answer_sympy", "answer_pdf_sympy", "kind")
+    missing = [key for key in needed if key not in d]
+    if missing:
+        raise AssertionError(f"{d['id']}: suspect row missing {', '.join(missing)}")
+    if d["kind"] != "indefinite":
+        raise AssertionError(f"{d['id']}: suspect row kind {d['kind']}")
+    expr = sp.sympify(d["sympy_expr"], locals=check_math.NS)
+    ans = sp.sympify(d["answer_sympy"], locals=check_math.NS)
+    pdf = sp.sympify(d["answer_pdf_sympy"], locals=check_math.NS)
+    if not check_math.is_antiderivative(ans, expr):
+        raise AssertionError(f"{d['id']}: stated answer is not an antiderivative")
+    if check_math.is_antiderivative(pdf, expr):
+        raise AssertionError(f"{d['id']}: PDF answer matches the integrand")
 
 
 def main() -> int:
@@ -70,15 +85,31 @@ def main() -> int:
             print(f"FAIL missing {sid}")
             return 1
     checked = 0
+    suspects = 0
     for d in rows:
+        if d.get("pdf_answer_suspect"):
+            check_suspect(d)
+            suspects += 1
         if d.get("verify") != "sympy":
             continue
         check_one(d)
         checked += 1
+    q17 = next((row for row in rows if row.get("id") == "SAMPLE-Q17"), None)
+    if q17 is None or not q17.get("pdf_answer_suspect"):
+        print("FAIL SAMPLE-Q17 must stay a checked pdf-suspect row")
+        return 1
+    if suspects < 1:
+        print("FAIL no pdf-suspect sample was checked")
+        return 1
     if checked < 1:
         print("FAIL no sympy-verifiable samples")
         return 1
-    print(f"PASS check_samples ({checked} sympy, {len(rows) - checked} manual/skipped)")
+    skipped = sum(
+        1
+        for row in rows
+        if row.get("verify") != "sympy" and not row.get("pdf_answer_suspect")
+    )
+    print(f"PASS check_samples ({checked} sympy, {suspects} pdf-suspect, {skipped} manual/skipped)")
     return 0
 
 
