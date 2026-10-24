@@ -43,6 +43,11 @@ def sample_guard(text: str) -> str | None:
             "FAIL scripts/compile-tex.sh must compile "
             "units/01-foundations-substitution/teaching.tex from a temporary directory."
         )
+    if "unset TEXINPUTS" not in text or "export TEXINPUTS" not in text:
+        return (
+            "FAIL scripts/compile-tex.sh must compile the unit sample "
+            "with TEXINPUTS unset and with TEXINPUTS already set."
+        )
     return None
 
 
@@ -63,6 +68,12 @@ def self_test() -> None:
         sys.exit(1)
     if sample_guard("latexmk -r templates/latexmkrc teaching.tex\n") is None:
         print("FAIL sample self-test accepted a compile with no off-root sample", file=sys.stderr)
+        sys.exit(1)
+    off_root_only = (
+        "mktemp -d\nunits/01-foundations-substitution/teaching.tex\nunset TEXINPUTS\n"
+    )
+    if sample_guard(off_root_only) is None:
+        print("FAIL sample self-test accepted a sample that ignores a preset TEXINPUTS", file=sys.stderr)
         sys.exit(1)
 
 

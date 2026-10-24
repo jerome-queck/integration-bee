@@ -4,17 +4,32 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 shopt -s nullglob
 
-sample_dir="$(mktemp -d)"
-sample_status=0
-(
-  cd "$sample_dir"
-  latexmk -r "$ROOT/templates/latexmkrc" -pdf -interaction=nonstopmode \
-    "$ROOT/units/01-foundations-substitution/teaching.tex"
-) || sample_status=$?
-rm -rf "$sample_dir"
-if [[ "$sample_status" -ne 0 ]]; then
+compile_sample() {
+  local texinputs="$1"
+  local dir status
+  dir="$(mktemp -d)"
+  status=0
+  (
+    cd "$dir"
+    if [[ -n "$texinputs" ]]; then
+      export TEXINPUTS="$texinputs"
+    else
+      unset TEXINPUTS
+    fi
+    latexmk -r "$ROOT/templates/latexmkrc" -pdf -interaction=nonstopmode \
+      "$ROOT/units/01-foundations-substitution/teaching.tex"
+  ) || status=$?
+  rm -rf "$dir"
+  return "$status"
+}
+
+if ! compile_sample ""; then
   echo "FAIL unit sample did not compile outside the repo root. templates/latexmkrc must put its own directory on TEXINPUTS." >&2
-  exit "$sample_status"
+  exit 1
+fi
+if ! compile_sample "/no/such/tex/tree"; then
+  echo "FAIL unit sample lost article.cls because TEXINPUTS was already set. templates/latexmkrc must keep an empty TEXINPUTS component." >&2
+  exit 1
 fi
 echo "PASS latex sample"
 

@@ -13,7 +13,11 @@ for my $rc (@rc_files_read) {
 if ($template_dir eq '') {
     die "templates/latexmkrc could not find ib-common.tex beside the rc file\n";
 }
-$ENV{'TEXINPUTS'} = $template_dir . ':' . ($ENV{'TEXINPUTS'} // '');
+my $prior = $ENV{'TEXINPUTS'} // '';
+if ($prior ne '' && substr($prior, -1) ne ':') {
+    $prior .= ':';
+}
+$ENV{'TEXINPUTS'} = $template_dir . ':' . $prior;
 $pdf_mode = 1;
 $interaction = 'nonstopmode';
 $aux_dir = '.latex-aux';
