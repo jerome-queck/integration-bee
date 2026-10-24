@@ -31,6 +31,7 @@ Each command from `scripts/control-integration-bee --commands-json` belongs to o
 - [Doctor](./doctor.md) is `doctor`.
 - [Practice](./practice.md) is `practice list`, `practice next`, and `practice check`.
 - [Drills](./drills.md) is `drills list`.
+- [Problems](./problems.md) is `problems list`, `problems show`, and `problems select`.
 - [Progress](./progress.md) is `progress show`, `progress tick`, `progress mistake`, `progress mock-start`, `progress mock-finish`, `progress journal`, and `progress streak`.
 - [Turn](./turn.md) is `turn schema`, `turn show`, and `turn apply`.
 - [Verify](./verify.md) is `verify`.

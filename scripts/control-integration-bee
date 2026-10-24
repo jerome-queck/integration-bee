@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT / "verify"))
 
 import check_math  # noqa: E402
 import model  # noqa: E402
+import problem_catalog  # noqa: E402
 import turn_contract  # noqa: E402
 
 TZ = ZoneInfo("Asia/Singapore")
@@ -33,6 +34,9 @@ COMMANDS = [
     {"path": "progress journal", "summary": "Store a technique note."},
     {"path": "progress streak", "summary": "Count today as a study day."},
     {"path": "drills list", "summary": "List drill ids. Includes the display answer."},
+    {"path": "problems list", "summary": "List contest and Yang problems without answers."},
+    {"path": "problems show", "summary": "Print one stored problem, including a cited answer when the extract has one."},
+    {"path": "problems select", "summary": "Print one problem prompt. Omits the answer and any worked solution."},
     {"path": "turn schema", "summary": "Print the teach, mark, and mock turn schemas."},
     {"path": "turn show", "summary": "Print the session and the coach report."},
     {"path": "turn apply", "summary": "Apply one teach, mark, or mock turn and write the session."},
@@ -352,6 +356,59 @@ def cmd_practice_check(args) -> int:
         args.format,
     )
     return 0 if correct else 1
+
+
+def load_problem_rows() -> list[dict]:
+    path = problem_catalog.RECORDS
+    if not path.is_file():
+        die(f"missing {path.relative_to(ROOT)}")
+    try:
+        return problem_catalog.load_records(path)
+    except (ValueError, json.JSONDecodeError) as exc:
+        die(f"catalog did not parse: {exc}")
+
+
+def problem_spec(args) -> dict:
+    spec = {
+        "id": getattr(args, "id", None),
+        "round": getattr(args, "problem_round", None),
+        "year": getattr(args, "year", None),
+        "source": getattr(args, "source", None),
+        "verify": getattr(args, "verify", None),
+        "problem_id": getattr(args, "problem_id", None),
+    }
+    err = problem_catalog.spec_problem(spec)
+    if err:
+        die(err, 2)
+    return spec
+
+
+def cmd_problems_list(args) -> int:
+    spec = problem_spec(args)
+    rows = problem_catalog.matching(load_problem_rows(), spec)
+    emit({"count": len(rows), "problems": [problem_catalog.index_view(row) for row in rows]}, args.format)
+    return 0
+
+
+def cmd_problems_show(args) -> int:
+    rows = problem_catalog.matching(load_problem_rows(), {"id": args.id})
+    if len(rows) != 1:
+        die(f"unknown problem {args.id}")
+    emit(rows[0], args.format)
+    return 0
+
+
+def cmd_problems_select(args) -> int:
+    spec = problem_spec(args)
+    if not any(spec.values()):
+        die("select needs a filter", 2)
+    rows = problem_catalog.matching(load_problem_rows(), spec)
+    if not rows:
+        die("unknown problem")
+    if len(rows) != 1:
+        die(f"select matched {len(rows)} problems", 2)
+    emit(problem_catalog.prompt_view(rows[0]), args.format)
+    return 0
 
 
 def cmd_drills_list(args) -> int:
@@ -843,7 +900,17 @@ def cmd_turn_apply(args) -> int:
         plan = turn_contract.plan_teach(session, attempts, ticks, cat, drills, heat, updated)
         return finish_plan(directory, plan, args.format)
     if kind == "mark":
-        plan = turn_contract.plan_mark(session, attempts, ticks, cat, drills, load_feed(), body, updated)
+        plan = turn_contract.plan_mark(
+            session,
+            attempts,
+            ticks,
+            cat,
+            drills,
+            load_feed(),
+            body,
+            updated,
+            load_problem_rows(),
+        )
         return finish_plan(directory, plan, args.format)
     if kind == "mock-start":
         return cmd_turn_mock_start(args, body)
@@ -901,6 +968,20 @@ def build_parser() -> argparse.ArgumentParser:
     dlist = dsub.add_parser("list", parents=[shared])
     dlist.add_argument("--unit", type=int)
     dlist.add_argument("--id")
+    problems = sub.add_parser("problems", parents=[shared])
+    bsub = problems.add_subparsers(dest="problems_cmd")
+
+    def add_problem_filters(target: argparse.ArgumentParser, require_id: bool = False) -> None:
+        target.add_argument("--round", dest="problem_round")
+        target.add_argument("--year")
+        target.add_argument("--source")
+        target.add_argument("--verify")
+        target.add_argument("--id", required=require_id)
+        target.add_argument("--problem-id", dest="problem_id")
+
+    add_problem_filters(bsub.add_parser("list", parents=[shared]))
+    add_problem_filters(bsub.add_parser("show", parents=[shared]), require_id=True)
+    add_problem_filters(bsub.add_parser("select", parents=[shared]))
     turn = sub.add_parser("turn", parents=[shared])
     tsub = turn.add_subparsers(dest="turn_cmd")
     tsub.add_parser("schema", parents=[shared])
@@ -928,6 +1009,12 @@ def main() -> int:
         return cmd_practice_check(args)
     if args.cmd == "drills" and args.drills_cmd == "list":
         return cmd_drills_list(args)
+    if args.cmd == "problems" and args.problems_cmd == "list":
+        return cmd_problems_list(args)
+    if args.cmd == "problems" and args.problems_cmd == "show":
+        return cmd_problems_show(args)
+    if args.cmd == "problems" and args.problems_cmd == "select":
+        return cmd_problems_select(args)
     if args.cmd == "turn" and args.turn_cmd == "schema":
         return cmd_turn_schema(args.format)
     if args.cmd == "turn" and args.turn_cmd == "show":

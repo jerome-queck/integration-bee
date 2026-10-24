@@ -28,6 +28,8 @@ make check
 
 Concept units `01-foundations-substitution` through `36-unique-tricks` (36 directories) have machine drills in `verify/drills_unit*.json` (284 drills).
 
+`problems/records.jsonl` holds 949 contest and Yang problems. `problems list` hides answers. `problems show` prints a stored cite.
+
 ## Feature map
 
 The map is `.cursor/skills/verify-integration-bee/features/`.
@@ -35,6 +37,7 @@ The map is `.cursor/skills/verify-integration-bee/features/`.
 - `doctor.md`
 - `drills.md`
 - `practice.md`
+- `problems.md`
 - `progress.md`
 - `turn.md`
 - `verify.md`
@@ -57,6 +60,9 @@ The map is `.cursor/skills/verify-integration-bee/features/`.
 | `progress journal` | Store a technique note. |
 | `progress streak` | Count today as a study day. |
 | `drills list` | List drill ids. Includes the display answer. |
+| `problems list` | List contest and Yang problems without answers. |
+| `problems show` | Print one stored problem, including a cited answer when the extract has one. |
+| `problems select` | Print one problem prompt. Omits the answer and any worked solution. |
 | `turn schema` | Print the teach, mark, and mock turn schemas. |
 | `turn show` | Print the session and the coach report. |
 | `turn apply` | Apply one teach, mark, or mock turn and write the session. |
@@ -75,7 +81,7 @@ Regenerate this file with `python3 scripts/generate_agents_md.py` after you add 
 
 | Situation | Run |
 |---|---|
-| You change what doctor, practice, drills, progress, turn, or verify prints or records | .cursor/skills/verify-integration-bee |
+| You change what doctor, practice, drills, problems, progress, turn, or verify prints or records | .cursor/skills/verify-integration-bee |
 | You change unit order, mock readiness, or tracker writes | .cursor/skills/formal-verify-integration-bee |
 | You teach, mark a photo, or answer an empty message | .cursor/skills/integration-bee-companion |
 | The same mistake shows up twice | pstack skill `correct` |

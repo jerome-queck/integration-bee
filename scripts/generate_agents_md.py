@@ -26,7 +26,7 @@ ENFORCERS = [
 ]
 
 SCENARIOS = [
-    ("You change what doctor, practice, drills, progress, turn, or verify prints or records", ".cursor/skills/verify-integration-bee"),
+    ("You change what doctor, practice, drills, problems, progress, turn, or verify prints or records", ".cursor/skills/verify-integration-bee"),
     ("You change unit order, mock readiness, or tracker writes", ".cursor/skills/formal-verify-integration-bee"),
     ("You teach, mark a photo, or answer an empty message", ".cursor/skills/integration-bee-companion"),
     ("The same mistake shows up twice", "pstack skill `correct`"),
@@ -50,6 +50,11 @@ def commands() -> list[dict]:
         text=True,
     )
     return json.loads(proc.stdout)
+
+
+def catalog_count() -> int:
+    path = ROOT / "problems" / "records.jsonl"
+    return sum(1 for line in path.read_text().splitlines() if line.strip())
 
 
 def coverage() -> str:
@@ -98,6 +103,8 @@ make check
 `verify/all_rounds_check.py` passes when the Round 1, Round 2, and Round 3 PDFs match `past/inventory.json`. The check requires the committed PDFs.
 
 {coverage()}
+
+`problems/records.jsonl` holds {catalog_count()} contest and Yang problems. `problems list` hides answers. `problems show` prints a stored cite.
 
 ## Feature map
 

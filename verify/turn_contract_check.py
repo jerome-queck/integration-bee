@@ -249,6 +249,49 @@ def main() -> int:
         check(pdf_doc["problems"][0]["count"] == 40 and pdf_doc["problems"][0]["on_disk"] is True, "2021 is a 40-question paper and the committed PDF is on disk")
         check("repository" not in pdf_doc["say"], "the mock line does not mention the repository")
 
+        refused = apply(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "R1-2024-Q01",
+                "source": "typed",
+                "extract": {"final_answer": "sin(1)"},
+            },
+        )
+        check(refused.returncode == 2 and "manual problem needs verdict" in refused.stderr, "catalog mark needs a verdict")
+        attempts_doc = json.loads((data / "attempts.json").read_text())
+        before = len(attempts_doc["items"])
+        check(not any(item["problem_id"] == "R1-2024-Q01" for item in attempts_doc["items"]), "refused catalog mark writes no attempt")
+        accepted = apply(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "R1-2024-Q01",
+                "source": "typed",
+                "verdict": "correct",
+                "extract": {"final_answer": "not-a-sympy-expression"},
+            },
+        )
+        accepted_doc = load(accepted)
+        check(accepted.returncode == 0 and accepted_doc["mark"]["correct"] is True, "manual catalog mark stores the verdict")
+        check("sin(1)" in accepted_doc["mark"]["expected_display"], "manual mark shows the cited answer")
+        shown = run(data, ["progress", "show", "--format", "json"])
+        check("R1-2024-Q01" in shown.stdout, "progress show reads the catalog attempt")
+        after = json.loads((data / "attempts.json").read_text())
+        check(len(after["items"]) == before + 1, "catalog mark appends one attempt")
+        invented = apply(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "YANG-1.1-P01",
+                "source": "typed",
+                "verdict": "correct",
+                "extract": {"final_answer": "x"},
+            },
+        )
+        check(invented.returncode == 2 and "no printed answer" in invented.stderr, "unanswered yang practice is not graded")
+        check("YANG-1.1-P01" not in run(data, ["progress", "show", "--format", "json"]).stdout, "yang practice leaves no attempt")
+
         projection = json.loads((data / "progress.local.json").read_text())
         check(projection["session"]["phase"] == "mock_open", "projection stores the session")
         check(any(row["problem_id"] == "U01-D07" for row in projection["mistakes"]), "projection stores the miss")
