@@ -1,0 +1,10 @@
+{
+  "schema": "integration-bee-stickies/v1",
+  "example": true,
+  "cards": {
+    "u-sub": {
+      "note": "Match a factor to the derivative of the inside.",
+      "touched": "2026-10-24"
+    }
+  }
+}

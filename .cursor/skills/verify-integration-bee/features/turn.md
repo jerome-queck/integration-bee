@@ -8,6 +8,7 @@ The companion sends one JSON turn. The CLI teaches, marks a photo extract, and o
 - `turn-mark` records a wrong photo extract, then a correct one, and reads both from `progress show`.
 - `turn-mock-blocked` refuses a mock before Round 1 nodes are solid.
 - `turn-sample` grades `SAMPLE-Q03` and accepts `SAMPLE-Q17` as `ln|ln x|+C`.
+- `turn-method-gap` stores a correct final answer with a wrong method as a mark row and a technique card.
 
 ## How to get to it (user POV)
 
@@ -32,3 +33,4 @@ Preconditions:
 - An unparsable answer and a manual problem with no `verdict` exit 2 and write nothing.
 - `mock-start` with `"cold": true` bypasses the Round 1 gate. The blocked proof must omit `cold`.
 - `verify/turn_contract_check.py` drives this contract, including sample grades. `make check` runs it from `verify/run.sh`.
+- A correct mark with `method_note` writes `marks.json` (`method_ok` false) and `stickies.json` (one card, no stored strength). A repeat of that same answer while the problem is still open does not append a second attempt. A wrong final answer does not invent `method_ok`.

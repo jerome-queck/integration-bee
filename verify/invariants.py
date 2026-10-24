@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Run unit-order, readiness, and tracker invariants. Mutations must be caught."""
 
 from __future__ import annotations
 
@@ -87,6 +86,8 @@ def live_problems() -> list[str]:
         "journal": ("notes", None),
         "mocks": ("sessions", None),
         "session": ("phase", None),
+        "marks": ("marks", None),
+        "stickies": ("cards", None),
     }
     for name in examples:
         doc = json.loads((ROOT / "trackers" / f"{name}.example.json").read_text())
@@ -122,6 +123,10 @@ def validate_doc(name: str, doc: dict, ids: set[str]) -> str | None:
                 return err
     elif name == "session":
         return model.session_problem(doc)
+    elif name == "marks":
+        return model.mark_problem(doc.get("marks") or {})
+    elif name == "stickies":
+        return model.sticky_problem(doc.get("cards") or {})
     return None
 
 
@@ -160,6 +165,18 @@ def caught(name: str) -> str | None:
             return err
     elif name == "bad-session-phase":
         err = model.session_problem({"phase": "teaching", "node": None, "problem_id": None, "mock_id": None})
+        if err:
+            return err
+    elif name == "mark-one-bool":
+        err = model.mark_problem({"U01-D01": {"answer_ok": True}})
+        if err:
+            return err
+    elif name == "mark-has-correct":
+        err = model.mark_problem({"U01-D01": {"answer_ok": True, "method_ok": False, "technique": "u-sub", "correct": False}})
+        if err:
+            return err
+    elif name == "sticky-stored-strength":
+        err = model.sticky_problem({"u-sub": {"note": "Match a factor to the derivative of the inside.", "touched": "2026-10-24", "strength": 3}})
         if err:
             return err
     else:

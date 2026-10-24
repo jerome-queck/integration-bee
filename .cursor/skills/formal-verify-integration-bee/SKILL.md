@@ -14,6 +14,8 @@ These checks cover finite catalogs and tracker records. They are not a TLA+ mode
 - A timed Round 1 mock is blocked until every `gate: round1` node is `solid`, unless the caller passes `--cold`.
 - A tick name must be in `trackers/catalog.json`. An attempt interval cannot be negative. Heatmap fails cannot exceed attempts. Streak days cannot repeat.
 - A session phase is `idle`, `awaiting_answer`, `mock_open`, or `mock_awaiting`. Idle has no open problem or mock. An answer phase names a problem. A mock phase names a mock.
+- A mark is one row per id with bool `answer_ok`, bool `method_ok`, and a technique. The key `correct` is rejected.
+- A sticky is one card per technique with a note and a touched day. The key `strength` is rejected. Strength is computed from the touched day.
 
 ## Run
 
@@ -28,6 +30,9 @@ python3 verify/invariants.py --expect-fail heatmap-fails-exceed
 python3 verify/invariants.py --expect-fail mock-before-ready
 python3 verify/invariants.py --expect-fail duplicate-streak-day
 python3 verify/invariants.py --expect-fail bad-session-phase
+python3 verify/invariants.py --expect-fail mark-one-bool
+python3 verify/invariants.py --expect-fail mark-has-correct
+python3 verify/invariants.py --expect-fail sticky-stored-strength
 ```
 
 The plain command exits 0 on the real tree. Each `--expect-fail` exits 0 only when the planted break is caught.
@@ -40,8 +45,9 @@ The plain command exits 0 on the real tree. Each `--expect-fail` exits 0 only wh
 | `mock_block_reason` | `verify/model.py`, called from `scripts/control-integration-bee` |
 | `tick_problem`, `attempt_problem`, `heatmap_problem`, `streak_problem` | `verify/model.py` |
 | `session_problem` | `verify/model.py`, called before `scripts/control-integration-bee` writes `session.json` |
+| `mark_problem`, `sticky_problem` | `verify/model.py`, called before `turn apply` writes `marks.json` and `stickies.json` |
 
-last_confirmed: 8ef99ddff0fadf3363dae65c978abd4154952178
+last_confirmed: 322e6a68f931ab279e48895fa94d7f23e36e18cb
 
 Move `last_confirmed` to `git rev-parse HEAD:verify/model.py` only after you rerun the commands above and they still describe that file. That command prints the blob id of `verify/model.py`. A shallow pull-request checkout and a later merge keep the same id when the file bytes do not change. If `verify/model.py` changes and the id does not, rerun the checks before trusting them.
 

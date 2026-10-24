@@ -1,6 +1,6 @@
 # Learner trackers
 
-Committed files are examples. Live files are written by `scripts/control-integration-bee` under `trackers/live/` and are gitignored.
+Committed files are examples. Live files under `trackers/live/` are gitignored. `turn apply` writes the session, attempts, the heatmap, mocks, the journal, streaks, skill ticks, marks, and stickies.
 
 | Example | Live file | What it stores |
 |---|---|---|
@@ -11,6 +11,8 @@ Committed files are examples. Live files are written by `scripts/control-integra
 | `streaks.example.json` | `trackers/live/streaks.json` | Study days |
 | `skill-ticks.example.json` | `trackers/live/skill-ticks.json` | Skill-tree ticks |
 | `session.example.json` | `trackers/live/session.json` | Teach, mark, and mock phase |
+| `marks.example.json` | `trackers/live/marks.json` | `answer_ok` and `method_ok` on one row per id |
+| `stickies.example.json` | `trackers/live/stickies.json` | One card per technique. Strength is computed from the touched day |
 
 `catalog.json` lists every skill-tree node. Personal ticks are not stored in `skill-tree.md`.
 

@@ -127,6 +127,15 @@ def main() -> int:
         check(solid.returncode == 0 and solid_doc["tick"]["status"] == "solid", "two correct drills make the node solid")
         notes = json.loads((data / "journal.json").read_text())
         check(any(note["note"] == "odd integrand" for note in notes["notes"]), "method note is a journal entry")
+        marks = json.loads((data / "marks.json").read_text())
+        gap = marks["marks"]["U01-D07"]
+        check(gap["answer_ok"] is True and gap["method_ok"] is False, "method gap is a mark row")
+        check(gap["note"] == "odd integrand" and gap["technique"] == "odd-even", "mark row names the technique")
+        clean = marks["marks"]["U01-D08"]
+        check(clean["answer_ok"] is True and clean["method_ok"] is True, "a clean mark stores both facts")
+        cards = json.loads((data / "stickies.json").read_text())
+        check(cards["cards"]["odd-even"]["note"] == "odd integrand", "method gap is the technique card")
+        check("strength" not in cards["cards"]["odd-even"], "sticky strength is not stored")
         ticks = json.loads((data / "skill-ticks.json").read_text())
         check(ticks["ticks"]["basic-integration"]["status"] == "solid", "solid tick is stored")
 
