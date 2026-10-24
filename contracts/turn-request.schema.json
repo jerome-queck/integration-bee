@@ -1,0 +1,17 @@
+{
+  "schema": "integration-bee-turn-request/v1",
+  "kinds": ["empty", "teach", "mark", "mock-start", "mock-finish"],
+  "required": ["kind"],
+  "mark": {
+    "required": ["kind", "problem_id", "source", "extract"],
+    "source": ["photo", "typed"],
+    "extract": ["final_answer"]
+  },
+  "mock-start": {
+    "pack": ["mock01", "pdf-round1"],
+    "cold": "boolean"
+  },
+  "mock-finish": {
+    "required": ["kind", "id", "score"]
+  }
+}

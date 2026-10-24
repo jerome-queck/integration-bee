@@ -36,6 +36,7 @@ The map is `.cursor/skills/verify-integration-bee/features/`.
 - `drills.md`
 - `practice.md`
 - `progress.md`
+- `turn.md`
 - `verify.md`
 
 ## Agent CLI
@@ -56,6 +57,9 @@ The map is `.cursor/skills/verify-integration-bee/features/`.
 | `progress journal` | Store a technique note. |
 | `progress streak` | Count today as a study day. |
 | `drills list` | List drill ids. Includes the display answer. |
+| `turn schema` | Print the teach, mark, and mock turn schemas. |
+| `turn show` | Print the session and the coach report. |
+| `turn apply` | Apply one teach, mark, or mock turn and write the session. |
 | `verify` | Run verify/run.sh. |
 
 Regenerate this file with `python3 scripts/generate_agents_md.py` after you add a command or a feature file.
@@ -71,7 +75,7 @@ Regenerate this file with `python3 scripts/generate_agents_md.py` after you add 
 
 | Situation | Run |
 |---|---|
-| You change what doctor, practice, drills, progress, or verify prints or records | .cursor/skills/verify-integration-bee |
+| You change what doctor, practice, drills, progress, turn, or verify prints or records | .cursor/skills/verify-integration-bee |
 | You change unit order, mock readiness, or tracker writes | .cursor/skills/formal-verify-integration-bee |
 | You teach, mark a photo, or answer an empty message | .cursor/skills/integration-bee-companion |
 | The same mistake shows up twice | pstack skill `correct` |

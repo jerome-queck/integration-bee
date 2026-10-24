@@ -1,0 +1,9 @@
+{
+  "schema": "integration-bee-session/v1",
+  "example": true,
+  "phase": "idle",
+  "node": null,
+  "problem_id": null,
+  "mock_id": null,
+  "updated": null
+}

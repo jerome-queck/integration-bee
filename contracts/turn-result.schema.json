@@ -1,0 +1,7 @@
+{
+  "schema": "integration-bee-turn-result/v1",
+  "required": ["ok", "session", "coach", "say", "drill", "mark", "mock", "problems", "tick"],
+  "session": ["phase", "node", "problem_id", "mock_id"],
+  "coach": ["next_node", "ready", "missing_round1", "weak"],
+  "phases": ["idle", "awaiting_answer", "mock_open", "mock_awaiting"]
+}

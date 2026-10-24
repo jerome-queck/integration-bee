@@ -81,5 +81,8 @@ wc -l /tmp/ibe_practice.out
 echo "== all_rounds_check (Resource pack r1|r2|r3) =="
 "$PY" "$ROOT/verify/all_rounds_check.py" || fail=1
 
+echo "== turn contract =="
+"$PY" "$ROOT/verify/turn_contract_check.py" || fail=1
+
 if [[ "$fail" -ne 0 ]]; then echo "FAIL integration-bee verify"; exit 1; fi
 echo "PASS integration-bee verify (multi-unit gates)"

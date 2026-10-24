@@ -32,6 +32,7 @@ mutations:
 	$(PYTHON) verify/invariants.py --expect-fail heatmap-fails-exceed
 	$(PYTHON) verify/invariants.py --expect-fail mock-before-ready
 	$(PYTHON) verify/invariants.py --expect-fail duplicate-streak-day
+	$(PYTHON) verify/invariants.py --expect-fail bad-session-phase
 
 verify:
 	bash verify/run.sh
