@@ -13,13 +13,16 @@ ROOT = Path(__file__).resolve().parent.parent
 ENFORCERS = [
     ("Learner state stays uncommitted", ".gitignore"),
     ("AGENTS.md matches the generator", "scripts/check_agents_md.py"),
+    ("Published commands match the parser", "scripts/check_agents_md.py"),
     ("Unit notes use the shared templates", "scripts/check_templates.py"),
+    ("A unit sample compiles outside the repo root", "scripts/compile-tex.sh"),
     ("Drill answers match SymPy, and a wrong answer fails", "verify/run.sh"),
     ("Past papers do not precede concept units", "verify/unit_order_check.py"),
     ("Tracker and readiness invariants hold", "verify/invariants.py"),
     ("All-rounds indexes match, and PDFs match when fetched", "verify/all_rounds_check.py"),
     ("Official contest PDFs stay out of git", ".gitignore"),
     ("The Yang PDF stays in git", "sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf"),
+    ("The check workflow still runs the pack targets", "scripts/check_ci.py"),
 ]
 
 SCENARIOS = [
