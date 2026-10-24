@@ -1,0 +1,174 @@
+[
+  {
+    "id": "U19-D01",
+    "technique": "power-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{1}{1+\\sqrt{x}}\\,dx",
+    "sympy_expr": "1/(1+sqrt(x))",
+    "answer_sympy": "2-2*log(2)",
+    "answer_display": "2 - 2 \\log{\\left(2 \\right)}",
+    "technique_tags": [
+      "power-substitution",
+      "yang:3.1"
+    ],
+    "yang": [
+      "yang:3.1"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "19-power-sneaky-usub",
+    "solution_note": "u=\u221ax."
+  },
+  {
+    "id": "U19-D02",
+    "technique": "power-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{1}{1+x^{1/3}}\\,dx",
+    "sympy_expr": "1/(1+x**(Rational(1,3)))",
+    "answer_sympy": "-Rational(3,2)+log(8)",
+    "answer_display": "- \\frac{3}{2} + \\log{\\left(8 \\right)}",
+    "technique_tags": [
+      "power-substitution",
+      "yang:3.1"
+    ],
+    "yang": [
+      "yang:3.1"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "19-power-sneaky-usub",
+    "solution_note": "u=1+x^{1/3}."
+  },
+  {
+    "id": "U19-D03",
+    "technique": "power-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{\\sqrt{x}}{1+\\sqrt{x}}\\,dx",
+    "sympy_expr": "sqrt(x)/(1+sqrt(x))",
+    "answer_sympy": "-1+log(4)",
+    "answer_display": "-1 + \\log{\\left(4 \\right)}",
+    "technique_tags": [
+      "power-substitution",
+      "yang:3.1"
+    ],
+    "yang": [
+      "yang:3.1"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "19-power-sneaky-usub",
+    "solution_note": "u=\u221ax."
+  },
+  {
+    "id": "U19-D04",
+    "technique": "power-substitution",
+    "kind": "definite",
+    "latex": "\\int_{1}^{64}\\frac{1}{\\sqrt{x}+x^{1/3}}\\,dx",
+    "sympy_expr": "1/(sqrt(x)+x**(Rational(1,3)))",
+    "answer_sympy": "11+log(64/729)",
+    "answer_display": "\\log{\\left(\\frac{64}{729} \\right)} + 11",
+    "technique_tags": [
+      "power-substitution",
+      "yang:3.1"
+    ],
+    "yang": [
+      "yang:3.1"
+    ],
+    "limits": [
+      1,
+      64
+    ],
+    "unit": "19-power-sneaky-usub",
+    "solution_note": "u^6=x."
+  },
+  {
+    "id": "U19-D05",
+    "technique": "sneaky-u-sub",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{1}{(2x+1)\\sqrt{x^{2}+x}}\\,dx",
+    "sympy_expr": "1/((2*x+1)*sqrt(x**2+x))",
+    "answer_sympy": "atan(2*sqrt(x**2+x))",
+    "answer_display": "\\operatorname{atan}{\\left(2 \\sqrt{x^{2} + x} \\right)}+C",
+    "technique_tags": [
+      "sneaky-u-sub",
+      "yang:3.2"
+    ],
+    "yang": [
+      "yang:3.2"
+    ],
+    "unit": "19-power-sneaky-usub",
+    "solution_note": "blind u."
+  },
+  {
+    "id": "U19-D06",
+    "technique": "sneaky-u-sub",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{((x-1)/(x+1))^{3}}{x+1}\\,dx",
+    "sympy_expr": "((x-1)/(x+1))**3/(x+1)",
+    "answer_sympy": "-Rational(5,6)+log(2)",
+    "answer_display": "- \\frac{5}{6} + \\log{\\left(2 \\right)}",
+    "technique_tags": [
+      "sneaky-u-sub",
+      "yang:3.2"
+    ],
+    "yang": [
+      "yang:3.2"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "19-power-sneaky-usub",
+    "solution_note": "British."
+  },
+  {
+    "id": "U19-D07",
+    "technique": "sneaky-u-sub",
+    "kind": "definite",
+    "latex": "\\int_{1}^{2}\\sqrt{\\frac{2-x}{x-1}}\\,dx",
+    "sympy_expr": "sqrt((2-x)/(x-1))",
+    "answer_sympy": "pi/2",
+    "answer_display": "\\frac{\\pi}{2}",
+    "technique_tags": [
+      "sneaky-u-sub",
+      "yang:3.2"
+    ],
+    "yang": [
+      "yang:3.2"
+    ],
+    "limits": [
+      1,
+      2
+    ],
+    "unit": "19-power-sneaky-usub",
+    "solution_note": "u\u00b2."
+  },
+  {
+    "id": "U19-D08",
+    "technique": "sneaky-u-sub",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}\\frac{1}{1+x^{2}}\\,dx",
+    "sympy_expr": "1/(1+x**2)",
+    "answer_sympy": "pi/2",
+    "answer_display": "\\frac{\\pi}{2}",
+    "technique_tags": [
+      "sneaky-u-sub",
+      "yang:3.2"
+    ],
+    "yang": [
+      "yang:3.2"
+    ],
+    "limits": [
+      0,
+      "oo"
+    ],
+    "unit": "19-power-sneaky-usub",
+    "solution_note": "arctan."
+  }
+]

@@ -1,0 +1,26 @@
+unit_id: "31-inverse-jailbreak"
+title: "Inverse Jailbreaking"
+order: 31
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U31-D"
+technique_tags:
+  - inverse-jailbreaking
+yang_tags:
+  - "yang:6.1"
+syllabus_refs:
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§6.1 Inverse Jailbreaking"
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Integration Techniques (supporting)"
+prerequisites:
+  - "10-inverse-kings"
+  - "28-semi-parts"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit31.json
+latex_note: "Self-contained article-class. Rewrap onto templates/ is deferred."

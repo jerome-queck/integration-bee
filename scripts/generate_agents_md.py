@@ -49,6 +49,18 @@ def commands() -> list[dict]:
     return json.loads(proc.stdout)
 
 
+def coverage() -> str:
+    units = sorted(path.name for path in (ROOT / "units").glob("[0-9][0-9]-*") if path.is_dir())
+    drills = sorted((ROOT / "verify").glob("drills_unit*.json"))
+    count = 0
+    for path in drills:
+        count += len(json.loads(path.read_text()))
+    return (
+        f"Concept units `{units[0]}` through `{units[-1]}` "
+        f"({len(units)} directories) have machine drills in `verify/drills_unit*.json` ({count} drills)."
+    )
+
+
 def render() -> str:
     feat_lines = "\n".join(f"- `{name}`" for name in features())
     cmd_lines = "\n".join(f"| `{row['path']}` | {row['summary']} |" for row in commands())
@@ -81,6 +93,8 @@ make check
 ```
 
 `verify/all_rounds_check.py` passes when the fetched Round 1, Round 2, and Round 3 PDFs match `past/inventory.json`. When those PDFs are absent it skips the binary check and still checks the committed indexes.
+
+{coverage()}
 
 ## Feature map
 

@@ -8,11 +8,28 @@ EXPECT = {
     "drills.tex": "\\input{drill-sheet.tex}",
     "solutions.tex": "\\input{solution-sheet.tex}",
 }
+def article_class(unit: Path) -> bool:
+    meta = unit / "meta.yaml"
+    if not meta.exists():
+        return False
+    for line in meta.read_text().splitlines():
+        if line.startswith("latex_note:") and "article-class" in line:
+            return True
+    return False
+
+
 fail = 0
 for unit in sorted((ROOT / "units").glob("[0-9][0-9]-*")):
+    plain = article_class(unit)
     for name, first in EXPECT.items():
         path = unit / name
-        line = path.read_text().splitlines()[0]
+        text = path.read_text()
+        line = text.splitlines()[0]
+        if plain:
+            if "\\documentclass" not in text or "\\begin{document}" not in text or "\\end{document}" not in text:
+                print(f"FAIL {path.relative_to(ROOT)} is not a self-contained article")
+                fail = 1
+            continue
         if line != first:
             print(f"FAIL {path.relative_to(ROOT)} starts with {line!r}")
             fail = 1

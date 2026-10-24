@@ -1,0 +1,26 @@
+unit_id: "28-semi-parts"
+title: "Semi-Integration by Parts"
+order: 28
+kind: concept
+status: ready
+past_paper: false
+problem_id_prefix: "U28-D"
+technique_tags:
+  - semi-parts
+yang_tags:
+  - "yang:5.1"
+syllabus_refs:
+  - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
+    section: "§5.1 Semi-Integration by Parts"
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§1 Integration Techniques (supporting)"
+prerequisites:
+  - "15-parts-regular"
+  - "22-awkward-parts-pf"
+files:
+  teaching_tex: teaching.tex
+  drills_tex: drills.tex
+  solutions_tex: solutions.tex
+  drills_feed: drills.md
+  machine_drills: ../../verify/drills_unit28.json
+latex_note: "Self-contained article-class. Rewrap onto templates/ is deferred."

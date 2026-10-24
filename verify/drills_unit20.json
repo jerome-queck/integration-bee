@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U20-D01",
+    "technique": "wallis",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\cos^{4}x\\,dx",
+    "sympy_expr": "cos(x)**4",
+    "answer_sympy": "3*pi/16",
+    "answer_display": "\\frac{3 \\pi}{16}",
+    "technique_tags": [
+      "wallis",
+      "yang:3.3"
+    ],
+    "yang": [
+      "yang:3.3"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "20-wallis",
+    "solution_note": "even."
+  },
+  {
+    "id": "U20-D02",
+    "technique": "wallis",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\sin^{2}x\\cos^{2}x\\,dx",
+    "sympy_expr": "sin(x)**2*cos(x)**2",
+    "answer_sympy": "pi/16",
+    "answer_display": "\\frac{\\pi}{16}",
+    "technique_tags": [
+      "wallis",
+      "yang:3.3"
+    ],
+    "yang": [
+      "yang:3.3"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "20-wallis",
+    "solution_note": "sin2x."
+  },
+  {
+    "id": "U20-D03",
+    "technique": "wallis",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}(1+\\sin x)^{3}\\,dx",
+    "sympy_expr": "(1+sin(x))**3",
+    "answer_sympy": "Rational(11,3)+5*pi/4",
+    "answer_display": "\\frac{11}{3} + \\frac{5 \\pi}{4}",
+    "technique_tags": [
+      "wallis",
+      "yang:3.3"
+    ],
+    "yang": [
+      "yang:3.3"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "20-wallis",
+    "solution_note": "expand."
+  },
+  {
+    "id": "U20-D04",
+    "technique": "wallis",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\sin^{5}x\\,dx",
+    "sympy_expr": "sin(x)**5",
+    "answer_sympy": "Rational(8,15)",
+    "answer_display": "\\frac{8}{15}",
+    "technique_tags": [
+      "wallis",
+      "yang:3.3"
+    ],
+    "yang": [
+      "yang:3.3"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "20-wallis",
+    "solution_note": "odd."
+  },
+  {
+    "id": "U20-D05",
+    "technique": "wallis",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\cos^{6}x\\,dx",
+    "sympy_expr": "cos(x)**6",
+    "answer_sympy": "5*pi/32",
+    "answer_display": "\\frac{5 \\pi}{32}",
+    "technique_tags": [
+      "wallis",
+      "yang:3.3"
+    ],
+    "yang": [
+      "yang:3.3"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "20-wallis",
+    "solution_note": "even."
+  },
+  {
+    "id": "U20-D06",
+    "technique": "wallis",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\sin^{3}x\\cos^{2}x\\,dx",
+    "sympy_expr": "sin(x)**3*cos(x)**2",
+    "answer_sympy": "Rational(2,15)",
+    "answer_display": "\\frac{2}{15}",
+    "technique_tags": [
+      "wallis",
+      "yang:3.3"
+    ],
+    "yang": [
+      "yang:3.3"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "20-wallis",
+    "solution_note": "u=cos."
+  },
+  {
+    "id": "U20-D07",
+    "technique": "wallis",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\sin^{4}x\\,dx",
+    "sympy_expr": "sin(x)**4",
+    "answer_sympy": "3*pi/16",
+    "answer_display": "\\frac{3 \\pi}{16}",
+    "technique_tags": [
+      "wallis",
+      "yang:3.3"
+    ],
+    "yang": [
+      "yang:3.3"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "20-wallis",
+    "solution_note": "sym."
+  },
+  {
+    "id": "U20-D08",
+    "technique": "wallis",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}\\cos^{3}x\\,dx",
+    "sympy_expr": "cos(x)**3",
+    "answer_sympy": "Rational(2,3)",
+    "answer_display": "\\frac{2}{3}",
+    "technique_tags": [
+      "wallis",
+      "yang:3.3"
+    ],
+    "yang": [
+      "yang:3.3"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "unit": "20-wallis",
+    "solution_note": "odd cos."
+  }
+]

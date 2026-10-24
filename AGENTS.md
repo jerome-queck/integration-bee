@@ -26,6 +26,8 @@ make check
 
 `verify/all_rounds_check.py` passes when the fetched Round 1, Round 2, and Round 3 PDFs match `past/inventory.json`. When those PDFs are absent it skips the binary check and still checks the committed indexes.
 
+Concept units `01-foundations-substitution` through `36-unique-tricks` (36 directories) have machine drills in `verify/drills_unit*.json` (284 drills).
+
 ## Feature map
 
 The map is `.cursor/skills/verify-integration-bee/features/`.

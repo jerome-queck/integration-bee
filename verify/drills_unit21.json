@@ -1,0 +1,175 @@
+[
+  {
+    "id": "U21-D01",
+    "technique": "advanced-trig-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{\\arcsin(2x/(1+x^{2}))}{1+x^{2}}\\,dx",
+    "sympy_expr": "asin(2*x/(1+x**2))/(1+x**2)",
+    "answer_sympy": "pi**2/16",
+    "answer_display": "\\frac{\\pi^{2}}{16}",
+    "technique_tags": [
+      "advanced-trig-substitution",
+      "yang:3.4"
+    ],
+    "yang": [
+      "yang:3.4"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "verify_mode": "numeric",
+    "unit": "21-advanced-trig-sub",
+    "solution_note": "x=tan."
+  },
+  {
+    "id": "U21-D02",
+    "technique": "advanced-trig-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\arcsin\\sqrt{x/(x+1)}\\,dx",
+    "sympy_expr": "asin(sqrt(x/(x+1)))",
+    "answer_sympy": "-1+pi/2",
+    "answer_display": "-1 + \\frac{\\pi}{2}",
+    "technique_tags": [
+      "advanced-trig-substitution",
+      "yang:3.4"
+    ],
+    "yang": [
+      "yang:3.4"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "21-advanced-trig-sub",
+    "solution_note": "x=tan\u00b2."
+  },
+  {
+    "id": "U21-D03",
+    "technique": "advanced-trig-substitution",
+    "kind": "definite",
+    "latex": "\\int_{1}^{\\sqrt{2}}\\frac{\\sqrt{x^{2}-1}}{x}\\,dx",
+    "sympy_expr": "sqrt(x**2-1)/x",
+    "answer_sympy": "1-pi/4",
+    "answer_display": "1 - \\frac{\\pi}{4}",
+    "technique_tags": [
+      "advanced-trig-substitution",
+      "yang:3.4"
+    ],
+    "yang": [
+      "yang:3.4"
+    ],
+    "limits": [
+      1,
+      "sqrt(2)"
+    ],
+    "unit": "21-advanced-trig-sub",
+    "solution_note": "x=sec."
+  },
+  {
+    "id": "U21-D04",
+    "technique": "advanced-trig-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\arctan\\sqrt{(1-x)/(1+x)}\\,dx",
+    "sympy_expr": "atan(sqrt((1-x)/(1+x)))",
+    "answer_sympy": "Rational(1,2)",
+    "answer_display": "\\frac{1}{2}",
+    "technique_tags": [
+      "advanced-trig-substitution",
+      "yang:3.4"
+    ],
+    "yang": [
+      "yang:3.4"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "21-advanced-trig-sub",
+    "solution_note": "x=cos2\u03b8."
+  },
+  {
+    "id": "U21-D05",
+    "technique": "advanced-trig-substitution",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{1}{\\sqrt{x^{2}+1}}\\,dx",
+    "sympy_expr": "1/sqrt(x**2+1)",
+    "answer_sympy": "log(x+sqrt(x**2+1))",
+    "answer_display": "\\log{\\left(x + \\sqrt{x^{2} + 1} \\right)}+C",
+    "technique_tags": [
+      "advanced-trig-substitution",
+      "yang:3.4"
+    ],
+    "yang": [
+      "yang:3.4"
+    ],
+    "unit": "21-advanced-trig-sub",
+    "solution_note": "asinh."
+  },
+  {
+    "id": "U21-D06",
+    "technique": "advanced-trig-substitution",
+    "kind": "definite",
+    "latex": "\\int_{1}^{\\sqrt{2}}\\frac{\\sqrt{x^{2}-1}}{x^{2}}\\,dx",
+    "sympy_expr": "sqrt(x**2-1)/x**2",
+    "answer_sympy": "-sqrt(2)/2+log(1+sqrt(2))",
+    "answer_display": "- \\frac{\\sqrt{2}}{2} + \\log{\\left(1 + \\sqrt{2} \\right)}",
+    "technique_tags": [
+      "advanced-trig-substitution",
+      "yang:3.4"
+    ],
+    "yang": [
+      "yang:3.4"
+    ],
+    "limits": [
+      1,
+      "sqrt(2)"
+    ],
+    "unit": "21-advanced-trig-sub",
+    "solution_note": "sec."
+  },
+  {
+    "id": "U21-D07",
+    "technique": "advanced-trig-substitution",
+    "kind": "definite",
+    "latex": "\\int_{1}^{\\sqrt{2}}\\sqrt{x^{2}-1}\\,dx",
+    "sympy_expr": "sqrt(x**2-1)",
+    "answer_sympy": "-log(1+sqrt(2))/2+sqrt(2)/2",
+    "answer_display": "- \\frac{\\log{\\left(1 + \\sqrt{2} \\right)}}{2} + \\frac{\\sqrt{2}}{2}",
+    "technique_tags": [
+      "advanced-trig-substitution",
+      "yang:3.4"
+    ],
+    "yang": [
+      "yang:3.4"
+    ],
+    "limits": [
+      1,
+      "sqrt(2)"
+    ],
+    "unit": "21-advanced-trig-sub",
+    "solution_note": "sec."
+  },
+  {
+    "id": "U21-D08",
+    "technique": "advanced-trig-substitution",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{x^{2}}{\\sqrt{1-x^{2}}}\\,dx",
+    "sympy_expr": "x**2/sqrt(1-x**2)",
+    "answer_sympy": "pi/4",
+    "answer_display": "\\frac{\\pi}{4}",
+    "technique_tags": [
+      "advanced-trig-substitution",
+      "yang:3.4"
+    ],
+    "yang": [
+      "yang:3.4"
+    ],
+    "limits": [
+      0,
+      1
+    ],
+    "unit": "21-advanced-trig-sub",
+    "solution_note": "x=sin."
+  }
+]

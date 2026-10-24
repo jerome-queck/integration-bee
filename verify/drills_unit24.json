@@ -1,0 +1,158 @@
+[
+  {
+    "id": "U24-D01",
+    "technique": "undertow",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{2x^{3}-1}{x^{4}+x}\\,dx",
+    "sympy_expr": "(2*x**3-1)/(x**4+x)",
+    "answer_sympy": "log(x**2+1/x)",
+    "answer_display": "\\log{\\left(x^{2} + \\frac{1}{x} \\right)}+C",
+    "technique_tags": [
+      "undertow",
+      "yang:4.1"
+    ],
+    "yang": [
+      "yang:4.1"
+    ],
+    "unit": "24-undertow-square",
+    "solution_note": "\u00f7x."
+  },
+  {
+    "id": "U24-D02",
+    "technique": "undertow",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{4x^{5}-1}{(x^{5}+x+1)^{2}}\\,dx",
+    "sympy_expr": "(4*x**5-1)/(x**5+x+1)**2",
+    "answer_sympy": "-x/(x**5+x+1)",
+    "answer_display": "- \\frac{x}{x^{5} + x + 1}+C",
+    "technique_tags": [
+      "undertow",
+      "yang:4.1"
+    ],
+    "yang": [
+      "yang:4.1"
+    ],
+    "unit": "24-undertow-square",
+    "solution_note": "chain."
+  },
+  {
+    "id": "U24-D03",
+    "technique": "undertow",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{e^{x}-\\sin x}{e^{x}+\\cos x}\\,dx",
+    "sympy_expr": "(exp(x)-sin(x))/(exp(x)+cos(x))",
+    "answer_sympy": "log(exp(x)+cos(x))",
+    "answer_display": "\\log{\\left(e^{x} + \\cos{\\left(x \\right)} \\right)}+C",
+    "technique_tags": [
+      "undertow",
+      "yang:4.1"
+    ],
+    "yang": [
+      "yang:4.1"
+    ],
+    "unit": "24-undertow-square",
+    "solution_note": "num=denom'."
+  },
+  {
+    "id": "U24-D04",
+    "technique": "undertow",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{x^{2}-1}{x^{3}+x}\\,dx",
+    "sympy_expr": "(x**2-1)/(x**3+x)",
+    "answer_sympy": "log(x+1/x)",
+    "answer_display": "\\log{\\left(x + \\frac{1}{x} \\right)}+C",
+    "technique_tags": [
+      "undertow",
+      "yang:4.1"
+    ],
+    "yang": [
+      "yang:4.1"
+    ],
+    "unit": "24-undertow-square",
+    "solution_note": "\u00f7x."
+  },
+  {
+    "id": "U24-D05",
+    "technique": "square-square",
+    "kind": "indefinite",
+    "latex": "\\int(\\sqrt{x}+1/\\sqrt{x})\\,dx",
+    "sympy_expr": "sqrt(x)+1/sqrt(x)",
+    "answer_sympy": "(2/3)*x**(Rational(3,2))+2*sqrt(x)",
+    "answer_display": "\\frac{2 x^{\\frac{3}{2}}}{3} + 2 \\sqrt{x}+C",
+    "technique_tags": [
+      "square-square",
+      "yang:4.2"
+    ],
+    "yang": [
+      "yang:4.2"
+    ],
+    "unit": "24-undertow-square",
+    "solution_note": "denest companion."
+  },
+  {
+    "id": "U24-D06",
+    "technique": "square-square",
+    "kind": "definite",
+    "latex": "\\int_{1}^{4}(\\sqrt{x}+x^{-1/2})\\,dx",
+    "sympy_expr": "sqrt(x)+1/sqrt(x)",
+    "answer_sympy": "Rational(20,3)",
+    "answer_display": "\\frac{20}{3}",
+    "technique_tags": [
+      "square-square",
+      "yang:4.2"
+    ],
+    "yang": [
+      "yang:4.2"
+    ],
+    "limits": [
+      1,
+      4
+    ],
+    "unit": "24-undertow-square",
+    "solution_note": "direct."
+  },
+  {
+    "id": "U24-D07",
+    "technique": "square-square",
+    "kind": "definite",
+    "latex": "\\int_{1}^{4}\\sqrt{x+2+1/x}\\,dx",
+    "sympy_expr": "sqrt(x+2+1/x)",
+    "answer_sympy": "Rational(20,3)",
+    "answer_display": "\\frac{20}{3}",
+    "technique_tags": [
+      "square-square",
+      "yang:4.2"
+    ],
+    "yang": [
+      "yang:4.2"
+    ],
+    "limits": [
+      1,
+      4
+    ],
+    "unit": "24-undertow-square",
+    "solution_note": "denest."
+  },
+  {
+    "id": "U24-D08",
+    "technique": "square-square",
+    "kind": "definite",
+    "latex": "\\int_{1}^{4}(\\sqrt{x}-x^{-1/2})\\,dx",
+    "sympy_expr": "sqrt(x)-1/sqrt(x)",
+    "answer_sympy": "Rational(8,3)",
+    "answer_display": "\\frac{8}{3}",
+    "technique_tags": [
+      "square-square",
+      "yang:4.2"
+    ],
+    "yang": [
+      "yang:4.2"
+    ],
+    "limits": [
+      1,
+      4
+    ],
+    "unit": "24-undertow-square",
+    "solution_note": "companion."
+  }
+]

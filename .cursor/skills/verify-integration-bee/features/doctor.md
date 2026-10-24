@@ -24,4 +24,5 @@ Preconditions:
 ## Gotchas
 
 - A missing Yang PDF is a failure. Missing official contest PDFs are not.
+- `units` counts every `units/[0-9][0-9]-*` directory. Chapters 3–6 are units 19–36 on that list.
 - Doctor reads `IB_DATA_DIR` only as a label. It must not create files there.
