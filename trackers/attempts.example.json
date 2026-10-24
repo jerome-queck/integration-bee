@@ -1,0 +1,17 @@
+{
+  "schema": "integration-bee-attempts/v1",
+  "example": true,
+  "items": [
+    {
+      "ts": "2026-10-24T15:00:00+08:00",
+      "problem_id": "U01-D07",
+      "correct": false,
+      "tags": ["odd-even", "yang:1.1"],
+      "note": "Treated an odd integrand on a symmetric interval as nonzero.",
+      "ease": 2.3,
+      "interval_days": 1,
+      "reps": 0,
+      "next_due": "2026-10-25"
+    }
+  ]
+}

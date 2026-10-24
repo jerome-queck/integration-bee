@@ -1,0 +1,166 @@
+[
+  {
+    "id": "U15-D01",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}x\\ln(x+1)\\,dx",
+    "sympy_expr": "x*log(x+1)",
+    "answer_sympy": "1/4",
+    "answer_display": "1/4",
+    "hint": "Parts or series for ln(1+x).",
+    "technique_tags": [
+      "parts",
+      "yang:2.5"
+    ],
+    "yang": [
+      "yang:2.5"
+    ],
+    "limits": [
+      0,
+      1
+    ]
+  },
+  {
+    "id": "U15-D02",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "indefinite",
+    "latex": "\\int e^{x}\\sin x\\,dx",
+    "sympy_expr": "exp(x)*sin(x)",
+    "answer_sympy": "exp(x)*(sin(x)-cos(x))/2",
+    "answer_display": "\\dfrac{e^{x}}{2}(\\sin x-\\cos x)+C",
+    "hint": "Parts twice; solve for I.",
+    "technique_tags": [
+      "parts",
+      "yang:2.5"
+    ],
+    "yang": [
+      "yang:2.5"
+    ]
+  },
+  {
+    "id": "U15-D03",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi}e^{x}\\sin x\\,dx",
+    "sympy_expr": "exp(x)*sin(x)",
+    "answer_sympy": "(1+exp(pi))/2",
+    "answer_display": "\\dfrac{1+e^{\\pi}}{2}",
+    "hint": "Use D02 antiderivative.",
+    "technique_tags": [
+      "parts",
+      "yang:2.5"
+    ],
+    "yang": [
+      "yang:2.5"
+    ],
+    "limits": [
+      0,
+      "pi"
+    ]
+  },
+  {
+    "id": "U15-D04",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\pi/2}x\\cos x\\,dx",
+    "sympy_expr": "x*cos(x)",
+    "answer_sympy": "-1+pi/2",
+    "answer_display": "\\pi/2-1",
+    "hint": "u=x, dv=cos x dx.",
+    "technique_tags": [
+      "parts",
+      "yang:2.5"
+    ],
+    "yang": [
+      "yang:2.5"
+    ],
+    "limits": [
+      0,
+      "pi/2"
+    ]
+  },
+  {
+    "id": "U15-D05",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_{1}^{e}\\frac{\\ln x}{x^{2}}\\,dx",
+    "sympy_expr": "log(x)/x**2",
+    "answer_sympy": "1-2*exp(-1)",
+    "answer_display": "1-\\dfrac{2}{e}",
+    "hint": "u=ln x, dv=x^{-2}dx.",
+    "technique_tags": [
+      "parts",
+      "yang:2.5"
+    ],
+    "yang": [
+      "yang:2.5"
+    ],
+    "limits": [
+      1,
+      "E"
+    ]
+  },
+  {
+    "id": "U15-D06",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{(\\ln x)^{2}}{x^{3}}\\,dx",
+    "sympy_expr": "log(x)**2 / x**3",
+    "answer_sympy": "-log(x)**2/(2*x**2) - log(x)/(2*x**2) - 1/(4*x**2)",
+    "answer_display": "-\\dfrac{(\\ln x)^{2}}{2x^{2}}-\\dfrac{\\ln x}{2x^{2}}-\\dfrac{1}{4x^{2}}+C",
+    "hint": "Parts twice with u=(ln x)^2.",
+    "technique_tags": [
+      "parts",
+      "yang:2.5"
+    ],
+    "yang": [
+      "yang:2.5"
+    ]
+  },
+  {
+    "id": "U15-D07",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_{1}^{\\infty}\\frac{\\arctan x}{x^{2}}\\,dx",
+    "sympy_expr": "atan(x)/x**2",
+    "answer_sympy": "log(2)/2 + pi/4",
+    "answer_display": "\\dfrac{\\ln 2}{2}+\\dfrac{\\pi}{4}",
+    "hint": "u=arctan x, dv=x^{-2}dx.",
+    "technique_tags": [
+      "parts",
+      "yang:2.5"
+    ],
+    "yang": [
+      "yang:2.5"
+    ],
+    "limits": [
+      1,
+      "oo"
+    ]
+  },
+  {
+    "id": "U15-D08",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "indefinite",
+    "latex": "\\int\\frac{x\\arcsin x}{\\sqrt{1-x^{2}}}\\,dx",
+    "sympy_expr": "x*asin(x)/sqrt(1-x**2)",
+    "answer_sympy": "x - sqrt(1-x**2)*asin(x)",
+    "answer_display": "x-\\sqrt{1-x^{2}}\\arcsin x+C",
+    "hint": "u=arcsin x, or spot reverse product.",
+    "technique_tags": [
+      "parts",
+      "yang:2.5"
+    ],
+    "yang": [
+      "yang:2.5"
+    ]
+  }
+]

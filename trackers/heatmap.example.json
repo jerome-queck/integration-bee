@@ -1,0 +1,7 @@
+{
+  "schema": "integration-bee-heatmap/v1",
+  "example": true,
+  "topics": {
+    "odd-even": {"attempts": 1, "fails": 1}
+  }
+}

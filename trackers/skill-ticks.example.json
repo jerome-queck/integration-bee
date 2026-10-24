@@ -1,0 +1,10 @@
+{
+  "schema": "integration-bee-skill-ticks/v1",
+  "example": true,
+  "ticks": {
+    "basic-integration": {
+      "status": "learning",
+      "ts": "2026-10-24T15:00:00+08:00"
+    }
+  }
+}

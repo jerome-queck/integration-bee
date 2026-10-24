@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U07-D01",
+    "technique": "absolute-value",
+    "kind": "definite",
+    "latex": "\\int_{-1}^{1}|x|\\,dx",
+    "sympy_expr": "Abs(x)",
+    "limits": [
+      -1,
+      1
+    ],
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "absolute-value",
+      "yang:1.12"
+    ],
+    "yang": [
+      "yang:1.12"
+    ],
+    "solution_note": "Even; $2\\int_0^1 x$.",
+    "unit": "07-abs-reverse-product"
+  },
+  {
+    "id": "U07-D02",
+    "technique": "absolute-value",
+    "kind": "definite",
+    "latex": "\\int_0^2 |x-1|\\,dx",
+    "sympy_expr": "Abs(x-1)",
+    "limits": [
+      0,
+      2
+    ],
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "absolute-value",
+      "yang:1.12"
+    ],
+    "yang": [
+      "yang:1.12"
+    ],
+    "solution_note": "Split at $x=1$.",
+    "unit": "07-abs-reverse-product"
+  },
+  {
+    "id": "U07-D03",
+    "technique": "absolute-value",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi}|\\sin x|\\,dx",
+    "sympy_expr": "Abs(sin(x))",
+    "limits": [
+      0,
+      "pi"
+    ],
+    "answer_sympy": "2",
+    "answer_display": "2",
+    "technique_tags": [
+      "absolute-value",
+      "yang:1.12"
+    ],
+    "yang": [
+      "yang:1.12"
+    ],
+    "solution_note": "Positive on $[0,\\pi]$.",
+    "unit": "07-abs-reverse-product"
+  },
+  {
+    "id": "U07-D04",
+    "technique": "reverse-product",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2}(\\sin x+x\\cos x)\\,dx",
+    "sympy_expr": "sin(x)+x*cos(x)",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "pi/2",
+    "answer_display": "\\pi/2",
+    "technique_tags": [
+      "reverse-product",
+      "yang:1.13"
+    ],
+    "yang": [
+      "yang:1.13"
+    ],
+    "solution_note": "$(x\\sin x)'$.",
+    "unit": "07-abs-reverse-product"
+  },
+  {
+    "id": "U07-D05",
+    "technique": "reverse-product",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2} e^x(\\sin x+\\cos x)\\,dx",
+    "sympy_expr": "exp(x)*(sin(x)+cos(x))",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "exp(pi/2)",
+    "answer_display": "e^{\\pi/2}",
+    "technique_tags": [
+      "reverse-product",
+      "yang:1.13"
+    ],
+    "yang": [
+      "yang:1.13"
+    ],
+    "solution_note": "$(e^x\\sin x)'$.",
+    "unit": "07-abs-reverse-product"
+  },
+  {
+    "id": "U07-D06",
+    "technique": "reverse-product",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2}(\\cos x-x\\sin x)\\,dx",
+    "sympy_expr": "cos(x)-x*sin(x)",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "0",
+    "answer_display": "0",
+    "technique_tags": [
+      "reverse-product",
+      "yang:1.13"
+    ],
+    "yang": [
+      "yang:1.13"
+    ],
+    "solution_note": "$(x\\cos x)'$.",
+    "unit": "07-abs-reverse-product"
+  },
+  {
+    "id": "U07-D07",
+    "technique": "absolute-value",
+    "kind": "definite",
+    "latex": "\\int_{-2}^{1}|x|\\,dx",
+    "sympy_expr": "Abs(x)",
+    "limits": [
+      -2,
+      1
+    ],
+    "answer_sympy": "5/2",
+    "answer_display": "5/2",
+    "technique_tags": [
+      "absolute-value",
+      "yang:1.12"
+    ],
+    "yang": [
+      "yang:1.12"
+    ],
+    "solution_note": "Split at 0.",
+    "unit": "07-abs-reverse-product"
+  },
+  {
+    "id": "U07-D08",
+    "technique": "reverse-product",
+    "kind": "definite",
+    "latex": "\\int_0^{1}(2x\\cos(x^2))\\,dx",
+    "sympy_expr": "2*x*cos(x**2)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "sin(1)",
+    "answer_display": "\\sin 1",
+    "technique_tags": [
+      "reverse-product",
+      "yang:1.13"
+    ],
+    "yang": [
+      "yang:1.13"
+    ],
+    "solution_note": "$(\\sin(x^2))'$.",
+    "unit": "07-abs-reverse-product"
+  }
+]

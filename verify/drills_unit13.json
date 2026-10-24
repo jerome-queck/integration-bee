@@ -1,0 +1,158 @@
+[
+  {
+    "id": "U13-D01",
+    "unit": "13-forced-u-sub",
+    "technique": "forced-u-sub",
+    "kind": "indefinite",
+    "latex": "\\int e^{\\sqrt{x}}\\,dx",
+    "sympy_expr": "exp(sqrt(x))",
+    "answer_sympy": "2*exp(sqrt(x))*(sqrt(x)-1)",
+    "answer_display": "2e^{\\sqrt{x}}(\\sqrt{x}-1)+C",
+    "hint": "u=sqrt(x), x=u^2, dx=2u du (Yang 2.3).",
+    "technique_tags": [
+      "forced-u-sub",
+      "yang:2.3"
+    ],
+    "yang": [
+      "yang:2.3"
+    ]
+  },
+  {
+    "id": "U13-D02",
+    "unit": "13-forced-u-sub",
+    "technique": "forced-u-sub",
+    "kind": "indefinite",
+    "latex": "\\int\\sin(\\ln x)\\,dx",
+    "sympy_expr": "sin(log(x))",
+    "answer_sympy": "x*(sin(log(x))-cos(log(x)))/2",
+    "answer_display": "\\dfrac{x}{2}(\\sin\\ln x-\\cos\\ln x)+C",
+    "hint": "u=ln x, x=e^u, then int e^u sin u.",
+    "technique_tags": [
+      "forced-u-sub",
+      "yang:2.3"
+    ],
+    "yang": [
+      "yang:2.3"
+    ]
+  },
+  {
+    "id": "U13-D03",
+    "unit": "13-forced-u-sub",
+    "technique": "forced-u-sub",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{dx}{(1+\\sqrt{x})^{2}}",
+    "sympy_expr": "1/(1+sqrt(x))**2",
+    "answer_sympy": "-1 + 2*log(2)",
+    "answer_display": "2\\ln 2-1",
+    "hint": "u=sqrt(x), dx=2u du.",
+    "technique_tags": [
+      "forced-u-sub",
+      "yang:2.3"
+    ],
+    "yang": [
+      "yang:2.3"
+    ],
+    "limits": [
+      0,
+      1
+    ]
+  },
+  {
+    "id": "U13-D04",
+    "unit": "13-forced-u-sub",
+    "technique": "forced-u-sub",
+    "kind": "indefinite",
+    "latex": "\\int\\cos\\sqrt{x}\\,dx",
+    "sympy_expr": "cos(sqrt(x))",
+    "answer_sympy": "2*(sqrt(x)*sin(sqrt(x))+cos(sqrt(x)))",
+    "answer_display": "2(\\sqrt{x}\\sin\\sqrt{x}+\\cos\\sqrt{x})+C",
+    "hint": "u=sqrt(x); int 2u cos u.",
+    "technique_tags": [
+      "forced-u-sub",
+      "yang:2.3"
+    ],
+    "yang": [
+      "yang:2.3"
+    ]
+  },
+  {
+    "id": "U13-D05",
+    "unit": "13-forced-u-sub",
+    "technique": "forced-u-sub",
+    "kind": "indefinite",
+    "latex": "\\int\\sin\\sqrt{x}\\,dx",
+    "sympy_expr": "sin(sqrt(x))",
+    "answer_sympy": "2*(sin(sqrt(x))-sqrt(x)*cos(sqrt(x)))",
+    "answer_display": "2(\\sin\\sqrt{x}-\\sqrt{x}\\cos\\sqrt{x})+C",
+    "hint": "u=sqrt(x); int 2u sin u.",
+    "technique_tags": [
+      "forced-u-sub",
+      "yang:2.3"
+    ],
+    "yang": [
+      "yang:2.3"
+    ]
+  },
+  {
+    "id": "U13-D06",
+    "unit": "13-forced-u-sub",
+    "technique": "forced-u-sub",
+    "kind": "definite",
+    "latex": "\\int_{0}^{4}e^{\\sqrt{x}}\\,dx",
+    "sympy_expr": "exp(sqrt(x))",
+    "answer_sympy": "2+2*exp(2)",
+    "answer_display": "2+2e^{2}",
+    "hint": "Same as D01 on [0,4].",
+    "technique_tags": [
+      "forced-u-sub",
+      "yang:2.3"
+    ],
+    "yang": [
+      "yang:2.3"
+    ],
+    "limits": [
+      0,
+      4
+    ]
+  },
+  {
+    "id": "U13-D07",
+    "unit": "13-forced-u-sub",
+    "technique": "forced-u-sub",
+    "kind": "indefinite",
+    "latex": "\\int\\cos(\\ln x)\\,dx",
+    "sympy_expr": "cos(log(x))",
+    "answer_sympy": "x*(sin(log(x))+cos(log(x)))/2",
+    "answer_display": "\\dfrac{x}{2}(\\sin\\ln x+\\cos\\ln x)+C",
+    "hint": "u=ln x twin of D02.",
+    "technique_tags": [
+      "forced-u-sub",
+      "yang:2.3"
+    ],
+    "yang": [
+      "yang:2.3"
+    ]
+  },
+  {
+    "id": "U13-D08",
+    "unit": "13-forced-u-sub",
+    "technique": "forced-u-sub",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{dx}{1+\\sqrt{x}}",
+    "sympy_expr": "1/(1+sqrt(x))",
+    "answer_sympy": "2-2*log(2)",
+    "answer_display": "2-2\\ln 2",
+    "hint": "u=sqrt(x), dx=2u du.",
+    "technique_tags": [
+      "forced-u-sub",
+      "yang:2.3"
+    ],
+    "yang": [
+      "yang:2.3"
+    ],
+    "limits": [
+      0,
+      1
+    ]
+  }
+]

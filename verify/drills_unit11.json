@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U11-D01",
+    "technique": "gaussian",
+    "kind": "definite",
+    "latex": "\\int_0^1 x e^{-x^2}\\,dx",
+    "sympy_expr": "x*exp(-x**2)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "(1-exp(-1))/2",
+    "answer_display": "(1-e^{-1})/2",
+    "technique_tags": [
+      "gaussian",
+      "yang:1.19"
+    ],
+    "yang": [
+      "yang:1.19"
+    ],
+    "solution_note": "$u=x^2$.",
+    "unit": "11-gaussian-wildcard"
+  },
+  {
+    "id": "U11-D02",
+    "technique": "gaussian",
+    "kind": "definite",
+    "latex": "\\int_{-1}^{1} x e^{-x^2}\\,dx",
+    "sympy_expr": "x*exp(-x**2)",
+    "limits": [
+      -1,
+      1
+    ],
+    "answer_sympy": "0",
+    "answer_display": "0",
+    "technique_tags": [
+      "gaussian",
+      "yang:1.19"
+    ],
+    "yang": [
+      "yang:1.19"
+    ],
+    "solution_note": "Odd.",
+    "unit": "11-gaussian-wildcard"
+  },
+  {
+    "id": "U11-D03",
+    "technique": "gaussian",
+    "kind": "definite",
+    "latex": "\\int_{-\\infty}^{\\infty} e^{-x^2}\\,dx",
+    "sympy_expr": "exp(-x**2)",
+    "limits": [
+      "-oo",
+      "oo"
+    ],
+    "answer_sympy": "sqrt(pi)",
+    "answer_display": "\\sqrt{\\pi}",
+    "technique_tags": [
+      "gaussian",
+      "yang:1.19"
+    ],
+    "yang": [
+      "yang:1.19"
+    ],
+    "solution_note": "Known Gaussian.",
+    "unit": "11-gaussian-wildcard"
+  },
+  {
+    "id": "U11-D04",
+    "technique": "gaussian",
+    "kind": "definite",
+    "latex": "\\int_0^{\\infty} e^{-x}\\,dx",
+    "sympy_expr": "exp(-x)",
+    "limits": [
+      0,
+      "oo"
+    ],
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "gaussian",
+      "yang:1.19"
+    ],
+    "yang": [
+      "yang:1.19"
+    ],
+    "solution_note": "Elementary.",
+    "unit": "11-gaussian-wildcard"
+  },
+  {
+    "id": "U11-D05",
+    "technique": "wildcard",
+    "kind": "definite",
+    "latex": "\\int_{-1}^{1}\\frac{1}{1+x^2}\\,dx",
+    "sympy_expr": "1/(1+x**2)",
+    "limits": [
+      -1,
+      1
+    ],
+    "answer_sympy": "pi/2",
+    "answer_display": "\\pi/2",
+    "technique_tags": [
+      "wildcard",
+      "yang:1.20"
+    ],
+    "yang": [
+      "yang:1.20"
+    ],
+    "solution_note": "Even arctan.",
+    "unit": "11-gaussian-wildcard"
+  },
+  {
+    "id": "U11-D06",
+    "technique": "wildcard",
+    "kind": "definite",
+    "latex": "\\int_{-1}^{1}|x|e^{-|x|}\\,dx",
+    "sympy_expr": "Abs(x)*exp(-Abs(x))",
+    "limits": [
+      -1,
+      1
+    ],
+    "answer_sympy": "2-4*exp(-1)",
+    "answer_display": "2-4e^{-1}",
+    "technique_tags": [
+      "wildcard",
+      "yang:1.20"
+    ],
+    "yang": [
+      "yang:1.20"
+    ],
+    "solution_note": "Even; split.",
+    "unit": "11-gaussian-wildcard"
+  },
+  {
+    "id": "U11-D07",
+    "technique": "wildcard",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2}\\frac{\\sin x}{\\sin x+\\cos x}\\,dx",
+    "sympy_expr": "sin(x)/(sin(x)+cos(x))",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "pi/4",
+    "answer_display": "\\pi/4",
+    "technique_tags": [
+      "wildcard",
+      "yang:1.20"
+    ],
+    "yang": [
+      "yang:1.20"
+    ],
+    "solution_note": "King revisit.",
+    "unit": "11-gaussian-wildcard"
+  },
+  {
+    "id": "U11-D08",
+    "technique": "gaussian",
+    "kind": "definite",
+    "latex": "\\int_0^{\\infty} x e^{-x}\\,dx",
+    "sympy_expr": "x*exp(-x)",
+    "limits": [
+      0,
+      "oo"
+    ],
+    "answer_sympy": "1",
+    "answer_display": "1",
+    "technique_tags": [
+      "gaussian",
+      "yang:1.19"
+    ],
+    "yang": [
+      "yang:1.19"
+    ],
+    "solution_note": "Parts / $\\Gamma(2)$.",
+    "unit": "11-gaussian-wildcard"
+  }
+]

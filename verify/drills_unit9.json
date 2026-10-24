@@ -1,0 +1,178 @@
+[
+  {
+    "id": "U09-D01",
+    "technique": "intermediate-trig",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi}\\sin^2 x\\,dx",
+    "sympy_expr": "sin(x)**2",
+    "limits": [
+      0,
+      "pi"
+    ],
+    "answer_sympy": "pi/2",
+    "answer_display": "\\pi/2",
+    "technique_tags": [
+      "intermediate-trig",
+      "yang:1.15"
+    ],
+    "yang": [
+      "yang:1.15"
+    ],
+    "solution_note": "Power-reduce.",
+    "unit": "09-intermediate-trig"
+  },
+  {
+    "id": "U09-D02",
+    "technique": "intermediate-trig",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2}\\cos^2 x\\,dx",
+    "sympy_expr": "cos(x)**2",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "pi/4",
+    "answer_display": "\\pi/4",
+    "technique_tags": [
+      "intermediate-trig",
+      "yang:1.15"
+    ],
+    "yang": [
+      "yang:1.15"
+    ],
+    "solution_note": "Power-reduce.",
+    "unit": "09-intermediate-trig"
+  },
+  {
+    "id": "U09-D03",
+    "technique": "intermediate-trig",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2}\\sin x\\cos^3 x\\,dx",
+    "sympy_expr": "sin(x)*cos(x)**3",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "1/4",
+    "answer_display": "1/4",
+    "technique_tags": [
+      "intermediate-trig",
+      "yang:1.15"
+    ],
+    "yang": [
+      "yang:1.15"
+    ],
+    "solution_note": "$u=\\cos x$.",
+    "unit": "09-intermediate-trig"
+  },
+  {
+    "id": "U09-D04",
+    "technique": "intermediate-trig",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/4}\\tan^2 x\\,dx",
+    "sympy_expr": "tan(x)**2",
+    "limits": [
+      0,
+      "pi/4"
+    ],
+    "answer_sympy": "1-pi/4",
+    "answer_display": "1-\\pi/4",
+    "technique_tags": [
+      "intermediate-trig",
+      "yang:1.15"
+    ],
+    "yang": [
+      "yang:1.15"
+    ],
+    "solution_note": "$\\tan^2=\\sec^2-1$.",
+    "unit": "09-intermediate-trig"
+  },
+  {
+    "id": "U09-D05",
+    "technique": "intermediate-trig-sub",
+    "kind": "definite",
+    "latex": "\\int_0^1\\frac{1}{\\sqrt{x^2+1}}\\,dx",
+    "sympy_expr": "1/sqrt(x**2+1)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "log(1+sqrt(2))",
+    "answer_display": "\\ln(1+\\sqrt{2})",
+    "technique_tags": [
+      "intermediate-trig-sub",
+      "yang:1.16"
+    ],
+    "yang": [
+      "yang:1.16"
+    ],
+    "solution_note": "Trig/hyp sub.",
+    "unit": "09-intermediate-trig"
+  },
+  {
+    "id": "U09-D06",
+    "technique": "intermediate-trig-sub",
+    "kind": "definite",
+    "latex": "\\int_0^1\\sqrt{x^2+1}\\,dx",
+    "sympy_expr": "sqrt(x**2+1)",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "log(1+sqrt(2))/2 + sqrt(2)/2",
+    "answer_display": "\\frac12\\ln(1+\\sqrt{2})+\\frac{\\sqrt{2}}{2}",
+    "technique_tags": [
+      "intermediate-trig-sub",
+      "yang:1.16"
+    ],
+    "yang": [
+      "yang:1.16"
+    ],
+    "solution_note": "Standard formula.",
+    "unit": "09-intermediate-trig"
+  },
+  {
+    "id": "U09-D07",
+    "technique": "intermediate-trig",
+    "kind": "definite",
+    "latex": "\\int_0^{\\pi/2}\\sin^3 x\\,dx",
+    "sympy_expr": "sin(x)**3",
+    "limits": [
+      0,
+      "pi/2"
+    ],
+    "answer_sympy": "2/3",
+    "answer_display": "2/3",
+    "technique_tags": [
+      "intermediate-trig",
+      "yang:1.15"
+    ],
+    "yang": [
+      "yang:1.15"
+    ],
+    "solution_note": "$\\sin^3=(1-\\cos^2)\\sin$.",
+    "unit": "09-intermediate-trig"
+  },
+  {
+    "id": "U09-D08",
+    "technique": "intermediate-trig-sub",
+    "kind": "definite",
+    "latex": "\\int_0^{\\sqrt{3}}\\frac{1}{x^2+1}\\,dx",
+    "sympy_expr": "1/(x**2+1)",
+    "limits": [
+      0,
+      "sqrt(3)"
+    ],
+    "answer_sympy": "pi/3",
+    "answer_display": "\\pi/3",
+    "technique_tags": [
+      "intermediate-trig-sub",
+      "yang:1.16"
+    ],
+    "yang": [
+      "yang:1.16"
+    ],
+    "solution_note": "$\\arctan\\sqrt3=\\pi/3$.",
+    "unit": "09-intermediate-trig"
+  }
+]

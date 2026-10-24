@@ -1,0 +1,5 @@
+$pdf_mode = 1;
+$interaction = 'nonstopmode';
+$aux_dir = '.latex-aux';
+$out_dir = '.latex-out';
+$ENV{'TEXINPUTS'} = 'templates:' . ($ENV{'TEXINPUTS'} // '');

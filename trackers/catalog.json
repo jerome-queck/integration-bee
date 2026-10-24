@@ -1,0 +1,341 @@
+{
+  "schema": "integration-bee-catalog/v1",
+  "nodes": [
+    {
+      "id": "basic-integration",
+      "yang": "1.1",
+      "unit": "01-foundations-substitution",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "basic-u-substitution",
+      "yang": "1.2",
+      "unit": "01-foundations-substitution",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "symmetry",
+      "yang": "1.3",
+      "unit": "02-symmetry-basic-trig",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "basic-exponential",
+      "yang": "1.4",
+      "unit": "03-exponential-parts",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "basic-trig-integrals",
+      "yang": "1.5",
+      "unit": "02-symmetry-basic-trig",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "basic-integration-by-parts",
+      "yang": "1.6",
+      "unit": "03-exponential-parts",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "basic-trig-substitution",
+      "yang": "1.7",
+      "unit": "04-trig-sub-circle",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "basic-partial-fractions",
+      "yang": "1.8",
+      "unit": "05-partial-fractions",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "area-partial-circle",
+      "yang": "1.9",
+      "unit": "04-trig-sub-circle",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "algebra-manipulation",
+      "yang": "1.10",
+      "unit": "01-foundations-substitution",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "intermediate-u-substitution",
+      "yang": "1.11",
+      "unit": "06-intermediate-u-sub",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "absolute-values",
+      "yang": "1.12",
+      "unit": "07-abs-reverse-product",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "reverse-product-rule",
+      "yang": "1.13",
+      "unit": "07-abs-reverse-product",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "basic-series",
+      "yang": "1.14",
+      "unit": "08-basic-series",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "intermediate-trig-integrals",
+      "yang": "1.15",
+      "unit": "09-intermediate-trig",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "intermediate-trig-substitution",
+      "yang": "1.16",
+      "unit": "09-intermediate-trig",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "inverse-functions",
+      "yang": "1.17",
+      "unit": "10-inverse-kings",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "kings-queens-rule",
+      "yang": "1.18",
+      "unit": "10-inverse-kings",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "gaussian-integrals",
+      "yang": "1.19",
+      "unit": "11-gaussian-wildcard",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "special-wildcard",
+      "yang": "1.20",
+      "unit": "11-gaussian-wildcard",
+      "gate": "round1",
+      "status": "ready"
+    },
+    {
+      "id": "modified-textbook",
+      "yang": "2.1",
+      "unit": "12-modified-sneaky-algebra",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "sneaky-algebra",
+      "yang": "2.2",
+      "unit": "12-modified-sneaky-algebra",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "forced-u-sub",
+      "yang": "2.3",
+      "unit": "13-forced-u-sub",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "gamma",
+      "yang": "2.4",
+      "unit": "14-gamma",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "parts-regular",
+      "yang": "2.5",
+      "unit": "15-parts-regular",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "trig-identities",
+      "yang": "2.6",
+      "unit": "16-trig-id-trig-sub",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "intermediate-trig-sub-ch2",
+      "yang": "2.7",
+      "unit": "16-trig-id-trig-sub",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "infinite-functions",
+      "yang": "2.8",
+      "unit": "17-infinite-functions",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "sneaky-symmetry",
+      "yang": "2.9",
+      "unit": "18-sneaky-symmetry-product",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "sneaky-product-rule",
+      "yang": "2.10",
+      "unit": "18-sneaky-symmetry-product",
+      "gate": null,
+      "status": "ready"
+    },
+    {
+      "id": "dutis",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "deferred"
+    },
+    {
+      "id": "weierstrass",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "deferred"
+    },
+    {
+      "id": "vector-calc",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "deferred"
+    },
+    {
+      "id": "beta",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "deferred"
+    },
+    {
+      "id": "zeta",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "deferred"
+    },
+    {
+      "id": "floor",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "deferred"
+    },
+    {
+      "id": "wallis",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "deferred"
+    },
+    {
+      "id": "euler-mascheroni",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "deferred"
+    },
+    {
+      "id": "catalan",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "deferred"
+    },
+    {
+      "id": "sample-bridge",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "index"
+    },
+    {
+      "id": "timed-mock-01",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "index"
+    },
+    {
+      "id": "past-paper-pdf-mock",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "index"
+    },
+    {
+      "id": "past-paper-2025",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "index"
+    },
+    {
+      "id": "past-paper-2024",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "index"
+    },
+    {
+      "id": "past-paper-2023",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "index"
+    },
+    {
+      "id": "past-paper-2022",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "index"
+    },
+    {
+      "id": "past-paper-2021",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "index"
+    },
+    {
+      "id": "past-paper-2020",
+      "yang": null,
+      "unit": null,
+      "gate": null,
+      "status": "index"
+    }
+  ]
+}

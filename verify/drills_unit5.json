@@ -1,0 +1,131 @@
+[
+  {
+    "id": "U05-D01",
+    "technique": "partial-fractions",
+    "kind": "definite",
+    "latex": "\\int_0^1 \\frac{1}{(x+1)(x+2)}\\,dx",
+    "sympy_expr": "1/((x+1)*(x+2))",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "log(4/3)",
+    "answer_display": "\\ln(4/3)",
+    "technique_tags": [
+      "partial-fractions",
+      "yang:1.8"
+    ],
+    "yang": [
+      "yang:1.8"
+    ],
+    "solution_note": "$1/(x+1)-1/(x+2)$.",
+    "unit": "05-partial-fractions"
+  },
+  {
+    "id": "U05-D02",
+    "technique": "partial-fractions",
+    "kind": "definite",
+    "latex": "\\int_1^2 \\frac{1}{x(x+1)}\\,dx",
+    "sympy_expr": "1/(x*(x+1))",
+    "limits": [
+      1,
+      2
+    ],
+    "answer_sympy": "log(4/3)",
+    "answer_display": "\\ln(4/3)",
+    "technique_tags": [
+      "partial-fractions",
+      "yang:1.8"
+    ],
+    "yang": [
+      "yang:1.8"
+    ],
+    "solution_note": "$1/x-1/(x+1)$.",
+    "unit": "05-partial-fractions"
+  },
+  {
+    "id": "U05-D03",
+    "technique": "partial-fractions",
+    "kind": "definite",
+    "latex": "\\int_3^4 \\frac{1}{(x-1)(x-2)}\\,dx",
+    "sympy_expr": "1/((x-1)*(x-2))",
+    "limits": [
+      3,
+      4
+    ],
+    "answer_sympy": "log(4/3)",
+    "answer_display": "\\ln(4/3)",
+    "technique_tags": [
+      "partial-fractions",
+      "yang:1.8"
+    ],
+    "yang": [
+      "yang:1.8"
+    ],
+    "solution_note": "$1/(x-2)-1/(x-1)$.",
+    "unit": "05-partial-fractions"
+  },
+  {
+    "id": "U05-D04",
+    "technique": "partial-fractions",
+    "kind": "indefinite",
+    "latex": "\\int \\frac{1}{x^2-1}\\,dx",
+    "sympy_expr": "1/(x**2-1)",
+    "limits": null,
+    "answer_sympy": "log(x-1)/2 - log(x+1)/2",
+    "answer_display": "\\frac12\\ln\\left|\\frac{x-1}{x+1}\\right|+C",
+    "technique_tags": [
+      "partial-fractions",
+      "yang:1.8"
+    ],
+    "yang": [
+      "yang:1.8"
+    ],
+    "solution_note": "Difference of logs.",
+    "unit": "05-partial-fractions"
+  },
+  {
+    "id": "U05-D05",
+    "technique": "partial-fractions",
+    "kind": "definite",
+    "latex": "\\int_0^1 \\frac{3x+4}{(x+1)(x+2)}\\,dx",
+    "sympy_expr": "(3*x+4)/((x+1)*(x+2))",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "log(9/2)",
+    "answer_display": "\\ln(9/2)",
+    "technique_tags": [
+      "partial-fractions",
+      "yang:1.8"
+    ],
+    "yang": [
+      "yang:1.8"
+    ],
+    "solution_note": "Solve $A/(x+1)+B/(x+2)$.",
+    "unit": "05-partial-fractions"
+  },
+  {
+    "id": "U05-D06",
+    "technique": "partial-fractions",
+    "kind": "definite",
+    "latex": "\\int_0^1 \\frac{x+5}{(x+1)(x+2)}\\,dx",
+    "sympy_expr": "(x+5)/((x+1)*(x+2))",
+    "limits": [
+      0,
+      1
+    ],
+    "answer_sympy": "log(128/27)",
+    "answer_display": "\\ln(128/27)",
+    "technique_tags": [
+      "partial-fractions",
+      "yang:1.8"
+    ],
+    "yang": [
+      "yang:1.8"
+    ],
+    "solution_note": "Partial fractions.",
+    "unit": "05-partial-fractions"
+  }
+]

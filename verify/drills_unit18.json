@@ -1,0 +1,162 @@
+[
+  {
+    "id": "U18-D01",
+    "unit": "18-sneaky-symmetry-product",
+    "technique": "sneaky-symmetry",
+    "kind": "definite",
+    "latex": "\\int_{2}^{4}(x-1)(x-2)(x-3)(x-4)(x-5)\\,dx",
+    "sympy_expr": "(x-1)*(x-2)*(x-3)*(x-4)*(x-5)",
+    "answer_sympy": "0",
+    "answer_display": "0",
+    "hint": "u=x-3 \u2192 odd on [-1,1].",
+    "technique_tags": [
+      "sneaky-symmetry",
+      "yang:2.9"
+    ],
+    "yang": [
+      "yang:2.9"
+    ],
+    "limits": [
+      2,
+      4
+    ]
+  },
+  {
+    "id": "U18-D02",
+    "unit": "18-sneaky-symmetry-product",
+    "technique": "sneaky-symmetry",
+    "kind": "definite",
+    "latex": "\\int_{-1}^{1}x(x^{2}-1)(x^{2}-4)\\,dx",
+    "sympy_expr": "x*(x**2-1)*(x**2-4)",
+    "answer_sympy": "0",
+    "answer_display": "0",
+    "hint": "Odd integrand.",
+    "technique_tags": [
+      "sneaky-symmetry",
+      "yang:2.9"
+    ],
+    "yang": [
+      "yang:2.9"
+    ],
+    "limits": [
+      -1,
+      1
+    ]
+  },
+  {
+    "id": "U18-D03",
+    "unit": "18-sneaky-symmetry-product",
+    "technique": "sneaky-symmetry",
+    "kind": "definite",
+    "latex": "\\int_{-\\pi/2}^{\\pi/2}x^{3}\\cos x\\,dx",
+    "sympy_expr": "x**3 * cos(x)",
+    "answer_sympy": "0",
+    "answer_display": "0",
+    "hint": "Odd\u00d7even=odd.",
+    "technique_tags": [
+      "sneaky-symmetry",
+      "yang:2.9"
+    ],
+    "yang": [
+      "yang:2.9"
+    ],
+    "limits": [
+      "-pi/2",
+      "pi/2"
+    ]
+  },
+  {
+    "id": "U18-D04",
+    "unit": "18-sneaky-symmetry-product",
+    "technique": "sneaky-symmetry",
+    "kind": "definite",
+    "latex": "\\int_{-1}^{1}\\frac{(\\arctan x)^{2}}{1+x^{2}}\\,dx",
+    "sympy_expr": "atan(x)**2 / (1+x**2)",
+    "answer_sympy": "pi**3/96",
+    "answer_display": "\\pi^{3}/96",
+    "hint": "u=arctan x; even leftover after odd cancel in related forms.",
+    "technique_tags": [
+      "sneaky-symmetry",
+      "yang:2.9"
+    ],
+    "yang": [
+      "yang:2.9"
+    ],
+    "limits": [
+      -1,
+      1
+    ]
+  },
+  {
+    "id": "U18-D05",
+    "unit": "18-sneaky-symmetry-product",
+    "technique": "sneaky-product-rule",
+    "kind": "indefinite",
+    "latex": "\\int\\bigl(\\sec^{3}x+\\sec x\\tan^{2}x\\bigr)\\,dx",
+    "sympy_expr": "sec(x)**3 + sec(x)*tan(x)**2",
+    "answer_sympy": "sec(x)*tan(x)",
+    "answer_display": "\\sec x\\tan x+C",
+    "hint": "Product rule for sec\u00b7tan.",
+    "technique_tags": [
+      "sneaky-product-rule",
+      "yang:2.10"
+    ],
+    "yang": [
+      "yang:2.10"
+    ]
+  },
+  {
+    "id": "U18-D06",
+    "unit": "18-sneaky-symmetry-product",
+    "technique": "sneaky-product-rule",
+    "kind": "indefinite",
+    "latex": "\\int e^{x}\\Bigl(2\\sqrt{x}+\\frac{1}{\\sqrt{x}}\\Bigr)\\,dx",
+    "sympy_expr": "exp(x)*(2*sqrt(x)+1/sqrt(x))",
+    "answer_sympy": "2*sqrt(x)*exp(x)",
+    "answer_display": "2\\sqrt{x}\\,e^{x}+C",
+    "hint": "d/dx[2 sqrt(x) e^x].",
+    "technique_tags": [
+      "sneaky-product-rule",
+      "yang:2.10"
+    ],
+    "yang": [
+      "yang:2.10"
+    ]
+  },
+  {
+    "id": "U18-D07",
+    "unit": "18-sneaky-symmetry-product",
+    "technique": "sneaky-product-rule",
+    "kind": "indefinite",
+    "latex": "\\int e^{x}(\\sin x-\\cos x)\\,dx",
+    "sympy_expr": "exp(x)*(sin(x)-cos(x))",
+    "answer_sympy": "-exp(x)*cos(x)",
+    "answer_display": "-e^{x}\\cos x+C",
+    "hint": "d/dx[e^x cos]=e^x(cos-sin).",
+    "technique_tags": [
+      "sneaky-product-rule",
+      "yang:2.10"
+    ],
+    "yang": [
+      "yang:2.10"
+    ]
+  },
+  {
+    "id": "U18-D08",
+    "unit": "18-sneaky-symmetry-product",
+    "technique": "sneaky-product-rule",
+    "kind": "indefinite",
+    "latex": "\\int\\bigl(\\sin(\\ln x)+\\cos(\\ln x)\\bigr)\\,dx",
+    "sympy_expr": "sin(log(x))+cos(log(x))",
+    "answer_sympy": "x*sin(log(x))",
+    "answer_display": "x\\sin(\\ln x)+C",
+    "hint": "u=ln x \u2192 e^u(sin+cos)=d/dx[e^u sin].",
+    "technique_tags": [
+      "sneaky-product-rule",
+      "yang:2.10"
+    ],
+    "yang": [
+      "yang:2.10"
+    ]
+  }
+]
