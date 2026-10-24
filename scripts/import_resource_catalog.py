@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Rewrite problems/records.jsonl from an extract JSON list. Idempotent."""
-
 from __future__ import annotations
 
 import argparse

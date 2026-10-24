@@ -1,5 +1,3 @@
-"""Contest and Yang problem records. The file is the catalog. Learner state stays elsewhere."""
-
 from __future__ import annotations
 
 import json

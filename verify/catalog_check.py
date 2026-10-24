@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Check problems/records.jsonl and the read-only catalog commands."""
-
 from __future__ import annotations
 
 import json
