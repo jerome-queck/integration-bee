@@ -25,4 +25,4 @@ files:
   solutions_tex: solutions.tex
   drills_feed: drills.md
   machine_drills: ../../verify/drills_unit19.json
-latex_note: "Self-contained article-class. Rewrap onto templates/ is deferred."
+latex_note: "Uses templates/ via TEXINPUTS. See templates/README.md."

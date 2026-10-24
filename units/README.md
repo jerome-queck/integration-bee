@@ -51,4 +51,4 @@ drills.md          # thin CLI table: ids, tags, sympy answers
 | `35-modified-famous/` | Modified Famous Integrals | 6.8 | ready |
 | `36-unique-tricks/` | Unique Tricks | 6.9 | ready |
 
-Yang Ch.1–6 concept units through 6.9 are complete (inventory 4.3 skipped). Notes for units 19–36 are self-contained articles; rewrap onto `templates/` is deferred. Past pedagogy lives under `../past/` (not as `units/*` past_paper dirs). Gate: `../verify/unit_order_check.py` + `past_presence_check.py`.
+Yang Ch.1–6 concept units through 6.9 are complete (inventory 4.3 skipped). Every unit note inputs `templates/`. Past pedagogy lives under `../past/` (not as `units/*` past_paper dirs). Gate: `../verify/unit_order_check.py` + `past_presence_check.py`.
