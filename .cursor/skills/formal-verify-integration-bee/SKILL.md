@@ -38,7 +38,7 @@ The plain command exits 0 on the real tree. Each `--expect-fail` exits 0 only wh
 | `mock_block_reason` | `verify/model.py`, called from `scripts/control-integration-bee` |
 | `tick_problem`, `attempt_problem`, `heatmap_problem`, `streak_problem` | `verify/model.py` |
 
-last_confirmed: uncommitted
+last_confirmed: 85615c62d64fc04fc8bc1ed62b9694ff9068aa19
 
 Move `last_confirmed` to the current `git log -1 --format=%H -- verify/model.py` only after you rerun the commands above and they still describe that file. If `verify/model.py` changes and the hash does not, rerun the checks before trusting them.
 
