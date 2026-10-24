@@ -1,0 +1,10 @@
+ts	phase	decision	why	evidence	result
+2026-10-24T15:37:00Z	frame	Land one PR with Yang units 01-18 and the all-rounds indexes, and keep contest PDFs out of git	The public repo was LICENSE-only and both packs have to stay	docs/decisions/0002-all-rounds-and-yang.md	open
+2026-10-24T15:37:00Z	fetch	Replaced the hand-rolled extractor with the attached fetch.sh and inventory	The attached pack is the committed surface Jerome asked to use	sources/fetch.sh, past/inventory.json	committed in 6c0743c
+2026-10-24T15:40:00Z	verify	all_rounds_check exits 0 when no PDFs are on disk, and fails a partial fetch	CI does not run fetch.sh, and a half-downloaded tree should still fail	verify/all_rounds_check.py:73	skip PASS and full PASS
+2026-10-24T15:41:00Z	copyright	Commit the named Yang PDF and ignore site HTML plus the syllabus text dump	Official binaries stay fetch-only, and a plaintext book extraction is not in the repo	.gitignore, sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf	gitignored mirrors, PDF committed
+2026-10-24T15:43:00Z	invariants	Named the Wallis product in the deferred syllabus row	The checker looks for the word Wallis and the row only had the id wallis	skill-tree.md	PASS invariants
+2026-10-24T15:44:00Z	cli	Accept --format after the subcommand, make doctor ready a boolean, and list attempts in progress show	The feature map puts --format last, and a correct check has to be readable back	scripts/control-integration-bee	U01-D08 correct true
+2026-10-24T15:46:00Z	latex	Put cos squared in math mode in unit 10 solutions	A bare caret stopped latexmk on that file	units/10-inverse-kings/solutions.tex:13	PASS latex 55 files
+2026-10-24T15:47:35Z	commits	Three commits on cursor/land-integration-bee-285e, then stamped last_confirmed to the model.py commit	Structure check compares the skill line to git log for verify/model.py	6c0743c, 85615c6, 4b21833	PASS structure
+2026-10-24T15:52:00Z	review	Removed the argv rewrite, the duplicate wrong-answer assignment, and the sample-id numeric escape	A comment pass marked those as workarounds. Reflection identity proves the sample instead	8ded136	PASS verify
