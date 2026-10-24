@@ -33,6 +33,9 @@ mutations:
 	$(PYTHON) verify/invariants.py --expect-fail mock-before-ready
 	$(PYTHON) verify/invariants.py --expect-fail duplicate-streak-day
 	$(PYTHON) verify/invariants.py --expect-fail bad-session-phase
+	$(PYTHON) verify/invariants.py --expect-fail mark-one-bool
+	$(PYTHON) verify/invariants.py --expect-fail mark-has-correct
+	$(PYTHON) verify/invariants.py --expect-fail sticky-stored-strength
 
 verify:
 	bash verify/run.sh

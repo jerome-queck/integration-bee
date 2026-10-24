@@ -336,6 +336,32 @@ def plan_teach(session, attempts, ticks, catalog, drills, heat, updated: str) ->
     }
 
 
+def gap_rows(graded: dict, problem_id: str, method_note: str) -> tuple[dict | None, dict | None]:
+    if not graded["correct"]:
+        return None, None
+    technique = graded["tags"][0] if graded["tags"] else problem_id
+    if method_note:
+        return (
+            {
+                "id": problem_id,
+                "answer_ok": True,
+                "method_ok": False,
+                "technique": technique,
+                "note": method_note,
+            },
+            {"technique": technique, "note": method_note},
+        )
+    return (
+        {
+            "id": problem_id,
+            "answer_ok": True,
+            "method_ok": True,
+            "technique": technique,
+        },
+        None,
+    )
+
+
 def plan_mark(session, attempts, ticks, catalog, drills, feed, body: dict, updated: str) -> dict:
     problem_id = body.get("problem_id")
     source = body.get("source")
@@ -365,6 +391,7 @@ def plan_mark(session, attempts, ticks, catalog, drills, feed, body: dict, updat
             node = _node_for_problem(problem_id, catalog, drills, session)
             if node is not None and distinct_correct(node, drills, attempts) >= 2 and not _solid(ticks, node["id"]):
                 tick = {"node": node["id"], "status": "solid"}
+        ledger, sticky = gap_rows(graded, problem_id, method_note) if method_note else (None, None)
         return {
             "exit": 0 if graded["correct"] else 1,
             "error": None,
@@ -381,6 +408,8 @@ def plan_mark(session, attempts, ticks, catalog, drills, feed, body: dict, updat
             },
             "tick": tick,
             "journal": None,
+            "ledger": ledger,
+            "sticky": sticky,
         }
     note = "final answer matched" if graded["correct"] else "final answer differed"
     if graded["manual"]:
@@ -414,6 +443,7 @@ def plan_mark(session, attempts, ticks, catalog, drills, feed, body: dict, updat
         say = f"The final answer does not match. Teach one gap, then offer a drill from {unit}."
     if tick:
         say = f"{say} {tick['node']} is now solid."
+    ledger, sticky = gap_rows(graded, problem_id, method_note)
     return {
         "exit": 0 if graded["correct"] else 1,
         "error": None,
@@ -439,6 +469,8 @@ def plan_mark(session, attempts, ticks, catalog, drills, feed, body: dict, updat
         },
         "tick": tick,
         "journal": journal,
+        "ledger": ledger,
+        "sticky": sticky,
     }
 
 

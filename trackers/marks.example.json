@@ -1,0 +1,12 @@
+{
+  "schema": "integration-bee-marks/v1",
+  "example": true,
+  "marks": {
+    "U01-D01": {
+      "answer_ok": true,
+      "method_ok": false,
+      "technique": "u-sub",
+      "note": "Final value matched. The factor was not the derivative of the inside."
+    }
+  }
+}

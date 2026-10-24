@@ -1,5 +1,3 @@
-"""Predicates for unit order, Round 1 readiness, and tracker records."""
-
 from __future__ import annotations
 
 import re
@@ -194,3 +192,67 @@ def touch_streak(days: list[str], today: date) -> dict:
         best = max(best, run)
         prev = cur
     return {"days": ordered, "current": current, "best": best}
+
+
+STICKY_FULL = 5
+
+
+def mark_problem(marks: dict) -> str | None:
+    for mark_id, row in marks.items():
+        if not mark_id:
+            return "mark needs an id"
+        if not isinstance(row, dict):
+            return "mark needs answer_ok and method_ok"
+        if "correct" in row:
+            return "mark has correct"
+        answer_ok = row.get("answer_ok")
+        method_ok = row.get("method_ok")
+        if not isinstance(answer_ok, bool) or not isinstance(method_ok, bool):
+            return "mark needs answer_ok and method_ok"
+        technique = row.get("technique")
+        if not isinstance(technique, str) or not technique:
+            return "mark needs technique"
+        if "note" in row:
+            note = row["note"]
+            if not isinstance(note, str) or not note:
+                return "mark needs a note"
+    return None
+
+
+def put_mark(marks: dict, mark_id: str, *, answer_ok: bool, method_ok: bool, technique: str, note: str = "") -> dict:
+    out = {key: dict(row) for key, row in marks.items()}
+    row = {"answer_ok": answer_ok, "method_ok": method_ok, "technique": technique}
+    if note:
+        row["note"] = note
+    out[mark_id] = row
+    return out
+
+
+def sticky_problem(cards: dict) -> str | None:
+    for technique, card in cards.items():
+        if not technique:
+            return "sticky needs a technique"
+        if not isinstance(card, dict):
+            return "sticky needs a note"
+        note = card.get("note")
+        if not isinstance(note, str) or not note:
+            return "sticky needs a note"
+        touched = card.get("touched")
+        if not isinstance(touched, str) or not ISO_DAY.match(touched):
+            return "bad sticky day"
+        if "strength" in card:
+            return "sticky strength is derived"
+    return None
+
+
+def put_sticky(cards: dict, technique: str, note: str, today: date) -> dict:
+    out = {key: dict(card) for key, card in cards.items()}
+    out[technique] = {"note": note, "touched": today.isoformat()}
+    return out
+
+
+def sticky_strength(touched: str, today: date) -> int:
+    start = date.fromisoformat(touched)
+    if start > today:
+        return STICKY_FULL
+    return max(0, STICKY_FULL - (today - start).days)

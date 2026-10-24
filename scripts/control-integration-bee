@@ -73,6 +73,8 @@ def empty(name: str) -> dict:
         "streaks": {"schema": "integration-bee-streaks/v1", "days": [], "current": 0, "best": 0},
         "skill-ticks": {"schema": "integration-bee-skill-ticks/v1", "ticks": {}},
         "session": turn_contract.empty_session(),
+        "marks": {"schema": "integration-bee-marks/v1", "marks": {}},
+        "stickies": {"schema": "integration-bee-stickies/v1", "cards": {}},
     }
     return blanks[name]
 
@@ -543,6 +545,40 @@ def apply_tick(directory: Path, tick: dict | None) -> None:
     write_json(directory, "skill-ticks", ticks)
 
 
+def apply_ledger(directory: Path, ledger: dict | None) -> None:
+    if not ledger:
+        return
+    doc = read_json(directory, "marks")
+    doc["marks"] = model.put_mark(
+        doc.get("marks") or {},
+        ledger["id"],
+        answer_ok=ledger["answer_ok"],
+        method_ok=ledger["method_ok"],
+        technique=ledger["technique"],
+        note=ledger.get("note") or "",
+    )
+    err = model.mark_problem(doc["marks"])
+    if err:
+        die(err)
+    write_json(directory, "marks", doc)
+
+
+def apply_sticky(directory: Path, sticky: dict | None) -> None:
+    if not sticky:
+        return
+    doc = read_json(directory, "stickies")
+    doc["cards"] = model.put_sticky(
+        doc.get("cards") or {},
+        sticky["technique"],
+        sticky["note"],
+        today(),
+    )
+    err = model.sticky_problem(doc["cards"])
+    if err:
+        die(err)
+    write_json(directory, "stickies", doc)
+
+
 def apply_journal(directory: Path, journal: dict | None) -> None:
     if not journal:
         return
@@ -585,6 +621,8 @@ def finish_plan(directory: Path, plan: dict, fmt: str) -> int:
             attempt.get("submitted"),
         )
     apply_journal(directory, plan.get("journal"))
+    apply_ledger(directory, plan.get("ledger"))
+    apply_sticky(directory, plan.get("sticky"))
     apply_tick(directory, plan.get("tick"))
     write_session(directory, plan["session"])
     payload = turn_payload(
