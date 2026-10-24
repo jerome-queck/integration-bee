@@ -15,6 +15,6 @@ jobs:
         run: |
           python -m pip install sympy
           sudo apt-get update
-          sudo apt-get install -y latexmk texlive-latex-recommended texlive-fonts-recommended
+          sudo apt-get install -y latexmk texlive-latex-recommended texlive-fonts-recommended default-jre-headless
       - name: make check
         run: make check

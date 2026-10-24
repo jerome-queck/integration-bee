@@ -1,0 +1,160 @@
+---
+title: "Tracker writes"
+config:
+  markdownAutoWrap: false
+  state:
+    useMaxWidth: false
+---
+stateDiagram-v2
+%% tla-blob: 7a61e1a85315d2fb25664d1cfb9c33841961b224
+  classDef plainWrong fill:#f4f6f7,stroke:#c0392b,stroke-width:4px,color:#7b241c
+  classDef group0 fill:#d5f5e3,stroke:#6b7b72,color:#1b2631
+  classDef group1 fill:#f5b7b1,stroke:#7b5c59,color:#1b2631
+  classDef group1Wrong fill:#f5b7b1,stroke:#c0392b,stroke-width:4px,color:#7b241c
+  classDef group2 fill:#d6eaf8,stroke:#6b757c,color:#1b2631
+  state "Legend" as legend {
+    state "Tracker agrees" as legendGroup0
+    state "Tracker disagrees" as legendGroup1
+    state "Write in progress" as legendGroup2
+    state "Breaks a rule" as legendWrong
+  }
+  class legendGroup0 group0
+  class legendGroup1 group1
+  class legendGroup2 group2
+  class legendWrong plainWrong
+  state "Saving the tracker" as s0
+  state "Tracker idle" as s1
+  state "Tracker idle, a cold mock<br/>is open" as s2
+  state "Tracker idle, a cold mock<br/>is open, a mock is scored" as s3
+  state "Tracker idle, a cold mock<br/>is open, a mock start was<br/>overwritten" as s4
+  state "Tracker idle, a correct<br/>attempt is saved" as s5
+  state "Tracker idle, a correct<br/>attempt is saved, a cold<br/>mock is open" as s6
+  state "Tracker idle, a correct<br/>attempt is saved, a mock<br/>is scored" as s7
+  state "Tracker idle, a correct<br/>attempt is saved, progress<br/>disagrees" as s8
+  state "Tracker idle, a correct<br/>attempt is saved, the<br/>heatmap disagrees" as s9
+  state "Tracker idle, a correct<br/>attempt is saved, the<br/>heatmap disagrees, a cold<br/>mock is open" as s10
+  state "Tracker idle, a correct<br/>attempt is saved, the<br/>heatmap disagrees, a mock<br/>is scored" as s11
+  state "Tracker idle, a correct<br/>attempt is saved, the<br/>heatmap disagrees,<br/>progress disagrees" as s12
+  state "Tracker idle, a correct<br/>attempt is saved, the<br/>heatmap disagrees, the<br/>skill tick is in progress" as s13
+  state "Tracker idle, a correct<br/>attempt is saved, the<br/>skill tick is in progress" as s14
+  state "Tracker idle, a miss is<br/>saved, the heatmap<br/>disagrees" as s15
+  state "Tracker idle, a miss is<br/>saved, the heatmap<br/>disagrees, a cold mock is<br/>open" as s16
+  state "Tracker idle, a miss is<br/>saved, the heatmap<br/>disagrees, a mock is<br/>scored" as s17
+  state "Tracker idle, a miss is<br/>saved, the heatmap<br/>disagrees, progress<br/>disagrees" as s18
+  state "Tracker idle, a miss is<br/>saved, the heatmap<br/>disagrees, progress<br/>disagrees, a cold mock is<br/>open" as s19
+  state "Tracker idle, a miss is<br/>saved, the heatmap<br/>disagrees, progress<br/>disagrees, a mock is<br/>scored" as s20
+  state "Tracker idle, a miss is<br/>saved, the heatmap<br/>disagrees, the skill tick<br/>is in progress" as s21
+  state "Tracker idle, a miss is<br/>saved, the weak tag is set" as s22
+  state "Tracker idle, a miss is<br/>saved, the weak tag is<br/>set, a cold mock is open" as s23
+  state "Tracker idle, a miss is<br/>saved, the weak tag is<br/>set, a mock is scored" as s24
+  state "Tracker idle, a miss is<br/>saved, the weak tag is<br/>set, progress disagrees" as s25
+  state "Tracker idle, a miss is<br/>saved, the weak tag is<br/>set, progress disagrees, a<br/>cold mock is open" as s26
+  state "Tracker idle, a miss is<br/>saved, the weak tag is<br/>set, progress disagrees, a<br/>mock is scored" as s27
+  state "Tracker idle, a miss is<br/>saved, the weak tag is<br/>set, the skill tick is in<br/>progress" as s28
+  state "Tracker idle, a mock is<br/>scored" as s29
+  state "Tracker idle, a mock is<br/>scored, a mock start was<br/>overwritten" as s30
+  state "Tracker idle, an attempt<br/>was overwritten" as s31
+  state "Tracker idle, an attempt<br/>was overwritten, progress<br/>disagrees" as s32
+  state "Tracker idle, an attempt<br/>was overwritten, the<br/>heatmap disagrees" as s33
+  state "Tracker idle, an attempt<br/>was overwritten, the<br/>heatmap disagrees,<br/>progress disagrees" as s34
+  state "Tracker idle, an attempt<br/>was overwritten, the weak<br/>tag is set" as s35
+  state "Tracker idle, an attempt<br/>was overwritten, the weak<br/>tag is set, progress<br/>disagrees" as s36
+  state "Tracker idle, progress<br/>disagrees" as s37
+  state "Tracker idle, progress<br/>disagrees, a cold mock is<br/>open" as s38
+  state "Tracker idle, progress<br/>disagrees, a mock is open" as s39
+  state "Tracker idle, progress<br/>disagrees, a mock is<br/>scored" as s40
+  state "Tracker idle, the skill<br/>tick is in progress" as s41
+  state "Tracker idle, the skill<br/>tick is in progress, a<br/>cold mock is open" as s42
+  state "Tracker idle, the skill<br/>tick is in progress, a<br/>mock is open" as s43
+  state "Tracker idle, the skill<br/>tick is in progress, a<br/>mock is scored" as s44
+  [*] --> s1
+  s1 --> s0 : start saving a check or start<br/>saving a miss or write the<br/>solid tick or read the tracker<br/>to start a cold mock
+  s0 --> s37 : the process stops
+  s0 --> s41 : the process stops or refresh<br/>progress after the tick
+  s0 --> s9 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s18 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s2 : the process stops or write<br/>progress from the mock's old<br/>read or keep the open mock
+  s0 --> s5 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s22 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s25 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s12 : the process stops
+  s0 --> s13 : the process stops or refresh<br/>progress after the tick
+  s0 --> s21 : the process stops or refresh<br/>progress after the tick
+  s0 --> s39 : the process stops
+  s0 --> s43 : write progress from the mock's<br/>old read or the process stops<br/>or refresh progress after the<br/>tick
+  s0 --> s38 : the process stops or write<br/>progress from the mock's old<br/>read
+  s0 --> s42 : the process stops or refresh<br/>progress after the tick
+  s0 --> s29 : the process stops or refresh<br/>progress after the score or<br/>keep the open mock
+  s0 --> s33 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s34 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s8 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s14 : the process stops or refresh<br/>progress after the tick or<br/>write progress from the<br/>check's old read
+  s0 --> s10 : the process stops or write<br/>progress from the mock's old<br/>read
+  s0 --> s28 : refresh progress after the<br/>tick or the process stops or<br/>write progress from the<br/>check's old read
+  s0 --> s19 : the process stops
+  s0 --> s16 : write progress from the mock's<br/>old read or the process stops
+  s0 --> s4 : the process stops or write<br/>progress from the mock's old<br/>read or refresh progress after<br/>the score
+  s0 --> s31 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s35 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s36 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s15 : the process stops or write<br/>progress from the check's old<br/>read
+  s0 --> s6 : the process stops or write<br/>progress from the mock's old<br/>read or write progress from<br/>the check's old read
+  s0 --> s23 : the process stops or write<br/>progress from the mock's old<br/>read or write progress from<br/>the check's old read
+  s0 --> s26 : the process stops
+  s0 --> s40 : the process stops
+  s0 --> s44 : refresh progress after the<br/>score or the process stops or<br/>refresh progress after the<br/>tick
+  s0 --> s32 : write progress from the<br/>check's old read or the<br/>process stops
+  s0 --> s11 : the process stops or refresh<br/>progress after the score
+  s0 --> s20 : the process stops
+  s0 --> s17 : refresh progress after the<br/>score or the process stops
+  s0 --> s30 : the process stops or refresh<br/>progress after the score or<br/>write progress from the mock's<br/>old read
+  s0 --> s3 : the process stops or write<br/>progress from the mock's old<br/>read or refresh progress after<br/>the score
+  s0 --> s7 : the process stops or refresh<br/>progress after the score or<br/>write progress from the<br/>check's old read
+  s0 --> s24 : the process stops or refresh<br/>progress after the score or<br/>write progress from the<br/>check's old read
+  s0 --> s27 : the process stops
+  s0 --> s0 : replace the attempts file or<br/>start saving a check or the<br/>process stops or read the<br/>tracker to start a cold mock<br/>or replace the mock file or<br/>start saving a miss or replace<br/>the heatmap file or write<br/>progress from the check's old<br/>read
+  class s0 group2
+  class s1 group0
+  class s2 group0
+  class s3 group0
+  class s4 group1Wrong
+  class s5 group0
+  class s6 group0
+  class s7 group0
+  class s8 group1Wrong
+  class s9 group1Wrong
+  class s10 group1Wrong
+  class s11 group1Wrong
+  class s12 group1Wrong
+  class s13 group1Wrong
+  class s14 group0
+  class s15 group1Wrong
+  class s16 group1Wrong
+  class s17 group1Wrong
+  class s18 group1Wrong
+  class s19 group1Wrong
+  class s20 group1Wrong
+  class s21 group1Wrong
+  class s22 group0
+  class s23 group0
+  class s24 group0
+  class s25 group1Wrong
+  class s26 group1Wrong
+  class s27 group1Wrong
+  class s28 group0
+  class s29 group0
+  class s30 group1Wrong
+  class s31 group1Wrong
+  class s32 group1Wrong
+  class s33 group1Wrong
+  class s34 group1Wrong
+  class s35 group1Wrong
+  class s36 group1Wrong
+  class s37 group1Wrong
+  class s38 group1Wrong
+  class s39 group1Wrong
+  class s40 group1Wrong
+  class s41 group0
+  class s42 group0
+  class s43 group0
+  class s44 group0
