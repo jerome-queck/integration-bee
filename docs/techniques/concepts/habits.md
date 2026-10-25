@@ -22,6 +22,22 @@ Open the parent card in `README.md` first. Open this page when the integrand is 
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 
+### Miss to the next drill
+
+| Miss | Next drill |
+|---|---|
+| A fresh technique for an integrand that is already \(e^u\,du\) | `U12-D01` |
+| Partial fractions on a polynomial that already cancels | `U12-D05` |
+| A root substitution on an integrand that is already an arctangent | `U19-D08`, stored \(\pi/2\) |
+| A report of \(0\) for an even integrand | `U18-D04`, stored \(\pi^3/96\) |
+| Parts begun before the product is guessed | `U18-D05` |
+| A new identity for a sum of textbook terms | `U23-D08` |
+| Two parts reductions for one complex exponential | `U32-D05`, stored \(1/2\) |
+| The half-angle substitution when the numerator is already the derivative | `U33-D01`, stored \((\ln 2)/2\) |
+| Inversion when the numerator is already the derivative of the denominator | `U33-D08`, stored \(1/2\) |
+| A new zeta value, or an elementary antiderivative of \(e^{-x^2}\) | `U35-D01`. Keep the series the unit prints. Do not tick `zeta`. |
+| \(G\) replaced by a logarithm or a rational | `U36-D03` stays \(G\). The parameter drill is `U36-D01`, stored \(\ln 2\). |
+
 ## Modified textbook
 
 Use this when one textbook antiderivative is hiding behind an extra derivative factor. The stored drill is `U12-D01`: \(u=e^x\) turns \(\int e^x e^{e^x}\,dx\) into \(e^{e^x}+C\). The same substitution on \([0,1]\) is the fence.
@@ -196,4 +212,4 @@ A named constant was unwrapped. \(G\) stays \(G\). The Basel values in unit 35 s
 
 ## On a miss
 
-Teach this file, then the unit in the table. Set the stored drill named in the section. The fences above are scales of those drills. They are not drill ids. Leave `floor` and `batis` unticked. A correct value reached by a second technique still needs the first move named.
+Teach this file, then the unit in the table. Use the miss table, then the stored drill named in the section. The fences above are scales of those drills. They are not drill ids. Leave `floor` and `batis` unticked. A correct value reached by a second technique still needs the first move named.

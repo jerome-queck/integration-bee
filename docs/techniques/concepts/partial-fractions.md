@@ -13,6 +13,17 @@ Divide first when the numerator's degree is at least the denominator's. That div
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 
+### Miss to the next drill
+
+| Miss | Next drill |
+|---|---|
+| Distinct linear factors, and the cover-up step was skipped | `U05-D01`, stored \(\ln(4/3)\). |
+| A logarithm was quoted on an interval that meets a pole | Refuse the number. `U05-D02` keeps both endpoints off the poles, on \([1,2]\), stored \(\ln(4/3)\). `U05-D03` does the same on \([3,4]\), stored \(\ln(4/3)\). |
+| The numerator was not \(1\) | `U05-D05`, stored \(\ln(9/2)\). Then `U05-D06`, stored \(\ln(128/27)\). |
+| \(x^2-1\) was left as one fraction | `U05-D04`, stored \(\frac12\ln\lvert(x-1)/(x+1)\rvert\). |
+| A repeated factor was given one coefficient | After `basic-partial-fractions` is solid, `U22-D07`, then `U22-D08` on \([1,2]\), stored \(\frac12+\ln(3/4)\). |
+| Three distinct linear factors | `U22-D06`, after the same prerequisite. |
+
 ## Distinct linear factors
 
 Cover a factor and read the coefficient. On \([0,1]\),
@@ -71,4 +82,4 @@ A pole sat inside the interval, or on an endpoint, and a log difference was quot
 
 ## On a miss
 
-Teach this file, then unit 05. Set `U05-D01`. Repeated factors and three-factor decompositions are unit 22, after `basic-partial-fractions` is solid. A correct value from an undivided improper fraction still needs the division named.
+Teach this file, then unit 05. Use the miss table. The first drill is `U05-D01`. Repeated factors and three-factor decompositions are unit 22, after `basic-partial-fractions` is solid. A correct value from an undivided improper fraction still needs the division named.

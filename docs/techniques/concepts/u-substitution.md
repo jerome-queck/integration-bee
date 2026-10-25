@@ -15,6 +15,16 @@ Coach card. Original examples on this page were checked with SymPy. They are not
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 
+### Miss to the next drill
+
+| Miss | Next drill |
+|---|---|
+| The constant in \(du\) was omitted | `U01-D01`, stored \(\ln 2\). The higher power with the same constant is `U01-D03`, stored \((e-1)/2\). |
+| The definite limits were left in \(x\) | `U06-D01`, stored \((e-1)/4\). |
+| \(x e^x\) was treated as a substitution | `U03-D03`, stored \(1\). |
+| The derivative was missing and \(x\) was not solved for | The worked example on this card, then `U13-D01`, after `intermediate-u-substitution` is solid. |
+| A root was not cleared before dividing | The power example on this card, then a unit 19 drill. `U19-D08` stores \(\pi/2\) and stops. |
+
 ## When to use it
 
 Use a substitution when one factor is a constant times the derivative of an inside function, and the rest of the integrand is a function of that inside function. On a definite integral, change the limits and leave the answer in the new variable.
@@ -97,4 +107,4 @@ The integrand is \(x e^x\). The exponential's derivative is itself, and the \(x\
 
 ## On a miss
 
-Teach this file, then the unit in the table. Set `U01-D01` at difficulty 1, `U06-D01` at difficulty 2, and the unit 13 or unit 19 drill only after those are solid. A correct value reached by the wrong substitution still needs the substitution named.
+Teach this file, then the unit in the table. Use the miss table. Set `U01-D01` at difficulty 1, `U06-D01` at difficulty 2, and the unit 13 or unit 19 drill only after those are solid. A correct value reached by the wrong substitution still needs the substitution named.

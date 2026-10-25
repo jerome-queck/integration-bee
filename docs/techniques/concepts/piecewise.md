@@ -15,6 +15,18 @@ The catalog id `floor` has no unit. The drills ride on `special-wildcard`. Teach
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 
+### Miss to the next drill
+
+| Miss | Next drill |
+|---|---|
+| The bars were dropped on the whole interval | `U07-D01`, stored \(1\) on \([-1,1]\). Then `U07-D02`, stored \(1\), with the kink at \(1\). |
+| A symmetric shortcut was used where the interval is not symmetric about the kink | `U07-D07`, stored \(5/2\) on \([-2,1]\). |
+| \(\lvert\sin x\rvert\) was integrated as \(\sin x\) through a zero | `U07-D03`, stored \(2\) on \([0,\pi]\). |
+| A floor on a negative argument was replaced by \(\lvert x\rvert\) or by \(-x\) | `U11-D12`, stored \(-3\). Leave `floor` unticked. |
+| The fractional part was integrated as the floor | `U11-D10`, stored \(3/2\). |
+| A last piece shorter than \(1\) was given length \(1\) | `U11-D11`, stored \(2\) on \([0,5/2]\). |
+| An exponential times an absolute value was not split | `U11-D06`, stored \(2-4e^{-1}\). |
+
 ## When to split
 
 An absolute value changes formula at each zero of its inside. Split the integral there, drop the bars on each piece, and add. A single endpoint does not change a definite integral.
@@ -55,4 +67,4 @@ A floor on a negative argument was replaced by \(-x\) or by \(|x|\). Use the gre
 
 ## On a miss
 
-An absolute-value miss teaches this file, then unit 07. Set `U07-D01`. A floor miss teaches `docs/techniques/floor.md` and sets one of `U11-D09` through `U11-D12`. Leave `floor` unticked.
+An absolute-value miss teaches this file, then unit 07. Use the miss table. The first drill is `U07-D01`. A floor miss teaches `docs/techniques/floor.md` and sets the floor row of that table. Leave `floor` unticked.

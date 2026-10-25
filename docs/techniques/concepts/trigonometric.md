@@ -23,6 +23,19 @@ Coach card. Original examples on this page were checked with SymPy. They are not
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 
+### Miss to the next drill
+
+| Miss | Next drill |
+|---|---|
+| A standard secant-squared was expanded | `U02-D06`, stored \(1\). |
+| A pure sine power was sent through \(t=\tan(x/2)\) | `U20-D01`, stored \(3\pi/16\), or `U29-D01`, stored \(5\pi/32\). |
+| A leftover factor of \(\sin x\) was reduced | `U29-D04`, stored \(1/6\). The same refusal in unit 20 is `U20-D06`, stored \(2/15\). |
+| \(\sec^2 x\) was already present and the half-angle was used | `U29-D08`, stored \(1\). `U29-D03` is the faded substitution, stored \(\frac12\tan^2 x\). |
+| \(\tan^2 x\) was treated as a Wallis power | `U29-D02`, stored \(1-\pi/4\). `U09-D04` stores the same value. |
+| Both powers were even and the reduction was skipped | Bare `U29-D06`, stored \(\pi/32\). |
+| A radical was expanded as a binomial | `U04-D01`, stored \(\pi/2\). A later radical is `U21-D08`, stored \(\pi/4\). |
+| A full-period cross term was given the value of the square | `U23-D01`, stored \(0\). The square of a sum is `U23-D02`, stored \(3\pi\). |
+
 ## Basic antiderivatives
 
 \(\int\sin x\,dx=-\cos x\), \(\int\cos x\,dx=\sin x\), \(\int\sec^2 x\,dx=\tan x\). Unit 02 stores \(\int_0^{\pi/4}\sec^2 x\,dx=1\) as `U02-D06`.
@@ -144,4 +157,4 @@ A full-period cross term was given the value of the square. The square is the ca
 
 ## On a miss
 
-Teach this file. A half-angle miss then opens unit 26. A power miss opens unit 09 or unit 20. Set `U02-D06` at difficulty 1, `U04-D01` at difficulty 2, and `U26-D01` only after the early pass in unit 09 is familiar. A correct value from the wrong substitution still needs the substitution named.
+Teach this file. Use the miss table. A half-angle miss then opens unit 26. A power miss opens unit 09, unit 20, or unit 29. Set `U02-D06` at difficulty 1, `U04-D01` at difficulty 2, `U29-D04` when a factor should have been saved, and `U26-D01` only after the early pass in unit 09 is familiar. A correct value from the wrong substitution still needs the substitution named.

@@ -24,6 +24,18 @@ On a definite interval, write the boundary term \([uv]\) before the remaining in
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 
+### Miss to the next drill
+
+| Miss | Next drill |
+|---|---|
+| The polynomial was integrated and the exponential was differentiated | `U03-D03`, stored \(1\). |
+| The boundary term was dropped | `U03-D05`, stored \(1\). The definite one-step case is `U15-D04`, stored \(\pi/2-1\). |
+| Parts began on a derivative of a product | `U07-D04`, stored \(\pi/2\). |
+| A quotient was read as a product, or as \(f'/f\) | `U27-D01`. The faded blank is `U27-D04`. The bare dose sets `U27-D08`. |
+| A polynomial coefficient match was used on a logarithm | `U28-D06`. The worked match is `U28-D01`. The bare table is `U28-D08`. The definite check is `U28-D07`, stored \(1\). |
+| A cyclic pair was stopped after one step | `U28-D05`, stored \((1+e^{\pi})/2\). The indefinite form is `U15-D02`. |
+| A reduction was started for a one-step substitution | `U14-D08`, stored \(1\), after `parts-regular` is solid. |
+
 ## When to use it
 
 Differentiate the factor that gets simpler. That is a polynomial, a logarithm, or an inverse function. Integrate the factor that stays familiar. That is an exponential, a sine, or a cosine.
@@ -120,4 +132,4 @@ Parts was started on a pure \(du/u\) or on a derivative of a product. Those fini
 
 ## On a miss
 
-Teach this file, then the unit in the table. Set `U03-D03` or `U03-D05` while the node is learning. Set `U15-D04` when the one-step case is solid. Leave `gamma` on its unit drills. A correct final answer that used the wrong factor in the \(u\) slot still needs the choice named.
+Teach this file, then the unit in the table. Use the miss table. Set `U03-D03` or `U03-D05` while the node is learning. Set `U15-D04` when the one-step case is solid. A reverse-quotient miss sets `U27-D01`. A semi-parts miss sets `U28-D01`, or `U28-D06` when the ansatz was the wrong tool. Leave `gamma` on its unit drills. A correct final answer that used the wrong factor in the \(u\) slot still needs the choice named.

@@ -18,6 +18,7 @@ Integration by parts still proves these antiderivatives. The speed move is to wr
 \begin{enumerate}
   \item For $p(x)e^x$, $p(x)\sin x$, or $p(x)\cos x$ with $p$ a polynomial, assume an answer of the same shape and differentiate.
   \item For a longer polynomial, tabulate: differentiate one column, integrate the other, and alternate signs.
+  \item Refuse the ansatz when the integrand is a logarithm, or when sine and exponential return together.
 \end{enumerate}
 
 \section{Worked coefficients --- \texttt{U28-D01}}
@@ -30,28 +31,43 @@ ae^x+(ax+b)e^x=(ax+a+b)e^x.
 \]
 Match $a=1$ and $a+b=0$, so $b=-1$. The antiderivative is $(x-1)e^x$. On $[0,1]$ that is $1$, the stored answer of \texttt{U28-D07}.
 
-\texttt{U28-D02} assumes $(ax+b)\cos x+(cx+d)\sin x$, or you remember the one-step result $-x\cos x+\sin x$ and differentiate it. \texttt{U28-D03} is $x\sin x+\cos x$. Both checks are one derivative.
+\texttt{U28-D02} stores $-x\cos x+\sin x$. Differentiate that expression. It returns $x\sin x$. The coefficient match is the same shape with sine and cosine swapped.
 
-\section{Worked table --- \texttt{U28-D08}}
+\section{Faded --- \texttt{U28-D03}}
 \[
-\int x^2\sin x\,dx.
+\int x\cos x\,dx.
 \]
-Differentiate $x^2\to 2x\to 2\to 0$. Integrate $\sin x\to -\cos x\to -\sin x\to \cos x$. Signs $+,-,+$:
+Assume $(ax+b)\sin x+(cx+d)\cos x$. The blank is the four coefficients. Differentiate, match $x\cos x$, and read $a=1$, $b=0$, $c=0$, $d=1$. The stored antiderivative is $x\sin x+\cos x$.
+
+\section{Bare --- \texttt{U28-D08}}
+Set
+\[
+\int x^2\sin x\,dx
+\]
+and show nothing else. The bare dose hides the table. After a line is written, uncover the signs $+,-,+$ on the pairs
 \[
 x^2(-\cos x)-(2x)(-\sin x)+2(\cos x)=-x^2\cos x+2x\sin x+2\cos x.
 \]
-That is the stored answer. \texttt{U23-D06} is the same table with $e^x$ in the integral column.
+That is the stored antiderivative.
 
-\section{Logarithms}
-\texttt{U28-D06} is $\int\ln x\,dx=x\ln x-x$, one parts step with $dv=dx$. \texttt{U28-D04} is $\int x\ln x\,dx$. Parts with $u=\ln x$ gives
+The tabular integral of $x^3 e^x$ is \texttt{U23-D06} in unit 23. It is a different polynomial. Do not mark it as \texttt{U28-D08}.
+
+\section{Refusal --- the ansatz does not fit}
+\texttt{U28-D06} is $\int\ln x\,dx$. The shape $(ax+b)e^x$ does not match a logarithm. One parts step, with $u=\ln x$ and $dv=dx$, stores $x\ln x-x$. Refuse the exponential table.
+
+\texttt{U28-D04} is $\int x\ln x\,dx$. The same refusal. Parts with $u=\ln x$ stores
 \[
-\frac{x^2}{2}\ln x-\int\frac{x}{2}\,dx=\frac{x^2}{2}\ln x-\frac{x^2}{4}.
+\frac{x^2}{2}\ln x-\frac{x^2}{4}.
 \]
-\texttt{U28-D05} is $\int_0^{\pi}e^x\sin x\,dx=(1+e^{\pi})/2$. Call the integral $I$, parts twice, and solve the linear equation. The shortcut does not remove that algebra when sine and exponential are both present.
+
+\texttt{U28-D05} is $\int_0^{\pi}e^x\sin x\,dx=(1+e^{\pi})/2$. Sine and exponential together return after two parts steps. A single polynomial in front of $e^x$ does not close the equation. Refuse stopping after one undetermined polynomial. Call the integral $I$, parts twice, and solve.
+
+\section{Dose}
+Worked reads \texttt{U28-D01}, then the faded coefficients on \texttt{U28-D03}, then sets \texttt{U28-D08}. Faded gives only those four blanks. Bare sets \texttt{U28-D08}. A logarithm, or a cyclic pair, opens the refusal and sets \texttt{U28-D06}, then \texttt{U28-D05}. \texttt{U28-D07} is the definite check of the worked antiderivative, value $1$.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit28.json}.
 
 \section*{On a miss}
-Teach this file. Write the assumed shape, differentiate, and match. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. Write the assumed shape, differentiate, and match. If the integrand is a logarithm, or both a sine and an exponential, refuse the polynomial ansatz and use one ordinary parts argument. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}
