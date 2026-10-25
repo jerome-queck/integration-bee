@@ -13,3 +13,7 @@ Machine JSON: `../../verify/drills_unit25.json`.
 | U25-D06 | advanced-kings-queens | yang:4.4 | definite | `x/(1+sin(x))` | [0, pi] | `pi` | $\pi$ |
 | U25-D07 | advanced-kings-queens | yang:4.4 | definite | `x/(1+x)` | [0, 1] | `1-log(2)` | $1 - \log{\left(2 \right)}$ |
 | U25-D08 | advanced-kings-queens | yang:4.4 | definite | `sin(x)*cos(x)` | [0, pi/2] | `Rational(1,2)` | $\frac{1}{2}$ |
+
+## Speed unroll
+
+`teaching.tex` times the constant-complement test on `U25-D01`, `U25-D02`, `U25-D03`, and `U25-D05`, and the refusal on `U25-D04`. The values are the table above. No new id.

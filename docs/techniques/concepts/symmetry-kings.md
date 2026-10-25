@@ -66,7 +66,7 @@ An inverse multiplied by another factor goes to parts. Put the inverse in the \(
 
 ## Later reflections
 
-Unit 25 is the same identity on an exponential, a tangent, and a factor of \(x\). Open it when `kings-queens-rule` is solid. The constant-complement test stays the unit 10 test.
+Unit 25 is the same identity on an exponential, a tangent, and a factor of \(x\). Open it when `kings-queens-rule` is solid. The constant-complement test stays the unit 10 test. Unit 25 times that test: `U25-D01`, `U25-D03`, and `U25-D05` add to a constant. `U25-D04` does not, and its stored value stays \(\pi/8+(\ln 2)/4\).
 
 Unit 18 centers a product with a shift so an odd part cancels, and it spots a hidden product rule. Those drills stay in that file. The scaled fences are `habits.md`.
 

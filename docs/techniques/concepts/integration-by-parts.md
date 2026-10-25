@@ -98,7 +98,7 @@ That definite reading is original. The antiderivative is the stored one. A numer
 
 When the same shape carries an integer \(n\), parts produces a relation and a base, and you unroll. Two families are already written out.
 
-Unit 14 defines \(J_n=\int_0^{\infty} x^n e^{-x}\,dx\). The base is \(J_0=1\), and \(J_n=n J_{n-1}\), so \(J_n=n!\). The unit stores \(J_2=2\) as `U14-D10` and \(J_4=24\) as `U14-D09`. A substitution that removes the power in one step finishes the integral. The reduction waits.
+Unit 14 defines \(J_n=\int_0^{\infty} x^n e^{-x}\,dx\). The base is \(J_0=1\), and \(J_n=n J_{n-1}\), so \(J_n=n!\). The unit stores \(J_2=2\) as `U14-D10` and \(J_4=24\) as `U14-D09`. The sixty-second unroll of \(J_2\) through \(J_5\) is the speed section of that unit. The checks are `U14-D10`, `U14-D02`, `U14-D09`, and `U14-D01`. A substitution that removes the power in one step finishes the integral. The reduction waits.
 
 Unit 15 writes \(I_n=\int_0^1 x^n\ln x\,dx=-1/(n+1)^2\) for an integer \(n\ge 0\). The same identity, differentiated in a parameter, is `docs/techniques/introduce-constant.md`.
 

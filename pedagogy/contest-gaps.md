@@ -29,6 +29,7 @@ File: `units/10-inverse-kings/teaching.tex`. Catalog node `kings-queens-rule`.
 2. Faded. For `U10-D05`, the learner writes the reflected integrand, then adds.
 3. Bare. Set `U10-D04` again.
 4. Later. Unit 25 is the same identity on an exponential, a tangent, and a factor of \(x\).
+5. Speed. Sixty seconds in unit 25. The copies add to 1 for `U25-D01`, `U25-D03`, and `U25-D05`, with stored values \(\pi/4\), \(1/2\), and \(\pi/4\). `U25-D04` does not add to a constant. Its stored value is \(\pi/8+(\ln 2)/4\).
 
 ## Recurrence
 
@@ -38,6 +39,7 @@ File: `units/20-wallis/teaching.tex`. Catalog node `wallis`.
 2. Second family, still in that file. \(\int_0^1 x^n/(1+x)\,dx\) alternates: \(I_n + I_{n-1} = 1/n\). The base uses the add-and-subtract move. \(I_3 = 5/6 - \ln 2\) is stored as `U15-D11`. The factorial drop \(J_n = n J_{n-1}\) is unit 14, drills `U14-D09` and `U14-D10`.
 3. Faded. `U20-D02` is a double-angle, so the learner should refuse the general reduction.
 4. Do not start a reduction when one substitution finishes the integral. `U20-D06` is that refusal.
+5. Speed. Unit 20 times three unrolls. The even line checks `U20-D01` and `U20-D05` (\(3\pi/16\), \(5\pi/32\)). The odd line checks `U20-D08` and `U20-D04` (\(2/3\), \(8/15\)). The alternating line checks `U15-D11` (\(5/6-\ln 2\)). Unit 14 times \(J_2,J_3,J_4,J_5\), stored as `U14-D10`, `U14-D02`, `U14-D09`, and `U14-D01` (2, 6, 24, 120), and the signs on `U14-D04`, `U14-D03`, and `U14-D11` (\(2\), \(-6\), \(24\)).
 
 ## Half-angle substitution, early
 
@@ -70,12 +72,13 @@ Algebra file: `docs/techniques/introduce-constant.md`. Parameter file: `units/34
 
 ## Formats
 
-File: `docs/techniques/formats.md`.
+File: `docs/techniques/formats.md`. Session: `pedagogy/round2-coach.md` for group, crossnumber, and relay. Session: `pedagogy/round3-coach.md` for chainlink, dichotomy, and tournament.
 
-1. Name the format and the object.
-2. State the rule the attempt broke, using the 2024 scoring in that file. The relay bonus counts correct problems. It is not a consecutive streak. A failed chainlink chain pays the safety net, not the bank row of the number solved.
-3. Set one ordinary unit drill and score it with that format's points: 6 or 0 in a group set, one digit once in a crossnumber, 3 then 1 in a relay, bank or continue after a chainlink solve, 6 then 2 in a dichotomy, a boxed line in a tournament.
-4. Do not invent a contest answer, and do not open a past-paper file as the lesson.
+1. Name the format and the object in the attempt-shape table of that file.
+2. State the rule the attempt broke, using the 2024 scoring in that file. The relay bonus counts correct problems. It is not a consecutive streak. A failed chainlink chain pays the safety net, not the bank row of the number solved. An unboxed tournament line spends the attempt. A gamble called after the fight has started is too late. Selectors do not describe the integrand they did not pass.
+3. Match `coach.detail` when a tick is present. Worked reads the vignette under "Score a stored drill". Faded asks for the score line from a stored value. Bare sets one drill from that section and hides the value.
+4. Say the format points after the usual mark: 6 or 0 in a group set, one digit once in a crossnumber, 3 then 1 in a relay, bank or continue after a chainlink solve, 6 then 2 in a dichotomy, a boxed line in a tournament. The mark still records the drill. The points are spoken. They are not a new tracker field.
+5. Do not invent a contest answer, and do not open a past-paper file as the lesson. A solutions note, when one exists, is opened only after an answer, and the rule is `pedagogy/README.md`.
 
 ## What the session does not do
 

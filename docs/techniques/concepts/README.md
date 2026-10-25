@@ -36,6 +36,10 @@ Read the integrand, then open one card. If two seem to fit, open the earlier one
 | `U11-D09` through `U11-D12` | `docs/techniques/floor.md` |
 | `U11-D13` through `U11-D15` | fixed-interval parameter, `algebra.md` and `docs/techniques/introduce-constant.md` |
 
+## Round 2 and Round 3
+
+A relay, a crossnumber, a chain, a chosen pair, or a boxed tournament line is not a new integrand card. Open `docs/techniques/formats.md`, then `pedagogy/round2-coach.md` or `pedagogy/round3-coach.md`. The integral stays a stored unit drill.
+
 ## On a miss
 
 Teach the one file the mark names when the mark carries a gap id. Otherwise teach the card for the node, then the unit `teaching.tex`. Do not invent a contest answer.

@@ -69,6 +69,8 @@ I_n=\frac{n-1}{n}I_{n-2}.
 
 Then \(I_2=\pi/4\) and \(I_4=(3/4)I_2=3\pi/16\). Unit 20 stores \(I_4\) as `U20-D01`. The odd-power substitution above is \(I_3=(2/3)I_1=2/3\). The two methods agree. Use the substitution when one factor finishes the integral. Use the reduction when the index drops by 2 and you still want a number. `U20-D02` is the drill that refuses the reduction, because a double angle finishes it.
 
+The speed unrolls are in unit 20: the even line through `U20-D05`, the odd line through `U20-D04`, and the alternating line through `U15-D11`. Unit 14 times the factorial line. Each check is a stored drill.
+
 ## Trig substitution and circle area
 
 | Radical | Substitution |

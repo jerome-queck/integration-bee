@@ -23,6 +23,8 @@ The six headings in `docs/techniques/beyond-yang.md` are the gap list. How to te
 
 Coach cards for the Round 1 families live in `docs/techniques/concepts/`. They are not gap ids. Which node opens which card is `pedagogy/concept-map.md`. The eleven former thin habits are `docs/techniques/concepts/habits.md`, and the thin count there is 0. How a tick chooses the worked example or the next drill is `pedagogy/round1-coach.md`.
 
+Round 2 and Round 3 sessions are `pedagogy/round2-coach.md` and `pedagogy/round3-coach.md`. The rules those sessions quote are `docs/techniques/formats.md`. The integral in a format minute is a stored unit drill.
+
 ## Teach on a miss
 
 `turn apply` names exactly one file in `say`. Teach that file. A wrong final answer with a gap id opens the technique note. A wrong final answer with no gap id opens `units/<unit>/teaching.tex`. A correct final answer that used the wrong method names the same kind of file and keeps the method note.
@@ -45,6 +47,14 @@ Drawn from cognitive-load / example-based instruction research (worked examples,
 4. **Spaced return** — later units revisit substitution inside harder techniques (a parameter derivative, half-angle cleanup).
 
 Official contest materials are the source of *what* to learn (`syllabus-map.md`); this folder is *how* we teach it.
+
+## A solutions note in a session
+
+Look for `solutions/pack/<id>.md`, `solutions/yang/<id>.md`, or `solutions/sample/<id>.md` only after the learner has written a final answer for that id. `solutions/README.md` lists a subset of those notes and the printed final in its table. When the file exists, read the final under the heading Final answer and compare the learner's line with that printed final. Do not turn the note into a new drill.
+
+When the file does not exist, say that this checkout has no worked note for that id. Do not write one in the session, and do not invent the final.
+
+A format lesson does not open these notes. The format lesson is `docs/techniques/formats.md` and one stored unit drill. The pinned example already in the README is the 2024 Round 1 first problem, printed final \(\sin 1\), at `solutions/pack/R1-2024-Q01.md`. Quote that final only after the learner has answered that id.
 
 ## Sources for contest content (not pedagogy theory)
 

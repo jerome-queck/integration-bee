@@ -54,7 +54,7 @@ The card states the move. Stored numbers stay in the unit.
 |---|---|---|---|
 | `forced-u-sub` | 2.3 | `u-substitution.md` | Solve for \(x\) when \(du\) is missing. Original \(\int_0^1 e^{\sqrt{x}}\,dx=2\). Unit 13 keeps its drills. |
 | `power-substitution` | 3.1 | `u-substitution.md` | Clear a root by \(x=u^n\), then divide. Original \(\int_0^1 \sqrt{x}/(1+x)\,dx=2-\pi/2\). |
-| `gamma` | 2.4 | `integration-by-parts.md` | \(J_n=n J_{n-1}\) with \(J_0=1\). Values stay the unit 14 drills. |
+| `gamma` | 2.4 | `integration-by-parts.md` | \(J_n=n J_{n-1}\) with \(J_0=1\). Values stay the unit 14 drills. The speed unroll is in that unit's teaching note. |
 | `parts-regular` | 2.5 | `integration-by-parts.md` | One step, then the cyclic stop. `U15-D04` is the faded definite case. |
 | `awkward-parts` | 3.5 | `integration-by-parts.md` | Pointer to unit 22 after ordinary parts is solid. |
 | `semi-parts` | 5.1 | `integration-by-parts.md` | Match coefficients on \(p(x)e^x\). Longer drills stay in unit 28. |
@@ -64,9 +64,9 @@ The card states the move. Stored numbers stay in the unit.
 | `advanced-trig-integrals` | 5.2 | `trigonometric.md` | Same powers. Unit 29 keeps secant. |
 | `advanced-trig-substitution` | 3.4 | `trigonometric.md` | \(\sec\), \(\sinh\), or \(\tan\) after the basic table is solid. |
 | `weierstrass` | 4.5 | `trigonometric.md` | The three replacements and an original \(\int_0^{\pi/2} dx/(2+\cos x)=\pi\sqrt{3}/9\). Unit 26 is the miss file. |
-| `wallis` | 3.3 | `trigonometric.md` | \(I_n=((n-1)/n)I_{n-2}\). `U20-D01` is \(I_4=3\pi/16\). |
+| `wallis` | 3.3 | `trigonometric.md` | \(I_n=((n-1)/n)I_{n-2}\). `U20-D01` is \(I_4=3\pi/16\). Even, odd, and alternating speed unrolls are in the unit note. |
 | `periodicity` | 3.7 | `trigonometric.md` | Full-period products. `U23-D01` is the stored pair. |
-| `advanced-kings-queens` | 4.4 | `symmetry-kings.md` | The identity is on the card. Further copies stay in unit 25. |
+| `advanced-kings-queens` | 4.4 | `symmetry-kings.md` | The identity is on the card. Further copies stay in unit 25. The constant-complement speed minute is in that unit. |
 | `infinite-functions` | 2.8 | `series.md` | Closed form before integrating. Differentiating the sum is unit 17. |
 | `taylor-series` | 6.2 | `series.md` | Termwise log series equaling the parts value \(2\ln 2-1\). Endpoint limits stay in unit 32. |
 | `advanced-gaussian` | 5.3 | `gaussian-dirichlet.md` | Quote \(\sqrt{\pi}\), then scale. Original \(\int_0^{\infty} e^{-4x^2}\,dx=\sqrt{\pi}/4\). |
@@ -116,7 +116,7 @@ Yang inventory 4.3 has no node. It stays skipped.
 
 ## Practice indexes
 
-These nine nodes are not concepts. Round formats are `docs/techniques/formats.md`. Per-question tags are not a lesson, and this map does not add any.
+These nine nodes are not concepts. Round formats are `docs/techniques/formats.md`. The session scripts are `pedagogy/round2-coach.md` and `pedagogy/round3-coach.md`. Per-question tags are not a lesson, and this map does not add any.
 
 | Node | What the tree already says |
 |---|---|
