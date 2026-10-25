@@ -16,6 +16,8 @@ from pathlib import Path
 import mpmath as mp
 import sympy as sp
 
+from pack_checks import EXTRA_CHECKS, EXTRA_PACK_IDS
+
 ROOT = Path(__file__).resolve().parent
 PACK = ROOT / "pack"
 YANG = ROOT / "yang"
@@ -59,6 +61,9 @@ PACK_IDS = (
     "R1-2022-Q22",
     "R1-2024-Q01",
 )
+if set(PACK_IDS) & set(EXTRA_PACK_IDS):
+    raise AssertionError("duplicate pack ids")
+PACK_IDS = tuple(sorted(PACK_IDS + EXTRA_PACK_IDS))
 YANG_IDS = (
     "YANG-1.3-Ex01",
     "YANG-1.3-Ex02",
@@ -463,6 +468,7 @@ CHECKS = (
     check_r1_2022_q15,
     check_r1_2022_q22,
     check_r1_2024_q01,
+    *EXTRA_CHECKS,
     check_yang_1_3_ex01,
     check_yang_1_3_ex02,
     check_yang_1_3_ex03,
