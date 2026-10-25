@@ -562,6 +562,10 @@ def check_r1_2024_q30() -> None:
     _eq(2 * (sp.pi / 2 * sp.log(sp.sqrt(2))), sp.pi / 2 * sp.log(2))
 
 
+from pack_checks_wave import WAVE_CHECKS, WAVE_PACK_IDS
+
+EXTRA_PACK_IDS = EXTRA_PACK_IDS + WAVE_PACK_IDS
+
 EXTRA_CHECKS = (
     check_r1_2021_q02,
     check_r1_2021_q03,
@@ -609,4 +613,4 @@ EXTRA_CHECKS = (
     check_r1_2024_q26,
     check_r1_2024_q28,
     check_r1_2024_q30,
-)
+) + WAVE_CHECKS
