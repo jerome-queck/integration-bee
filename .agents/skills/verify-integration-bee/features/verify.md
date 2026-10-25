@@ -23,7 +23,7 @@ Preconditions:
 
 ## Gotchas
 
-- The mutation probe prints `FAIL math:` and then `PASS mutation (wrong answer rejected)`. The command still exits 0. A real math failure prints `FAIL math:` and is not followed by `PASS mutation`. The exit code is then 1.
-- A broken gap index prints `FAIL gap index` and exits 1. `verify/gap_index.py --expect-fail extra-file` injects a fake path and prints `PASS mutation extra-file`. It does not create a file. The verify command still reaches `PASS integration-bee verify`.
+- The mutation probe prints `FAIL math:` and then `PASS mutation (wrong answer rejected)`. The command still exits 0. A real math failure also prints `FAIL math:`. `verify/run.sh` continues, and the mutation probe still prints `PASS mutation (wrong answer rejected)` when that probe exits non-zero. The command then prints `FAIL integration-bee verify` and exits 1.
+- A broken gap index prints `FAIL gap index` from that step. `verify/run.sh` continues. The command prints `FAIL integration-bee verify` and exits 1. `verify/gap_index.py --expect-fail extra-file` on a healthy index injects a fake path and prints `PASS mutation extra-file`. It does not create a file. A healthy `verify` run still reaches `PASS integration-bee verify`.
 - A normal run does not print `WARN` lines or `SKIP round PDFs absent`. `verify/all_rounds_check.py` fails when the reference PDFs are absent from `sources/past/`.
 - `make check` also runs LaTeX, `scripts/check_agents_md.py`, and the invariant mutations. `verify` runs only `verify/run.sh`.

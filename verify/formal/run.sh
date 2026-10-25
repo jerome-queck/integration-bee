@@ -59,6 +59,8 @@ fail SessionFlow.tick-early.cfg SessionFlow.tla TwoCorrectBeforeSolid
 fail SessionFlow.mock-ungated.cfg SessionFlow.tla MockGate
 fail SessionFlow.forget-weak.cfg SessionFlow.tla MistakeQueuesWeak
 fail SessionFlow.score-without-open.cfg SessionFlow.tla ScoreAfterOpen
+fail SessionFlow.confirm-anytime.cfg SessionFlow.tla SkipFollowsProposal
+fail SessionFlow.skip-as-solid.cfg SessionFlow.tla SkipIsNotSolid
 
 pass TrackerWrites.cfg TrackerWrites.tla
 fail TrackerWrites.lost-attempt.cfg TrackerWrites.tla NoLostAttempt

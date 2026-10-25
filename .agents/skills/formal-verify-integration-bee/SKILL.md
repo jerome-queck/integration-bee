@@ -15,7 +15,7 @@ These predicates are not a state machine. `verify/unit_order_check.py` calls `un
 - A catalog with past-paper units and no concept unit is rejected.
 - A timed Round 1 mock is blocked until every `gate: round1` node is `solid`, unless the caller passes `--cold`.
 - A tick name must be in `trackers/catalog.json`. An attempt interval cannot be negative. Heatmap fails cannot exceed attempts. Streak days cannot repeat.
-- A session phase is `idle`, `awaiting_answer`, `mock_open`, `mock_awaiting`, `aptitude`, or `proposing`. Idle has no open problem or mock. An answer phase names a problem. A mock phase names a mock. `aptitude` names a problem. `proposing` waits for confirm and names an offer.
+- A session phase is `idle`, `awaiting_answer`, `mock_open`, `mock_awaiting`, `aptitude`, or `proposing`. Idle has no open problem or mock. An answer phase names a problem. A mock phase names a mock. `aptitude` names a problem. `proposing` waits for confirm and names an offer. `confirm` writes `skipped` only for ids in that offer. An empty list writes no skip. `cover` sets `aptitude.full_coverage` and does not change the phase. A skipped node stays out of the coach queue until full coverage is on or a miss sets the tick back to `learning`. The mock still needs every Round 1 node `solid`.
 - A mark is one row per id with bool `answer_ok`, bool `method_ok`, and a technique. The key `correct` is rejected.
 - A sticky is one card per technique with a note and a touched day. The key `strength` is rejected. Strength is computed from the touched day.
 
@@ -30,6 +30,10 @@ python3 verify/invariants.py --expect-fail heatmap-fails-exceed
 python3 verify/invariants.py --expect-fail mock-before-ready
 python3 verify/invariants.py --expect-fail duplicate-streak-day
 python3 verify/invariants.py --expect-fail bad-session-phase
+python3 verify/invariants.py --expect-fail aptitude-needs-problem
+python3 verify/invariants.py --expect-fail proposing-needs-offer
+python3 verify/invariants.py --expect-fail proposing-still-open
+python3 verify/invariants.py --expect-fail aptitude-bad-coverage
 python3 verify/invariants.py --expect-fail mark-one-bool
 python3 verify/invariants.py --expect-fail mark-has-correct
 python3 verify/invariants.py --expect-fail sticky-stored-strength
@@ -63,7 +67,7 @@ That is `bash verify/formal/run.sh`. It downloads TLC 1.7.4 into `verify/formal/
 
 ### Properties that hold
 
-A solid tick in `SessionFlow` follows two correct drills for that node. A stored mock was started with the node solid, or with `--cold`. A photo miss appends a mistake and marks the tag weak and due. An incorrect check does the same for the spaced queue. A stored score follows an opened mock.
+A solid tick in `SessionFlow` follows two correct drills for that node. A stored mock was started with the node solid, or with `--cold`. A photo miss appends a mistake and marks the tag weak and due. An incorrect check does the same for the spaced queue. A stored score follows an opened mock. A skip is stored only after a proposing offer. That skip is not the solid gate. Full coverage does not open the mock.
 
 In `TrackerWrites`, with `Break = "none"`, a mock file is gated, the file holds at most one open session, a score follows a start, heatmap fails do not exceed heatmap attempts, and incorrect rows do not exceed attempt rows.
 
@@ -86,6 +90,8 @@ These are findings. Do not delete them to make TLC pass. `make formal` expects e
 | `SessionFlow.mock-ungated.cfg` | `MockGate` |
 | `SessionFlow.forget-weak.cfg` | `MistakeQueuesWeak` |
 | `SessionFlow.score-without-open.cfg` | `ScoreAfterOpen` |
+| `SessionFlow.confirm-anytime.cfg` | `SkipFollowsProposal` |
+| `SessionFlow.skip-as-solid.cfg` | `SkipIsNotSolid` |
 | `TrackerWrites.drop-gate.cfg` | `MockGate` |
 | `TrackerWrites.second-open.cfg` | `AtMostOneOpen` |
 | `TrackerWrites.lost-attempt.cfg` | `NoLostAttempt` |
@@ -95,21 +101,21 @@ These are findings. Do not delete them to make TLC pass. `make formal` expects e
 
 ### Charts
 
-`verify/formal/charts/session-flow.mmd` is the session. `verify/formal/charts/tracker-writes.mmd` is the tracker, and `charts/bug-1.mmd` through `charts/bug-5.mmd` are the shortest paths TLC found. `charts/tracker-stories.md` is those paths in sentences. `make formal` checks that each chart names the current blob of its spec. After you change a spec and rerun TLC, redraw with the pstack skill `statechart` and put the new `tla-blob` line back. The last session drawing had 33 states from 128 model states. The last tracker drawing had 45 states from 810 model states.
+`verify/formal/charts/session-flow.mmd` is the session. `verify/formal/charts/tracker-writes.mmd` is the tracker, and `charts/bug-1.mmd` through `charts/bug-5.mmd` are the shortest paths TLC found. `charts/tracker-stories.md` is those paths in sentences. `make formal` checks that each chart names the current blob of its spec. After you change a spec and rerun TLC, redraw with the pstack skill `statechart` and put the new `tla-blob` line back. The last session drawing had 92 states from 857 model states. The last tracker drawing had 45 states from 810 model states. The tracker spec's comments moved to the current line numbers. Its state graph did not change, so the tracker drawing is the previous one with a new `tla-blob`.
 
 ### Bounds
 
-One node stands in for the Round 1 gate. `mock_block_reason` is all or nothing, so a second node would not change the gate shape. SymPy is an input, pass or miss. The model does not check algebra. Each writer begins at most one command. Finishing a mock that writer opened is a later step. Counts stop at 2. The streak write between the heatmap write and `project` is omitted. `learning` and `skipped` ticks are omitted. Journal notes are omitted. The model does not read gitignored learner files. `session.json` phases stay with `session_problem`. `turn apply` records a mark by calling `record_attempt`, then writes the phase in `write_session`. The chart does not add a phase the CLI does not already store.
+One node stands in for the Round 1 gate. `mock_block_reason` is all or nothing, so a second node would not change the gate shape. SymPy is an input, pass or miss. The model does not check algebra. Each writer begins at most one command. Finishing a mock that writer opened is a later step. Counts stop at 2. The streak write between the heatmap write and `project` is omitted. `learning` ticks are omitted. Journal notes are omitted. Policy rows are omitted. The model does not read gitignored learner files. `session_problem` still checks the stored phase. `SessionFlow` also stores `aptitude` and `proposing`, one placement cycle from the opening idle screen. That cycle is one drill id and one manual contest row, so it does not reach two distinct drills and does not tick solid. A later aptitude is the same action. `plan_cover` keeps the current phase. The spec takes the flag from `idle`, `aptitude`, and `proposing`. Cover during a drill or a mock is the same flag and does not change the gate. `turn apply` records a mark by calling `record_attempt`, then writes the phase in `write_session`. `confirm` writes a skipped tick in `apply_tick` and then calls `write_session`. `TrackerWrites` does not take that pair. A stop between those two writes leaves `skill-ticks.json` ahead of `session.json`. The chart labels phases the CLI stores.
 
 ### Coverage
 
 | Spec | Code |
 |---|---|
-| `SessionFlow.tla` | `verify/turn_contract.py` `distinct_correct`, `.agents/skills/integration-bee-companion/SKILL.md` teach, photo, and mock sections, `scripts/control-integration-bee` `practice check`, `progress mistake`, `turn apply`, `mock-start`, `mock-finish` |
+| `SessionFlow.tla` | `verify/turn_contract.py` `distinct_correct`, `plan_aptitude`, `plan_confirm`, `plan_cover`, `.agents/skills/integration-bee-companion/SKILL.md` teach, photo, mock, aptitude, confirm, and cover sections, `scripts/control-integration-bee` `practice check`, `progress mistake`, `turn apply`, `mock-start`, `mock-finish` |
 | `TrackerWrites.tla` | `record_attempt`, `write_json`, `project`, `cmd_tick`, `cmd_mock_start`, `cmd_mock_finish`, `finish_plan` in `scripts/control-integration-bee` |
 
-session_flow_blob: fcb8397f65fe9bcd2f15fc54acf50c0b13987742
-tracker_writes_blob: eb39ca7919c658137f0c57af267560cd2e026877
+session_flow_blob: 01e5313dfbb6dc32372211b3124918e8bb9787ca
+tracker_writes_blob: e2df07117f2f09740171189aa70d6191e022be1f
 
 Move a blob only after `make formal` passes on that file. `git hash-object` prints it. If the spec changes and the blob line does not, `make formal` fails.
 

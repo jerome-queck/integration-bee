@@ -33,6 +33,10 @@ mutations:
 	$(PYTHON) verify/invariants.py --expect-fail mock-before-ready
 	$(PYTHON) verify/invariants.py --expect-fail duplicate-streak-day
 	$(PYTHON) verify/invariants.py --expect-fail bad-session-phase
+	$(PYTHON) verify/invariants.py --expect-fail aptitude-needs-problem
+	$(PYTHON) verify/invariants.py --expect-fail proposing-needs-offer
+	$(PYTHON) verify/invariants.py --expect-fail proposing-still-open
+	$(PYTHON) verify/invariants.py --expect-fail aptitude-bad-coverage
 	$(PYTHON) verify/invariants.py --expect-fail mark-one-bool
 	$(PYTHON) verify/invariants.py --expect-fail mark-has-correct
 	$(PYTHON) verify/invariants.py --expect-fail sticky-stored-strength
