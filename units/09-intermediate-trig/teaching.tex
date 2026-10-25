@@ -30,6 +30,16 @@ Worked $\to$ faded $\to$ interleaved. See \texttt{pedagogy/README.md}.
 \int_0^1\frac{1}{\sqrt{x^2+1}}\,dx=\operatorname{arsinh}1=\ln(1+\sqrt2).
 \]
 
+\section{Early half-angle substitution}
+The syllabus puts the substitution $t=\tan(x/2)$ in section 1. The Techniques Guide teaches it as T-sub in \S1.6. Yang files the same move in a later chapter. You do not wait for that chapter when the integrand is rational in $\sin x$ and $\cos x$.
+\[
+\sin x=\frac{2t}{1+t^2},\qquad
+\cos x=\frac{1-t^2}{1+t^2},\qquad
+dx=\frac{2\,dt}{1+t^2}.
+\]
+On \texttt{U26-D01}, $\int_0^{\pi/2} dx/(1+\sin x)$, the limits become $t=0$ and $t=1$, and $1+\sin x=(1+t)^2/(1+t^2)$. The integral collapses to $\int_0^1 2/(1+t)^2\,dt=1$.
+A power of sine alone is still the reduction in unit 20. The full pattern $\int_0^\pi dx/(a+b\cos x)$, the endpoint at $x=\pi$, and the drill set are unit 26. That file is the note a miss of this substitution names.
+
 \section{Practice}
 \texttt{U09-D01}\ldots\texttt{U09-D08} in \texttt{drills.tex}; \texttt{verify/run.sh}.
 \end{document}

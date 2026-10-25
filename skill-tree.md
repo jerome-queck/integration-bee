@@ -75,6 +75,8 @@ Personal/session ticks live in gitignored `progress.local.json` (CLI-owned); nev
 
 **Still deferred:** official syllabus nodes that have no Yang unit (DUTIS, vector calculus, Beta, zeta, floor, Euler-Mascheroni, Catalan's constant). Yang inventory 4.3 is skipped. See `sources/user/yang-topics-inventory.md`.
 
+The Yang chapters are one source. Teaching for the deferred floor node is `docs/techniques/floor.md`. Introducing a constant, which is not a catalog id, is `docs/techniques/introduce-constant.md`. Round 2 and Round 3 formats are `docs/techniques/formats.md`. Those notes do not tick a node. Reflection, the recurrence $I_n$, and the half-angle substitution are taught in units 10, 20, and 26. A first pass of $t=\tan(x/2)$ is in unit 09. The index of the six gaps is `docs/techniques/beyond-yang.md`.
+
 Prerequisites (soft): 1.1 then 1.2 then 1.11. 1.5 then 1.7 then 1.15 and 1.16. 1.3 with 1.18. 1.6 before reverse-product (1.13).
 
 ## Official Round 1 syllabus

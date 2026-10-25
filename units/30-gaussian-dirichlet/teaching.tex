@@ -1,19 +1,65 @@
-% Unit 30 — Advanced Gaussian and Dirichlet
+% Unit 30 — Gaussian and Dirichlet
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 30:\\ Advanced Gaussian and Dirichlet}
-\author{UK Uni Integration Bee prep\\ Yang §§5.3 Advanced Gaussian, 5.4 Dirichlet Integral}
+\title{Integration Bee --- Unit 30:\\ Gaussian and Dirichlet Integrals}
+\author{UK Uni Integration Bee prep\\ Named integrals, with the reductions that stay elementary}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:5.3}, \texttt{yang:5.4}; techniques: \texttt{advanced-gaussian}, \texttt{dirichlet}.
+Tags: \texttt{yang:5.3}, \texttt{yang:5.4}; techniques: \texttt{advanced-gaussian}, \texttt{dirichlet}.
+Two named values do the heavy lifting: $\int_{-\infty}^{\infty}e^{-x^2}\,dx=\sqrt{\pi}$ and $\int_0^{\infty}(\sin x)/x\,dx=\pi/2$. Everything else in the drill set is a substitution, a parameter derivative, or one parts step on top of those values. Yang \S\S5.3--5.4 records the contest forms. The evaluations below are the usual public arguments.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §§5.3 Advanced Gaussian, 5.4 Dirichlet Integral
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 11 for the first Gaussian cousins. Unit 34 for a parameter derivative.
+\item Syllabus \S2 special functions, as names. Vector calculus is not required for Round 1; the polar sketch below is optional background.
+\item Yang Topics Guide 2nd Ed \S\S5.3 Advanced Gaussian, 5.4 Dirichlet Integral.
 \end{itemize}
-\section{Learning goals} Gaussian variants; Dirichlet $\sin x/x$.
+\section{Learning goals}
+\begin{enumerate}
+  \item Quote $\int_0^{\infty}e^{-x^2}\,dx=\sqrt{\pi}/2$, then scale. Do not invent an elementary antiderivative of $e^{-x^2}$.
+  \item Integrate $x e^{-x^2}$ by substituting $u=x^2$. That one is elementary.
+  \item Quote $\int_0^{\infty}(\sin x)/x\,dx=\pi/2$, then change variables or integrate by parts.
+\end{enumerate}
+
+\section{The Gaussian}
+Evenness gives
+\[
+\int_0^{\infty}e^{-x^2}\,dx=\frac12\int_{-\infty}^{\infty}e^{-x^2}\,dx=\frac{\sqrt{\pi}}{2},
+\]
+which is \texttt{U30-D01}. The full line is \texttt{U30-D03}. One evaluation of the square, optional here, is the polar computation
+\[
+\Bigl(\int_{-\infty}^{\infty}e^{-x^2}\,dx\Bigr)^2=\int_0^{2\pi}\int_0^{\infty}e^{-r^2}r\,dr\,d\theta=\pi.
+\]
+For $a>0$, the substitution $u=x\sqrt{a}$ yields $\int_0^{\infty}e^{-a x^2}\,dx=\frac12\sqrt{\pi/a}$. \texttt{U35-D01} is $a=2$.
+
+\texttt{U30-D02} is elementary:
+\[
+\int_0^{\infty}x e^{-x^2}\,dx=\frac12.
+\]
+\texttt{U30-D04} differentiates the scaled Gaussian in $a$ and sets $a=1$:
+\[
+\int_0^{\infty}x^2 e^{-x^2}\,dx=\frac{\sqrt{\pi}}{4}.
+\]
+The differentiation is the Leibniz rule from unit 34, taken as a limit of compact intervals.
+
+\section{The Dirichlet integral --- \texttt{U30-D05}}
+For $a>0$ set $I(a)=\int_0^{\infty}e^{-ax}(\sin x)/x\,dx$. Differentiating in $a$ under the integral gives
+\[
+I'(a)=-\int_0^{\infty}e^{-ax}\sin x\,dx=-\frac{1}{a^2+1}.
+\]
+$I(a)\to 0$ as $a\to\infty$, so $I(a)=\pi/2-\arctan a$. The limit $a\to 0^+$ is $\pi/2$. That is the stored answer of \texttt{U30-D05}. The switch of derivative and integral is a limit; unit 34 states the compact case.
+
+\section{One parts step --- \texttt{U30-D06}}
+\[
+\int_0^{\infty}\frac{\sin^2 x}{x^2}\,dx.
+\]
+Parts with $u=\sin^2 x$ and $dv=x^{-2}\,dx$ kills the boundary term in the limit and leaves $\int_0^{\infty}\sin(2x)/x\,dx$. The substitution $u=2x$ turns that into $\int_0^{\infty}(\sin u)/u\,du=\pi/2$.
+
+\texttt{U30-D07} and \texttt{U30-D08} are $\int_0^{\infty}e^{-x}\sin x\,dx$ and the cosine partner. Both equal $1/2$. They are one-line parts, or the real and imaginary parts of $\int_0^{\infty}e^{-x}e^{ix}\,dx$ in unit 32. They do not need the Dirichlet value.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit30.json}.
+
+\section*{On a miss}
+Teach this file. Say which named value you used, then the scaling or the parts step. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

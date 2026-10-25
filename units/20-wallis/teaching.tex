@@ -1,48 +1,80 @@
-% Unit 20 — Wallis' Trick
+% Unit 20 — recurrence for a family I_n
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 20:\\ Wallis' Trick}
-\author{UK Uni Integration Bee prep\\ Yang §3.3 Wallis' Trick}
+\title{Integration Bee --- Unit 20:\\ A reduction for $I_n$}
+\author{UK Uni Integration Bee prep\\ Techniques Guide \S1.3, Wallis 1656 as the product}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:3.3}; techniques: \texttt{wallis}.
+Tags: \texttt{yang:3.3}; techniques: \texttt{wallis}.
+Guide section 1.3 is the recurrence. Yang \S3.3 writes the trigonometric case later and calls it Wallis' trick. The product in guide section 1.4 is what the reduction can be used for after the values are known. This note teaches the reduction. It does not derive the infinite product.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §3.3 Wallis' Trick
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Techniques Guide \S1.3 Recurrence, then \S1.4 for the product that sits on top of it.
+\item Syllabus \S1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}), reduction formulas as ordinary parts.
+\item Yang Topics Guide 2nd Ed \S3.3, one writeup of the cosine family.
 \end{itemize}
 \section{Learning goals}
 Set up a family $I_n$ and reduce the index by a fixed step.
-Guide section 1.3 is this move. The Wallis product in guide section 1.4 is what the reduction can be used for later.
+Stop at a base you can compute. Do not start a reduction when a single substitution finishes the integral.
+
+\section{The pattern}
+A contest recurrence has an integer $n$ in the integrand and the same shape at $n$ and at $n-1$ or $n-2$. Define
+\[
+I_n=\int_c^d f_n(x)\,dx
+\]
+with the limits independent of $n$. Produce a relation $I_n = a_n I_{n-k}+b_n$ by parts or by an identity, compute $I_0$ or $I_1$ directly, and unroll. The boundary term is the part that usually vanishes. Write it down before you drop it.
+
+This is not a series (unit 08) and not a derivative in a continuous parameter (unit 34 and \texttt{docs/techniques/introduce-constant.md}). The index jumps by a fixed integer.
 
 \section{Worked reduction --- \texttt{U20-D01}}
 Write
 \[
-I_n=\int_0^{\pi/2}\cos^n x\,dx,\qquad n\ge 0.
+I_n=\int_0^{\pi/2}\sin^n x\,dx=\int_0^{\pi/2}\cos^n x\,dx,\qquad n\ge 0.
 \]
-The base is $I_0=\pi/2$. For $n\ge 2$, integration by parts gives
+The two families agree by $x\mapsto\pi/2-x$. The base cases are $I_0=\pi/2$ and $I_1=1$.
+
+For $n\ge 2$, integrate $\sin^n x=\sin^{n-1}x\cdot\sin x$ by parts on $[0,\pi/2]$. The boundary term $\sin^{n-1}x\cos x$ is 0 at both ends. What remains is
 \[
 I_n=\frac{n-1}{n}I_{n-2}.
 \]
-The boundary term on $[0,\pi/2]$ vanishes.
-Then $I_2=\pi/4$ and
+The same step with cosine in place of sine gives the same relation. Then $I_2=\pi/4$ and
 \[
 I_4=\frac34\cdot\frac\pi4=\frac{3\pi}{16},
 \]
-which is the stored answer of \texttt{U20-D01}.
-The same step with sine in place of cosine gives the odd powers. $I_1=1$ for sine, and $I_5=8/15$, the stored answer of \texttt{U20-D04}.
-
-A second family, not one of these drills, is $\int_0^\infty x^n e^{-x}\,dx=n\int_0^\infty x^{n-1}e^{-x}\,dx$ for a positive integer $n$, with the $n=0$ case equal to 1. Reduce until the index is 0 or 1, then stop.
+which is the stored answer of \texttt{U20-D01} and of \texttt{U20-D07}.
+Keep going: $I_6=(5/6)I_4=5\pi/32$, the stored answer of \texttt{U20-D05}.
+For the odd line, $I_3=(2/3)I_1=2/3$ and $I_5=(4/5)I_3=8/15$, the stored answer of \texttt{U20-D04}. \texttt{U20-D08} is $I_3$ for cosine, stored value $2/3$.
 
 \section{Faded step --- \texttt{U20-D02}}
 \[
 \int_0^{\pi/2}\sin^2 x\cos^2 x\,dx.
 \]
-Use $\sin x\cos x=\frac12\sin 2x$, square it, and reduce $\sin^2(2x)$.
-The stored answer is $\pi/16$.
+Use $\sin x\cos x=\frac12\sin 2x$, square it, and reduce $\sin^2(2x)=(1-\cos 4x)/2$. The integrand is $(1-\cos 4x)/8$. The stored answer is $\pi/16$. You do not need the general $I_n$ once a double angle has removed the product.
 
-\section{Drill pointers}
+\section{Expand, then use the values you have}
+\texttt{U20-D03} is $\int_0^{\pi/2}(1+\sin x)^3\,dx$. Expand
+\[
+(1+\sin x)^3=1+3\sin x+3\sin^2 x+\sin^3 x
+\]
+and insert $I_0$, $I_1$, $I_2$, $I_3$:
+\[
+\frac\pi2 + 3\cdot 1 + 3\cdot\frac\pi4 + \frac23 = \frac{11}{3}+\frac{5\pi}{4}.
+\]
+That is the stored answer. A binomial around a sine power is still this unit.
+
+\texttt{U20-D06} saves one sine: $\sin^3 x\cos^2 x=\sin x(1-\cos^2 x)\cos^2 x$. The substitution $u=\cos x$ runs from 1 to 0 and the stored value is $2/15$. A leftover factor of $\sin x$ or $\cos x$ means a substitution, not a reduction.
+
+\section{A second family}
+For a positive integer $n$,
+\[
+J_n=\int_0^\infty x^n e^{-x}\,dx.
+\]
+Parts with $u=x^n$ gives $J_n=n J_{n-1}$, and $J_0=1$, so $J_n=n!$. In particular $J_3=6$. This is not one of the eight drills. It is the same index drop, and it is the integer case of the Gamma integral in unit 14. Stop when the index hits 0.
+
+\section{Practice}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit20.json}.
+
+\section*{On a miss}
+Teach this file. Write $I_n$, the relation, and the base. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

@@ -1,19 +1,67 @@
-% Unit 35 — Modified Famous Integrals
+% Unit 35 — Modified famous integrals
 \input{technique-note.tex}
 \title{Integration Bee --- Unit 35:\\ Modified Famous Integrals}
-\author{UK Uni Integration Bee prep\\ Yang §6.8 Modified Famous Integrals}
+\author{UK Uni Integration Bee prep\\ Scale a named integral, or expand a series}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:6.8}; techniques: \texttt{modified-famous}.
+Tags: \texttt{yang:6.8}; techniques: \texttt{modified-famous}.
+A famous integral with one constant changed is still that integral after a substitution. Yang \S6.8 collects those tweaks. The values come from unit 30, from the geometric series, and from one double-angle argument for $\ln(\sin x)$. None of these drills needs a new constant invented on the spot.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §6.8 Modified Famous Integrals
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 30 for the Gaussian and $\int_0^{\infty}(\sin x)/x\,dx=\pi/2$.
+\item The Basel value $\sum_{n=1}^{\infty}1/n^2=\pi^2/6$, and the alternating partner $\sum_{n=1}^{\infty}(-1)^{n-1}/n^2=\pi^2/12$.
+\item Yang Topics Guide 2nd Ed \S6.8 Modified Famous Integrals. Syllabus \S2 names zeta.
 \end{itemize}
-\section{Learning goals} Tweaks of classic integrals.
+\section{Learning goals}
+\begin{enumerate}
+  \item Scale the limit and the constant in the exponent or the argument. Write the substitution.
+  \item Expand $1/(1\pm x)$ and integrate $x^n\ln x$ termwise when the famous value is a zeta number.
+\end{enumerate}
+
+\section{Scale the Gaussian --- \texttt{U35-D01}}
+\[
+\int_0^{\infty}e^{-2x^2}\,dx=\frac12\sqrt{\frac{\pi}{2}}=\frac{\sqrt{2\pi}}{4}.
+\]
+Put $u=x\sqrt{2}$ in \texttt{U30-D01}. \texttt{U35-D03} is $\int_0^{\infty}e^{-3x}\,dx=1/3$, which is elementary and is not a Gaussian.
+
+\section{Scale the Dirichlet integral --- \texttt{U35-D02}}
+\[
+\int_0^{\infty}\frac{\sin 2x}{x}\,dx=\frac\pi2.
+\]
+Put $u=2x$. Then $dx/x=du/u$, and the integral is \texttt{U30-D05}. The factor $2$ in the sine does not change the value.
+
+\section{Series --- \texttt{U35-D04} and \texttt{U35-D05}}
+On $[0,1)$,
+\[
+\frac{1}{1-x}=\sum_{n=0}^{\infty}x^n,\qquad \int_0^1 x^n\ln x\,dx=-\frac{1}{(n+1)^2}.
+\]
+So
+\[
+\int_0^1\frac{\ln x}{1-x}\,dx=-\sum_{m=1}^{\infty}\frac{1}{m^2}=-\frac{\pi^2}{6}.
+\]
+The alternating expansion of $1/(1+x)$ produces
+\[
+\int_0^1\frac{\ln x}{1+x}\,dx=-\sum_{m=1}^{\infty}\frac{(-1)^{m-1}}{m^2}=-\frac{\pi^2}{12}.
+\]
+Those are the stored answers. The endpoint $x=1$ in \texttt{U35-D04} is improper. The series of positive terms and the integral agree as improper integrals. \texttt{U35-D08} is the elementary cousin $\int_0^1 -\ln x\,dx=1$.
+
+\section{Logarithm of sine --- \texttt{U35-D06}}
+\[
+I=\int_0^{\pi/2}\ln(\sin x)\,dx.
+\]
+The reflection $x\mapsto\pi/2-x$ shows $I=\int_0^{\pi/2}\ln(\cos x)\,dx$, so
+\[
+2I=\int_0^{\pi/2}\ln(\sin x\cos x)\,dx=\int_0^{\pi/2}\ln(\sin 2x)\,dx-\int_0^{\pi/2}\ln 2\,dx.
+\]
+The second integral is $(\pi/2)\ln 2$. For the first, $v=2x$ gives $\frac12\int_0^{\pi}\ln(\sin v)\,dv=\int_0^{\pi/2}\ln(\sin v)\,dv=I$, because $\sin(\pi-v)=\sin v$. Therefore $2I=I-(\pi/2)\ln 2$, and $I=-(\pi/2)\ln 2$. \texttt{U36-D02} is the same integral.
+
+\texttt{U35-D07} is $(e^{-x}-e^{-2x})/x$ on $[0,\infty)$, stored value $\ln 2$. That is \texttt{U34-D01}. Use the parameter argument there. Do not start a series.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit35.json}.
+
+\section*{On a miss}
+Teach this file. Name the famous integral you scaled, or the series you integrated. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

@@ -1,19 +1,61 @@
-% Unit 36 — Unique Tricks
+% Unit 36 — Named constants and one-line substitutions
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 36:\\ Unique Tricks}
-\author{UK Uni Integration Bee prep\\ Yang §6.9 Unique Tricks}
+\title{Integration Bee --- Unit 36:\\ Named Constants and One-Line Substitutions}
+\author{UK Uni Integration Bee prep\\ A parameter, a substitution, or a named constant}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:6.9}; techniques: \texttt{unique-tricks}.
+Tags: \texttt{yang:6.9}; techniques: \texttt{unique-tricks}.
+Yang \S6.9 is a drawer of leftovers. In this drill set every integral is one of three things: a parameter integral from unit 34, a substitution $u=\ln x$, or Catalan's constant left as Catalan's constant. There is no fourth trick to memorize, and there is no elementary closed form hiding behind $G$.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §6.9 Unique Tricks
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 34 for $\int_0^1 (x^b-x^a)/\ln x\,dx=\ln((b+1)/(a+1))$.
+\item Unit 35 for $\int_0^{\pi/2}\ln(\sin x)\,dx=-(\pi/2)\ln 2$.
+\item Catalan's constant $G=\sum_{k=0}^{\infty}(-1)^k/(2k+1)^2$. Syllabus \S2 lists it. Yang Topics Guide 2nd Ed \S6.9 Unique Tricks.
 \end{itemize}
-\section{Learning goals} One-off contest tricks (SymPy-checkable).
+\section{Learning goals}
+\begin{enumerate}
+  \item Recognise $(x^b-x^a)/\ln x$ and integrate the geometric parameter. Do not series-expand $\ln x$ in the denominator.
+  \item Leave $G$ as $G$. Do not replace it by a rational number or a logarithm.
+  \item For $1/(x\ln x)$, substitute $u=\ln x$.
+\end{enumerate}
+
+\section{Worked parameter --- \texttt{U36-D01}}
+\[
+\int_0^1\frac{x-1}{\ln x}\,dx=\ln 2.
+\]
+For $a>-1$, $\int_0^1 x^a\,dx=1/(a+1)$. Integrate in $a$ from 0 to 1:
+\[
+\int_0^1\frac{x-1}{\ln x}\,dx=\ln\frac{1+1}{0+1}=\ln 2.
+\]
+\texttt{U36-D07} runs the parameter from 0 to 2 and stores $\ln 3$. That is \texttt{U34-D04}. The improper endpoint is the same limit used in unit 34.
+
+\section{Catalan's constant --- \texttt{U36-D03}}
+\[
+\int_0^1\frac{\arctan x}{x}\,dx=G.
+\]
+On $[0,1)$, $\arctan x=\sum_{k=0}^{\infty}(-1)^k x^{2k+1}/(2k+1)$, so
+\[
+\frac{\arctan x}{x}=\sum_{k=0}^{\infty}(-1)^k\frac{x^{2k}}{2k+1}.
+\]
+Integrate termwise. Each term contributes $(-1)^k/(2k+1)^2$. The series at $x=1$ is the definition of $G$. The integrand extends continuously through $x=0$ by the value $1$. The stored answer is the constant $G$, written \texttt{Catalan} in the drill feed. Stop there.
+
+\section{The logarithm substitution --- \texttt{U36-D04}}
+\[
+\int\frac{dx}{x\ln x}=\ln|\ln x|+C.
+\]
+Let $u=\ln x$. \texttt{U36-D05} on $[2,4]$ is $\ln(\ln 4)-\ln(\ln 2)=\ln 2$. \texttt{U36-D06} on $[e,e^e]$ is $\ln e-\ln 1=1$. \texttt{U36-D08} is $\int(\ln x)/x\,dx=\frac12(\ln x)^2$, the same substitution.
+
+\section{Already taught --- \texttt{U36-D02}}
+\[
+\int_0^{\pi/2}\ln(\sin x)\,dx=-\frac\pi2\ln 2
+\]
+is \texttt{U35-D06}. Use the double-angle argument in that note. Calling it a unique trick does not change the proof.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit36.json}.
+
+\section*{On a miss}
+Teach this file. If the answer is $G$, say so and stop. If the denominator is $\ln x$, build the parameter or the substitution $u=\ln x$. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

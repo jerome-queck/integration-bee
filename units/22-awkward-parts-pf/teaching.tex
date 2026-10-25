@@ -1,19 +1,59 @@
-% Unit 22 — Awkward Parts and Intermediate Partial Fractions
+% Unit 22 — Awkward parts and intermediate partial fractions
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 22:\\ Awkward Parts and Intermediate Partial Fractions}
-\author{UK Uni Integration Bee prep\\ Yang §§3.5 Awkward \& Advanced Parts, 3.6 Intermediate Partial Fractions}
+\title{Integration Bee --- Unit 22:\\ Awkward Parts and Partial Fractions}
+\author{UK Uni Integration Bee prep\\ Parts and cover-up, then Yang \S\S3.5--3.6}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:3.5}, \texttt{yang:3.6}; techniques: \texttt{awkward-parts}, \texttt{intermediate-partial-fractions}.
+Tags: \texttt{yang:3.5}, \texttt{yang:3.6}; techniques: \texttt{awkward-parts}, \texttt{intermediate-partial-fractions}.
+Repeated parts and a three-factor decomposition are ordinary calculus. Yang \S\S3.5--3.6 collects the contest shapes. Unit 03 is one parts step. Unit 05 is two linear factors. This unit is the next step of each.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §§3.5 Awkward \& Advanced Parts, 3.6 Intermediate Partial Fractions
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Units 03 and 05.
+\item Syllabus \S1 parts and partial fractions.
+\item Yang Topics Guide 2nd Ed \S\S3.5 Awkward Parts, 3.6 Intermediate Partial Fractions.
 \end{itemize}
-\section{Learning goals} Parts on $\ln^n$, arctan; intermediate PF.
+\section{Learning goals}
+\begin{enumerate}
+  \item Put the logarithm or the inverse trig in the $u$ slot, and repeat until the log power is gone.
+  \item Cover up a repeated linear factor. A squared factor needs two terms, $A/x+B/x^2$, not one.
+\end{enumerate}
+
+\section{Worked parts --- \texttt{U22-D01}}
+\[
+\int\ln(x)^2\,dx.
+\]
+Parts with $u=\ln(x)^2$, $dv=dx$ gives $x\ln(x)^2-2\int\ln x\,dx$. One more parts step on $\int\ln x\,dx$ gives $x\ln x-x$. The antiderivative is
+\[
+x\ln(x)^2-2x\ln x+2x.
+\]
+That is the stored answer. The same pattern with $u=\arctan x$ is \texttt{U22-D02}: $x\arctan x-\frac12\ln(1+x^2)$. With $u=\arcsin x$ it is \texttt{U22-D04}: $x\arcsin x+\sqrt{1-x^2}$.
+
+\texttt{U22-D03} is $x^2 e^x$. Differentiate the polynomial and integrate the exponential twice. The stored answer is $e^x(x^2-2x+2)$. \texttt{U22-D05} is $e^x\sin x$. Call the integral $I$, integrate by parts twice, and solve $I=\frac12 e^x(\sin x-\cos x)$.
+
+\section{Worked partial fractions --- \texttt{U22-D07}}
+\[
+\int\frac{dx}{x^2(x+1)}.
+\]
+Write $A/x+B/x^2+C/(x+1)$. Clearing the denominator and testing $x=0$ and $x=-1$ gives $B=1$, $C=1$, $A=-1$:
+\[
+\frac{1}{x^2(x+1)}=-\frac{1}{x}+\frac{1}{x^2}+\frac{1}{x+1}.
+\]
+The antiderivative is $-\ln|x|-1/x+\ln|x+1|$. On $[1,2]$ that is $\frac12+\ln(3/4)$, the stored answer of \texttt{U22-D08}.
+
+\section{Three distinct factors --- \texttt{U22-D06}}
+\[
+\frac{x}{(x+1)(x+2)(x+3)}=\frac{A}{x+1}+\frac{B}{x+2}+\frac{C}{x+3}.
+\]
+Cover-up: $A=-1/2$, $B=2$, $C=-3/2$. The stored antiderivative is
+\[
+-\frac12\ln|x+1|+2\ln|x+2|-\frac32\ln|x+3|.
+\]
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit22.json}.
+
+\section*{On a miss}
+Teach this file. For parts, name $u$ and $dv$. For fractions, write every factor, including the repeated one. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

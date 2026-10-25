@@ -1,19 +1,65 @@
-% Unit 25 — Advanced King's/Queen's Rule
+% Unit 25 — Advanced reflection
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 25:\\ Advanced King's/Queen's Rule}
-\author{UK Uni Integration Bee prep\\ Yang §4.4 Advanced King's/Queen's Rule}
+\title{Integration Bee --- Unit 25:\\ Advanced Reflection}
+\author{UK Uni Integration Bee prep\\ The same $a+b-x$, past the sine-cosine case}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:4.4}; techniques: \texttt{advanced-kings-queens}.
+Tags: \texttt{yang:4.4}; techniques: \texttt{advanced-kings-queens}.
+Unit 10 is the reflection toolkit. This unit is the same substitution $u=a+b-x$ when the integrand is an exponential, a tangent, or a factor of $x$ on $[0,\pi]$. Yang \S4.4 is a later list of those shapes. There is still one identity.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §4.4 Advanced King's/Queen's Rule
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 10 and Guide \S1.2. The syllabus calls it the reflection property.
+\item Syllabus \S1.
+\item Yang Topics Guide 2nd Ed \S4.4 Advanced King's/Queen's Rule.
 \end{itemize}
-\section{Learning goals} $f(a+b-x)$ on nested trig/exp (SymPy-friendly).
+\section{Learning goals}
+\begin{enumerate}
+  \item Reflect, add the two copies, and only then integrate.
+  \item If the reflected integrand is not a complement, keep both copies. The sum may still simplify.
+  \item Do not quote $\pi/4$ for a tangent integral whose sum is not constant.
+\end{enumerate}
+
+\section{Worked exponential --- \texttt{U25-D03}}
+\[
+I=\int_0^1\frac{e^x}{e^x+e^{1-x}}\,dx.
+\]
+The map $x\mapsto 1-x$ swaps $e^x$ with $e^{1-x}$. The reflected integrand is the other fraction, and the two fractions add to 1. So $2I=\int_0^1 1\,dx=1$ and $I=1/2$.
+
+\section{The sine-cosine case, one step harder --- \texttt{U25-D05}}
+\[
+\int_0^{\pi/2}\frac{\sin^3 x}{\sin^3 x+\cos^3 x}\,dx=\frac\pi4.
+\]
+The swap $x\mapsto\pi/2-x$ exchanges the cubes. The sum of the two integrands is 1, the interval has length $\pi/2$, and half of that length is $\pi/4$. \texttt{U25-D01} and \texttt{U25-D02} are the first-power versions from unit 10. \texttt{U25-D08} does not need a reflection: $u=\sin x$ gives $1/2$.
+
+\section{Worked tangent --- \texttt{U25-D04}}
+\[
+I=\int_0^{\pi/4}\frac{dx}{1+\tan x}.
+\]
+The map $x\mapsto\pi/4-x$ uses $\tan(\pi/4-x)=(1-\tan x)/(1+\tan x)$, so
+\[
+\frac{1}{1+\tan(\pi/4-x)}=\frac{1+\tan x}{2}.
+\]
+Therefore
+\[
+I=\int_0^{\pi/4}\frac{1+\tan x}{2}\,dx=\frac\pi8+\frac12\int_0^{\pi/4}\tan x\,dx=\frac\pi8+\frac14\ln 2.
+\]
+The stored answer is $\pi/8+(\ln 2)/4$. Reflection did not make the integrand constant. Adding the copies still removed the hard fraction.
+
+\section{A factor of $x$ --- \texttt{U25-D06}}
+\[
+I=\int_0^{\pi}\frac{x}{1+\sin x}\,dx.
+\]
+The map $x\mapsto\pi-x$ leaves $\sin x$ fixed and sends $x$ to $\pi-x$, so
+\[
+2I=\pi\int_0^{\pi}\frac{dx}{1+\sin x}.
+\]
+The half-angle substitution of unit 26, with a split because $t=\tan(x/2)$ runs to infinity as $x$ approaches $\pi$, gives $\int_0^{\pi} dx/(1+\sin x)=2$. Hence $I=\pi$. That is the stored answer. \texttt{U25-D07} is the unit 10 warmup $x/(1+x)$ on $[0,1]$, value $1-\ln 2$, by writing the integrand as $1-1/(1+x)$.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit25.json}.
+
+\section*{On a miss}
+Teach this file together with unit 10. Write the reflected integrand before you add. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

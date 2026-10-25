@@ -1,19 +1,50 @@
-% Unit 23 — Basic Periodicity and Speed Bashing
+% Unit 23 — Periodicity and speed
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 23:\\ Basic Periodicity and Speed Bashing}
-\author{UK Uni Integration Bee prep\\ Yang §§3.7 Basic Periodicity, 3.8 Speed Bashing}
+\title{Integration Bee --- Unit 23:\\ Periodicity and Speed}
+\author{UK Uni Integration Bee prep\\ Orthogonality on a full period, then Yang \S\S3.7--3.8}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:3.7}, \texttt{yang:3.8}; techniques: \texttt{periodicity}, \texttt{speed-bashing}.
+Tags: \texttt{yang:3.7}, \texttt{yang:3.8}; techniques: \texttt{periodicity}, \texttt{speed-bashing}.
+The integral of $\sin(mx)\sin(nx)$ over a full number of periods is classical Fourier arithmetic. Yang \S\S3.7--3.8 is the contest packaging: read the square before you expand, and split a sum the moment you see it.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §§3.7 Basic Periodicity, 3.8 Speed Bashing
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 02 for $\int_0^{2\pi}\sin^2 x\,dx=\pi$, which is the diagonal case below.
+\item Syllabus \S1 trig integrals.
+\item Yang Topics Guide 2nd Ed \S\S3.7 Periodicity, 3.8 Speed Bashing.
 \end{itemize}
-\section{Learning goals} Orthogonality; watch squares; speed patterns.
+\section{Learning goals}
+\begin{enumerate}
+  \item On $[0,2\pi]$, for positive integers $m\neq n$, the products $\sin(mx)\sin(nx)$ and $\cos(mx)\cos(nx)$ integrate to 0. The square $\sin^2(mx)$ integrates to $\pi$.
+  \item A square of a sum keeps the diagonal. Cross terms die.
+  \item Speed means split, then integrate. It does not mean a new identity.
+\end{enumerate}
+
+\section{Worked orthogonality --- \texttt{U23-D01}}
+\[
+\int_0^{2\pi}\sin(3x)\sin(5x)\,dx=0,
+\]
+because $3\neq 5$. The product-to-sum formula gives the same zero in one line. \texttt{U23-D05} is the cosine partner, also 0. \texttt{U23-D03} is $\sin(23x)\sin(19x)$ on $[0,\pi]$, still 0 for distinct positive integers.
+
+\texttt{U23-D04} is the diagonal: $\int_0^{2\pi}20\sin^2 x\,dx=20\pi$.
+
+\section{Watch the square --- \texttt{U23-D02}}
+\[
+\int_0^{2\pi}\bigl(\sin x+\sin 2x+\sin 3x\bigr)^2\,dx.
+\]
+Expand. Three cross terms integrate to 0. Three squares remain, and each $\int_0^{2\pi}\sin^2(mx)\,dx$ equals $\pi$. The value is $3\pi$. If you drop the squares and keep only the cross terms, you will report 0.
+
+\section{Speed --- \texttt{U23-D08}}
+\[
+\int\Bigl(\frac{1}{x^2}+\frac{1}{x}+1-\frac{1}{x^2+1}\Bigr)dx
+=x+\ln|x|-\arctan x-\frac{1}{x}+C.
+\]
+The integrand was already a sum. \texttt{U23-D06} is $x^3 e^x$, three parts steps, stored answer $e^x(x^3-3x^2+6x-6)$. \texttt{U23-D07} splits $\sin^3 x+\cos^3 x$ into odd powers and substitutes. Do not start a recurrence when the power is 3 and a factor of $\sin x$ or $\cos x$ is already the derivative of the other.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit23.json}.
+
+\section*{On a miss}
+Teach this file. Say whether the term is a cross term or a square, then integrate that piece. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

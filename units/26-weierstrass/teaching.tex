@@ -1,31 +1,31 @@
-% Unit 26 — Weierstrass Substitution
+% Unit 26 — early half-angle substitution t=tan(x/2)
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 26:\\ Weierstrass Substitution}
-\author{UK Uni Integration Bee prep\\ Yang §4.5 Weierstrass Substitution}
+\title{Integration Bee --- Unit 26:\\ Half-angle substitution}
+\author{UK Uni Integration Bee prep\\ Techniques Guide \S1.6 T-sub}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:4.5}; techniques: \texttt{weierstrass}.
+Tags: \texttt{yang:4.5}; techniques: \texttt{weierstrass}.
+Guide section 1.6 is this move. The syllabus lists it in section 1, so it is an early tool: use it as soon as the integrand is a rational function of sine and cosine. Yang \S4.5 is a later chapter under the name Weierstrass. It is the same substitution, not a new one. A first pass sits in unit 09. This file is the note a miss names.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §4.5 Weierstrass Substitution
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Techniques Guide \S1.6, the T-substitution $t=\tan(x/2)$.
+\item Syllabus \S1 Weierstrass (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Yang Topics Guide 2nd Ed \S4.5, the same three replacements.
 \end{itemize}
 \section{Learning goals}
 Turn a rational function of sine and cosine into a rational function of $t$.
-Guide section 1.6. The substitution is $t=\tan(x/2)$.
+The substitution is $t=\tan(x/2)$. Check the endpoints before you expand. A plain sine power is a reduction, unit 20, not this substitution. A rational function of $\tan x$ with a $\sec^2 x$ already present is $t=\tan x$, which is unit 09's ordinary substitution.
 
 \section{The three replacements}
-From the double-angle formulas,
+The half-angle formulas give
 \[
 \sin x=\frac{2t}{1+t^2},\qquad
 \cos x=\frac{1-t^2}{1+t^2},\qquad
-dx=\frac{2\,dt}{1+t^2}.
+dx=\frac{2\,dt}{1+t^2},
 \]
-Use this when the integrand is rational in $\sin x$ and $\cos x$.
-A plain sine power is a reduction, not this substitution.
+where $t=\tan(x/2)$. They are the double-angle formulas written in $t$, together with $x=2\arctan t$. Use them when the integrand is rational in $\sin x$ and $\cos x$.
 
 \section{Worked --- \texttt{U26-D01}}
 \[
@@ -41,13 +41,45 @@ so the integrand collapses to $2/(1+t)^2$.
 \]
 That is the stored answer.
 
-\section{Faded step --- \texttt{U26-D02}}
+The indefinite integral of the same integrand is stored as \texttt{U26-D04}, $\tan x-\sec x$. The half-angle antiderivative $-2/(1+\tan(x/2))$ equals that expression plus 1 on $(0,\pi)$. Either form is valid. The drill stores $\tan x-\sec x$.
+
+\section{A definite pattern --- \texttt{U26-D02}}
+For $a>|b|$,
 \[
-\int_0^{\pi}\frac{1}{2+\cos x}\,dx.
+\int_0^{\pi}\frac{dx}{a+b\cos x}=\frac{\pi}{\sqrt{a^2-b^2}}.
 \]
-Put $t=\tan(x/2)$. The stored answer is $\pi/\sqrt{3}$.
-Check the endpoints before you expand the algebra. At $x=\pi$ the half-angle tangent is unbounded, so split at $\pi/2$ or quote the standard definite form after the substitution is in place.
+The derivation is the same substitution. As $x$ runs over $[0,\pi)$, $t=\tan(x/2)$ runs over $[0,\infty)$, and
+\[
+a+b\cos x=\frac{(a-b)t^2+(a+b)}{1+t^2}.
+\]
+The $1+t^2$ cancels the factor in $dx$, and
+\[
+\int_0^\infty\frac{2\,dt}{(a-b)t^2+(a+b)}=\frac{\pi}{\sqrt{a^2-b^2}}.
+\]
+\texttt{U26-D02} is $a=2$, $b=1$, so the value is $\pi/\sqrt{3}$. \texttt{U26-D03} is $a=3$, $b=2$, value $\pi/\sqrt{5}$. \texttt{U26-D05} is $a=5$, $b=4$, value $\pi/3$. The hypothesis $a>|b|$ keeps the denominator from vanishing. At $x=\pi$ the half-angle tangent is unbounded, so the definite integral is the improper integral in $t$, which converges.
+
+\section{Both sine and cosine --- \texttt{U26-D06}}
+\[
+\int_0^{\pi/2}\frac{dx}{1+\sin x+\cos x}.
+\]
+Here $t$ runs from 0 to 1. The numerator $2\,dt/(1+t^2)$ cancels against
+\[
+1+\sin x+\cos x=\frac{2(1+t)}{1+t^2},
+\]
+and the integral is $\int_0^1 dt/(1+t)=\ln 2$. That is the stored answer.
+
+\section{Faded step --- \texttt{U26-D08}}
+\[
+\int_0^{\pi/2}\frac{dx}{2+\sin x}.
+\]
+Put $t=\tan(x/2)$ again. The limits are $0$ and $1$, not $0$ and $\infty$. The stored answer is $\sqrt{3}\,\pi/9$. \texttt{U26-D07} shortens the upper limit of \texttt{U26-D02} to $\pi/3$. Do not quote the full $[0,\pi]$ formula when the interval is shorter.
+
+\section{What this is not}
+A reduction $I_n=((n-1)/n)I_{n-2}$ is unit 20. Adding a reflected copy is unit 10. Introducing a constant in a rational function of $x$ is \texttt{docs/techniques/introduce-constant.md}. If the integrand is not rational in sine and cosine, this substitution makes a harder integral.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit26.json}.
+
+\section*{On a miss}
+Teach this file. Write the three replacements, change the limits, and simplify before you expand. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

@@ -1,44 +1,67 @@
-% Unit 10 teaching — Inverse Functions \& King's/Queen's Rule
+% Unit 10 teaching — Inverse Functions & King's/Queen's Rule
 \input{technique-note.tex}
 \title{Integration Bee --- Unit 10:\\ Inverse Functions \& King's/Queen's Rule}
-\author{UK Uni Integration Bee prep (Jerome)\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed}
+\author{UK Uni Integration Bee prep\\ Syllabus reflection, Techniques Guide \S\S1.2 and 1.5}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Concept teaching only. Tags: \texttt{inverse-functions}, \texttt{kings-rule}, \texttt{yang:1.17}, \texttt{yang:1.18}.
+Concept teaching. Tags: \texttt{inverse-functions}, \texttt{kings-rule}, \texttt{yang:1.17}, \texttt{yang:1.18}.
+The Yang chapter is one source. The identity below is the syllabus reflection property and Guide \S1.2. The inverse-area step is Guide \S1.5. Nested and exponential copies are unit 25.
 \section{Official anchors}
 \begin{itemize}
-  \item Syllabus §1 --- reflection property $\int_a^b f(x)\,dx=\int_a^b f(a+b-x)\,dx$.
-  \item Guide §1.2 Reflection (p.7); §1.5 Integral of Inverse (Contents p.14).
-  \item Yang §§1.17 Inverse Functions, 1.18 King's/Queen's Rule.
+  \item Syllabus \S1 --- reflection property $\int_a^b f(x)\,dx=\int_a^b f(a+b-x)\,dx$.
+  \item Guide \S1.2 Reflection; \S1.5 Integral of an inverse.
+  \item Yang \S\S1.17 Inverse Functions, 1.18 King's/Queen's Rule, as a later writeup of the same two moves.
 \end{itemize}
 \section{Learning goals}
 \begin{enumerate}
-  \item Integrate standard inverse trig on easy intervals.
-  \item Apply King's substitution $x\mapsto a-x$ (esp.\ on $[0,\pi/2]$).
+  \item Integrate an inverse by parts, or by the area identity.
+  \item Apply the one reflection $u=a+b-x$, including the sine-cosine case on $[0,\pi/2]$.
+  \item Recognise the even, odd, and $x\mapsto 1/x$ cases as the same idea.
 \end{enumerate}
 \section{Pedagogy}
 Worked $\to$ faded $\to$ interleaved. See \texttt{pedagogy/README.md}.
 
 \section{Worked inverse --- \texttt{U10-D01} (\texttt{yang:1.17})}
 \[
-\int_0^1\arcsin x\,dx = \frac\pi2-1.
+\int_0^1\arcsin x\,dx.
 \]
-
-\section{Worked King --- \texttt{U10-D04} (\texttt{yang:1.18})}
+Parts with $u=\arcsin x$, $dv=dx$ gives
 \[
-I=\int_0^{\pi/2}\frac{\sin x}{\sin x+\cos x}\,dx.
+\bigl[x\arcsin x\bigr]_0^1 - \int_0^1\frac{x}{\sqrt{1-x^2}}\,dx.
 \]
-King $x\mapsto\pi/2-x$ swaps $\sin/\cos$, so $2I=\pi/2$ and $I=\pi/4$.
-That substitution is one case of the reflection below.
+The boundary term is $\pi/2$. The remaining integral is $-\sqrt{1-x^2}$, so
+\[
+\frac\pi2 - \bigl[-\sqrt{1-x^2}\bigr]_0^1 = \frac\pi2 - (0-1) = \frac\pi2-1.
+\]
+The same value falls out of areas. On $[0,\pi/2]$, $\sin$ and $\arcsin$ are inverses, and
+\[
+\int_0^1\arcsin y\,dy = 1\cdot\frac\pi2 - \int_0^{\pi/2}\sin x\,dx = \frac\pi2-1.
+\]
+That area identity is the general one: if $f$ is increasing and continuous,
+\[
+\int_a^b f^{-1}(y)\,dy = b\,f^{-1}(b)-a\,f^{-1}(a)-\int_{f^{-1}(a)}^{f^{-1}(b)} f(x)\,dx,
+\]
+whenever the integrals exist.
+
+\section{Faded inverse --- \texttt{U10-D08}}
+\[
+\int_0^{1/2}\arcsin x\,dx.
+\]
+The boundary term is $(1/2)\cdot(\pi/6)=\pi/12$. The same substitution $w=1-x^2$ produces $\sqrt3/2-1$ from the remaining integral. The stored value is $\pi/12+\sqrt3/2-1$.
+
+\texttt{U10-D02} is $\arctan$ on $[0,1]$, parts again, stored value $\pi/4-(\ln 2)/2$. \texttt{U10-D03} is $\arccos$ on $[0,1]$, stored value $1$.
 
 \section{Worked reflection}
 The identity keeps the same interval. For a continuous $f$,
 \[
 \int_a^b f(x)\,dx=\int_a^b f(a+b-x)\,dx.
 \]
-The substitution $u=a+b-x$ swaps the limits and then the sign of $du$ swaps them back.
+The substitution $u=a+b-x$ swaps the limits and then the sign of $du$ swaps them back. Contest writeups call this King's rule. They call the special case on $[0,a]$, namely $u=a-x$, Queen's rule. There is one identity.
+
+Add the original integral to the reflected copy when the two integrands sum to something you can integrate. That is the whole toolkit.
+
 On $[-a,a]$ the endpoints sum to zero, so $a+b-x$ is $-x$.
 An even integrand is unchanged by that swap.
 An odd integrand changes sign, so the integral is 0 when it exists.
@@ -51,10 +74,34 @@ I=\int_0^{\pi/2}\sin^2 x\,dx
 \]
 and $\sin^2 x+\cos^2 x=1$, so $2I=\pi/2$ and $I=\pi/4$.
 
+\section{Worked King --- \texttt{U10-D04} (\texttt{yang:1.18})}
+\[
+I=\int_0^{\pi/2}\frac{\sin x}{\sin x+\cos x}\,dx.
+\]
+The swap $x\mapsto\pi/2-x$ exchanges the two summands, so the reflected integrand is $\cos x/(\sin x+\cos x)$. Adding the copies gives $2I=\int_0^{\pi/2} 1\,dx=\pi/2$, hence $I=\pi/4$.
+\texttt{U10-D05} is the cosine-over-sum partner and has the same value. The King example \texttt{U10-D04} is the sine and cosine case, not the whole toolkit.
+
+\section{Algebra on a reflected interval}
+\texttt{U10-D06} is $\int_0^1 x/(1+x)\,dx$. Reflection sends it to $\int_0^1 (1-x)/(2-x)\,dx$, which is a different integral. The short path is the constant you add and subtract:
+\[
+\frac{x}{1+x}=1-\frac{1}{1+x},\qquad \int_0^1=1-\ln 2.
+\]
+That algebra is Guide \S1.9 and \texttt{docs/techniques/introduce-constant.md}. Use it when reflection produces a mess and the numerator is almost the denominator.
+
+\section{The half-line}
 On $(0,\infty)$ the substitution $x=1/u$ is the same idea at a different point.
-It sends $\ln x/(1+x^2)$ to its negative, so that integral is 0.
-The King example \texttt{U10-D04} is the sine and cosine case, not the whole toolkit.
+It sends $\ln x/(1+x^2)$ to its negative, and $dx/(1+x^2)$ is unchanged, so
+\[
+\int_0^\infty\frac{\ln x}{1+x^2}\,dx=0
+\]
+when the integral exists. The stored drill is \texttt{U33-D07}. Unit 33 writes the general inversion; the sign flip is the reflection.
+
+\section{Where the toolkit goes next}
+Unit 25 uses the same $a+b-x$ on an exponential weight and on $x/(1+\sin x)$. If the reflected integrand is not the original and not a complement, you still add the two copies. The half-angle substitution is a different move. It lives in unit 09 and, as the named note, in unit 26.
 
 \section{Practice}
-\texttt{U10-D01}\ldots\texttt{U10-D08} in \texttt{drills.tex}; \texttt{verify/run.sh}.
+\texttt{U10-D01}\ldots\texttt{U10-D08} in \texttt{drills.tex}. Machine check: \texttt{verify/run.sh}.
+
+\section*{On a miss}
+Teach this file. Rebuild the reflected copy and add it to the original. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}
