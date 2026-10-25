@@ -83,7 +83,7 @@ Let \(x=u^2\), so \(dx=2u\,du\) and \(\sqrt{x}=u\), with limits still \(0\) and 
 \int_0^1\frac{2u^2}{1+u^2}\,du=\int_0^1 2\left(1-\frac{1}{1+u^2}\right)du=2\bigl[u-\arctan u\bigr]_0^1=2-\frac{\pi}{2}.
 \]
 
-Unit 19 stores the contest-shaped drills. This example is the move. `sneaky-u-sub` stays in that unit's stored drills. A new sneaky example is not part of this card.
+Unit 19 stores the power drills. This example is the move. `sneaky-u-sub` is the next four drills in that file. The scaled fence is `habits.md`.
 
 ## Where this goes wrong
 

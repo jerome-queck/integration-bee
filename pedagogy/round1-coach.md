@@ -28,7 +28,7 @@ Teach at the learner's highest solid band, plus one step. A band 4 card waits un
 
 Quote a stored drill id and the value printed in the unit note or the drill feed. Quote an original example in `docs/techniques/concepts/` that the card says was checked. Quote the six gap notes.
 
-Leave a pack final alone. Leave a Yang practice final alone when the extract does not print it. Leave a zeta value unquoted. `pedagogy/concept-map.md` names the nodes that are still thin for that reason.
+Leave a pack final alone. Leave a Yang practice final alone when the extract does not print it. Quote a zeta value only when unit 35 already prints it. `pedagogy/concept-map.md` records a thin count of 0. `floor` and `dutis` stay unticked. Leave \(G\) as \(G\).
 
 ## After a miss
 

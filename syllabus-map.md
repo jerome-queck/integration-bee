@@ -136,11 +136,11 @@ Guide Contents: §1.1 Odd/Even p.3 → §1.2 Reflection p.7 → §1.3 Recurrence
 | `yang:6.8` | Modified Famous Integrals | **Unit 35** (`U35-D01`…`D08`) |
 | `yang:6.9` | Unique Tricks | **Unit 36** (`U36-D01`…`D08`) |
 
-**Done:** Units 19–36 cover inventory `yang:3.1`…`yang:6.9` (4.3 skipped). Official syllabus nodes without a Yang unit stay deferred on `skill-tree.md`.
+**Done:** Units 19–36 cover inventory `yang:3.1`…`yang:6.9` (4.3 skipped). Official syllabus nodes without a Yang unit stay deferred on `skill-tree.md`. The eleven habit nodes, from modified textbook through unique tricks, teach their stored drills in the unit notes. Scaled fences are `docs/techniques/concepts/habits.md`. The thin count in `pedagogy/concept-map.md` is 0.
 
 ## Pedagogy order (Round 1)
 
-Coach cards and the node inventory are `docs/techniques/concepts/` and `pedagogy/concept-map.md`. A tick chooses the dose in `pedagogy/round1-coach.md`.
+Coach cards and the node inventory are `docs/techniques/concepts/` and `pedagogy/concept-map.md`. Habit nodes that used to be thin are `docs/techniques/concepts/habits.md`. A tick chooses the dose in `pedagogy/round1-coach.md`.
 
 1. Units 01–11 → full Yang Ch.1 (`yang:1.1`…`yang:1.20`)
 2. Units 12–18 → full Yang Ch.2 (`yang:2.1`…`yang:2.10`)

@@ -10,7 +10,7 @@ Depth means one of the following.
 |---|---|
 | card | A coach card states when to use the move, one worked example, and the usual failure. The unit file holds the stored drills. |
 | unit | The unit `teaching.tex` already states the move and a stored drill. The card only points there. No new example was added. |
-| thin | The unit packages several habits. A new example is easy to fake. Teach the stored drill in that file and stop. |
+| thin | Empty after the habit card. A node landed here when its unit had not yet taught the stored drills. Those eleven nodes are `habits.md`. |
 | deferred-taught | The catalog id has no unit, so it stays deferred. A note and drills exist. Leave the id unticked. |
 | deferred-open | No drill and no checked value. Name the syllabus entry. Do not invent a value. |
 | index | A paper or a mock. Not a technique. |
@@ -73,6 +73,17 @@ The card states the move. Stored numbers stay in the unit.
 | `dirichlet` | 5.4 | `gaussian-dirichlet.md` | Quote `U30-D05`, then scale by \(u=bx\). |
 | `intermediate-partial-fractions` | 3.6 | `partial-fractions.md` | A repeated factor needs two terms. |
 | `feynman` | 6.7 | `algebra.md` | Fixed interval versus a moving endpoint. The unit 34 case \(I'(2)=6\) stays the unit's example. |
+| `modified-textbook` | 2.1 | `habits.md` | Scale of `U12-D01` on \([0,1]\), value \(e^e-e\). The four textbook drills stay in unit 12. |
+| `sneaky-algebra` | 2.2 | `habits.md` | Scale of `U12-D05` with \(3\) in place of \(2\), value \(11/3\). |
+| `sneaky-u-sub` | 3.2 | `habits.md` | Numerator form of the `U19-D05` substitution on \([0,3]\), value \(4\sqrt{3}\). |
+| `sneaky-symmetry` | 2.9 | `habits.md` | Three-factor shift on \([1,3]\), value \(0\). `U18-D04` stays the even warning, value \(\pi^3/96\). |
+| `sneaky-product-rule` | 2.10 | `habits.md` | Half the coefficient of `U18-D06` on \([1,4]\), value \(2e^4-e\). |
+| `speed-bashing` | 3.8 | `habits.md` | Two-term split on \([0,1]\), value \(\frac12+\ln 2\). `U23-D06` and `U23-D07` stay in the unit. |
+| `complexifying` | 6.3 | `habits.md` | Decay \(2\) in place of the stored decay \(1\), value \(2/5\). `U32-D05` stays \(1/2\). |
+| `ninja-substitution` | 6.4 | `habits.md` | \(\int_0^1 \arctan x/(1+x^2)\,dx=\pi^2/32\). `U33-D04` stays the stored logarithm. |
+| `inversion` | 6.5 | `habits.md` | Finite copy of `U33-D08` on \([0,1]\), value \(1/4\). |
+| `modified-famous` | 6.8 | `habits.md` | Gaussian scale \(e^{-9x^2}\) equals \(\sqrt{\pi}/6\), and \(\sin(3x)/x\) equals \(\pi/2\). Series values stay the ones unit 35 prints. |
+| `unique-tricks` | 6.9 | `habits.md` | Parameter from \(0\) to \(4\), value \(\ln 5\). `U36-D03` stays \(G\). |
 
 ## Unit lessons, no new example
 
@@ -87,21 +98,7 @@ Open the unit file. The move is already there.
 
 ## Still thin
 
-Teach the stored drill. Stop before a new example.
-
-| Node | Yang | Stay inside | Why it stays thin |
-|---|---|---|---|
-| `modified-textbook` | 2.1 | `units/12-modified-sneaky-algebra/teaching.tex` | "Modify a textbook skeleton" is a habit, not one identity. |
-| `sneaky-algebra` | 2.2 | the same file | Factoring tricks. The parent moves are `algebra.md`. |
-| `sneaky-u-sub` | 3.2 | `units/19-power-sneaky-usub/teaching.tex` | The power move is on the substitution card. The sneaky drills stay here. |
-| `sneaky-symmetry` | 2.9 | `units/18-sneaky-symmetry-product/teaching.tex` | A shift that makes an odd part cancel. Parent move is the symmetry card. |
-| `sneaky-product-rule` | 2.10 | the same file | Hidden product rule. Parent move is reverse product on the parts card. |
-| `speed-bashing` | 3.8 | `units/23-periodicity-speed/teaching.tex` | Split a sum and integrate. The unit says this is not a new identity. |
-| `complexifying` | 6.3 | `units/32-taylor-complex/teaching.tex` | Real part of a complex exponential. `U32-D07` is the stored drill. |
-| `ninja-substitution` | 6.4 | `units/33-ninja-inversion/teaching.tex` | \(x=\tan\theta\) when \(1+x^2\) is present. `U33-D04`. |
-| `inversion` | 6.5 | the same file | \(x\mapsto 1/x\) on a half-line. The symmetry card names the map and stops. `U33-D06`. |
-| `modified-famous` | 6.8 | `units/35-modified-famous/teaching.tex` | Scaling a Gaussian or a Dirichlet integral is the Gaussian card. Series and \(\ln(\sin x)\) stay here, including any zeta number the unit already prints. |
-| `unique-tricks` | 6.9 | `units/36-unique-tricks/teaching.tex` | Several devices in one unit. \((x^b-x^a)/\ln x\) is the parameter integral. Leave Catalan's \(G\) as \(G\). |
+None. The eleven habits that were thin are rows of `docs/techniques/concepts/habits.md` above. Each unit file teaches the stored drills. Each fence on that card is a scale of one of those drills, checked with SymPy, and is not a drill id.
 
 Yang inventory 4.3 has no node. It stays skipped.
 
@@ -138,12 +135,12 @@ These nine nodes are not concepts. Round formats are `docs/techniques/formats.md
 | Depth | Nodes |
 |---|---|
 | card, Round 1 gate | 20 |
-| card, later chapter or syllabus technique | 21 |
+| card, later chapter or syllabus technique | 32 |
 | unit lesson, no new example | 4 |
-| thin | 11 |
+| thin | 0 |
 | deferred-taught | 2 (`floor`, `dutis`) |
 | deferred-open | 5 |
 | index | 9 |
 | Total | 72 |
 
-The 20 Round 1 nodes and the 21 later card rows are what an agent can teach without a Yang answer key. The 11 thin rows and the 5 deferred-open rows are the remaining gap.
+The thin count was 11 before the habit card. It is 0. The 20 Round 1 nodes and the 32 later card rows are what an agent can teach without a Yang answer key. The 5 deferred-open rows are the remaining gap. `floor` and `dutis` stay unticked.

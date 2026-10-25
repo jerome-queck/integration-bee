@@ -7,7 +7,7 @@
 \maketitle
 \section*{Status}
 Tags: \texttt{yang:6.4}, \texttt{yang:6.5}; techniques: \texttt{ninja-substitution}, \texttt{inversion}.
-Two moves carry this unit. A substitution can be hidden inside a rational function of $\tan x$ or of $\sqrt{(1-x)/(1+x)}$. Separately, $x=1/t$ on $(0,\infty)$ reflects a integral through $1$, which is the half-line case of unit 10. Yang \S\S6.4--6.5 names them. The substitutions themselves are ordinary.
+Two moves carry this unit. \texttt{ninja-substitution} tries $x=\tan\theta$ when $1+x^2$ is in the denominator, and it tries a radical that collapses to an arctangent. \texttt{inversion} is $x=1/t$ on $(0,\infty)$, the half-line case of unit 10. Yang \S\S6.4--6.5 names them. The substitutions themselves are ordinary. The route is \texttt{docs/techniques/concepts/habits.md}.
 \section{Official anchors}
 \begin{itemize}
 \item Unit 10 for the sign flip of $\ln x/(1+x^2)$. Unit 26 for a rational function of sine and cosine.
@@ -30,15 +30,21 @@ Put $x=\tan\theta$, so $\theta$ runs from $0$ to $\pi/4$ and $dx/(1+x^2)=d\theta
 \]
 so $\ln(1+\tan(\pi/4-\theta))=\ln 2-\ln(1+\tan\theta)$. Adding the two copies gives $2I=(\pi/4)\ln 2$, hence $I=\pi\ln 2/8$. That is the stored answer.
 
-\texttt{U33-D01} is the plain substitution $\int_0^1 x/(1+x^2)\,dx=(\ln 2)/2$. No reflection.
+\texttt{U33-D01} is the plain substitution $\int_0^1 x/(1+x^2)\,dx=(\ln 2)/2$. The numerator is already the derivative of the inside. A tangent substitution is the long way around.
+
+A scale of the tangent differential, not a drill, drops the logarithm:
+\[
+\int_0^1\frac{\arctan x}{1+x^2}\,dx.
+\]
+Set $u=\arctan x$. Then $u$ runs from $0$ to $\pi/4$ and the integral is $\int_0^{\pi/4}u\,du=\pi^2/32$. SymPy checks $\pi^2/32$.
 
 \section{A rational trig integral --- \texttt{U33-D02}}
 \[
 \int_0^{\pi/2}\frac{dx}{1+\sin^2 x}=\frac{\pi}{2\sqrt{2}}.
 \]
-Write $\sin^2 x=(1-\cos 2x)/2$, so $1+\sin^2 x=(3-\cos 2x)/2$. The integral becomes $\int_0^{\pi} du/(3-\cos u)$ after $u=2x$. Unit 26 evaluates $\int_0^{\pi} du/(a+b\cos u)=\pi/\sqrt{a^2-b^2}$ for $a>|b|$. Here $a=3$ and $b=-1$, and $\sqrt{9-1}=2\sqrt{2}$.
+Write $\sin^2 x=(1-\cos 2x)/2$, so $1+\sin^2 x=(3-\cos 2x)/2$. The integral becomes $\int_0^{\pi} du/(3-\cos u)$ after $u=2x$. Unit 26 evaluates $\int_0^{\pi} du/(a+b\cos u)=\pi/\sqrt{a^2-b^2}$ for $a>|b|$. Here $a=3$ and $b=-1$, and $\sqrt{9-1}=2\sqrt{2}$. The drill feed prints the rationalized form $\sqrt{2}\,\pi/4$. A 30-digit evaluation of the original integral matches that number.
 
-\section{Worked inversion --- \texttt{U33-D06}}
+\section{Worked inversion --- \texttt{U33-D06} (\texttt{inversion})}
 \[
 I=\int_0^{\infty}\frac{dx}{(1+x^2)(1+x)}.
 \]
@@ -46,13 +52,43 @@ The substitution $x=1/t$ produces $\int_0^{\infty} t\,dt/((1+t^2)(1+t))$. Add th
 \[
 2I=\int_0^{\infty}\frac{dx}{1+x^2}=\frac\pi2,
 \]
-so $I=\pi/4$. \texttt{U33-D05} is $\int_0^{\infty} dx/(1+x^2)=\pi/2$ with no extra factor. \texttt{U33-D07} is $\int_0^{\infty}\ln x/(1+x^2)\,dx=0$: the same substitution sends the integrand to its negative, as in unit 10. \texttt{U33-D08} is elementary, $u=1+x^2$, value $1/2$.
+so $I=\pi/4$. That is the stored value.
 
-\section{Faded --- \texttt{U33-D03}}
+\texttt{U33-D05} is $\int_0^{\infty} dx/(1+x^2)=\pi/2$. Inversion reproduces the same integral. Stop at the arctangent.
+
+\section{The logarithm changes sign --- \texttt{U33-D07}}
+\[
+I=\int_0^{\infty}\frac{\ln x}{1+x^2}\,dx.
+\]
+Set $x=1/t$. Then $\ln x=-\ln t$ and $dx/(1+x^2)=-dt/(1+t^2)$. The product of those two minuses is positive, so the integrand in $t$ is $\ln t/(1+t^2)$. The endpoint $x=0^+$ maps to $t=\infty$ and $x=\infty$ maps to $t=0^+$:
+\[
+I=\int_{\infty}^{0}\frac{\ln t}{1+t^2}\,dt=-I.
+\]
+Hence $I=0$, the stored value. The same sign flip is unit 10.
+
+\section{Faded, skip the inversion --- \texttt{U33-D08}}
+\[
+\int_0^{\infty}\frac{x}{(1+x^2)^2}\,dx.
+\]
+The numerator is half the derivative of the inside. Set $u=1+x^2$, so $du=2x\,dx$ and $u$ runs from $1$ to $\infty$:
+\[
+\frac12\int_1^{\infty}u^{-2}\,du=\frac12.
+\]
+That is the stored value. Inversion is a longer path. The same substitution on the finite interval $[0,1]$ is a scale, not a drill:
+\[
+\int_0^1\frac{x}{(1+x^2)^2}\,dx=\frac14.
+\]
+SymPy checks $1/4$.
+
+\section{Faded radical --- \texttt{U33-D03}}
 \[
 \int\frac{dx}{x\sqrt{x^2-1}}.
 \]
-The stored antiderivative is $\arctan\sqrt{x^2-1}$. Differentiate it, or put $\sqrt{x^2-1}=u$.
+Set $u=\sqrt{x^2-1}$, so $x^2=u^2+1$ and $2x\,dx=2u\,du$. Then $dx/x=u\,du/x^2=u\,du/(u^2+1)$, and dividing by the remaining $u$ leaves
+\[
+\int\frac{du}{u^2+1}=\arctan u=\arctan\sqrt{x^2-1}.
+\]
+That is the stored antiderivative, on $x>1$. Differentiating the stored answer recovers the integrand. The blank is the substitution $u$.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit33.json}.

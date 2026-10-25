@@ -7,47 +7,129 @@
 \maketitle
 
 \section*{Status}
-First Yang Chapter 2 concept unit (after Ch.1 units 01--11 and the \texttt{past/} pack).
-Tags: \texttt{yang:2.1}, \texttt{yang:2.2}.
+Tags: \texttt{yang:2.1}, \texttt{yang:2.2}, \texttt{modified-textbook}, \texttt{sneaky-algebra}.
+A textbook antiderivative with one extra factor, or one factor that cancels, is the whole of this unit. The parent moves are \texttt{docs/techniques/concepts/algebra.md}. The route for these two nodes is \texttt{docs/techniques/concepts/habits.md}.
 
 \section{Official anchors}
 \begin{itemize}
   \item Yang Topics Guide 2nd Ed §§2.1--2.2
         (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-  \item Syllabus §1 algebra / substitution support
+  \item Syllabus §1 algebra and substitution
         (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+  \item Unit 01 for $du/u$ and the arcsine, unit 04 for a square root of $1-x^2$.
 \end{itemize}
 
 \section{Learning goals}
 \begin{enumerate}
-  \item Take a textbook skeleton and modify it (square a denominator; hide a $u$-sub inside parts).
-  \item Factor cleverly (difference of squares under a radical denominator).
-  \item Absorb polynomial factors into a single $u$-power.
-  \item Center a product integral with a shift $u=x-a$.
+  \item Modify one textbook antiderivative: a nested exponential, a squared logistic denominator, a half-angle under a square root, or an arcsine minus a square-root derivative.
+  \item Cancel a linear factor against a radical, or expand a short product after a shift, and integrate the polynomial that remains.
+  \item Integrate a polynomial that is already elementary. Factoring it is optional.
 \end{enumerate}
 
 \section{Pedagogy}
-Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
+Worked $\to$ faded $\to$ the stored drills. See \texttt{pedagogy/README.md}.
 
-\section{Worked example A --- \texttt{U12-D01} (\texttt{yang:2.1})}
+\section{Worked nested exponential --- \texttt{U12-D01} (\texttt{modified-textbook})}
 \[
 \int e^{x}\,e^{e^{x}}\,dx.
 \]
-Let $u=e^{x}$, $du=e^{x}\,dx$: $\int e^{u}\,du=e^{e^{x}}+C$.
-
-\section{Worked example B --- \texttt{U12-D05} (\texttt{yang:2.2})}
+The factor $e^{x}$ is the derivative of the inside $e^{x}$. Set $u=e^{x}$, so $du=e^{x}\,dx$ and the integral is $\int e^{u}\,du=e^{u}+C$. Back-substitute:
 \[
-\int_0^1 \frac{x-4}{\sqrt{x}-2}\,dx.
+e^{e^{x}}+C.
 \]
-Factor $x-4=(\sqrt{x}-2)(\sqrt{x}+2)$, so the integrand is $\sqrt{x}+2$ on $[0,1]$:
+That is the stored antiderivative. The same substitution on $[0,1]$ gives $e^{e}-e$. SymPy checks that definite value. It is a scale of this drill, and it is not a drill id.
+
+\section{Worked squared denominator --- \texttt{U12-D02}}
 \[
-\int_0^1(\sqrt{x}+2)\,dx=\Bigl[\tfrac23 x^{3/2}+2x\Bigr]_0^1=\tfrac83.
+\int\frac{dx}{(1+e^{x})^{2}}.
+\]
+Start from the textbook piece $\int dx/(1+e^{x})$. The algebraic split
+\[
+\frac{1}{1+e^{x}}=1-\frac{e^{x}}{1+e^{x}}
+\]
+integrates to $x-\ln(1+e^{x})$. The squared denominator is that piece minus one derivative:
+\[
+\frac{1}{(1+e^{x})^{2}}=\frac{1}{1+e^{x}}-\frac{e^{x}}{(1+e^{x})^{2}},
+\]
+and
+\[
+\frac{d}{dx}\frac{1}{1+e^{x}}=-\frac{e^{x}}{(1+e^{x})^{2}}.
+\]
+Adding the two antiderivatives produces the stored answer
+\[
+x-\ln(1+e^{x})+\frac{1}{1+e^{x}}+C.
 \]
 
-\section{Faded example}
-Try \texttt{U12-D08}: absorb $x^{2}$ against $(x^{3}+1)^{2}$ via $u=x^{3}+1$.
+\section{Worked half-angle --- \texttt{U12-D03}}
+\[
+\int_{0}^{1}\sqrt{\frac{1-x}{1+x}}\,dx.
+\]
+Set $x=\cos\theta$, so $\theta$ runs from $\pi/2$ down to $0$ and $dx=-\sin\theta\,d\theta$. The half-angle identities $1-\cos\theta=2\sin^{2}(\theta/2)$ and $1+\cos\theta=2\cos^{2}(\theta/2)$ turn the square root into $\tan(\theta/2)$ on $(0,\pi)$. Then $\sin\theta=2\sin(\theta/2)\cos(\theta/2)$, and
+\[
+\tan(\theta/2)\sin\theta=2\sin^{2}(\theta/2)=1-\cos\theta.
+\]
+The sign of $dx$ flips the limits, so the integral is
+\[
+\int_{0}^{\pi/2}(1-\cos\theta)\,d\theta=\frac\pi2-1.
+\]
+That is the stored value.
+
+\section{Worked arcsine --- \texttt{U12-D04}}
+\[
+\int\frac{1-x}{\sqrt{1-x^{2}}}\,dx=\int\frac{dx}{\sqrt{1-x^{2}}}-\int\frac{x}{\sqrt{1-x^{2}}}\,dx.
+\]
+The first term is $\arcsin x$. For the second, $u=1-x^{2}$ gives $du=-2x\,dx$, so
+\[
+\int\frac{x}{\sqrt{1-x^{2}}}\,dx=-\sqrt{1-x^{2}}.
+\]
+The stored antiderivative is $\arcsin x+\sqrt{1-x^{2}}+C$.
+
+\section{Worked cancellation --- \texttt{U12-D05} (\texttt{sneaky-algebra})}
+\[
+\int_{0}^{1}\frac{x-4}{\sqrt{x}-2}\,dx.
+\]
+Factor $x-4=(\sqrt{x}-2)(\sqrt{x}+2)$. On $[0,1]$ the factor $\sqrt{x}-2$ is never zero, so the integrand is $\sqrt{x}+2$:
+\[
+\int_{0}^{1}(\sqrt{x}+2)\,dx=\Bigl[\tfrac23 x^{3/2}+2x\Bigr]_{0}^{1}=\tfrac83.
+\]
+The same cancellation with $3$ in place of $2$ is
+\[
+\int_{0}^{1}\frac{x-9}{\sqrt{x}-3}\,dx=\int_{0}^{1}(\sqrt{x}+3)\,dx=\tfrac{11}{3}.
+\]
+SymPy checks $11/3$. That integral is a scale of this drill, and it is not a drill id.
+
+\section{A polynomial --- \texttt{U12-D06}}
+\[
+\int_{-1}^{1}(x^{2}-1)\,dx.
+\]
+The integrand is even. Twice the half-interval is enough:
+\[
+2\int_{0}^{1}(x^{2}-1)\,dx=2\Bigl[\frac{x^{3}}{3}-x\Bigr]_{0}^{1}=2\Bigl(\frac13-1\Bigr)=-\frac43.
+\]
+That is the stored value. The difference of squares $(x-1)(x+1)$ is the same polynomial. Use it when it cancels a denominator. Here there is no denominator.
+
+\section{Worked shift --- \texttt{U12-D07}}
+\[
+\int_{3}^{4}(x-1)(x-2)(x-3)(x-4)\,dx.
+\]
+Set $u=x-3$, so the interval is $[0,1]$ and the integrand is $(u+2)(u+1)\,u\,(u-1)=(u^{2}+2u)(u^{2}-1)$:
+\[
+u^{4}+2u^{3}-u^{2}-2u.
+\]
+\[
+\int_{0}^{1}=\Bigl[\frac{u^{5}}{5}+\frac{u^{4}}{2}-\frac{u^{3}}{3}-u^{2}\Bigr]_{0}^{1}=\frac15+\frac12-\frac13-1=-\frac{19}{30}.
+\]
+That is the stored value.
+
+\section{Faded power --- \texttt{U12-D08}}
+\[
+\int x^{2}(x^{3}+1)^{2}\,dx.
+\]
+Write $u=x^{3}+1$. Then $du=3x^{2}\,dx$, and the constant in front of the integral is $1/3$. The stored antiderivative is $(x^{3}+1)^{3}/9+C$.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit12.json}.
 
+\section*{On a miss}
+Teach this file. Name the textbook piece you modified, or the factor you cancelled, then set the drill. The scaled copies $e^{e}-e$ and $11/3$ are fences, not drill ids. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}
