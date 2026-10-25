@@ -4,6 +4,8 @@ Yang is one source. The Techniques Guide files reflection, a recurrence \(I_n\),
 
 The six headings in `docs/techniques/beyond-yang.md` are the only gap ids. A study session does not edit a teaching note. Teach the one file the mark names. Read the worked example, then the faded step, then set the integral again. Match `coach.detail` when it is present: worked, faded, or bare.
 
+Before a gap id, a Round 1 node opens the coach card in `pedagogy/concept-map.md`. Match the card to the tick using `pedagogy/round1-coach.md`. A missing or learning prerequisite is taught first. A solid node skips the lecture and takes the next drill. The six headings stay the only `extract.gap` values.
+
 ## Answer shape before technique
 
 Name the object the blank wants before any substitution.

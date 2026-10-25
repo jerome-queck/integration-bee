@@ -1,0 +1,40 @@
+# Coach cards
+
+These pages teach Round 1 technique families from the unit notes already in the repo, plus original examples checked with SymPy. They are not gap ids. A mark still uses one of the six headings in `docs/techniques/beyond-yang.md`. The node-by-node map is `pedagogy/concept-map.md`. How a tick chooses the page is `pedagogy/round1-coach.md`.
+
+A contest row is not a source for a new number. A stored drill id is a source. An example with no drill id is original exposition. Yang is one writeup of the same moves. The lesson is the unit file named on the card.
+
+The gap index admits exactly six headings, and it rejects an extra file placed directly in `docs/techniques/`. These cards live in this subdirectory for that reason. See `docs/decisions/0014-concept-cards.md`.
+
+## Which card
+
+Read the integrand, then open one card. If two seem to fit, open the earlier one in this list and try it. Stop when the integral is finished.
+
+| You see | Open |
+|---|---|
+| A factor that is a constant times the derivative of an inside function, a pure power, or \(e^{ax}\) | `u-substitution.md` |
+| A polynomial times an exponential, a logarithm, or an inverse function | `integration-by-parts.md` |
+| A symmetric interval, a reflection \(x \mapsto a+b-x\), or an inverse with no extra factor | `symmetry-kings.md` |
+| Sine or cosine powers, a radical \(a^2-x^2\), \(a^2+x^2\), \(x^2-a^2\), or a rational function of sine and cosine | `trigonometric.md` |
+| A ratio of polynomials | `partial-fractions.md`, after the division in `algebra.md` |
+| A sum you can integrate term by term, or a geometric closed form | `series.md` |
+| \(e^{-x^2}\), or \((\sin x)/x\) on a half-line | `gaussian-dirichlet.md` |
+| An absolute value, a floor, or a fractional part | `piecewise.md` and, for the floor, `docs/techniques/floor.md` |
+| A numerator that is almost a denominator or almost its derivative | `algebra.md` and `docs/techniques/introduce-constant.md` |
+
+## Wildcard drills
+
+`special-wildcard` is not one technique. The unit 11 drills route as follows. The coach does not tick `floor` or `dutis`.
+
+| Drill | Teach |
+|---|---|
+| `U11-D01` through `U11-D04`, `U11-D08` | `gaussian-dirichlet.md` |
+| `U11-D05` | arctangent, unit 01, `u-substitution.md` |
+| `U11-D06` | absolute value, then the exponential, `piecewise.md` |
+| `U11-D07` | reflection on \([0,\pi/2]\), `symmetry-kings.md` |
+| `U11-D09` through `U11-D12` | `docs/techniques/floor.md` |
+| `U11-D13` through `U11-D15` | fixed-interval parameter, `algebra.md` and `docs/techniques/introduce-constant.md` |
+
+## On a miss
+
+Teach the one file the mark names when the mark carries a gap id. Otherwise teach the card for the node, then the unit `teaching.tex`. Do not invent a contest answer.

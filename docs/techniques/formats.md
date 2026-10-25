@@ -101,4 +101,4 @@ Train by racing a partner on three drills. Call the gamble before you see the in
 
 ## On a miss
 
-Teach this file. Name the format, the object of the answer, and the rule the attempt broke: a second try at a square, a spoken digit, a return to an earlier relay problem, a bonus treated as a streak, a chain continued with no net under it, a selector telling the solver the other integrand, a gamble called after the fight started, an unboxed tournament answer. Then set an ordinary unit drill. Do not invent a contest answer.
+Teach this file. Name the format, the object of the answer, and the rule the attempt broke: a second try at a square, a spoken digit, a return to an earlier relay problem, a bonus treated as a streak, a chain continued with no net under it, a selector telling the solver the other integrand, a gamble called after the fight started, an unboxed tournament answer. Then set an ordinary unit drill. Do not invent a contest answer. The integral skill for that drill is the coach card in `pedagogy/concept-map.md`.

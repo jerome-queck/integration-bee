@@ -138,4 +138,4 @@ That is the stored answer of `U11-D15`. It is an original power, not a contest r
 
 ## On a miss
 
-Teach this file when the miss is the algebra, and teach `units/34-frullani-feynman/teaching.tex` when the miss is a moving limit. For a fixed-interval parameter, set `U11-D13`, `U11-D14`, or `U11-D15`. Do not invent an unchecked answer. Do not tick `dutis`. A correct final answer that used the wrong method still needs the method named in the mark.
+Teach this file when the miss is the algebra, and teach `units/34-frullani-feynman/teaching.tex` when the miss is a moving limit. For a fixed-interval parameter, set `U11-D13`, `U11-D14`, or `U11-D15`. Do not invent an unchecked answer. Do not tick `dutis`. A correct final answer that used the wrong method still needs the method named in the mark. Completing the square and the decision to open this note are `docs/techniques/concepts/algebra.md`.

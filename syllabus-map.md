@@ -140,6 +140,8 @@ Guide Contents: §1.1 Odd/Even p.3 → §1.2 Reflection p.7 → §1.3 Recurrence
 
 ## Pedagogy order (Round 1)
 
+Coach cards and the node inventory are `docs/techniques/concepts/` and `pedagogy/concept-map.md`. A tick chooses the dose in `pedagogy/round1-coach.md`.
+
 1. Units 01–11 → full Yang Ch.1 (`yang:1.1`…`yang:1.20`)
 2. Units 12–18 → full Yang Ch.2 (`yang:2.1`…`yang:2.10`)
 3. Units 19–36 → Yang Ch.3–6 (`yang:3.1`…`yang:6.9`, skip 4.3)

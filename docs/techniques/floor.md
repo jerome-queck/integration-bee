@@ -125,4 +125,4 @@ The feed stores the piecewise split, because SymPy leaves `floor` unevaluated. T
 
 ## On a miss
 
-Teach this file. Split the graph at the integers in the limits, write the piecewise, and add the areas. Watch a negative argument and a piece that ends between integers. Then set `U11-D09`, `U11-D10`, `U11-D11`, or `U11-D12`. Do not tick `floor`. Do not invent a pack answer.
+Teach this file. Split the graph at the integers in the limits, write the piecewise, and add the areas. Watch a negative argument and a piece that ends between integers. Then set `U11-D09`, `U11-D10`, `U11-D11`, or `U11-D12`. Do not tick `floor`. Do not invent a pack answer. The absolute-value sibling is `docs/techniques/concepts/piecewise.md`. The node map is `pedagogy/concept-map.md`.
