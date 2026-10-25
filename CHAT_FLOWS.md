@@ -21,4 +21,4 @@ Send `{"kind":"mock-start"}`. Send `"cold": true` only when the learner explicit
 - No CLI steps for the learner.
 - An empty message sends `{"kind":"empty"}` and uses `say`.
 - The CLI blocks a timed mock until every Round 1 node is solid.
-- SAMPLE-Q17 is graded by the CLI. `ln|ln x|+C` matches. The answers PDF value `e^x+C` does not.
+- SAMPLE-Q17 is graded by the CLI. The integrand is `x^(1/ln x)`. `e*x+C` matches. `ln|ln x|+C` does not, and `e^x+C` does not.

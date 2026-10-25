@@ -6,8 +6,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
 
-ROUNDS = frozenset({"r1", "r2", "r3", "yang"})
-SOURCES = frozenset({"resource_pack", "yang_book"})
+ROUNDS = frozenset({"r1", "r2", "r3", "yang", "sample"})
+SOURCES = frozenset({"resource_pack", "yang_book", "uk_sample"})
+SAMPLE_ROUND = "sample"
+SAMPLE_SOURCE = "uk_sample"
+SAMPLE_COUNT = 20
+SAMPLE_PROBLEM_PDF = "sources/Integration_Competition_Sample_problems.pdf"
+SAMPLE_ANSWERS_PDF = "sources/Integration_bee_sample_problems_answers.pdf"
+SAMPLE_SOLUTIONS_PDF = "sources/UK_University_integration_bee_sample_problems_solutions.pdf"
 VERIFIES = frozenset({"manual", "unchecked", "sympy"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
@@ -152,9 +158,93 @@ def _sympy_shape(row: dict) -> str | None:
     return None
 
 
+def _is_sample(row: dict) -> bool:
+    ident = str(row.get("id") or "")
+    return row.get("round") == SAMPLE_ROUND or row.get("source") == SAMPLE_SOURCE or ident.startswith("SAMPLE-")
+
+
+def _sample_sympy_shape(row: dict) -> str | None:
+    ident = row.get("id")
+    if row.get("source") != SAMPLE_SOURCE or row.get("round") != SAMPLE_ROUND:
+        return f"{ident} sample sympy source"
+    if row.get("variable") != "x":
+        return f"{ident} sympy variable is not x"
+    if row.get("kind") not in {"definite", "indefinite"}:
+        return f"{ident} sympy kind"
+    for key in ("sympy_expr", "answer_sympy", "integrand_latex", "answer_latex"):
+        if _blank(row.get(key)) or not isinstance(row.get(key), str):
+            return f"{ident} missing {key}"
+    limits = row.get("limits")
+    if row.get("kind") == "indefinite":
+        if limits not in ([],):
+            return f"{ident} indefinite limits"
+    elif not isinstance(limits, list) or len(limits) != 2 or any(_blank(item) or not isinstance(item, str) for item in limits):
+        return f"{ident} definite limits"
+    if row.get("worked_solution_latex") is not None:
+        return f"{ident} invented worked latex"
+    return None
+
+
+def _sample_catalog(rows: list[dict]) -> str | None:
+    if len(rows) != SAMPLE_COUNT:
+        return f"sample count {len(rows)}"
+    expected = [f"SAMPLE-Q{i:02d}" for i in range(1, SAMPLE_COUNT + 1)]
+    if [row.get("id") for row in rows] != expected:
+        return "sample ids"
+    for row in rows:
+        ident = row["id"]
+        if row.get("round") != SAMPLE_ROUND or row.get("source") != SAMPLE_SOURCE:
+            return f"{ident} sample source"
+        if row.get("pdf_path") != SAMPLE_PROBLEM_PDF or row.get("pdf_role") != "problems":
+            return f"{ident} sample problem pdf"
+        if row.get("problem_id") != ident.removeprefix("SAMPLE-"):
+            return f"{ident} sample problem id"
+        if row.get("kind") not in {"definite", "indefinite"}:
+            return f"{ident} sample kind"
+        if _blank(row.get("integrand_plain")):
+            return f"{ident} missing integrand"
+        if _blank(row.get("answer_plain")) or _blank(row.get("answer_source_pdf")):
+            return f"{ident} sample answer cite"
+        cite = str(row.get("answer_source_pdf"))
+        if cite not in {SAMPLE_ANSWERS_PDF, SAMPLE_SOLUTIONS_PDF}:
+            return f"{ident} sample answer pdf"
+        if row.get("verify") not in {"manual", "sympy"}:
+            return f"{ident} sample verify"
+        if row.get("worked_solution_origin") != "missing" or not _blank(row.get("worked_solution_plain")):
+            return f"{ident} sample worked field"
+        if row.get("worked_solution_latex") is not None:
+            return f"{ident} sample worked latex"
+        solution = f"solutions/sample/{ident}.md"
+        if solution not in str(row.get("notes") or ""):
+            return f"{ident} sample solution path"
+        if not isinstance(row.get("technique_tags"), list) or not isinstance(row.get("yang"), list):
+            return f"{ident} sample tags"
+        if row.get("verify") == "sympy":
+            shape = _sample_sympy_shape(row)
+            if shape:
+                return shape
+        else:
+            if "answer_sympy" in row or "sympy_expr" in row or "variable" in row:
+                return f"{ident} invented answer_sympy"
+            if row.get("integrand_latex") is not None or row.get("answer_latex") is not None:
+                return f"{ident} invented latex answer"
+            if row.get("limits") is not None:
+                return f"{ident} manual limits"
+        if ident == "SAMPLE-Q15" and "sign" not in str(row.get("notes") or "").lower():
+            return "SAMPLE-Q15 note must record the printed sign"
+        if ident == "SAMPLE-Q17":
+            expr = str(row.get("sympy_expr") or "").replace(" ", "")
+            plain = str(row.get("integrand_plain") or "")
+            if row.get("verify") != "sympy" or row.get("answer_sympy") != "E*x":
+                return "SAMPLE-Q17 grades e*x"
+            if expr not in {"E", "x**(1/log(x))"}:
+                return "SAMPLE-Q17 integrand"
+            if "1/ln" not in plain and "1/\\ln" not in plain:
+                return "SAMPLE-Q17 plain integrand"
+    return None
+
+
 def catalog_problem(rows: list[dict]) -> str | None:
-    if len(rows) != EXPECTED_COUNT:
-        return f"catalog count {len(rows)}"
     ids = [row.get("id") for row in rows]
     if any(not isinstance(item, str) or not item for item in ids):
         return "catalog id missing"
@@ -162,6 +252,14 @@ def catalog_problem(rows: list[dict]) -> str | None:
         return "catalog duplicate id"
     if ids != sorted(ids):
         return "catalog not sorted by id"
+    samples = [row for row in rows if _is_sample(row)]
+    pack_rows = [row for row in rows if not _is_sample(row)]
+    sample_err = _sample_catalog(samples)
+    if sample_err:
+        return sample_err
+    if len(pack_rows) != EXPECTED_COUNT:
+        return f"catalog count {len(pack_rows)}"
+    rows = pack_rows
     manual = 0
     sympy_n = 0
     pdf_copy = 0

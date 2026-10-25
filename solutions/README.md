@@ -59,3 +59,7 @@ python3 solutions/self_check.py
 | YANG-1.3-Ex01 | \(8/3\) | [yang/YANG-1.3-Ex01.md](yang/YANG-1.3-Ex01.md) |
 | YANG-1.3-Ex02 | \(2\) | [yang/YANG-1.3-Ex02.md](yang/YANG-1.3-Ex02.md) |
 | YANG-1.3-Ex03 | \(2\tan^{-1}(3)\) | [yang/YANG-1.3-Ex03.md](yang/YANG-1.3-Ex03.md) |
+
+## Sample
+
+The UK site sample sheet is `solutions/sample/SAMPLE-Q01.md` through `SAMPLE-Q20.md`. Those ids are catalog rows. `python3 solutions/sample_self_check.py` re-proves the `sympy` rows and the manual checks for Q05, Q08, Q09, and Q19. Q15 grades the antiderivative obtained by finishing the solutions PDF's correct split. The printed last line has the wrong sign on the arctan term. Q17 is \(x^{1/\ln x}\), graded as \(ex+C\).

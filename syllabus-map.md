@@ -63,7 +63,7 @@ Inventory: `sources/user/yang-topics-inventory.md`.
 | `yang:1.19` | Gaussian Integrals | Related to Gamma (Syllabus §2) / special forms | `U11-D01`…`U11-D04`,`U11-D08` | **Unit 11** |
 | `yang:1.20` | Special Wildcard | Catch-all / mixed easy contest openers | `U11-D05`…`U11-D07` | **Unit 11** |
 
-**Done:** Units 01–11 cover every `yang:1.1`…`yang:1.20` (1.10 light in Unit 01). Sample bridge + past pack: `past/` (SAMPLE-Q01…20 tagged; mocks ready).
+**Done:** Units 01–11 cover every `yang:1.1`…`yang:1.20` (1.10 light in Unit 01). Sample problems SAMPLE-Q01…20 are catalog rows in `problems/records.jsonl`, with worked notes in `solutions/sample/`. The feed in `past/samples/` stays the citation cross-check. Mocks are ready.
 
 ---
 

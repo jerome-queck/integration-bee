@@ -500,11 +500,9 @@ def grade_problem(
         tags = list(drill.get("technique_tags") or [])
         display = drill.get("answer_display")
         return {"correct": correct, "tags": tags, "display": display, "row": drill, "manual": False}, None
+    catalog_row = next((row for row in (catalog_rows or []) if row.get("id") == problem_id), None)
     feed_row = next((row for row in feed if row.get("id") == problem_id), None)
-    if feed_row is None:
-        catalog_row = next((row for row in (catalog_rows or []) if row.get("id") == problem_id), None)
-        if catalog_row is None:
-            return None, f"unknown problem {problem_id}"
+    if catalog_row is not None:
         if catalog_row.get("verify") == "sympy":
             answer = catalog_row.get("answer_sympy")
             if not isinstance(answer, str) or not answer or catalog_row.get("variable") != "x":
@@ -542,6 +540,8 @@ def grade_problem(
             "row": {"id": problem_id},
             "manual": True,
         }, None
+    if feed_row is None:
+        return None, f"unknown problem {problem_id}"
     tags = list(feed_row.get("technique_tags") or [])
     if feed_row.get("answer_sympy"):
         try:

@@ -131,7 +131,7 @@ make check
 
 {coverage()}
 
-`problems/records.jsonl` holds {catalog_count()} contest and Yang problems. `problems list` hides answers. `problems show` prints a stored cite.
+`problems/records.jsonl` holds {catalog_count()} contest, Yang, and sample problems. `problems list` hides answers. `problems show` prints a stored cite.
 
 {HARNESS_MD}
 ## Feature map

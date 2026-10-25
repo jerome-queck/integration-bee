@@ -505,33 +505,55 @@ def main() -> int:
             },
         )
         check(sample.returncode == 0 and load(sample)["mark"]["correct"] is True, "SAMPLE-Q03 grades with SymPy")
+        q01 = apply(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "SAMPLE-Q01",
+                "source": "typed",
+                "extract": {"final_answer": "log(6)"},
+            },
+        )
+        check(q01.returncode == 0 and load(q01)["mark"]["correct"] is True, "SAMPLE-Q01 grades with SymPy")
         q17 = apply(
             data,
             {
                 "kind": "mark",
                 "problem_id": "SAMPLE-Q17",
                 "source": "photo",
-                "extract": {"final_answer": "log(Abs(log(x)))+C"},
+                "extract": {"final_answer": "E*x+C"},
             },
         )
-        check(q17.returncode == 0 and load(q17)["mark"]["correct"] is True, "SAMPLE-Q17 accepts ln|ln x|+C")
+        check(q17.returncode == 0 and load(q17)["mark"]["correct"] is True, "SAMPLE-Q17 accepts e*x+C")
         suspect = apply(
             data,
             {
                 "kind": "mark",
                 "problem_id": "SAMPLE-Q17",
                 "source": "typed",
-                "extract": {"final_answer": "exp(x)+C"},
+                "extract": {"final_answer": "log(Abs(log(x)))+C"},
             },
         )
-        check(suspect.returncode == 1 and load(suspect)["mark"]["correct"] is False, "SAMPLE-Q17 rejects the PDF misprint")
+        check(suspect.returncode == 1 and load(suspect)["mark"]["correct"] is False, "SAMPLE-Q17 rejects ln|ln x|+C")
+        printed = apply(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "SAMPLE-Q15",
+                "source": "typed",
+                "extract": {
+                    "final_answer": "log(x + 1)/3 - (log(x**2 - x + 1) + 2*sqrt(3)*atan((2*x - 1)/sqrt(3)))/6"
+                },
+            },
+        )
+        check(printed.returncode == 1 and load(printed)["mark"]["correct"] is False, "SAMPLE-Q15 rejects the printed sign")
         manual = apply(
             data,
             {
                 "kind": "mark",
-                "problem_id": "SAMPLE-Q01",
+                "problem_id": "SAMPLE-Q05",
                 "source": "photo",
-                "extract": {"final_answer": "ln 6"},
+                "extract": {"final_answer": "pi*log(2)/8"},
                 "verdict": "correct",
             },
         )
@@ -540,14 +562,14 @@ def main() -> int:
             data,
             {
                 "kind": "mark",
-                "problem_id": "SAMPLE-Q02",
+                "problem_id": "SAMPLE-Q09",
                 "source": "typed",
-                "extract": {"final_answer": "pi/2"},
+                "extract": {"final_answer": "1/2 - zeta(3)/3"},
             },
         )
         check(bare.returncode == 2 and "manual problem needs verdict" in bare.stderr, "manual mark without a verdict writes nothing")
         attempts = json.loads((data / "attempts.json").read_text())
-        check(not any(item["problem_id"] == "SAMPLE-Q02" for item in attempts["items"]), "refused manual mark is absent")
+        check(not any(item["problem_id"] == "SAMPLE-Q09" for item in attempts["items"]), "refused manual mark is absent")
 
         indef = apply(
             data,

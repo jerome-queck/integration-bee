@@ -19,6 +19,12 @@ def main() -> int:
     args = parser.parse_args()
     raw = json.loads(args.extract.read_text(encoding="utf-8"))
     rows = problem_catalog.normalize_extract(raw)
+    if args.out == problem_catalog.RECORDS and args.out.is_file():
+        existing = problem_catalog.load_records(args.out)
+        have = {row["id"] for row in rows}
+        samples = [row for row in existing if row.get("round") == "sample" and row["id"] not in have]
+        if samples:
+            rows = problem_catalog.normalize_extract(rows + samples)
     err = problem_catalog.catalog_problem(rows)
     if err:
         print(err, file=sys.stderr)
