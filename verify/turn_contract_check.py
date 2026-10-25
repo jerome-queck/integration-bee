@@ -93,7 +93,7 @@ def placement(data: Path, check) -> None:
     check(first_drill.returncode == 0, "U01-D07 aptitude mark exit")
     check(first_doc["tick"] is None or first_doc["tick"].get("status") != "skipped", "aptitude drill is not skipped")
     check(first_doc["session"]["phase"] == "aptitude", "a correct drill opens the contest probe")
-    check(first_doc["session"]["problem_id"] == "R1-2020-Q06", "contest probe is R1-2020-Q06")
+    check(first_doc["session"]["problem_id"] == "R1-2020-Q10", "contest probe is R1-2020-Q10")
     check(first_doc["session"]["node"] is None, "contest probe has no node")
     check("answer_plain" not in first_drill.stdout, "contest probe hides answer_plain")
     policy = json.loads((data / "session.json").read_text())["policy"]["basic-integration"]
@@ -104,7 +104,7 @@ def placement(data: Path, check) -> None:
         data,
         {
             "kind": "mark",
-            "problem_id": "R1-2020-Q06",
+            "problem_id": "R1-2020-Q10",
             "source": "typed",
             "verdict": "correct",
             "extract": {"final_answer": "1"},
@@ -114,7 +114,7 @@ def placement(data: Path, check) -> None:
     check(catalog_mark.returncode == 0, "catalog probe mark exit")
     attempts = json.loads((data / "attempts.json").read_text())
     check(
-        any(item["problem_id"] == "R1-2020-Q06" and item["correct"] is True for item in attempts["items"]),
+        any(item["problem_id"] == "R1-2020-Q10" and item["correct"] is True for item in attempts["items"]),
         "catalog probe stores an attempt",
     )
     ticks = json.loads((data / "skill-ticks.json").read_text())["ticks"] if (data / "skill-ticks.json").exists() else {}
@@ -135,7 +135,7 @@ def placement(data: Path, check) -> None:
     check(again.returncode == 0, "aptitude continues after a decline")
     check(again_doc["session"]["phase"] == "aptitude", "the next probe is open")
     check(again_doc["session"]["problem_id"] != "U01-D07", "a declined node is not probed again")
-    check(again_doc["session"]["problem_id"] != "R1-2020-Q06", "the contest probe is not repeated")
+    check(again_doc["session"]["problem_id"] != "R1-2020-Q10", "the contest probe is not repeated")
     probe_id = again_doc["session"]["problem_id"]
     node_id = again_doc["session"]["node"]
     check(node_id and not str(probe_id).startswith("YANG-"), "the next probe is a unit drill")
