@@ -179,7 +179,7 @@ Regenerate this file with `python3 scripts/generate_agents_md.py` after you add 
 
 ## Isolation
 
-Set `IB_DATA_DIR` or pass `--data-dir` so two runs do not share tracker files. There is no port. `doctor` does not write. A second writer needs its own data directory.
+Set `IB_DATA_DIR` or pass `--data-dir` so two runs do not share tracker files. `IB_USER` names the `submissions/` folder for a photo mark and defaults to `default`. There is no port. `doctor` does not write. A second learner needs a separate data directory.
 
 ## Decisions
 

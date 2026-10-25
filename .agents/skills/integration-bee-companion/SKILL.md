@@ -174,7 +174,7 @@ Never treat `answer_plain` or a worked solution as checked unless `verify` is sy
 
 ## Photo
 
-Read the image. Set `source` to `photo` and put the expression you read in `extract.final_answer`. If the value matches and the method does not, put the diagnosis in `extract.method_note`. When that diagnosis is one of the six headings, also set `extract.gap` to that heading. `turn apply` stores the method gap as one mark row with `answer_ok` true and `method_ok` false, and as one technique card. It still appends the journal note. If the problem has no SymPy answer, set `verdict` from `past/samples/answers_feed.json` or from the solutions PDF named in the mock result. If `on_disk` is false, say so and mark a concept drill. Do not ask the learner to.
+Read the image. Set `source` to `photo`, put the expression you read in `extract.final_answer`, and set `image` to the chat file path. The CLI copies that file to `submissions/<IB_USER>/` under the data directory. `IB_USER` defaults to `default`. A second learner needs a separate `IB_DATA_DIR`. Read the stored path back from `mark.picture` or from `progress show`. Do not copy the file yourself, do not commit it, and do not upload it. If the value matches and the method does not, put the diagnosis in `extract.method_note`. When that diagnosis is one of the six headings, also set `extract.gap` to that heading. `turn apply` stores the method gap as one mark row with `answer_ok` true and `method_ok` false, and as one technique card. It still appends the journal note. If the problem has no SymPy answer, set `verdict` from `past/samples/answers_feed.json` or from the solutions PDF named in the mock result. If `on_disk` is false, say so and mark a concept drill. Do not ask the learner to.
 
 ## Contest catalog
 

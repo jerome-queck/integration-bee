@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import shutil
 import subprocess
 import sys
 from datetime import datetime
@@ -145,6 +146,11 @@ def project(directory: Path, ticks: dict, attempts: dict, mocks: dict, session: 
                     "note": item["note"],
                 }
             )
+    pictures = [
+        {"ts": item.get("ts"), "problem_id": item.get("problem_id"), "picture": item["picture"]}
+        for item in attempts["items"]
+        if item.get("picture")
+    ]
     if session is None:
         session = read_json(directory, "session")
     doc = {
@@ -152,6 +158,7 @@ def project(directory: Path, ticks: dict, attempts: dict, mocks: dict, session: 
         "skill_ticks": ticks["ticks"],
         "mistakes": mistakes,
         "mocks": mocks["sessions"],
+        "pictures": pictures,
         "session": {
             "phase": session.get("phase"),
             "node": session.get("node"),
@@ -235,6 +242,76 @@ def public_drill(row: dict) -> dict:
     }
 
 
+def attempt_view(item: dict) -> dict:
+    view = {"problem_id": item.get("problem_id"), "correct": item.get("correct")}
+    if item.get("picture"):
+        view["picture"] = item["picture"]
+    return view
+
+
+IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".heic"}
+
+
+def submission_user() -> str:
+    raw = os.environ.get("IB_USER", "").strip()
+    cleaned = "".join(ch if ch.isalnum() or ch in "._-" else "-" for ch in raw)
+    cleaned = cleaned.strip(".-")[:64]
+    if not cleaned or ".." in cleaned:
+        return "default"
+    return cleaned
+
+
+def store_mark_photo(directory: Path, body: dict) -> str | None:
+    image = body.get("image")
+    if image in (None, ""):
+        return None
+    if body.get("source") != "photo":
+        die("image is only for source photo", 2)
+    if not isinstance(image, str):
+        die("image must be a path", 2)
+    src = Path(image)
+    if not src.is_file():
+        die(f"image not found: {image}", 2)
+    ext = src.suffix.lower()
+    if ext not in IMAGE_SUFFIXES:
+        die(f"image type not stored: {ext or 'none'}", 2)
+    user = submission_user()
+    root = (directory / "submissions").resolve()
+    folder = (root / user).resolve()
+    if not folder.is_relative_to(root):
+        die("submission folder escapes the data directory", 2)
+    folder.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(TZ).strftime("%Y%m%dT%H%M%S%f")
+    dest = folder / f"{stamp}{ext}"
+    extra = 2
+    while dest.exists():
+        dest = folder / f"{stamp}-{extra}{ext}"
+        extra += 1
+    shutil.copyfile(src, dest)
+    return dest.resolve().relative_to(directory.resolve()).as_posix()
+
+
+def attach_picture(directory: Path, problem_id: str, picture: str) -> None:
+    attempts = read_json(directory, "attempts")
+    found = None
+    for item in attempts["items"]:
+        if item.get("problem_id") == problem_id:
+            found = item
+    if found is None:
+        die("photo has no attempt", 2)
+    found["picture"] = picture
+    err = model.attempt_problem(found)
+    if err:
+        die(err)
+    write_json(directory, "attempts", attempts)
+    project(
+        directory,
+        read_json(directory, "skill-ticks"),
+        attempts,
+        read_json(directory, "mocks"),
+    )
+
+
 def find_drill(drill_id: str) -> dict | None:
     for row in load_drills():
         if row["id"] == drill_id:
@@ -250,6 +327,7 @@ def record_attempt(
     tags: list[str],
     submitted: str | None = None,
     gap: str | None = None,
+    picture: str | None = None,
 ) -> dict:
     attempts = read_json(directory, "attempts")
     heat = read_json(directory, "heatmap")
@@ -273,6 +351,8 @@ def record_attempt(
         item["submitted"] = submitted
     if gap:
         item["gap"] = gap
+    if picture:
+        item["picture"] = picture
     err = model.attempt_problem(item)
     if err:
         die(err)
@@ -564,10 +644,7 @@ def cmd_progress_show(args) -> int:
     emit(
         {
             "ticks": ticks["ticks"],
-            "attempts": [
-                {"problem_id": item.get("problem_id"), "correct": item.get("correct")}
-                for item in attempts.get("items") or []
-            ],
+            "attempts": [attempt_view(item) for item in attempts.get("items") or []],
             "due": model.due_ids(attempts.get("items") or [], today()),
             "streak": {"current": streaks.get("current", 0), "best": streaks.get("best", 0)},
             "weak": weak,
@@ -847,6 +924,7 @@ def finish_plan(directory: Path, plan: dict, fmt: str) -> int:
         die("attempt and gap_fill are both set", 2)
     if plan["exit"] == 2:
         die(plan["error"] or "turn refused", 2)
+    picture = plan.get("picture")
     if attempt:
         drills = load_drills()
         row = turn_contract.find_drill(drills, attempt["problem_id"]) or {"id": attempt["problem_id"]}
@@ -858,7 +936,14 @@ def finish_plan(directory: Path, plan: dict, fmt: str) -> int:
             attempt["tags"],
             attempt.get("submitted"),
             attempt.get("gap"),
+            attempt.get("picture"),
         )
+    elif picture:
+        attach_picture(directory, (plan.get("mark") or {})["id"], picture)
+    if picture and isinstance(plan.get("mark"), dict):
+        marked = dict(plan["mark"])
+        marked["picture"] = picture
+        plan["mark"] = marked
     if gap_fill:
         fill_gap(directory, gap_fill["problem_id"], gap_fill["gap"])
     apply_journal(directory, plan.get("journal"))
@@ -1150,6 +1235,13 @@ def cmd_turn_apply(args) -> int:
             updated,
             load_problem_rows(),
         )
+        if plan["exit"] != 2:
+            stored = store_mark_photo(directory, body)
+            if stored:
+                plan["picture"] = stored
+                pending = (plan.get("effects") or {}).get("attempt")
+                if pending is not None:
+                    pending["picture"] = stored
         return finish_plan(directory, plan, args.format)
     if kind == "aptitude":
         plan = turn_contract.plan_aptitude(
@@ -1194,6 +1286,7 @@ def build_parser() -> argparse.ArgumentParser:
                 "Recorded results use --format json.",
                 "problems list, practice list, and drills list print a table when the format is text.",
                 "Set IB_DATA_DIR or pass --data-dir so two runs do not share tracker files.",
+                "IB_USER names the submissions folder for a photo mark. It defaults to default.",
                 "doctor reports IB_DATA_DIR and ignores --data-dir.",
                 "",
                 *command_lines,

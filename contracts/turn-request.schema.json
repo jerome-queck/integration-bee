@@ -6,7 +6,8 @@
     "required": ["kind", "problem_id", "source", "extract"],
     "source": ["photo", "typed"],
     "extract": ["final_answer"],
-    "extract_optional": ["method_note", "gap"]
+    "extract_optional": ["method_note", "gap"],
+    "optional": ["image"]
   },
   "mock-start": {
     "pack": ["mock01", "pdf-round1"],

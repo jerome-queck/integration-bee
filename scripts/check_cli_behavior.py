@@ -13,9 +13,12 @@ ROOT = Path(__file__).resolve().parent.parent
 CLI = [sys.executable, str(ROOT / "scripts" / "control-integration-bee")]
 
 
-def run(args: list[str], data: Path) -> subprocess.CompletedProcess[str]:
+def run(args: list[str], data: Path, extra: dict | None = None) -> subprocess.CompletedProcess[str]:
     env = os.environ.copy()
     env["IB_DATA_DIR"] = str(data)
+    env.pop("IB_USER", None)
+    if extra:
+        env.update(extra)
     return subprocess.run(
         [*CLI, *args],
         cwd=ROOT,
@@ -36,10 +39,10 @@ def body(proc: subprocess.CompletedProcess[str]):
         return None
 
 
-def turn(data: Path, payload: dict) -> subprocess.CompletedProcess[str]:
+def turn(data: Path, payload: dict, extra: dict | None = None) -> subprocess.CompletedProcess[str]:
     path = data / "turn.json"
     path.write_text(json.dumps(payload))
-    return run(["turn", "apply", "--file", str(path), "--format", "json"], data)
+    return run(["turn", "apply", "--file", str(path), "--format", "json"], data, extra)
 
 
 def main() -> int:
@@ -347,6 +350,172 @@ def main() -> int:
             "corrupt attempts.json exits 2",
             detail(broken),
         )
+
+    png = b"integration-bee-photo\n"
+    with tempfile.TemporaryDirectory(prefix="ib-cli-photo-") as tmp:
+        data = Path(tmp)
+        src = data / "chat.png"
+        src.write_bytes(png)
+        marked = turn(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "U01-D08",
+                "source": "photo",
+                "image": str(src),
+                "extract": {"final_answer": "1"},
+            },
+        )
+        marked_doc = body(marked)
+        picture = None
+        if isinstance(marked_doc, dict):
+            picture = (marked_doc.get("mark") or {}).get("picture")
+        stored = data / picture if isinstance(picture, str) else None
+        check(
+            marked.returncode == 1
+            and isinstance(picture, str)
+            and picture.startswith("submissions/default/")
+            and picture.endswith(".png")
+            and stored is not None
+            and stored.is_file()
+            and not stored.is_symlink()
+            and stored.read_bytes() == png,
+            "photo mark copies the file",
+            detail(marked),
+        )
+        src.unlink()
+        check(stored is not None and stored.is_file() and stored.read_bytes() == png, "stored photo outlives the chat file")
+        shown = run(["progress", "show", "--format", "json"], data)
+        shown_doc = body(shown)
+        rows = shown_doc.get("attempts") if isinstance(shown_doc, dict) else None
+        check(
+            shown.returncode == 0
+            and isinstance(rows, list)
+            and any(row.get("problem_id") == "U01-D08" and row.get("picture") == picture for row in rows),
+            "progress show lists the stored photo",
+            detail(shown),
+        )
+        projection = json.loads((data / "progress.local.json").read_text())
+        check(
+            any(row.get("picture") == picture for row in projection.get("pictures") or []),
+            "projection lists the stored photo",
+        )
+        plain = turn(
+            data,
+            {"kind": "mark", "problem_id": "U01-D01", "source": "photo", "extract": {"final_answer": "0"}},
+        )
+        plain_doc = body(plain)
+        plain_rows = (plain_doc or {}).get("mark") if isinstance(plain_doc, dict) else None
+        check(
+            plain.returncode == 1 and isinstance(plain_rows, dict) and "picture" not in plain_rows,
+            "photo mark without a file still grades",
+            detail(plain),
+        )
+
+    with tempfile.TemporaryDirectory(prefix="ib-cli-photo-user-") as tmp:
+        data = Path(tmp)
+        src = data / "chat.png"
+        src.write_bytes(png)
+        payload = {
+            "kind": "mark",
+            "problem_id": "U01-D08",
+            "source": "photo",
+            "image": str(src),
+            "extract": {"final_answer": "1"},
+        }
+        named = turn(data, payload, {"IB_USER": "ada"})
+        named_picture = ((body(named) or {}).get("mark") or {}).get("picture")
+        check(
+            named.returncode == 1 and isinstance(named_picture, str) and named_picture.startswith("submissions/ada/"),
+            "IB_USER selects the submission folder",
+            detail(named),
+        )
+        escaped = turn(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "U01-D07",
+                "source": "photo",
+                "image": str(src),
+                "extract": {"final_answer": "1"},
+            },
+            {"IB_USER": "../x"},
+        )
+        escaped_picture = ((body(escaped) or {}).get("mark") or {}).get("picture")
+        landed = (data / escaped_picture).resolve() if isinstance(escaped_picture, str) else None
+        check(
+            escaped.returncode == 1
+            and isinstance(escaped_picture, str)
+            and escaped_picture.startswith("submissions/x/")
+            and ".." not in escaped_picture
+            and landed is not None
+            and landed.is_relative_to((data / "submissions").resolve()),
+            "IB_USER cannot leave the submissions folder",
+            detail(escaped),
+        )
+
+    with tempfile.TemporaryDirectory(prefix="ib-cli-photo-miss-") as tmp:
+        data = Path(tmp)
+        missing = turn(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "U01-D08",
+                "source": "photo",
+                "image": str(data / "missing.png"),
+                "extract": {"final_answer": "1"},
+            },
+        )
+        check(
+            missing.returncode == 2
+            and "image not found:" in missing.stderr
+            and not (data / "attempts.json").exists()
+            and not (data / "submissions").exists(),
+            "missing photo writes nothing",
+            detail(missing),
+        )
+        note = data / "note.txt"
+        note.write_text("not a photo\n")
+        typed = turn(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "U01-D08",
+                "source": "typed",
+                "image": str(note),
+                "extract": {"final_answer": "1"},
+            },
+        )
+        check(
+            typed.returncode == 2
+            and "image is only for source photo" in typed.stderr
+            and not (data / "attempts.json").exists(),
+            "typed mark refuses an image",
+            detail(typed),
+        )
+        bad = turn(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "U01-D08",
+                "source": "photo",
+                "image": str(note),
+                "extract": {"final_answer": "1"},
+            },
+        )
+        check(
+            bad.returncode == 2
+            and "image type not stored:" in bad.stderr
+            and not (data / "attempts.json").exists(),
+            "non-image suffix is refused",
+            detail(bad),
+        )
+
+    ignored = subprocess.run(
+        ["git", "check-ignore", "-q", "--no-index", "trackers/live/submissions/default/photo.png"],
+        cwd=ROOT,
+    )
+    check(ignored.returncode == 0, "default submission path is gitignored")
 
     if fails:
         print(f"FAIL cli behavior ({len(fails)})")
