@@ -2,11 +2,148 @@
 
 Public study pack for the UK University Integration Bee.
 
-A learner talks to the companion. The companion reads `.cursor/skills/integration-bee-companion/SKILL.md` and sends a JSON turn to `scripts/control-integration-bee`. The learner does not run commands.
+A learner talks to the companion. The companion reads `.agents/skills/integration-bee-companion/SKILL.md` and sends a JSON turn to `scripts/control-integration-bee`. The learner does not run commands.
+
+## One skill text
+
+Codex loads `.agents/skills/<name>/SKILL.md`. That directory is the only copy.
+
+- `.agents/skills/integration-bee-companion/SKILL.md`
+- `.agents/skills/verify-integration-bee/SKILL.md`
+- `.agents/skills/formal-verify-integration-bee/SKILL.md`
+
+`.cursor/skills/<name>` and `.claude/skills/<name>` are symlinks to `../../.agents/skills/<name>`. Cursor and Claude Code follow those links. Edit the file under `.agents/skills/`. Git must store the symlinks (`core.symlinks=true`, the default on Linux and macOS).
+
+## Getting started
+
+Follow the section for the harness you run. Each section is enough on its own: packages, the companion CLI, and the pstack plugin.
+
+### Codex
+
+Install the Codex CLI and confirm that `codex` runs.
+
+Install Python 3.11 or newer. CI uses Python 3.12.
+
+```bash
+python3 -m pip install sympy pyyaml
+```
+
+Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+
+```bash
+git clone https://github.com/jerome-queck/integration-bee.git
+cd integration-bee
+scripts/control-integration-bee doctor
+```
+
+`doctor` prints `READY integration-bee` and exits 0 when the checkout can run.
+
+`make check` needs `latexmk`, `pdflatex`, and Java 11 or newer. On Debian or Ubuntu, CI installs them with:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y latexmk texlive-latex-recommended texlive-fonts-recommended default-jre-headless
+```
+
+On macOS, install Python 3.11 or newer, run the same pip command, install a TeX distribution that provides `latexmk` and `pdflatex`, and install a JDK 11 or newer so `java` runs.
+
+Install the pstack skill stack yourself from https://github.com/michael-denyer/pstack-claude:
+
+```bash
+codex plugin marketplace add michael-denyer/pstack-claude
+codex plugin add pstack@pstack-claude
+```
+
+Skills land at `${CODEX_HOME:-$HOME/.codex}/plugins/cache/pstack-claude/pstack/<version>/skills/<skill-name>/SKILL.md`. With `CODEX_HOME` unset, that directory is `~/.codex/plugins/cache/pstack-claude/pstack/<version>/skills`. Version 0.9.102 is one installed example: `~/.codex/plugins/cache/pstack-claude/pstack/0.9.102/skills`.
+
+Start Codex in this repository. Codex reads `AGENTS.md` and loads `.agents/skills/`. Invoke `$integration-bee-companion`.
+
+When the pack names a pstack skill, open `skills/<skill-name>/SKILL.md` in that cache. The names used here are `poteto-mode`, `correct`, `statechart`, `setup-pstack`, `create-verification-skill`, `maintain-verification-skill`, and `maintain-formal-verification-skill`. Use the version directory the installer created.
+
+### Claude
+
+Install Claude Code 2.1.292 or later and confirm that `claude` runs.
+
+Install Python 3.11 or newer. CI uses Python 3.12.
+
+```bash
+python3 -m pip install sympy pyyaml
+```
+
+Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+
+```bash
+git clone https://github.com/jerome-queck/integration-bee.git
+cd integration-bee
+scripts/control-integration-bee doctor
+```
+
+`doctor` prints `READY integration-bee` and exits 0 when the checkout can run.
+
+`make check` needs `latexmk`, `pdflatex`, and Java 11 or newer. On Debian or Ubuntu, CI installs them with:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y latexmk texlive-latex-recommended texlive-fonts-recommended default-jre-headless
+```
+
+On macOS, install Python 3.11 or newer, run the same pip command, install a TeX distribution that provides `latexmk` and `pdflatex`, and install a JDK 11 or newer so `java` runs.
+
+Install the pstack skill stack yourself from https://github.com/michael-denyer/pstack-claude. Inside Claude Code:
+
+```text
+/plugin marketplace add michael-denyer/pstack-claude
+/plugin install pstack@pstack-claude
+```
+
+Start a new Claude Code session so the plugin loads. `/reload-plugins` reloads plugins in the session you already have.
+
+The plugins root is `~/.claude/plugins` unless `CLAUDE_CODE_PLUGIN_CACHE_DIR` or `CLAUDE_CONFIG_DIR` is set. Skills land at `${CLAUDE_CODE_PLUGIN_CACHE_DIR:-${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins}/cache/pstack-claude/pstack/<version>/skills/<skill-name>/SKILL.md`.
+
+Start Claude Code in this repository. Claude Code reads `AGENTS.md`. `.claude/skills/` points at `.agents/skills/`. Invoke `/integration-bee-companion`.
+
+When the pack names a pstack skill, open `skills/<skill-name>/SKILL.md` in that cache. The names used here are `poteto-mode`, `correct`, `statechart`, `setup-pstack`, `create-verification-skill`, `maintain-verification-skill`, and `maintain-formal-verification-skill`. Use the version directory the installer created.
+
+### Cursor
+
+Install Cursor. Open this repository as the project folder.
+
+Install Python 3.11 or newer. CI uses Python 3.12.
+
+```bash
+python3 -m pip install sympy pyyaml
+```
+
+Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+
+```bash
+git clone https://github.com/jerome-queck/integration-bee.git
+cd integration-bee
+scripts/control-integration-bee doctor
+```
+
+`doctor` prints `READY integration-bee` and exits 0 when the checkout can run.
+
+`make check` needs `latexmk`, `pdflatex`, and Java 11 or newer. On Debian or Ubuntu, CI installs them with:
+
+```bash
+sudo apt-get update
+sudo apt-get install -y latexmk texlive-latex-recommended texlive-fonts-recommended default-jre-headless
+```
+
+On macOS, install Python 3.11 or newer, run the same pip command, install a TeX distribution that provides `latexmk` and `pdflatex`, and install a JDK 11 or newer so `java` runs.
+
+Install the `pstack` plugin from the Cursor marketplace yourself. Codex and Claude install the port of that same skill stack from https://github.com/michael-denyer/pstack-claude. The skill names match.
+
+Skills land at `~/.cursor/plugins/cache/<marketplace>/<plugin>/<version>/skills/<skill-name>/SKILL.md`. The `<plugin>` segment is the marketplace id and may be a number.
+
+Cursor reads `AGENTS.md` and loads `.agents/skills/`. `.cursor/skills/` points at that directory. Invoke `integration-bee-companion` from the skill menu.
+
+When the pack names a pstack skill, open `skills/<skill-name>/SKILL.md` in that cache. The names used here are `poteto-mode`, `correct`, `statechart`, `setup-pstack`, `create-verification-skill`, `maintain-verification-skill`, and `maintain-formal-verification-skill`. Use the version directory the installer created.
 
 ## Start
 
-The learner talks to the companion and does not run the CLI. The companion reads `.cursor/skills/integration-bee-companion/SKILL.md` and writes one JSON turn.
+The learner talks to the companion and does not run the CLI. The companion reads `.agents/skills/integration-bee-companion/SKILL.md` and writes one JSON turn.
 
 ```bash
 scripts/control-integration-bee turn apply --file turn.json --format json
@@ -40,12 +177,13 @@ Ask the companion for a concept, or send a photo of a solution.
 
 People changing this pack use the checks below. Learners do not.
 
-1. Install Python 3.11 or newer, SymPy, and PyYAML with `python3 -m pip install sympy pyyaml`.
-2. Run `make check` before a pull request. CI runs the same command. Details are in `AGENTS.md`.
-3. The unpacked contest PDFs and the site PDFs are committed reference copies under `sources/past/` and `sources/`. The contest list is `past/inventory.json`. Do not commit `Resource_pack.zip`.
-4. Teach from `units/` with the files in `templates/`.
-5. The Yang Topics Guide, 2nd edition, is `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`. Attribution is in `sources/user/README.md`.
-6. Contest and Yang problems are `problems/records.jsonl`. `problems list` hides answers. A mark still goes through `turn apply`.
-7. `scripts/recover_pack_math.py` rereads the committed Round 1, Round 2, and Round 3 PDFs and rewrites a row only when SymPy proves the layout reading. `--write` is the whole catalog. Rows that do not prove stay `manual` or `unchecked`. `R1-2024-Q01` stays manual. PyMuPDF is required for that script. `make check` re-proves stored rows and does not open the PDFs.
+1. Follow the Getting started section for Codex, Claude, or Cursor. That section installs Python, SymPy, PyYAML (`python3 -m pip install sympy pyyaml`), the TeX and Java packages, and the pstack plugin.
+2. Point Git at the drift hook once with `make hooks`.
+3. Run `make check` before a pull request. CI runs the same command. Details are in `AGENTS.md`.
+4. The unpacked contest PDFs and the site PDFs are committed reference copies under `sources/past/` and `sources/`. The contest list is `past/inventory.json`. Do not commit `Resource_pack.zip`.
+5. Teach from `units/` with the files in `templates/`.
+6. The Yang Topics Guide, 2nd edition, is `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`. Attribution is in `sources/user/README.md`.
+7. Contest and Yang problems are `problems/records.jsonl`. `problems list` hides answers. A mark still goes through `turn apply`.
+8. `scripts/recover_pack_math.py` rereads the committed Round 1, Round 2, and Round 3 PDFs and rewrites a row only when SymPy proves the layout reading. `--write` is the whole catalog. Rows that do not prove stay `manual` or `unchecked`. `R1-2024-Q01` stays manual. PyMuPDF is required for that script. `make check` re-proves stored rows and does not open the PDFs.
 
 Syllabus links are in `syllabus-map.md`. The skill tree is `skill-tree.md`.

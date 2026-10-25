@@ -37,7 +37,7 @@ Require `doctor_exit:0`, `READY integration-bee`, `yang_pdf=ok`, and an empty `d
 
 ## Drive
 
-Follow `.cursor/skills/verify-integration-bee/features/README.md`. Drive one feature file end to end. Every path from `scripts/control-integration-bee --commands-json` is named in that index. Do not mark a skipped entry point as verified through a different command.
+Follow `features/README.md` in this skill directory. Drive one feature file end to end. Every path from `scripts/control-integration-bee --commands-json` is named in that index. Do not mark a skipped entry point as verified through a different command.
 
 `verify/run.sh` runs `verify/turn_contract_check.py`. That script is the CI proof of the turn contract. A feature drive still has to save its own transcript under `$IB_EVIDENCE`.
 
