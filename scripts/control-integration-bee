@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-"""Agent CLI for Integration Bee. Learners talk to the companion, not this program."""
 
 from __future__ import annotations
 
@@ -15,7 +14,6 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "verify"))
 
-import check_math  # noqa: E402
 import model  # noqa: E402
 import problem_catalog  # noqa: E402
 import turn_contract  # noqa: E402
@@ -42,6 +40,7 @@ COMMANDS = [
     {"path": "turn apply", "summary": "Apply one teach, mark, mock, aptitude, confirm, or cover turn and write the session."},
     {"path": "verify", "summary": "Run verify/run.sh."},
 ]
+HELP = {row["path"]: row["summary"] for row in COMMANDS}
 
 
 def now_iso() -> str:
@@ -87,7 +86,13 @@ def read_json(directory: Path, name: str) -> dict:
     path = directory / f"{name}.json"
     if not path.exists():
         return empty(name)
-    return json.loads(path.read_text())
+    try:
+        doc = json.loads(path.read_text())
+    except json.JSONDecodeError as exc:
+        die(f"{name}.json did not parse: {exc}", 2)
+    if not isinstance(doc, dict):
+        die(f"{name}.json must be an object", 2)
+    return doc
 
 
 def load_session(doc: dict) -> dict:
@@ -175,6 +180,49 @@ def die(msg: str, code: int = 1) -> None:
     raise SystemExit(code)
 
 
+def take_limit(rows: list, limit: int) -> list:
+    if limit < 0:
+        die("limit must be >= 0", 2)
+    if limit == 0:
+        return rows
+    return rows[:limit]
+
+
+def fold_token(value, allowed: frozenset):
+    if not isinstance(value, str):
+        return value
+    folded = value.strip().casefold()
+    if folded in allowed:
+        return folded
+    return value
+
+
+def write_table(count: int, header: list[str], records: list[dict]) -> None:
+    if len(records) == count:
+        print(f"count={count}")
+    else:
+        print(f"count={count} shown={len(records)}")
+    print("\t".join(header))
+    for row in records:
+        cells = []
+        for key in header:
+            text = row.get(key)
+            if text is None:
+                cells.append("")
+            else:
+                cells.append(str(text).replace("\t", " ").replace("\n", " "))
+        print("\t".join(cells))
+
+
+def latest_by_id(items: list[dict]) -> dict[str, dict]:
+    latest: dict[str, dict] = {}
+    for item in items:
+        pid = item.get("problem_id")
+        if pid:
+            latest[pid] = item
+    return latest
+
+
 def public_drill(row: dict) -> dict:
     return {
         "id": row["id"],
@@ -192,16 +240,6 @@ def find_drill(drill_id: str) -> dict | None:
         if row["id"] == drill_id:
             return row
     return None
-
-
-def grade(row: dict, answer: str) -> bool:
-    ns = dict(check_math.NS)
-    ns["ln"] = ns["log"]
-    import sympy as sp
-
-    ans = sp.sympify(row["answer_sympy"], locals=ns)
-    got = sp.sympify(answer, locals=ns)
-    return sp.simplify(got - ans) == 0
 
 
 def record_attempt(
@@ -310,6 +348,8 @@ def cmd_doctor(fmt: str) -> int:
         "official_pdfs": reference_pdf_status(),
         "data_dir": str(data_dir(None)),
     }
+    if missing_unit:
+        payload["missing_units"] = missing_unit
     if fmt == "json":
         emit(payload, fmt)
     else:
@@ -331,42 +371,67 @@ def cmd_practice_list(args) -> int:
             if not any(tag in bag for tag in args.tag):
                 continue
         rows.append(public_drill(row))
-    if args.limit:
-        rows = rows[: args.limit]
-    emit({"drills": rows}, args.format)
+    shown = take_limit(rows, args.limit)
+    if args.format == "json":
+        emit({"drills": shown}, "json")
+    else:
+        write_table(len(rows), ["id", "unit", "technique", "kind", "latex"], shown)
     return 0
 
 
 def cmd_practice_next(args) -> int:
     directory = data_dir(args.data_dir)
-    attempts = read_json(directory, "attempts")
-    due = model.due_ids(attempts.get("items") or [], today())
-    drills = {row["id"]: row for row in load_drills()}
+    items = read_json(directory, "attempts").get("items") or []
+    drills = load_drills()
+    by_id = {row["id"]: row for row in drills}
+    latest = latest_by_id(items)
+    today_iso = today().isoformat()
+    due = sorted(
+        (item["next_due"], pid)
+        for pid, item in latest.items()
+        if pid in by_id and item.get("next_due") and item["next_due"] <= today_iso
+    )
     chosen = None
-    for drill_id in due:
-        if drill_id in drills:
-            chosen = drills[drill_id]
-            break
-    if chosen is None:
+    reason = "new"
+    if due:
+        chosen = by_id[due[0][1]]
+        reason = "due"
+    else:
         ticks = read_json(directory, "skill-ticks")["ticks"]
         session = load_session(read_json(directory, "session"))
         full = session["aptitude"]["full_coverage"] is True
-        unit = None
+        units: list[str] = []
         for node in catalog():
             if node.get("gate") != "round1":
                 continue
             status = (ticks.get(node["id"]) or {}).get("status")
-            if not model.coach_queue_done(status, full):
-                unit = node.get("unit")
-                break
-        for row in load_drills():
-            if unit and row["unit"] != unit:
+            if model.coach_queue_done(status, full):
                 continue
-            chosen = row
-            break
+            unit = node.get("unit")
+            if unit and unit not in units:
+                units.append(unit)
+        if not units:
+            reason = "queue_clear"
+        else:
+            for unit in units:
+                for row in drills:
+                    if row["unit"] != unit:
+                        continue
+                    last = latest.get(row["id"])
+                    if last and last.get("correct") is True:
+                        continue
+                    chosen = row
+                    break
+                if chosen is not None:
+                    break
+            if chosen is None:
+                reason = "unit_clear"
     if chosen is None:
-        die("no drill")
-    emit(public_drill(chosen), args.format)
+        emit({"id": None, "reason": reason}, args.format)
+        return 0
+    view = public_drill(chosen)
+    view["reason"] = reason
+    emit(view, args.format)
     return 0
 
 
@@ -375,7 +440,7 @@ def cmd_practice_check(args) -> int:
     if row is None:
         die(f"unknown drill {args.id}")
     try:
-        correct = grade(row, args.answer)
+        correct = turn_contract.answer_matches(row, args.answer)
     except Exception as exc:
         die(f"answer did not parse: {exc}", 2)
     tags = list(row.get("technique_tags") or [])
@@ -406,10 +471,10 @@ def load_problem_rows() -> list[dict]:
 def problem_spec(args) -> dict:
     spec = {
         "id": getattr(args, "id", None),
-        "round": getattr(args, "problem_round", None),
+        "round": fold_token(getattr(args, "problem_round", None), problem_catalog.ROUNDS),
         "year": getattr(args, "year", None),
-        "source": getattr(args, "source", None),
-        "verify": getattr(args, "verify", None),
+        "source": fold_token(getattr(args, "source", None), problem_catalog.SOURCES),
+        "verify": fold_token(getattr(args, "verify", None), problem_catalog.VERIFIES),
         "problem_id": getattr(args, "problem_id", None),
     }
     err = problem_catalog.spec_problem(spec)
@@ -421,7 +486,16 @@ def problem_spec(args) -> dict:
 def cmd_problems_list(args) -> int:
     spec = problem_spec(args)
     rows = problem_catalog.matching(load_problem_rows(), spec)
-    emit({"count": len(rows), "problems": [problem_catalog.index_view(row) for row in rows]}, args.format)
+    shown = take_limit(rows, args.limit)
+    views = [problem_catalog.index_view(row) for row in shown]
+    if args.format == "json":
+        emit({"count": len(rows), "problems": views}, "json")
+    else:
+        write_table(
+            len(rows),
+            ["id", "round", "year", "problem_id", "verify", "kind", "source", "has_answer"],
+            views,
+        )
     return 0
 
 
@@ -441,7 +515,9 @@ def cmd_problems_select(args) -> int:
     if not rows:
         die("unknown problem")
     if len(rows) != 1:
-        die(f"select matched {len(rows)} problems", 2)
+        ids = [str(row.get("id")) for row in rows[:8]]
+        extra = f" (+{len(rows) - 8} more)" if len(rows) > 8 else ""
+        die(f"select matched {len(rows)} problems: {', '.join(ids)}{extra}. Pass --id.", 2)
     emit(problem_catalog.prompt_view(rows[0]), args.format)
     return 0
 
@@ -456,7 +532,11 @@ def cmd_drills_list(args) -> int:
         view = public_drill(row)
         view["answer_display"] = row.get("answer_display")
         rows.append(view)
-    emit({"drills": rows}, args.format)
+    shown = take_limit(rows, args.limit)
+    if args.format == "json":
+        emit({"drills": shown}, "json")
+    else:
+        write_table(len(rows), ["id", "unit", "technique", "kind", "answer_display"], shown)
     return 0 if rows else 1
 
 
@@ -719,7 +799,16 @@ def apply_journal(directory: Path, journal: dict | None) -> None:
 
 
 def read_turn(path: str) -> dict:
-    raw = sys.stdin.read() if path == "-" else Path(path).read_text()
+    if path == "-":
+        raw = sys.stdin.read()
+    else:
+        file = Path(path)
+        if not file.is_file():
+            die(f"turn file not found: {path}", 2)
+        try:
+            raw = file.read_text()
+        except OSError as exc:
+            die(f"turn file unreadable: {exc}", 2)
     try:
         body = json.loads(raw)
     except json.JSONDecodeError as exc:
@@ -858,6 +947,57 @@ def describe_pack(pack: str, year, out_of_request) -> tuple[int, int, list, obje
     die(f"unknown pack {pack}", 2)
 
 
+def pack_request_differs(body: dict, mock: dict) -> bool:
+    pack = mock.get("pack") or "mock01"
+    requested = body.get("pack") or "mock01"
+    if requested != pack:
+        return True
+    if body.get("id") and body["id"] != mock.get("id"):
+        return True
+    if requested == "pdf-round1" and body.get("year") not in (None, "") and str(body.get("year")) != str(mock.get("year")):
+        return True
+    return False
+
+
+def unscored_mock(directory: Path) -> dict | None:
+    for row in read_json(directory, "mocks").get("sessions") or []:
+        if row.get("score") is None:
+            return row
+    return None
+
+
+def mock_message(mock: dict, duration: int, problems: list, mode: str) -> str:
+    pack = mock.get("pack") or "mock01"
+    on_disk = True
+    if pack == "pdf-round1":
+        on_disk = bool(problems and isinstance(problems[0], dict) and problems[0].get("on_disk"))
+    if pack == "pdf-round1" and not on_disk:
+        return "The problems PDF is not on disk. Say so. Do not invent the paper. Mark a concept drill instead."
+    clock = f"{duration} minutes from {mock['started']}."
+    if mode == "stay":
+        return (
+            f"The open mock stays {mock['id']} ({pack}). "
+            f"Finish it before starting another pack. {clock} "
+            "Serve each problem in words. Keep file paths to yourself."
+        )
+    if mode == "continue":
+        return (
+            f"A timed mock is still open ({mock['id']}, {pack}). {clock} "
+            "Serve the next problem in words. Keep file paths to yourself. "
+            "Do not start a new concept."
+        )
+    return (
+        f"A timed mock is open. {clock} "
+        "Serve each problem in words. Keep file paths to yourself."
+    )
+
+
+def mock_view(mock: dict, mode: str) -> tuple[str, int, list]:
+    pack = mock.get("pack") or "mock01"
+    _, duration, problems, _ = describe_pack(pack, mock.get("year"), mock.get("out_of"))
+    return mock_message(mock, duration, problems, mode), duration, problems
+
+
 def cmd_turn_mock_start(args, body: dict) -> int:
     directory = data_dir(args.data_dir)
     learner = load_session(read_json(directory, "session"))
@@ -865,19 +1005,16 @@ def cmd_turn_mock_start(args, body: dict) -> int:
         die("an integral is still open", 2)
     if learner.get("phase") == "proposing":
         die("confirm the skip offer first", 2)
-    open_mock = next(
-        (row for row in read_json(directory, "mocks").get("sessions") or [] if row.get("score") is None),
-        None,
-    )
+    open_mock = unscored_mock(directory)
     if open_mock is not None:
-        pack = open_mock.get("pack") or "mock01"
-        year = open_mock.get("year")
-        out_of, duration, problems, _year = describe_pack(pack, year, open_mock.get("out_of"))
+        mode = "stay" if pack_request_differs(body, open_mock) else "open"
+        say, duration, problems = mock_view(open_mock, mode)
         mock = open_mock
     else:
         pack = body.get("pack") or "mock01"
         out_of, duration, problems, year = describe_pack(pack, body.get("year"), body.get("out_of"))
         mock = start_mock_record(directory, body, pack, out_of, year)
+        say = mock_message(mock, duration, problems, "open")
     phase = "mock_awaiting" if learner.get("phase") == "mock_awaiting" else "mock_open"
     problem_id = learner.get("problem_id") if phase == "mock_awaiting" else None
     node = learner.get("node") if phase == "mock_awaiting" else None
@@ -886,15 +1023,6 @@ def cmd_turn_mock_start(args, body: dict) -> int:
     except ValueError as exc:
         die(str(exc))
     write_session(directory, updated)
-    disk = True
-    if pack == "pdf-round1":
-        disk = bool(problems and problems[0].get("on_disk"))
-    say = (
-        f"A timed mock is open. {duration} minutes from {mock['started']}. "
-        "Serve each problem in words. Keep file paths to yourself."
-    )
-    if pack == "pdf-round1" and not disk:
-        say = "The problems PDF is not on disk. Say so. Do not invent the paper. Mark a concept drill instead."
     payload = turn_payload(directory, updated, say, None, None, mock, problems, None)
     payload["duration_minutes"] = duration
     emit(payload, args.format)
@@ -906,6 +1034,13 @@ def cmd_turn_mock_finish(args, body: dict) -> int:
     learner = load_session(read_json(directory, "session"))
     if body.get("score") is None or not body.get("id"):
         die("mock-finish needs id and score", 2)
+    phase = learner.get("phase")
+    if phase in {"awaiting_answer", "aptitude"}:
+        die("an integral is still open", 2)
+    if phase == "proposing":
+        die("confirm the skip offer first", 2)
+    if phase in {"mock_open", "mock_awaiting"} and learner.get("mock_id") not in (None, body["id"]):
+        die(f"open mock is {learner.get('mock_id')}", 2)
     mocks = read_json(directory, "mocks")
     found = None
     for session in mocks["sessions"]:
@@ -964,6 +1099,17 @@ def cmd_turn_apply(args) -> int:
                 f"These nodes can be skipped: {ids}. "
                 "Nothing is skipped until a confirm turn repeats the ids."
             )
+        elif phase == "mock_open":
+            mock = unscored_mock(directory)
+            if mock is None or mock.get("id") != session.get("mock_id"):
+                say = "The session says a mock is open, but no unscored mock is stored."
+                emit(turn_payload(directory, session, say, None, None, None, None, None), args.format)
+                return 0
+            say, duration, problems = mock_view(mock, "continue")
+            payload = turn_payload(directory, session, say, None, None, mock, problems, None)
+            payload["duration_minutes"] = duration
+            emit(payload, args.format)
+            return 0
         elif phase in {"awaiting_answer", "mock_awaiting"} and session.get("problem_id"):
             row = turn_contract.find_drill(drills, session["problem_id"])
             drill = turn_contract.drill_public(row) if row else None
@@ -1019,73 +1165,120 @@ def cmd_turn_apply(args) -> int:
 
 def build_parser() -> argparse.ArgumentParser:
     shared = argparse.ArgumentParser(add_help=False)
-    shared.add_argument("--data-dir", default=argparse.SUPPRESS)
-    shared.add_argument("--format", choices=("text", "json"), default=argparse.SUPPRESS)
-    parser = argparse.ArgumentParser(prog="control-integration-bee")
-    parser.add_argument("--commands-json", action="store_true")
-    parser.add_argument("--data-dir", default=None)
-    parser.add_argument("--format", choices=("text", "json"), default="text")
-    sub = parser.add_subparsers(dest="cmd")
-    sub.add_parser("doctor", parents=[shared])
-    sub.add_parser("verify", parents=[shared])
-    practice = sub.add_parser("practice", parents=[shared])
-    psub = practice.add_subparsers(dest="practice_cmd")
-    plist = psub.add_parser("list", parents=[shared])
-    plist.add_argument("--tag", action="append", default=[])
-    plist.add_argument("--unit", type=int)
-    plist.add_argument("--limit", type=int, default=0)
-    psub.add_parser("next", parents=[shared])
-    pcheck = psub.add_parser("check", parents=[shared])
-    pcheck.add_argument("--id", required=True)
-    pcheck.add_argument("--answer", required=True)
-    progress = sub.add_parser("progress", parents=[shared])
-    g = progress.add_subparsers(dest="progress_cmd")
-    g.add_parser("show", parents=[shared])
-    tick = g.add_parser("tick", parents=[shared])
-    tick.add_argument("--node", required=True)
-    tick.add_argument("--status", required=True, choices=("learning", "solid", "skipped"))
-    mistake = g.add_parser("mistake", parents=[shared])
-    mistake.add_argument("--id", required=True)
-    mistake.add_argument("--tag", action="append", required=True)
-    mistake.add_argument("--note", required=True)
-    mock_start = g.add_parser("mock-start", parents=[shared])
-    mock_start.add_argument("--id", default=None)
-    mock_start.add_argument("--cold", action="store_true")
-    mock_start.add_argument("--out-of", type=int, default=30)
-    mock_finish = g.add_parser("mock-finish", parents=[shared])
-    mock_finish.add_argument("--id", required=True)
-    mock_finish.add_argument("--score", type=int, required=True)
-    mock_finish.add_argument("--out-of", type=int, default=30)
-    mock_finish.add_argument("--missed", action="append", default=[])
-    journal = g.add_parser("journal", parents=[shared])
-    journal.add_argument("--technique", required=True)
-    journal.add_argument("--note", required=True)
-    g.add_parser("streak", parents=[shared])
-    drills = sub.add_parser("drills", parents=[shared])
-    dsub = drills.add_subparsers(dest="drills_cmd")
-    dlist = dsub.add_parser("list", parents=[shared])
-    dlist.add_argument("--unit", type=int)
-    dlist.add_argument("--id")
-    problems = sub.add_parser("problems", parents=[shared])
-    bsub = problems.add_subparsers(dest="problems_cmd")
+    shared.add_argument(
+        "--data-dir",
+        default=argparse.SUPPRESS,
+        help="Tracker directory. Overrides IB_DATA_DIR. doctor ignores this flag.",
+    )
+    shared.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default=argparse.SUPPRESS,
+        help="json is the stable record. text is a table for list commands.",
+    )
+    command_lines = ["Commands:"]
+    for row in COMMANDS:
+        command_lines.append(f"  {row['path']}")
+        command_lines.append(f"    {row['summary']}")
+    parser = argparse.ArgumentParser(
+        prog="control-integration-bee",
+        description="Companion CLI for Integration Bee. The learner does not run this program.",
+        epilog="\n".join(
+            [
+                "Recorded results use --format json.",
+                "problems list, practice list, and drills list print a table when the format is text.",
+                "Set IB_DATA_DIR or pass --data-dir so two runs do not share tracker files.",
+                "doctor reports IB_DATA_DIR and ignores --data-dir.",
+                "",
+                *command_lines,
+            ]
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
+    parser.add_argument("--commands-json", action="store_true", help="Print the command list as JSON and exit.")
+    parser.add_argument(
+        "--data-dir",
+        default=None,
+        help="Tracker directory. Overrides IB_DATA_DIR. doctor ignores this flag.",
+    )
+    parser.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default="text",
+        help="json is the stable record. text is a table for list commands.",
+    )
+    sub = parser.add_subparsers(dest="cmd", required=True)
 
-    def add_problem_filters(target: argparse.ArgumentParser, require_id: bool = False) -> None:
-        target.add_argument("--round", dest="problem_round")
-        target.add_argument("--year")
-        target.add_argument("--source")
-        target.add_argument("--verify")
-        target.add_argument("--id", required=require_id)
-        target.add_argument("--problem-id", dest="problem_id")
+    def leaf(parent, name: str, path: str):
+        text = HELP[path]
+        return parent.add_parser(name, parents=[shared], help=text, description=text)
 
-    add_problem_filters(bsub.add_parser("list", parents=[shared]))
-    add_problem_filters(bsub.add_parser("show", parents=[shared]), require_id=True)
-    add_problem_filters(bsub.add_parser("select", parents=[shared]))
-    turn = sub.add_parser("turn", parents=[shared])
-    tsub = turn.add_subparsers(dest="turn_cmd")
-    tsub.add_parser("schema", parents=[shared])
-    tsub.add_parser("show", parents=[shared])
-    tapply = tsub.add_parser("apply", parents=[shared])
-    tapply.add_argument("--file", required=True)
+    def group(parent, name: str, text: str):
+        return parent.add_parser(name, parents=[shared], help=text, description=text)
+
+    leaf(sub, "doctor", "doctor")
+    leaf(sub, "verify", "verify")
+    practice = group(sub, "practice", "Serve a drill and record a SymPy check.")
+    psub = practice.add_subparsers(dest="practice_cmd", required=True)
+    plist = leaf(psub, "list", "practice list")
+    plist.add_argument("--tag", action="append", default=[], help="Keep a drill when this tag matches. Repeat for more.")
+    plist.add_argument("--unit", type=int, help="Unit number. 1 matches a unit whose name starts with 01-.")
+    plist.add_argument("--limit", type=int, default=0, help="Stop after this many rows. 0 lists every match.")
+    leaf(psub, "next", "practice next")
+    pcheck = leaf(psub, "check", "practice check")
+    pcheck.add_argument("--id", required=True, help="Drill id.")
+    pcheck.add_argument("--answer", required=True, help="SymPy expression. An indefinite answer may include +C.")
+    progress = group(sub, "progress", "Read and write ticks, misses, mocks, notes, and the streak.")
+    g = progress.add_subparsers(dest="progress_cmd", required=True)
+    leaf(g, "show", "progress show")
+    tick = leaf(g, "tick", "progress tick")
+    tick.add_argument("--node", required=True, help="Skill-tree node id.")
+    tick.add_argument("--status", required=True, choices=("learning", "solid", "skipped"), help="learning, solid, or skipped.")
+    mistake = leaf(g, "mistake", "progress mistake")
+    mistake.add_argument("--id", required=True, help="Drill or problem id.")
+    mistake.add_argument("--tag", action="append", required=True, help="Topic tag. Repeat for more.")
+    mistake.add_argument("--note", required=True, help="What went wrong.")
+    mock_start = leaf(g, "mock-start", "progress mock-start")
+    mock_start.add_argument("--id", default=None, help="Mock id. Defaults to the current time.")
+    mock_start.add_argument("--cold", action="store_true", help="Open a mock before Round 1 nodes are solid.")
+    mock_start.add_argument("--out-of", type=int, default=30, help="Number of problems.")
+    mock_finish = leaf(g, "mock-finish", "progress mock-finish")
+    mock_finish.add_argument("--id", required=True, help="Mock id.")
+    mock_finish.add_argument("--score", type=int, required=True, help="Problems scored correct.")
+    mock_finish.add_argument("--out-of", type=int, default=30, help="Problems on the paper.")
+    mock_finish.add_argument("--missed", action="append", default=[], help="Missed problem id. Repeat for more.")
+    journal = leaf(g, "journal", "progress journal")
+    journal.add_argument("--technique", required=True, help="Technique name.")
+    journal.add_argument("--note", required=True, help="Technique note.")
+    leaf(g, "streak", "progress streak")
+    drills = group(sub, "drills", "List drill ids and display answers.")
+    dsub = drills.add_subparsers(dest="drills_cmd", required=True)
+    dlist = leaf(dsub, "list", "drills list")
+    dlist.add_argument("--unit", type=int, help="Unit number. 1 matches a unit whose name starts with 01-.")
+    dlist.add_argument("--id", help="One drill id.")
+    dlist.add_argument("--limit", type=int, default=0, help="Stop after this many rows. 0 lists every match.")
+    problems = group(sub, "problems", "Read the contest and Yang catalog.")
+    bsub = problems.add_subparsers(dest="problems_cmd", required=True)
+
+    def add_problem_filters(target: argparse.ArgumentParser, require_id: bool = False, with_limit: bool = False) -> None:
+        target.add_argument("--round", dest="problem_round", help="r1, r2, r3, or yang. Case does not matter.")
+        target.add_argument("--year", help="Contest year.")
+        target.add_argument("--source", help="resource_pack or yang_book. Case does not matter.")
+        target.add_argument("--verify", help="manual, unchecked, or sympy. Case does not matter.")
+        target.add_argument("--id", required=require_id, help="Catalog id.")
+        target.add_argument("--problem-id", dest="problem_id", help="Id printed on the paper.")
+        if with_limit:
+            target.add_argument("--limit", type=int, default=0, help="Stop after this many rows. 0 lists every match. count stays the match total.")
+
+    add_problem_filters(leaf(bsub, "list", "problems list"), with_limit=True)
+    add_problem_filters(leaf(bsub, "show", "problems show"), require_id=True)
+    add_problem_filters(leaf(bsub, "select", "problems select"))
+    turn = group(sub, "turn", "Apply one companion turn.")
+    tsub = turn.add_subparsers(dest="turn_cmd", required=True)
+    leaf(tsub, "schema", "turn schema")
+    leaf(tsub, "show", "turn show")
+    tapply = leaf(tsub, "apply", "turn apply")
+    tapply.add_argument("--file", required=True, help="Turn JSON file. Use - to read stdin.")
     return parser
 
 

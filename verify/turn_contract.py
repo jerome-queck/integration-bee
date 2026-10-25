@@ -479,6 +479,10 @@ def _indefinite(row: dict) -> bool:
     return limits in (None, [])
 
 
+def answer_matches(row: dict, submitted: str) -> bool:
+    return expressions_match(row["answer_sympy"], submitted, _indefinite(row))
+
+
 def grade_problem(
     problem_id: str,
     submitted: str,

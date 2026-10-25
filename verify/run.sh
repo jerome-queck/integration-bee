@@ -91,6 +91,9 @@ echo "== gap index =="
 "$PY" "$ROOT/verify/gap_index.py" || fail=1
 "$PY" "$ROOT/verify/gap_index.py" --expect-fail extra-file || fail=1
 
+echo "== cli behavior =="
+"$PY" "$ROOT/scripts/check_cli_behavior.py" || fail=1
+
 echo "== turn contract =="
 "$PY" "$ROOT/verify/turn_contract_check.py" || fail=1
 
