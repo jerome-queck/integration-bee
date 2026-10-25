@@ -1,0 +1,42 @@
+# R3-2024-Chainlink-G4-Q08
+
+- Problem: `sources/past/r3/2024/Chainlink_Game_4_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (problem 8)
+- Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 4, problem 8)
+- Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 4, problem 8)
+- The catalog row is not changed.
+
+## Problem
+
+\[
+\int_{0}^{\infty}\frac{x\cosh x}{\sinh(\pi x)}\,dx.
+\]
+
+## Solution
+
+The solutions PDF first evaluates
+
+\[
+I(a)=\int_{0}^{\infty}\frac{\sinh(ax)}{\sinh(\pi x)}\,dx.
+\]
+
+Expanding \(1/(1-e^{-2\pi x})\) and integrating term by term produces a difference of digamma values. The reflection formula simplifies that difference to
+
+\[
+I(a)=\frac12\tan\frac{a}{2}.
+\]
+
+Differentiating in \(a\) brings down the factor \(x\cosh(ax)\). At \(a=1\),
+
+\[
+I'(1)=\frac14\sec^{2}\frac12.
+\]
+
+## Final answer
+
+\[
+\dfrac{1}{4}\sec^{2}\dfrac{1}{2}.
+\]
+
+## SymPy self-check
+
+SymPy differentiates \(\frac12\tan(a/2)\) to \(\frac14\sec^{2}(a/2)\) and checks \(\cot(\pi/2-\theta)=\tan\theta\). A quadrature of \(x\cosh x/\sinh(\pi x)\) from \(0\) to \(\infty\) matches \(\frac14\sec^{2}(1/2)\) within \(10^{-18}\).
