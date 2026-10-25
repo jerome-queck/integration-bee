@@ -15,7 +15,7 @@ These predicates are not a state machine. `verify/unit_order_check.py` calls `un
 - A catalog with past-paper units and no concept unit is rejected.
 - A timed Round 1 mock is blocked until every `gate: round1` node is `solid`, unless the caller passes `--cold`.
 - A tick name must be in `trackers/catalog.json`. An attempt interval cannot be negative. Heatmap fails cannot exceed attempts. Streak days cannot repeat.
-- A session phase is `idle`, `awaiting_answer`, `mock_open`, or `mock_awaiting`. Idle has no open problem or mock. An answer phase names a problem. A mock phase names a mock.
+- A session phase is `idle`, `awaiting_answer`, `mock_open`, `mock_awaiting`, `aptitude`, or `proposing`. Idle has no open problem or mock. An answer phase names a problem. A mock phase names a mock. `aptitude` names a problem. `proposing` waits for confirm and names an offer.
 - A mark is one row per id with bool `answer_ok`, bool `method_ok`, and a technique. The key `correct` is rejected.
 - A sticky is one card per technique with a note and a touched day. The key `strength` is rejected. Strength is computed from the touched day.
 
@@ -45,7 +45,7 @@ The plain command exits 0 on the real tree. Each `--expect-fail` exits 0 only wh
 | `session_problem` | `verify/model.py`, called before `scripts/control-integration-bee` writes `session.json` |
 | `mark_problem`, `sticky_problem` | `verify/model.py`, called before `turn apply` writes `marks.json` and `stickies.json` |
 
-last_confirmed: 322e6a68f931ab279e48895fa94d7f23e36e18cb
+last_confirmed: 292ff5c8a2ac9cb84d373cdb83e28a2ba5fa444c
 
 Move `last_confirmed` to `git rev-parse HEAD:verify/model.py` only after you rerun the commands above and they still describe that file. That command prints the blob id of `verify/model.py`. A shallow pull-request checkout and a later merge keep the same id when the file bytes do not change. If `verify/model.py` changes and the id does not, rerun the checks before trusting them.
 

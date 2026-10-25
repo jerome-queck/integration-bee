@@ -101,7 +101,75 @@ def mock_session_problem(session: dict) -> str | None:
     return None
 
 
-SESSION_PHASES = {"idle", "awaiting_answer", "mock_open", "mock_awaiting"}
+SESSION_PHASES = {
+    "idle",
+    "awaiting_answer",
+    "mock_open",
+    "mock_awaiting",
+    "aptitude",
+    "proposing",
+}
+
+POLICY_DETAILS = {"worked", "faded", "bare"}
+POLICY_KINDS = {"definite", "indefinite", "any"}
+
+
+def _id_list(value, label: str) -> str | None:
+    if not isinstance(value, list):
+        return f"aptitude {label} must be a list"
+    seen = set()
+    for item in value:
+        if not isinstance(item, str) or item == "" or item in seen:
+            return f"aptitude {label} needs unique ids"
+        seen.add(item)
+    return None
+
+
+def aptitude_problem(value) -> str | None:
+    if not isinstance(value, dict):
+        return "aptitude needs full_coverage, offer, and declined"
+    if set(value) != {"full_coverage", "offer", "declined"}:
+        return "aptitude needs full_coverage, offer, and declined"
+    if not isinstance(value.get("full_coverage"), bool):
+        return "aptitude full_coverage must be bool"
+    err = _id_list(value.get("offer"), "offer")
+    if err:
+        return err
+    return _id_list(value.get("declined"), "declined")
+
+
+def policy_problem(value) -> str | None:
+    if not isinstance(value, dict):
+        return "policy needs rows"
+    allowed = {"approach", "detail", "kind", "volume"}
+    for row in value.values():
+        if not isinstance(row, dict) or set(row) != allowed:
+            return "policy row needs approach, detail, kind, and volume"
+        approach = row.get("approach")
+        if not isinstance(approach, str) or approach == "":
+            return "policy approach is empty"
+        if row.get("detail") not in POLICY_DETAILS:
+            return "policy detail is bad"
+        if row.get("kind") not in POLICY_KINDS:
+            return "policy kind is bad"
+        volume = row.get("volume")
+        if isinstance(volume, bool) or not isinstance(volume, int) or volume < 0:
+            return "policy volume is bad"
+    return None
+
+
+def coach_queue_done(status: str | None, full_coverage: bool) -> bool:
+    """True when the coach queue leaves this node.
+
+    solid is done. skipped is done unless full_coverage is on.
+    learning and a missing tick stay in the queue.
+    mock_block_reason does not call this.
+    """
+    if status == "solid":
+        return True
+    if status == "skipped" and not full_coverage:
+        return True
+    return False
 
 
 def session_problem(doc: dict) -> str | None:
@@ -119,6 +187,17 @@ def session_problem(doc: dict) -> str | None:
         return "mock session needs a mock id"
     if phase == "mock_awaiting" and (not mock or not problem):
         return "mock question needs a mock and a problem"
+    if phase == "aptitude" and (not problem or mock):
+        return "aptitude session needs a problem"
+    if phase == "proposing" and (problem or mock or node):
+        return "proposing session is waiting for confirm"
+    err = aptitude_problem(doc.get("aptitude")) if "aptitude" in doc else None
+    if err:
+        return err
+    if phase == "proposing" and not (doc.get("aptitude") or {}).get("offer"):
+        return "proposing session needs an offer"
+    if "policy" in doc:
+        return policy_problem(doc.get("policy"))
     return None
 
 

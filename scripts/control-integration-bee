@@ -39,7 +39,7 @@ COMMANDS = [
     {"path": "problems select", "summary": "Print one problem prompt. Omits the answer and any worked solution."},
     {"path": "turn schema", "summary": "Print the teach, mark, and mock turn schemas."},
     {"path": "turn show", "summary": "Print the session and the coach report."},
-    {"path": "turn apply", "summary": "Apply one teach, mark, or mock turn and write the session."},
+    {"path": "turn apply", "summary": "Apply one teach, mark, mock, aptitude, confirm, or cover turn and write the session."},
     {"path": "verify", "summary": "Run verify/run.sh."},
 ]
 
@@ -88,6 +88,36 @@ def read_json(directory: Path, name: str) -> dict:
     if not path.exists():
         return empty(name)
     return json.loads(path.read_text())
+
+
+def load_session(doc: dict) -> dict:
+    """Fill absent aptitude and policy. Reject a bad bool or a bad row.
+
+    Does not write. turn show on a missing file still writes nothing.
+    """
+    out = dict(doc)
+    if "aptitude" not in out:
+        out["aptitude"] = {"full_coverage": False, "offer": [], "declined": []}
+    elif isinstance(out.get("aptitude"), dict):
+        apt = dict(out["aptitude"])
+        if isinstance(apt.get("offer"), list):
+            apt["offer"] = list(apt["offer"])
+        if "declined" not in apt:
+            apt["declined"] = []
+        elif isinstance(apt.get("declined"), list):
+            apt["declined"] = list(apt["declined"])
+        out["aptitude"] = apt
+    if "policy" not in out:
+        out["policy"] = {}
+    elif isinstance(out.get("policy"), dict):
+        copied = {}
+        for key, row in out["policy"].items():
+            copied[key] = dict(row) if isinstance(row, dict) else row
+        out["policy"] = copied
+    err = model.session_problem(out)
+    if err:
+        die(err, 2)
+    return out
 
 
 def write_json(directory: Path, name: str, doc: dict) -> None:
@@ -316,12 +346,14 @@ def cmd_practice_next(args) -> int:
             break
     if chosen is None:
         ticks = read_json(directory, "skill-ticks")["ticks"]
+        session = load_session(read_json(directory, "session"))
+        full = session["aptitude"]["full_coverage"] is True
         unit = None
         for node in catalog():
             if node.get("gate") != "round1":
                 continue
             status = (ticks.get(node["id"]) or {}).get("status")
-            if status != "solid":
+            if not model.coach_queue_done(status, full):
                 unit = node.get("unit")
                 break
         for row in load_drills():
@@ -436,12 +468,14 @@ def cmd_progress_show(args) -> int:
         ({"tag": tag, **row} for tag, row in topics.items() if row.get("fails", 0) > 0),
         key=lambda row: (-row.get("fails", 0), row["tag"]),
     )
+    session = load_session(read_json(directory, "session"))
+    full = session["aptitude"]["full_coverage"] is True
     nxt = None
     for node in catalog():
         if node.get("gate") != "round1":
             continue
         status = (ticks["ticks"].get(node["id"]) or {}).get("status")
-        if status != "solid":
+        if not model.coach_queue_done(status, full):
             nxt = node["id"]
             break
     emit(
@@ -589,19 +623,20 @@ def session_view(session: dict) -> dict:
     }
 
 
-def turn_payload(directory: Path, session: dict, say: str, drill, mark, mock, problems, tick) -> dict:
+def turn_payload(directory: Path, session: dict, say: str, drill, mark, mock, problems, tick, result_ticks=None) -> dict:
     ticks = read_json(directory, "skill-ticks")
     heat = read_json(directory, "heatmap")
     return {
         "ok": True,
         "session": session_view(session),
-        "coach": turn_contract.coach_view(catalog(), ticks["ticks"], heat, load_drills()),
+        "coach": turn_contract.coach_view(catalog(), ticks["ticks"], heat, load_drills(), session),
         "say": say,
         "drill": drill,
         "mark": mark,
         "mock": mock,
         "problems": problems,
         "tick": tick,
+        "ticks": [] if result_ticks is None else result_ticks,
     }
 
 
@@ -709,8 +744,14 @@ def finish_plan(directory: Path, plan: dict, fmt: str) -> int:
     apply_journal(directory, plan.get("journal"))
     apply_ledger(directory, plan.get("ledger"))
     apply_sticky(directory, plan.get("sticky"))
-    apply_tick(directory, plan.get("tick"))
+    listed = plan.get("ticks")
+    if isinstance(listed, list) and listed:
+        for item in listed:
+            apply_tick(directory, item)
+    elif plan.get("tick"):
+        apply_tick(directory, plan["tick"])
     write_session(directory, plan["session"])
+    shown_ticks = [] if plan.get("tick") else list(plan.get("ticks") or [])
     payload = turn_payload(
         directory,
         plan["session"],
@@ -718,8 +759,9 @@ def finish_plan(directory: Path, plan: dict, fmt: str) -> int:
         plan.get("drill"),
         plan.get("mark"),
         None,
-        None,
+        plan.get("problems"),
         plan.get("tick"),
+        shown_ticks,
     )
     emit(payload, fmt)
     return plan["exit"]
@@ -737,7 +779,7 @@ def cmd_turn_schema(fmt: str) -> int:
 
 def cmd_turn_show(args) -> int:
     directory = data_dir(args.data_dir)
-    session = read_json(directory, "session")
+    session = load_session(read_json(directory, "session"))
     emit(
         turn_payload(directory, session, "The session is unchanged.", None, None, None, None, None),
         args.format,
@@ -793,9 +835,11 @@ def describe_pack(pack: str, year, out_of_request) -> tuple[int, int, list, obje
 
 def cmd_turn_mock_start(args, body: dict) -> int:
     directory = data_dir(args.data_dir)
-    learner = read_json(directory, "session")
-    if learner.get("phase") == "awaiting_answer":
+    learner = load_session(read_json(directory, "session"))
+    if learner.get("phase") in {"awaiting_answer", "aptitude"}:
         die("an integral is still open", 2)
+    if learner.get("phase") == "proposing":
+        die("confirm the skip offer first", 2)
     open_mock = next(
         (row for row in read_json(directory, "mocks").get("sessions") or [] if row.get("score") is None),
         None,
@@ -812,14 +856,10 @@ def cmd_turn_mock_start(args, body: dict) -> int:
     phase = "mock_awaiting" if learner.get("phase") == "mock_awaiting" else "mock_open"
     problem_id = learner.get("problem_id") if phase == "mock_awaiting" else None
     node = learner.get("node") if phase == "mock_awaiting" else None
-    updated = {
-        "schema": "integration-bee-session/v1",
-        "phase": phase,
-        "node": node,
-        "problem_id": problem_id,
-        "mock_id": mock["id"],
-        "updated": now_iso(),
-    }
+    try:
+        updated = turn_contract._set_phase(learner, phase, node, problem_id, mock["id"], now_iso())
+    except ValueError as exc:
+        die(str(exc))
     write_session(directory, updated)
     disk = True
     if pack == "pdf-round1":
@@ -838,6 +878,7 @@ def cmd_turn_mock_start(args, body: dict) -> int:
 
 def cmd_turn_mock_finish(args, body: dict) -> int:
     directory = data_dir(args.data_dir)
+    learner = load_session(read_json(directory, "session"))
     if body.get("score") is None or not body.get("id"):
         die("mock-finish needs id and score", 2)
     mocks = read_json(directory, "mocks")
@@ -856,8 +897,10 @@ def cmd_turn_mock_finish(args, body: dict) -> int:
     if err:
         die(err)
     write_json(directory, "mocks", mocks)
-    closed = turn_contract.empty_session()
-    closed["updated"] = now_iso()
+    try:
+        closed = turn_contract._set_phase(learner, "idle", None, None, None, now_iso())
+    except ValueError as exc:
+        die(str(exc))
     write_session(directory, closed)
     payload = turn_payload(
         directory,
@@ -877,7 +920,7 @@ def cmd_turn_apply(args) -> int:
     body = read_turn(args.file)
     kind = body["kind"]
     directory = data_dir(args.data_dir)
-    session = read_json(directory, "session")
+    session = load_session(read_json(directory, "session"))
     attempts = read_json(directory, "attempts").get("items") or []
     ticks = read_json(directory, "skill-ticks")["ticks"]
     heat = read_json(directory, "heatmap")
@@ -885,19 +928,38 @@ def cmd_turn_apply(args) -> int:
     cat = catalog()
     updated = now_iso()
     if kind == "empty":
-        say = "Ask whether they want a new concept or to mark work they already did."
-        node = turn_contract.recommend_node(cat, ticks, heat, drills)
-        if node:
-            say = f"{say} The next node is {node['id']}."
         drill = None
-        if session.get("phase") in {"awaiting_answer", "mock_awaiting"} and session.get("problem_id"):
+        problems = None
+        phase = session.get("phase")
+        if phase == "aptitude" and session.get("problem_id"):
+            drill, problems, say = turn_contract.describe_open_probe(session, drills, load_problem_rows())
+        elif phase == "proposing":
+            ids = ", ".join(session["aptitude"]["offer"])
+            say = (
+                f"These nodes can be skipped: {ids}. "
+                "Nothing is skipped until a confirm turn repeats the ids."
+            )
+        elif phase in {"awaiting_answer", "mock_awaiting"} and session.get("problem_id"):
             row = turn_contract.find_drill(drills, session["problem_id"])
             drill = turn_contract.drill_public(row) if row else None
             say = "An integral is still open. Show it again. Do not show an answer."
-        emit(turn_payload(directory, session, say, drill, None, None, None, None), args.format)
+        else:
+            say = "Ask whether they want a new concept or to mark work they already did."
+            node = turn_contract.recommend_node(
+                cat,
+                ticks,
+                heat,
+                drills,
+                full_coverage=session["aptitude"]["full_coverage"] is True,
+            )
+            if node:
+                say = f"{say} The next node is {node['id']}."
+        emit(turn_payload(directory, session, say, drill, None, None, problems, None), args.format)
         return 0
     if kind == "teach":
-        plan = turn_contract.plan_teach(session, attempts, ticks, cat, drills, heat, updated)
+        plan = turn_contract.plan_teach(
+            session, attempts, ticks, cat, drills, heat, updated, load_problem_rows()
+        )
         return finish_plan(directory, plan, args.format)
     if kind == "mark":
         plan = turn_contract.plan_mark(
@@ -911,6 +973,17 @@ def cmd_turn_apply(args) -> int:
             updated,
             load_problem_rows(),
         )
+        return finish_plan(directory, plan, args.format)
+    if kind == "aptitude":
+        plan = turn_contract.plan_aptitude(
+            session, attempts, ticks, cat, drills, load_problem_rows(), updated
+        )
+        return finish_plan(directory, plan, args.format)
+    if kind == "confirm":
+        plan = turn_contract.plan_confirm(session, ticks, cat, body, updated)
+        return finish_plan(directory, plan, args.format)
+    if kind == "cover":
+        plan = turn_contract.plan_cover(session, cat, drills, body, updated)
         return finish_plan(directory, plan, args.format)
     if kind == "mock-start":
         return cmd_turn_mock_start(args, body)
