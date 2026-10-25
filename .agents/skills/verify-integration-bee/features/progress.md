@@ -12,11 +12,13 @@ Progress stores ticks, misses, mocks, journal notes, and the study streak. `prog
 - `progress-mock-finish` stores the score for that mock.
 - `progress-journal` stores a technique note that `progress show` does not echo.
 - `progress-streak` counts today once.
+- `progress-syllabus` stores a tick for `floor` and for `dutis`. `next_node` stays `basic-integration`.
 
 ## How to get to it (user POV)
 
 - The companion marks a concept after practice, records a diagnosed miss, stores a technique note, and does not start a timed mock early.
 - A cold paper is `progress mock-start --cold`. The score is `progress mock-finish`.
+- `skill-tree.md` marks `floor` and `dutis` content ready and names drills `U11-D09` through `U11-D15`. The catalog rows stay `deferred`, with no unit and no Round 1 gate. The coach queue keeps `next_node` on a `gate: round1` node. The served node for those drills is `special-wildcard`.
 
 ## Driving it with control-integration-bee
 
@@ -24,7 +26,7 @@ Preconditions:
 
 - `IB_DATA_DIR` has no `basic-integration` tick yet.
 - They share that directory.
-- `$IB_PHASE` and `$IB_OFFER` are two other empty directories. Do not point them at `trackers/live`.
+- `$IB_PHASE`, `$IB_OFFER`, and `$IB_SYLLABUS` are other empty directories. Do not point them at `trackers/live`.
 
 - **Tick.** Run `scripts/control-integration-bee progress tick --node basic-integration --status learning --format json >"$IB_EVIDENCE/tick.json" 2>"$IB_EVIDENCE/tick.err"`. The exit code is 0. Stdout contains `basic-integration` and `learning`.
 - **Show.** Run `scripts/control-integration-bee progress show --format json >"$IB_EVIDENCE/show-after-tick.json" 2>"$IB_EVIDENCE/show-after-tick.err"`. The exit code is 0. Stdout contains `basic-integration`, `learning`, and `"next_node": "basic-integration"`. `attempts` and `due` are empty. `streak.current` is 0.
@@ -40,11 +42,13 @@ Preconditions:
 - **Streak.** Run `scripts/control-integration-bee progress streak --format json >"$IB_EVIDENCE/streak.json"`. The exit code is 0. Stdout contains today's Asia/Singapore date and `"current": 1`. Run the same command again. The exit code is 0 and `current` stays 1.
 - **Finish while a drill is open.** Use a new empty directory `$IB_PHASE`. Run `IB_DATA_DIR="$IB_PHASE" scripts/control-integration-bee progress mock-start --cold --id phase-1 --format json >"$IB_EVIDENCE/phase-start.json"`. The exit code is 0. Write `{"kind":"teach"}` to `$IB_PHASE/turn.json`. Run `IB_DATA_DIR="$IB_PHASE" scripts/control-integration-bee turn apply --file "$IB_PHASE/turn.json" --format json >"$IB_EVIDENCE/phase-teach.json"`. The exit code is 0. Stdout contains `awaiting_answer`. Run `IB_DATA_DIR="$IB_PHASE" scripts/control-integration-bee progress mock-finish --id phase-1 --score 1 --out-of 30 --format json >"$IB_EVIDENCE/phase-finish.out" 2>"$IB_EVIDENCE/phase-finish.err"`. The exit code is 2. Stderr contains `an integral is still open`. The stored session still has `"score": null`.
 - **Finish during a skip offer.** Use a new empty directory `$IB_OFFER`. Repeat the aptitude start, the `U01-D07` mark of `0`, and the `R1-2020-Q10` verdict from the turn feature until the phase is `proposing`. Run `IB_DATA_DIR="$IB_OFFER" scripts/control-integration-bee progress mock-start --cold --id offer-1 --format json >"$IB_EVIDENCE/offer-start.json"`. The exit code is 0. Run `IB_DATA_DIR="$IB_OFFER" scripts/control-integration-bee progress mock-finish --id offer-1 --score 1 --out-of 30 --format json >"$IB_EVIDENCE/offer-finish.out" 2>"$IB_EVIDENCE/offer-finish.err"`. The exit code is 2. Stderr contains `confirm the skip offer first`. The stored score is still `null`.
+- **Syllabus ticks.** Use the empty directory `$IB_SYLLABUS`. Run `IB_DATA_DIR="$IB_SYLLABUS" scripts/control-integration-bee progress show --format json >"$IB_EVIDENCE/syllabus-empty.json"`. The exit code is 0. Stdout contains `"next_node": "basic-integration"` and `"ticks": {}`. Run `IB_DATA_DIR="$IB_SYLLABUS" scripts/control-integration-bee progress tick --node floor --status learning --format json >"$IB_EVIDENCE/tick-floor.json" 2>"$IB_EVIDENCE/tick-floor.err"`. The exit code is 0. Stdout contains `floor` and `learning`. Run `IB_DATA_DIR="$IB_SYLLABUS" scripts/control-integration-bee progress tick --node dutis --status learning --format json >"$IB_EVIDENCE/tick-dutis.json" 2>"$IB_EVIDENCE/tick-dutis.err"`. The exit code is 0. Stdout contains `dutis` and `learning`. Run `IB_DATA_DIR="$IB_SYLLABUS" scripts/control-integration-bee progress show --format json >"$IB_EVIDENCE/syllabus-show.json"`. The exit code is 0. Stdout contains `floor`, `dutis`, `learning`, and `"next_node": "basic-integration"`.
 
 ## Gotchas
 
 - `mock-start --cold` bypasses the Round 1 gate. The blocked proof must omit `--cold`.
 - A second `mock-start` while a session has `"score": null` returns that session and does not append another. `mock-finish` exits 2 while the session phase is `awaiting_answer` or `aptitude` (`an integral is still open`) or `proposing` (`confirm the skip offer first`). The mock file is unchanged.
 - An unknown node exits 1, stderr contains `unknown node`, and `skill-ticks.json` is unchanged.
+- `skill-tree.md` marks `floor` and `dutis` content ready. `trackers/catalog.json` keeps both rows `"status": "deferred"`, `"unit": null`, and `"gate": null`. `progress tick` accepts the ids because they are catalog ids. `progress show` sets `next_node` from nodes whose `gate` is `round1`, so the value stays `basic-integration`. The drills `U11-D09` through `U11-D15` are served on `special-wildcard`. The curriculum note says to leave `floor` and `dutis` unticked.
 - `progress show` does not include journal notes or mock scores. Read `journal.json` and `mocks.json`.
 - A second `progress streak` on the same Asia/Singapore day does not add another day.
