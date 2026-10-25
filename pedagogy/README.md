@@ -13,7 +13,7 @@ Yang is one source among others. The other sources used in the notes are:
 
 - the contest syllabus and the Techniques Guide under `sources/`
 - the society site https://integration.soc.srcf.net/ for the round formats
-- classical arguments written out in the unit notes: a reduction for \(I_n\), the half-angle substitution \(t=\tan(x/2)\), the Leibniz rule on a compact rectangle, the reflection \(x\mapsto a+b-x\), and the floor split at the integers
+- classical arguments written out in the unit notes: a reduction for \(I_n\) (units 14, 15, and 20), the half-angle substitution \(t=\tan(x/2)\), the Leibniz rule on a compact rectangle, the reflection \(x\mapsto a+b-x\), and the floor split at the integers (unit 11 drills `U11-D09` through `U11-D12`, note `docs/techniques/floor.md`)
 
 A PDF is a reference for checking a printed value. It is not the lesson. Do not copy a contest answer into a note. Do not invent a value that `drills.md` does not store and that SymPy has not checked.
 

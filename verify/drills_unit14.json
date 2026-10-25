@@ -174,5 +174,47 @@
       0,
       "oo"
     ]
+  },
+  {
+    "id": "U14-D09",
+    "unit": "14-gamma",
+    "technique": "gamma",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}x^{4}e^{-x}\\,dx",
+    "sympy_expr": "x**4 * exp(-x)",
+    "answer_sympy": "24",
+    "answer_display": "24",
+    "hint": "J_4=4*J_3=24.",
+    "technique_tags": ["gamma", "yang:2.4"],
+    "yang": ["yang:2.4"],
+    "limits": [0, "oo"]
+  },
+  {
+    "id": "U14-D10",
+    "unit": "14-gamma",
+    "technique": "gamma",
+    "kind": "definite",
+    "latex": "\\int_{0}^{\\infty}x^{2}e^{-x}\\,dx",
+    "sympy_expr": "x**2 * exp(-x)",
+    "answer_sympy": "2",
+    "answer_display": "2",
+    "hint": "J_2=2*J_1=2.",
+    "technique_tags": ["gamma", "yang:2.4"],
+    "yang": ["yang:2.4"],
+    "limits": [0, "oo"]
+  },
+  {
+    "id": "U14-D11",
+    "unit": "14-gamma",
+    "technique": "gamma",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}(\\ln x)^{4}\\,dx",
+    "sympy_expr": "log(x)**4",
+    "answer_sympy": "24",
+    "answer_display": "24",
+    "hint": "(-1)^4*4!=24.",
+    "technique_tags": ["gamma", "yang:2.4"],
+    "yang": ["yang:2.4"],
+    "limits": [0, 1]
   }
 ]

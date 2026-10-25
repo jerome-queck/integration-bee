@@ -13,3 +13,6 @@ Machine JSON: `../../verify/drills_unit14.json`.
 | U14-D06 | gamma | yang:2.4 | definite | `exp(x)*x**2` | ['-oo', 0] | `2` | $2$ |
 | U14-D07 | gamma | yang:2.4 | definite | `x*exp(-sqrt(x))` | [0, 'oo'] | `12` | $12$ |
 | U14-D08 | gamma | yang:2.4 | definite | `x**5 * exp(-x**2)` | [0, 'oo'] | `1` | $1$ |
+| U14-D09 | gamma | yang:2.4 | definite | `x**4 * exp(-x)` | [0, 'oo'] | `24` | $24$ |
+| U14-D10 | gamma | yang:2.4 | definite | `x**2 * exp(-x)` | [0, 'oo'] | `2` | $2$ |
+| U14-D11 | gamma | yang:2.4 | definite | `log(x)**4` | [0, 1] | `24` | $24$ |

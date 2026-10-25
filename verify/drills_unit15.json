@@ -162,5 +162,47 @@
     "yang": [
       "yang:2.5"
     ]
+  },
+  {
+    "id": "U15-D09",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}x^{5}\\ln x\\,dx",
+    "sympy_expr": "x**5*log(x)",
+    "answer_sympy": "-Rational(1,36)",
+    "answer_display": "-1/36",
+    "hint": "I_n=-1/(n+1)^2 at n=5.",
+    "technique_tags": ["parts", "yang:2.5"],
+    "yang": ["yang:2.5"],
+    "limits": [0, 1]
+  },
+  {
+    "id": "U15-D10",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}x^{6}\\ln x\\,dx",
+    "sympy_expr": "x**6*log(x)",
+    "answer_sympy": "-Rational(1,49)",
+    "answer_display": "-1/49",
+    "hint": "I_n=-1/(n+1)^2 at n=6.",
+    "technique_tags": ["parts", "yang:2.5"],
+    "yang": ["yang:2.5"],
+    "limits": [0, 1]
+  },
+  {
+    "id": "U15-D11",
+    "unit": "15-parts-regular",
+    "technique": "parts",
+    "kind": "definite",
+    "latex": "\\int_{0}^{1}\\frac{x^{3}}{1+x}\\,dx",
+    "sympy_expr": "x**3/(1+x)",
+    "answer_sympy": "Rational(5,6)-log(2)",
+    "answer_display": "5/6-\\ln 2",
+    "hint": "I_n+I_{n-1}=1/n, I_0=ln 2.",
+    "technique_tags": ["parts", "yang:2.5"],
+    "yang": ["yang:2.5"],
+    "limits": [0, 1]
   }
 ]
