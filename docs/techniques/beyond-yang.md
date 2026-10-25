@@ -2,6 +2,8 @@
 
 The six headings below are the gap index. `verify/gap_index.py` is the only parser. A mark may set `extract.gap` to one of these ids. `say` names that row's file. The study session does not write the file.
 
+Yang is one source among others. These notes are original exposition for moves the Topics Guide files late or omits: reflection, a recurrence \(I_n\), the half-angle substitution the Techniques Guide teaches as T-sub in section 1.6, floor integrals, introducing a constant and a small parameter derivative, and the Round 2 and Round 3 formats. The other sources are the syllabus, the Techniques Guide, and the SymPy-checked drills named in each note. A contest row is not a source of a new answer. Do not invent one.
+
 ## reflection
 - note: units/10-inverse-kings/teaching.tex
 - cite: Techniques Guide section 1.2
@@ -28,14 +30,14 @@ The six headings below are the gap index. `verify/gap_index.py` is the only pars
 - cite: Techniques Guide section 1.7
 - catalog: floor
 - contains: This node stays deferred, 1.7, split at integers
-- examples: 1
+- examples: 3
 
 ## introduce-constant
 - note: docs/techniques/introduce-constant.md
 - cite: Techniques Guide section 1.9
 - catalog:
 - contains: add and subtract, This move is not dutis, 34-frullani-feynman, smaller parameter
-- examples: 2
+- examples: 3
 
 ## formats
 - note: docs/techniques/formats.md
@@ -45,3 +47,5 @@ The six headings below are the gap index. `verify/gap_index.py` is the only pars
 - examples: 0
 
 Pack and Yang integrands in `problems/records.jsonl` start from the PDF text layer. A pack row with `verify` set to `sympy` also stores the proved `integrand_latex` and `answer_latex`. Every other `integrand_latex` stays null. An answer with `verify` set to `manual` is a mark-scheme cite, or a short equality already printed in a Yang example. It is not a SymPy result. Yang practice rows with `verify` set to `unchecked` have no printed answer in the extract. Do not invent one.
+
+On a miss, teach the one file `say` names. Read that note and work its displayed example. Do not edit the note in the study session. A later commit is what fills a missing move, with an original example or a stored drill id.

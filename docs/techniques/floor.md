@@ -1,10 +1,12 @@
 # Floor integrals
 
-Guide section 1.7. This node stays deferred. The catalog node `floor` has no unit, so the coach does not assign a floor drill. This note is the teaching for that gap.
+Guide section 1.7. This node stays deferred. The catalog node `floor` has no unit, so the coach does not assign a floor drill. This note is the teaching for that gap. The Yang Topics Guide has no floor chapter. The syllabus lists the floor in section 2, and the Techniques Guide teaches the split. Those two, plus the checks below, are the sources.
 
-The floor of x is the greatest integer less than or equal to x. On each half-open interval [k, k+1) the floor is the constant k. You split at integers, pull that constant out, and sum the pieces.
+The floor of x is the greatest integer less than or equal to x. Write it \(\lfloor x\rfloor\). On each half-open interval \([k, k+1)\) the floor is the constant \(k\). You split at integers, pull that constant out, and sum the pieces. A single endpoint does not change a definite integral.
 
-On [0, 2] the floor is 0 on [0, 1) and 1 on [1, 2). The single point at 2 does not change the value. The integral of that step is the length of the second piece.
+## A step on two units
+
+On \([0, 2]\) the floor is 0 on \([0, 1)\) and 1 on \([1, 2)\). The single point at 2 does not change the value. The integral of that step is the length of the second piece.
 
 ```ib-example
 integrand: Piecewise((0, x < 1), (1, x < 2), (0, True))
@@ -13,3 +15,45 @@ answer: 1
 ```
 
 SymPy leaves `integrate(floor(x), (x, 0, 2))` unevaluated, so the checked fence is the piecewise split, not a call to `floor`. A contest row tagged floor in the sample list is still `verify: manual` until its own integrand is checked. Do not copy that answer into this note.
+
+## Three units
+
+On \([0, 3]\) the pieces contribute \(0\cdot 1 + 1\cdot 1 + 2\cdot 1 = 3\).
+
+```ib-example
+integrand: Piecewise((0, x < 1), (1, x < 2), (2, x < 3), (0, True))
+limits: 0, 3
+answer: 3
+```
+
+The same count works on \([0, n]\) for a positive integer \(n\): the integral of \(\lfloor x\rfloor\) is \(0+1+\cdots+(n-1) = n(n-1)/2\).
+
+## The fractional part
+
+The fractional part is \(\{x\} = x - \lfloor x\rfloor\). It lies in \([0, 1)\). On each interval \([k, k+1)\) it is the sawtooth \(x-k\), and the integral of one tooth is \(1/2\). Over two teeth the value is 1.
+
+```ib-example
+integrand: Piecewise((x, x < 1), (x-1, x < 2), (0, True))
+limits: 0, 2
+answer: 1
+```
+
+So an integral of \(\{x\}\) on \([0, n]\) is \(n/2\). An integral of \(x\) on that interval is \(n^2/2\), and subtracting the floor integral \(n(n-1)/2\) leaves the same \(n/2\).
+
+## A linear argument
+
+\(\lfloor ax+b\rfloor\) is constant between the points where \(ax+b\) is an integer. Solve \(ax+b = k\) for those points, split the interval there, and pull out \(k\). Do the same when the floor sits on a simple function you can invert, such as \(\lfloor e^x\rfloor\) or \(\lfloor 1/x\rfloor\), and stop at the last piece that meets the limits. If a piece is improper, check that the integral still exists before you quote a value.
+
+## A sum of shifts
+
+For a positive integer \(n\),
+
+\[
+\sum_{k=0}^{n-1}\lfloor x + k/n\rfloor = \lfloor nx\rfloor.
+\]
+
+Check \(n=2\), \(x=1/2\): \(\lfloor 1/2\rfloor + \lfloor 1\rfloor = 1\) and \(\lfloor 1\rfloor = 1\). A sum of shifted floors can collapse with this identity before you integrate term by term. This is Hermite's identity. It is not a license to import a contest value.
+
+## On a miss
+
+Teach this file. Split the graph at the integers in the limits, write the piecewise, and add the areas. Do not tick `floor`. Do not invent a pack answer. The node stays deferred until a unit exists.

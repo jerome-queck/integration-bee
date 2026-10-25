@@ -1,19 +1,57 @@
-% Unit 28 — Semi-Integration by Parts
+% Unit 28 — Semi-parts
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 28:\\ Semi-Integration by Parts}
-\author{UK Uni Integration Bee prep\\ Yang §5.1 Semi-Integration by Parts}
+\title{Integration Bee --- Unit 28:\\ Semi-Parts}
+\author{UK Uni Integration Bee prep\\ Undetermined coefficients and a table}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:5.1}; techniques: \texttt{semi-parts}.
+Tags: \texttt{yang:5.1}; techniques: \texttt{semi-parts}.
+Integration by parts still proves these antiderivatives. The speed move is to write the shape of the answer and match coefficients, or to run the tabular form of parts. Yang \S5.1 calls the shortcut semi-parts. The derivative check is the source of truth.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §5.1 Semi-Integration by Parts
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 03 for one parts step, unit 22 for a repeated step.
+\item Syllabus \S1 parts.
+\item Yang Topics Guide 2nd Ed \S5.1 Semi-Integration by Parts.
 \end{itemize}
-\section{Learning goals} Semi-parts / tabular shortcuts.
+\section{Learning goals}
+\begin{enumerate}
+  \item For $p(x)e^x$, $p(x)\sin x$, or $p(x)\cos x$ with $p$ a polynomial, assume an answer of the same shape and differentiate.
+  \item For a longer polynomial, tabulate: differentiate one column, integrate the other, and alternate signs.
+\end{enumerate}
+
+\section{Worked coefficients --- \texttt{U28-D01}}
+\[
+\int x e^x\,dx.
+\]
+Assume $(ax+b)e^x$. Differentiate:
+\[
+ae^x+(ax+b)e^x=(ax+a+b)e^x.
+\]
+Match $a=1$ and $a+b=0$, so $b=-1$. The antiderivative is $(x-1)e^x$. On $[0,1]$ that is $1$, the stored answer of \texttt{U28-D07}.
+
+\texttt{U28-D02} assumes $(ax+b)\cos x+(cx+d)\sin x$, or you remember the one-step result $-x\cos x+\sin x$ and differentiate it. \texttt{U28-D03} is $x\sin x+\cos x$. Both checks are one derivative.
+
+\section{Worked table --- \texttt{U28-D08}}
+\[
+\int x^2\sin x\,dx.
+\]
+Differentiate $x^2\to 2x\to 2\to 0$. Integrate $\sin x\to -\cos x\to -\sin x\to \cos x$. Signs $+,-,+$:
+\[
+x^2(-\cos x)-(2x)(-\sin x)+2(\cos x)=-x^2\cos x+2x\sin x+2\cos x.
+\]
+That is the stored answer. \texttt{U23-D06} is the same table with $e^x$ in the integral column.
+
+\section{Logarithms}
+\texttt{U28-D06} is $\int\ln x\,dx=x\ln x-x$, one parts step with $dv=dx$. \texttt{U28-D04} is $\int x\ln x\,dx$. Parts with $u=\ln x$ gives
+\[
+\frac{x^2}{2}\ln x-\int\frac{x}{2}\,dx=\frac{x^2}{2}\ln x-\frac{x^2}{4}.
+\]
+\texttt{U28-D05} is $\int_0^{\pi}e^x\sin x\,dx=(1+e^{\pi})/2$. Call the integral $I$, parts twice, and solve the linear equation. The shortcut does not remove that algebra when sine and exponential are both present.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit28.json}.
+
+\section*{On a miss}
+Teach this file. Write the assumed shape, differentiate, and match. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

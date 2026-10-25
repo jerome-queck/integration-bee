@@ -1,19 +1,74 @@
 % Unit 21 — Advanced Trig-Substitution
 \input{technique-note.tex}
 \title{Integration Bee --- Unit 21:\\ Advanced Trig-Substitution}
-\author{UK Uni Integration Bee prep\\ Yang §3.4 Advanced Trig-Substitution}
+\author{UK Uni Integration Bee prep\\ Circle substitutions, then Yang \S3.4}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:3.4}; techniques: \texttt{advanced-trig-substitution}.
+Tags: \texttt{yang:3.4}; techniques: \texttt{advanced-trig-substitution}.
+The three radicals $\sqrt{a^2-x^2}$, $\sqrt{x^2-a^2}$, and $\sqrt{x^2+a^2}$ are the unit 04 substitutions. This unit uses them on a quotient, and it uses $x=\tan\theta$ to simplify an inverse sine of a rational function. Yang \S3.4 is one later writeup.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §3.4 Advanced Trig-Substitution
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 04 for $x=a\sin\theta$ and the area of a circle.
+\item Syllabus \S1 trig substitution.
+\item Yang Topics Guide 2nd Ed \S3.4 Advanced Trig-Substitution.
 \end{itemize}
-\section{Learning goals} Inverse-trig kill; sec/tan on $\sqrt{x^2\pm1}$.
+\section{Learning goals}
+\begin{enumerate}
+  \item Choose $\sec$, $\sinh$, or $\tan$ from the radicand, and change the limits before simplifying.
+  \item When an inverse sine contains $2x/(1+x^2)$, try $x=\tan\theta$ before parts.
+\end{enumerate}
+
+\section{Worked secant --- \texttt{U21-D03}}
+\[
+\int_1^{\sqrt{2}}\frac{\sqrt{x^2-1}}{x}\,dx.
+\]
+Put $x=\sec\theta$, so $\theta$ runs from $0$ to $\pi/4$, $\sqrt{x^2-1}=\tan\theta$, and $dx=\sec\theta\tan\theta\,d\theta$.
+\[
+\frac{\tan\theta}{\sec\theta}\cdot\sec\theta\tan\theta\,d\theta=\tan^2\theta\,d\theta=\sec^2\theta-1.
+\]
+\[
+\int_0^{\pi/4}(\sec^2\theta-1)\,d\theta=\bigl[\tan\theta-\theta\bigr]_0^{\pi/4}=1-\frac\pi4.
+\]
+That is the stored answer. \texttt{U21-D06} and \texttt{U21-D07} are the same substitution on $\sqrt{x^2-1}/x^2$ and on $\sqrt{x^2-1}$. Their stored values keep a logarithm because the antiderivative of the reduced trig function is not a pure tangent.
+
+\section{Worked inverse --- \texttt{U21-D01}}
+\[
+\int_0^1\frac{1}{1+x^2}\arcsin\Bigl(\frac{2x}{1+x^2}\Bigr)dx.
+\]
+Put $x=\tan\theta$, so $\theta$ runs from $0$ to $\pi/4$ and $dx/(1+x^2)=d\theta$. The argument of the inverse sine is
+\[
+\frac{2\tan\theta}{1+\tan^2\theta}=\sin 2\theta.
+\]
+On $[0,\pi/4]$ the double angle stays in $[0,\pi/2]$, so $\arcsin(\sin 2\theta)=2\theta$.
+\[
+\int_0^{\pi/4}2\theta\,d\theta=\Bigl[\theta^2\Bigr]_0^{\pi/4}=\frac{\pi^2}{16}.
+\]
+
+\section{The hyperbolic partner --- \texttt{U21-D05}}
+\[
+\int\frac{dx}{\sqrt{x^2+1}}=\ln\bigl(x+\sqrt{x^2+1}\bigr)+C.
+\]
+Put $x=\sinh u$. Then $\sqrt{x^2+1}=\cosh u$ and $dx=\cosh u\,du$, so the integral is $u=\operatorname{arsinh} x$. The logarithm is the same function. \texttt{U21-D08} is the circle case $x^2/\sqrt{1-x^2}$ on $[0,1]$. With $x=\sin\theta$ it becomes $\int_0^{\pi/2}\sin^2\theta\,d\theta=\pi/4$.
+
+\section{Worked inverse of a quotient --- \texttt{U21-D04}}
+\[
+\int_0^1\arctan\sqrt{\frac{1-x}{1+x}}\,dx.
+\]
+Let $t=\sqrt{(1-x)/(1+x)}$. Then $x=(1-t^2)/(1+t^2)$ and $dx=-4t\,dt/(1+t^2)^2$. The limits swap from $t=1$ to $t=0$, so the sign drops and
+\[
+\int_0^1\arctan(t)\cdot\frac{4t}{(1+t^2)^2}\,dt.
+\]
+Now $t=\tan u$, with $u$ from $0$ to $\pi/4$. The rational factor simplifies to $2\sin 2u$, and the integral is
+\[
+\int_0^{\pi/4}2u\sin 2u\,du=\Bigl[-u\cos 2u+\frac12\sin 2u\Bigr]_0^{\pi/4}=\frac12.
+\]
+That is the stored answer. The endpoints matter: $x=1$ is $t=0$, not a singularity of the original integrand.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit21.json}.
+
+\section*{On a miss}
+Teach this file. Name the substitution from the radicand and write the new limits. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

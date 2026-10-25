@@ -1,19 +1,93 @@
 % Unit 19 — Power Substitution and Sneaky U-Sub Tricks
 \input{technique-note.tex}
 \title{Integration Bee --- Unit 19:\\ Power Substitution and Sneaky U-Sub Tricks}
-\author{UK Uni Integration Bee prep\\ Yang §§3.1 Power Substitution, 3.2 Sneaky U-Sub Tricks}
+\author{UK Uni Integration Bee prep\\ Forced powers, then Yang \S\S3.1--3.2}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:3.1}, \texttt{yang:3.2}; techniques: \texttt{power-substitution}, \texttt{sneaky-u-sub}.
+Tags: \texttt{yang:3.1}, \texttt{yang:3.2}; techniques: \texttt{power-substitution}, \texttt{sneaky-u-sub}.
+Yang \S\S3.1--3.2 names these moves. The algebra is the same forced substitution as unit 13: if the inside is a root, set the root equal to $u$ and solve for $x$ and $dx$.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §§3.1 Power Substitution, 3.2 Sneaky U-Sub Tricks
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Techniques already used in units 06 and 13. This unit only raises the root.
+\item Syllabus \S1 substitution (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Yang Topics Guide 2nd Ed \S\S3.1 Power Substitution, 3.2 Sneaky U-Sub Tricks.
 \end{itemize}
-\section{Learning goals} Clear radicals via $u^n=x$; blind/British subs.
+\section{Learning goals}
+\begin{enumerate}
+  \item Clear a radical by $x=u^n$ with $n$ large enough that every root becomes a power of $u$.
+  \item After the substitution, divide the rational function. Do not expand before you divide.
+  \item Leave an integrand alone when it is already an arctangent.
+\end{enumerate}
+
+\section{Worked power --- \texttt{U19-D01}}
+\[
+\int_0^1\frac{dx}{1+\sqrt{x}}.
+\]
+Let $u=\sqrt{x}$, so $x=u^2$ and $dx=2u\,du$. Limits stay $0$ and $1$.
+\[
+\int_0^1\frac{2u}{1+u}\,du=\int_0^1\Bigl(2-\frac{2}{1+u}\Bigr)du=2-2\ln 2.
+\]
+That is the stored answer. \texttt{U19-D03} is the partner $\sqrt{x}/(1+\sqrt{x})$. The same $u$ produces $2u^2/(1+u)=2\bigl(u-1+1/(u+1)\bigr)$, and the value on $[0,1]$ is $-1+\ln 4$.
+
+\section{A cube root --- \texttt{U19-D02}}
+\[
+\int_0^1\frac{dx}{1+x^{1/3}}.
+\]
+Let $u=x^{1/3}$, so $x=u^3$ and $dx=3u^2\,du$.
+\[
+\frac{u^2}{u+1}=u-1+\frac{1}{u+1},
+\]
+because $u^2=(u+1)(u-1)+1$. Then
+\[
+3\int_0^1\Bigl(u-1+\frac{1}{u+1}\Bigr)du=3\Bigl(-\frac12+\ln 2\Bigr)=-\frac32+\ln 8.
+\]
+
+\section{Two roots at once --- \texttt{U19-D04}}
+\[
+\int_1^{64}\frac{dx}{\sqrt{x}+x^{1/3}}.
+\]
+The exponents $1/2$ and $1/3$ have least common multiple $6$. Put $x=u^6$, so $\sqrt{x}=u^3$, $x^{1/3}=u^2$, and $dx=6u^5\,du$. The limits are $u=1$ and $u=2$.
+\[
+\frac{6u^5}{u^3+u^2}=\frac{6u^3}{u+1}=6\Bigl(u^2-u+1-\frac{1}{u+1}\Bigr),
+\]
+using $u^3=(u+1)(u^2-u+1)-1$. Integrating from 1 to 2 gives $11+\ln(64/729)$, the stored answer.
+
+\section{A radical in the denominator --- \texttt{U19-D05}}
+\[
+\int\frac{dx}{(2x+1)\sqrt{x^2+x}}.
+\]
+Let $u=\sqrt{x^2+x}$. Then $2u\,du=(2x+1)\,dx$ and $(2x+1)^2=4u^2+1$, so
+\[
+\frac{dx}{(2x+1)u}=\frac{2\,du}{4u^2+1}.
+\]
+The antiderivative is $\arctan(2u)=\arctan\bigl(2\sqrt{x^2+x}\bigr)$. That is the stored answer.
+
+\section{A fractional linear substitution --- \texttt{U19-D06}}
+\[
+\int_0^1\frac{1}{x+1}\Bigl(\frac{x-1}{x+1}\Bigr)^3\,dx.
+\]
+Let $u=(x-1)/(x+1)$. Then $x=(1+u)/(1-u)$, $dx=2\,du/(1-u)^2$, and $x+1=2/(1-u)$. The limits run from $u=-1$ to $u=0$, and the integrand becomes $u^3/(1-u)$. Divide:
+\[
+\frac{u^3}{1-u}=-u^2-u-1+\frac{1}{1-u}.
+\]
+\[
+\int_{-1}^{0}\Bigl(-u^2-u-1+\frac{1}{1-u}\Bigr)du=-\frac56+\ln 2.
+\]
+That is the stored answer.
+
+\section{Faded geometric substitution --- \texttt{U19-D07}}
+\[
+\int_1^2\sqrt{\frac{2-x}{x-1}}\,dx.
+\]
+Put $t=x-1$, so the integral is $\int_0^1\sqrt{(1-t)/t}\,dt$. Then $t=\sin^2\theta$ runs from $0$ to $\pi/2$ and the integrand becomes $2\cos^2\theta$. The stored value is $\pi/2$.
+
+\texttt{U19-D08} is $\int_0^\infty dx/(1+x^2)=\pi/2$. It does not want a root. If you reach for $x=u^n$ on an arctangent, stop.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit19.json}.
+
+\section*{On a miss}
+Teach this file. Name $u$ as the root, write $dx$, and divide. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}
