@@ -1,0 +1,30 @@
+# R1-2022-Oxford-Q14
+
+- Problem: `sources/past/r1/2022/Oxford_2022_Round_1_UK_University_Integration_Bee_(1).pdf` (problem 14)
+- Printed answer: `sources/past/r1/2022/Oxford_Mark_Scheme_2022_Round_1_UK_University_Integration_Bee_(5).pdf`
+- Worked source: derived in this note; the mark scheme prints the final value.
+- The catalog row is not changed.
+
+## Problem
+
+\[
+\int\frac{\ln(2x)}{x\ln x}\,dx.
+\]
+
+## Solution
+
+On \((1,\infty)\), \(\ln(2x)=\ln 2+\ln x\), so the integrand is
+\[
+\frac{\ln 2}{x\ln x}+\frac{1}{x}.
+\]
+Integrating gives \(\ln x+\ln 2\cdot\ln(\ln x)\). The mark scheme writes \(\ln x+\ln 2\log\log x\). On this sheet \(\log\) is the natural logarithm.
+
+## Final answer
+
+\[
+\ln x+\ln 2\cdot\ln(\ln x).
+\]
+
+## SymPy self-check
+
+`solutions/self_check.py` runs `check_r1_2022_oxford_q14`. SymPy differentiates \(\ln x+\ln 2\cdot\ln(\ln x)\) back to \(\ln(2x)/(x\ln x)\).
