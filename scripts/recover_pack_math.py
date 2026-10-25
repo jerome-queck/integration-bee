@@ -62,7 +62,7 @@ def gate_row(row: dict, cache: dict) -> dict | None:
     answers = load_pair(cache, answer_pdf, "answer")
     integral = integrals.get(number)
     answer = answers.get(number)
-    if integral is None or answer is None or integral.variable != "x":
+    if integral is None or answer is None:
         return None
     return pack_gate.fields_for(number, integral, answer)
 

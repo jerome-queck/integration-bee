@@ -39,8 +39,19 @@ FUNCS = {
     "atan": "atan",
     "gamma": "gamma",
     "Gamma": "gamma",
+    "Γ": "gamma",
     "zeta": "zeta",
+    "ζ": "zeta",
     "W": "LambertW",
+    "arccot": "acot",
+    "arcsec": "asec",
+    "arccsc": "acsc",
+    "arcsinh": "asinh",
+    "arccosh": "acosh",
+    "arctanh": "atanh",
+    "arccsch": "acsch",
+    "arcsech": "asech",
+    "arccoth": "acoth",
 }
 INVERSES = {
     "sin": "asin",
@@ -56,9 +67,18 @@ INVERSES = {
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
 PROBLEM_NO = re.compile(r"^(\d+)[.:]$")
 FUNC_NAMES = (
+    "arcsinh",
+    "arccosh",
+    "arctanh",
+    "arccsch",
+    "arcsech",
+    "arccoth",
     "arcsin",
     "arccos",
     "arctan",
+    "arccsc",
+    "arcsec",
+    "arccot",
     "sinh",
     "cosh",
     "tanh",
@@ -229,6 +249,36 @@ def _nodes_from_span(span) -> list[Node]:
     return _merge_vertical_bars(_merge_function_names(nodes))
 
 
+def _take_function_name(nodes: list[Node], index: int, name: str) -> list[Node] | None:
+    """Match ``name`` against glyphs that may already be a whole syllable.
+
+    ``cot`` is often one span, so ``arccot`` is the three letters ``arc`` plus
+    that span, not six single letters. A gap or a superscript breaks the name.
+    """
+    chosen: list[Node] = []
+    pos = 0
+    cursor = index
+    while pos < len(name):
+        if cursor >= len(nodes):
+            return None
+        node = nodes[cursor]
+        text = node.text.strip()
+        if not text or name[pos : pos + len(text)] != text:
+            return None
+        if chosen:
+            gap = node.x0 - chosen[-1].x1
+            if gap > max(1.6, 0.22 * node.size):
+                return None
+            if abs(node.size - chosen[0].size) > 0.8:
+                return None
+            if abs(node.cy - chosen[0].cy) > max(2.0, 0.35 * chosen[0].size):
+                return None
+        chosen.append(node)
+        pos += len(text)
+        cursor += 1
+    return chosen
+
+
 def _merge_function_names(nodes: list[Node]) -> list[Node]:
     """Join glyphs that spell a whole function name, and nothing shorter.
 
@@ -243,15 +293,9 @@ def _merge_function_names(nodes: list[Node]) -> list[Node]:
     while index < len(nodes):
         matched = None
         for name in names:
-            chunk = nodes[index : index + len(name)]
-            if len(chunk) != len(name):
-                continue
-            if "".join(node.text for node in chunk) != name:
-                continue
-            if any(chunk[pos + 1].x0 - chunk[pos].x1 > max(1.6, 0.22 * chunk[pos].size) for pos in range(len(name) - 1)):
-                continue
-            matched = chunk
-            break
+            matched = _take_function_name(nodes, index, name)
+            if matched is not None:
+                break
         if matched is None:
             out.append(nodes[index])
             index += 1
@@ -741,11 +785,20 @@ def _powered(base: str, node: Node) -> str | None:
         sub = emit(node.sub)
         if sub is None:
             return None
-        if NUMBER.fullmatch(sub) or LETTER.fullmatch(sub):
-            base = f"{base}_{sub}"
-        else:
+        scripted = _apply_subscript(base, sub)
+        if scripted is None:
             return None
+        base = scripted
     return base
+
+
+def _apply_subscript(base: str, sub: str) -> str | None:
+    """ζ_3 is the value zeta(3). Other numeric subscripts stay indexed symbols."""
+    if base == "zeta" and NUMBER.fullmatch(sub):
+        return f"zeta({sub})"
+    if NUMBER.fullmatch(sub) or LETTER.fullmatch(sub):
+        return f"{base}_{sub}"
+    return None
 
 
 def _dx_numerator(node: Node) -> str | None:
@@ -855,10 +908,10 @@ def emit(node: Node | None) -> str | None:
         sub = emit(node.sub)
         if sub is None:
             return None
-        if NUMBER.fullmatch(sub) or LETTER.fullmatch(sub):
-            base = f"{base}_{sub}"
-        else:
+        scripted = _apply_subscript(base, sub)
+        if scripted is None:
             return None
+        base = scripted
     return base
 
 
@@ -982,7 +1035,20 @@ def _parse_factor(nodes: list[Node], index: int) -> tuple[str | None, int]:
         name, power = called
         nxt = nodes[index + 1]
         if nxt.kind in {"paren", "floor"}:
+            # ln(x)^2 puts the 2 on the closing fence, outside the argument.
+            # That is a power of the call. A power of x sits on x, inside the fence.
+            lifted = nxt.sup if power is None else None
+            if lifted is not None:
+                nxt.sup = None
             arg = emit(nxt)
+            if lifted is not None:
+                nxt.sup = lifted
+                exp = emit(lifted)
+                if exp is None or arg is None:
+                    return None, index
+                arg_call = f"(({name}({arg}))**({exp}))"
+            else:
+                arg_call = None
             cursor = index + 2
         else:
             # sin 2x is one argument. The next function starts a new factor: sin x cos x.
@@ -1000,9 +1066,12 @@ def _parse_factor(nodes: list[Node], index: int) -> tuple[str | None, int]:
                 arg = "(" + "*".join(f"({part})" for part in parts) + ")"
         if arg is None:
             return None, index
-        call = f"{name}({arg})"
-        if power is not None:
-            call = f"(({call})**({power}))"
+        if nxt.kind in {"paren", "floor"} and power is None and nxt.sup is not None:
+            call = arg_call
+        else:
+            call = f"{name}({arg})"
+            if power is not None:
+                call = f"(({call})**({power}))"
         return call, cursor
     text = emit(node)
     if text is None:
