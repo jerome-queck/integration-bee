@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Recover Round 1 integrand and answer readings from the committed PDFs.
+"""Recover pack integrand and answer readings from the committed PDFs.
 
 The script rewrites problems/records.jsonl only for rows whose layout reading
 is proved by SymPy. Every other row stays manual or unchecked. Run it again
-after a parser change. It is deterministic.
+after a parser change. It is deterministic. R1-2024-Q01 stays manual: it is
+the cited example of a mark-scheme verdict.
 
 PyMuPDF is required for this script. The catalog check does not import it.
 """
@@ -40,8 +41,15 @@ def load_pair(cache: dict, pdf: str, kind: str):
     return cache[key]
 
 
+GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
+# The turn contract and the catalog pin use this row as the manual mark example.
+HELD_MANUAL = frozenset({"R1-2024-Q01"})
+
+
 def gate_row(row: dict, cache: dict) -> dict | None:
-    if row.get("round") != "r1" or row.get("source") != "resource_pack":
+    if row.get("round") not in GATED_ROUNDS or row.get("source") != "resource_pack":
+        return None
+    if row.get("id") in HELD_MANUAL:
         return None
     if not str(row.get("answer_plain") or "").strip():
         return None
@@ -54,7 +62,7 @@ def gate_row(row: dict, cache: dict) -> dict | None:
     answers = load_pair(cache, answer_pdf, "answer")
     integral = integrals.get(number)
     answer = answers.get(number)
-    if integral is None or answer is None:
+    if integral is None or answer is None or integral.variable != "x":
         return None
     return pack_gate.fields_for(number, integral, answer)
 
@@ -74,7 +82,7 @@ def recover(rows: list[dict]) -> tuple[list[dict], list[str]]:
     cache: dict = {}
     gated: list[str] = []
     for row in rows:
-        if row.get("round") != "r1":
+        if row.get("round") not in GATED_ROUNDS:
             continue
         fields = gate_row(row, cache)
         if fields is not None:

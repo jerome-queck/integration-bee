@@ -1,8 +1,15 @@
 """Prove a layout reading against a mark-scheme reading.
 
 A row is gated only when SymPy differentiates an indefinite answer back to the
-integrand, or evaluates a definite integral to the printed answer. Numeric
-agreement is not a proof.
+integrand, or evaluates a definite integral to the printed answer. When the
+direct value stays an unevaluated Integral, SymPy may still prove the printed
+answer by an algebraic identity: the even part on symmetric limits, King's
+reflection on a finite interval starting at 0, a constant sum f(x)+f(b-x) on
+[0, b], the reciprocal substitution on (0, oo), a floor sum from 0 to
+infinity, an integral with the other symbols taken positive, or the
+substitution x = exp(-u) on [0, 1] when the integrand contains a logarithm.
+A reduced integrand has to be simpler, and its evaluated value has to match.
+Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -19,6 +26,8 @@ PROOF_TIMEOUT = 20.0
 def namespace(variable: str) -> dict:
     ns = dict(check_math.NS)
     ns["ln"] = ns["log"]
+    ns["Abs"] = sp.Abs
+    ns["LambertW"] = sp.LambertW
     ns[variable] = sp.symbols(variable, real=True)
     ns["C"] = sp.Symbol("C")
     return ns
@@ -101,6 +110,85 @@ def _same(left, right) -> bool:
         return False
 
 
+def _simpler(new, old) -> bool:
+    try:
+        return sp.count_ops(new) < sp.count_ops(old)
+    except Exception:
+        return False
+
+
+def _king_constant(integrand, symbol, lo, hi):
+    """If f(x)+f(b-x) simplifies to a constant, the integral on [0, b] is that times b/2."""
+    if not _zero(lo) or not _closed(hi) or hi.has(sp.oo):
+        return None
+    if not any(integrand.has(fn) for fn in (sp.sin, sp.cos, sp.tan, sp.cot)):
+        return None
+    try:
+        reflected = integrand.subs(symbol, hi - symbol).rewrite(sp.tan)
+        base = 1 / sp.tan(symbol)
+        reflected = reflected.replace(
+            lambda expr: isinstance(expr, sp.Pow) and expr.base == base,
+            lambda expr: sp.tan(symbol) ** (-expr.exp),
+        )
+        total = sp.simplify(integrand.rewrite(sp.tan) + reflected)
+    except Exception:
+        return None
+    if not _closed(total) or total.has(symbol):
+        return None
+    return sp.simplify(total * (hi - lo) / 2)
+
+
+def _positive_parameters(expr, symbol):
+    repl = {}
+    for free in expr.free_symbols:
+        if free == symbol or free.is_number:
+            continue
+        repl[free] = sp.Symbol(str(free), positive=True)
+    return expr.subs(repl) if repl else expr
+
+
+def _exponential_limit(integrand, answer, symbol, lo, hi) -> bool:
+    """∫_0^1 f(log x) dx = ∫_0^∞ f(-u) e^{-u} du, with positive parameters."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.log):
+        return False
+    parameter = sp.Symbol("_u", positive=True)
+    try:
+        subbed = sp.simplify(integrand.subs(symbol, sp.exp(-parameter)) * sp.exp(-parameter))
+    except Exception:
+        return False
+    if not _closed(subbed):
+        return False
+    if subbed.has(sp.log) and not _simpler(subbed, integrand):
+        return False
+    subbed = _positive_parameters(subbed, parameter)
+    goal = _positive_parameters(answer, symbol)
+    try:
+        value = sp.integrate(subbed, (parameter, 0, sp.oo))
+    except Exception:
+        return False
+    return _same(value, goal)
+
+
+def _reduced_integrals(integrand, symbol, lo, hi):
+    """Algebraic identities SymPy can check. Each item is a candidate value."""
+    found = []
+    if _zero(lo + hi):
+        half = sp.simplify((integrand + integrand.subs(symbol, -symbol)) / 2)
+        if _closed(half) and _simpler(half, integrand):
+            found.append(sp.integrate(half, (symbol, lo, hi)))
+    if _zero(lo) and _closed(hi) and not hi.has(sp.oo):
+        reflected = sp.simplify(integrand.subs(symbol, hi - symbol))
+        average = sp.simplify((integrand + reflected) / 2)
+        if _closed(average) and _simpler(average, integrand):
+            found.append(sp.integrate(average, (symbol, lo, hi)))
+    if _zero(lo) and hi == sp.oo:
+        flipped = integrand.subs(symbol, 1 / symbol) / symbol**2
+        average = sp.simplify((integrand + flipped) / 2)
+        if _closed(average) and _simpler(average, integrand):
+            found.append(sp.integrate(average, (symbol, lo, hi)))
+    return found
+
+
 def _floor_sum(integrand, symbol, lo, hi):
     if not integrand.has(sp.floor) or lo != 0 or hi != sp.oo:
         return None
@@ -136,10 +224,28 @@ def _worker(payload, queue) -> None:
         lo = _parse(limits[0], variable)
         hi = _parse(limits[1], variable)
         symbol = namespace(variable)[variable]
+        king = _king_constant(integrand, symbol, lo, hi)
+        if king is not None and _same(king, answer):
+            queue.put(("ok", True))
+            return
         value = sp.integrate(integrand, (symbol, lo, hi))
         if _same(value, answer):
             queue.put(("ok", True))
             return
+        positive_integrand = _positive_parameters(integrand, symbol)
+        positive_answer = _positive_parameters(answer, symbol)
+        if positive_integrand != integrand or positive_answer != answer:
+            positive_value = sp.integrate(positive_integrand, (symbol, lo, hi))
+            if _same(positive_value, positive_answer):
+                queue.put(("ok", True))
+                return
+        if _exponential_limit(integrand, answer, symbol, lo, hi):
+            queue.put(("ok", True))
+            return
+        for reduced in _reduced_integrals(integrand, symbol, lo, hi):
+            if _same(reduced, answer):
+                queue.put(("ok", True))
+                return
         summed = _floor_sum(integrand, symbol, lo, hi)
         queue.put(("ok", summed is not None and _same(summed, answer)))
     except Exception as exc:  # the reading is unusable, not a crash of the gate

@@ -40,6 +40,7 @@ FUNCS = {
     "gamma": "gamma",
     "Gamma": "gamma",
     "zeta": "zeta",
+    "W": "LambertW",
 }
 INVERSES = {
     "sin": "asin",
@@ -53,7 +54,7 @@ INVERSES = {
     "cot": "acot",
 }
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
-PROBLEM_NO = re.compile(r"^(\d+)\.$")
+PROBLEM_NO = re.compile(r"^(\d+)[.:]$")
 FUNC_NAMES = (
     "arcsin",
     "arccos",
@@ -151,7 +152,9 @@ def _can_extend(text: str, font: str, nxt: str, gap: float, size: float) -> bool
         return True
     if text.isdigit() or nxt.isdigit():
         return False
-    return nxt.isalpha() and (text + nxt) in FUNC_PREFIXES
+    # Function names arrive as one roman span ("sin", "exp"). Joining italic
+    # letters here turns the constant e followed by x into the non-name "ex".
+    return False
 
 
 def _keep_span(text: str) -> bool:
@@ -167,7 +170,10 @@ def _keep_span(text: str) -> bool:
 def _nodes_from_span(span) -> list[Node]:
     font = span.get("font") or ""
     size = float(span["size"])
-    text = _clean("".join(glyph["c"] for glyph in span.get("chars") or []))
+    raw = "".join(glyph["c"] for glyph in span.get("chars") or [])
+    if font.startswith("CMEX"):
+        raw = raw.replace("\x0c", "|")
+    text = _clean(raw)
     if font.startswith("CMEX"):
         # Computer Modern extension slots used as ordinary fences in these sheets.
         for src, dst in (
@@ -178,6 +184,7 @@ def _nodes_from_span(span) -> list[Node]:
             ("\x12", "("),
             ("\x13", ")"),
             ("!", ")"),
+            ("\x0c", "|"),
         ):
             text = text.replace(src, dst)
     if not text or text.startswith("Page"):
@@ -189,7 +196,8 @@ def _nodes_from_span(span) -> list[Node]:
         return [Node("text", x0, y0, x1, y1, size, text, font)]
     glyphs = []
     for glyph in span.get("chars") or []:
-        piece = _clean(glyph["c"])
+        raw_piece = glyph["c"]
+        piece = "|" if font.startswith("CMEX") and raw_piece == "\x0c" else _clean(raw_piece)
         if not piece or piece == " ":
             continue
         if font.startswith("CMEX"):
@@ -201,6 +209,7 @@ def _nodes_from_span(span) -> list[Node]:
                 "\x12": "(",
                 "\x13": ")",
                 "!": ")",
+                "\x0c": "|",
             }.get(piece, piece)
         gx0, gy0, gx1, gy1 = glyph["bbox"]
         glyphs.append((gx0, gy0, gx1, gy1, size, piece, font))
@@ -217,7 +226,66 @@ def _nodes_from_span(span) -> list[Node]:
             continue
         prev = Node("text", gx0, gy0, gx1, gy1, gsize, piece, gfont)
         nodes.append(prev)
-    return nodes
+    return _merge_vertical_bars(_merge_function_names(nodes))
+
+
+def _merge_function_names(nodes: list[Node]) -> list[Node]:
+    """Join glyphs that spell a whole function name, and nothing shorter.
+
+    ``cos(`` is one span, so the letters are split before this pass. ``ex`` is
+    the constant e times x and must stay two glyphs.
+    """
+    if len(nodes) < 2:
+        return nodes
+    names = sorted(FUNC_NAMES, key=len, reverse=True)
+    out: list[Node] = []
+    index = 0
+    while index < len(nodes):
+        matched = None
+        for name in names:
+            chunk = nodes[index : index + len(name)]
+            if len(chunk) != len(name):
+                continue
+            if "".join(node.text for node in chunk) != name:
+                continue
+            if any(chunk[pos + 1].x0 - chunk[pos].x1 > max(1.6, 0.22 * chunk[pos].size) for pos in range(len(name) - 1)):
+                continue
+            matched = chunk
+            break
+        if matched is None:
+            out.append(nodes[index])
+            index += 1
+            continue
+        host = matched[0]
+        host.text = name
+        host.x0 = min(node.x0 for node in matched)
+        host.x1 = max(node.x1 for node in matched)
+        host.y0 = min(node.y0 for node in matched)
+        host.y1 = max(node.y1 for node in matched)
+        out.append(host)
+        index += len(matched)
+    return out
+
+
+def _merge_vertical_bars(nodes: list[Node]) -> list[Node]:
+    """Stack CMEX extension pieces of one absolute-value bar into a single glyph."""
+    bars = [node for node in nodes if node.text == "|"]
+    if len(bars) < 2:
+        return nodes
+    others = [node for node in nodes if node.text != "|"]
+    bars.sort(key=lambda node: (node.x0, node.y0))
+    merged: list[Node] = []
+    for bar in bars:
+        if merged and abs(bar.cx - merged[-1].cx) < 2.5 and bar.y0 <= merged[-1].y1 + 2.5:
+            host = merged[-1]
+            host.x0 = min(host.x0, bar.x0)
+            host.x1 = max(host.x1, bar.x1)
+            host.y0 = min(host.y0, bar.y0)
+            host.y1 = max(host.y1, bar.y1)
+            host.size = max(host.size, bar.y1 - bar.y0, host.size)
+            continue
+        merged.append(bar)
+    return sorted(others + merged, key=lambda node: (node.x0, node.y0))
 
 
 def page_primitives(page) -> tuple[list[Node], list[Bar]]:
@@ -352,9 +420,29 @@ def merge_scripts(nodes: list[Node]) -> list[Node]:
     return sorted(nodes, key=lambda n: n.x0)
 
 
+def _near_below(nodes: list[Node]) -> list[Node]:
+    if len(nodes) < 2:
+        return nodes
+    anchor = min(node.y0 for node in nodes)
+    return [node for node in nodes if node.y0 <= anchor + 8.0]
+
+
+def _near_above(nodes: list[Node]) -> list[Node]:
+    if len(nodes) < 2:
+        return nodes
+    anchor = max(node.y1 for node in nodes)
+    return [node for node in nodes if node.y1 >= anchor - 8.0]
+
+
 def _bar_candidates(bar: Bar, nodes: list[Node]) -> tuple[list[Node], list[Node]]:
     above = [n for n in nodes if _overlaps_bar(n, bar) and _above(n, bar)]
     below = [n for n in nodes if _overlaps_bar(n, bar) and _below(n, bar)]
+    # A short bar is a limit or a one-digit fraction. The next limit is about
+    # 15 points away and shares that narrow x-range. Tall display fractions
+    # keep the wider window.
+    if bar.w < 12:
+        above = _near_above(above)
+        below = _near_below(below)
     return above, below
 
 
@@ -376,6 +464,27 @@ def _peel_fence_power(nodes: list[Node]) -> tuple[list[Node], Node | None]:
     return ordered[:-1], power
 
 
+def _root_index(radical: Node, nodes: list[Node]) -> Node | None:
+    """A small digit in the crook of a CMEX radical is the root index, not a factor."""
+    if not (radical.font.startswith("CMEX") and radical.text in RADICAL_TEXT):
+        return None
+    found = None
+    for node in nodes:
+        if node is radical or node.kind != "text":
+            continue
+        token = node.text.strip()
+        if not NUMBER.fullmatch(token):
+            continue
+        if node.size > radical.size * 0.7:
+            continue
+        if node.x0 > radical.cx or node.x1 < radical.x0 - 1:
+            continue
+        if node.cy < radical.y0 - 2 or node.cy > radical.y1 + 2:
+            continue
+        found = node
+    return found
+
+
 def _radical_for(bar: Bar, nodes: list[Node]) -> Node | None:
     found = None
     for node in nodes:
@@ -383,7 +492,9 @@ def _radical_for(bar: Bar, nodes: list[Node]) -> Node | None:
             continue
         if bar.x0 - node.x1 > 6 or node.x1 - bar.x0 > 8:
             continue
-        if abs(node.y0 - bar.y) > 10 and abs(node.cy - bar.y) > 12:
+        # The radical hook sits a few points above its vinculum. A fraction
+        # bar inside the root is much lower and must not claim this glyph.
+        if abs(node.y0 - bar.y) > 10:
             continue
         if found is None or node.x1 > found.x1:
             found = node
@@ -398,8 +509,37 @@ def structure(nodes: list[Node], bars: list[Bar]) -> list[Node]:
         built = False
         for bar in list(bars):
             above, below = _bar_candidates(bar, nodes)
+            radical = _radical_for(bar, nodes)
+            # A radical vinculum can sit just under a fraction bar, so the
+            # fraction's numerator is also "above" this bar. The root does not
+            # consume that numerator.
+            if radical is not None and below:
+                index = _root_index(radical, nodes)
+                captured = [radical, *below]
+                if index is not None:
+                    captured.append(index)
+                    below = [n for n in below if n is not index]
+                rest = [n for n in nodes if n not in captured]
+                inner_bars = [b for b in bars if b is not bar]
+                body = structure(below, inner_bars)
+                box = _union_box(captured, radical)
+                kids = [_as_row(body)]
+                if index is not None:
+                    kids.append(index)
+                sqrt = Node(
+                    "sqrt",
+                    box[0],
+                    box[1],
+                    max(bar.x1, box[2]),
+                    box[3],
+                    radical.size,
+                    kids=kids,
+                )
+                nodes = rest + [sqrt]
+                bars = [b for b in bars if b is not bar]
+                built = True
+                break
             below, fence_power = _peel_fence_power(below)
-            radical = _radical_for(bar, nodes) if not above else None
             if above and below:
                 captured = above + below
                 rest = [n for n in nodes if n not in captured and n is not fence_power]
@@ -420,25 +560,6 @@ def structure(nodes: list[Node], bars: list[Bar]) -> list[Node]:
                 if fence_power is not None:
                     frac.sup = fence_power
                 nodes = rest + [frac]
-                bars = [b for b in bars if b is not bar]
-                built = True
-                break
-            if radical is not None and below:
-                captured = [radical, *below]
-                rest = [n for n in nodes if n not in captured]
-                inner_bars = [b for b in bars if b is not bar]
-                body = structure(below, inner_bars)
-                box = _union_box(captured, radical)
-                sqrt = Node(
-                    "sqrt",
-                    box[0],
-                    box[1],
-                    max(bar.x1, box[2]),
-                    box[3],
-                    radical.size,
-                    kids=[_as_row(body)],
-                )
-                nodes = rest + [sqrt]
                 bars = [b for b in bars if b is not bar]
                 built = True
                 break
@@ -532,6 +653,30 @@ def group_fences(nodes: list[Node]) -> list[Node]:
     index = 0
     while index < len(nodes):
         node = nodes[index]
+        if node.kind == "text" and node.text.strip() == "|":
+            close = None
+            for cursor in range(index + 1, len(nodes)):
+                if nodes[cursor].kind == "text" and nodes[cursor].text.strip() == "|":
+                    close = cursor
+                    break
+            if close is None:
+                out.append(node)
+                index += 1
+                continue
+            inner = group_fences(nodes[index + 1 : close])
+            closer = nodes[close]
+            grouped = Node(
+                "abs",
+                node.x0,
+                min(n.y0 for n in [node, closer, *inner]) if inner else min(node.y0, closer.y0),
+                closer.x1,
+                max(n.y1 for n in [node, closer, *inner]) if inner else max(node.y1, closer.y1),
+                node.size,
+                kids=[_as_row(inner)],
+            )
+            out.append(grouped)
+            index = close + 1
+            continue
         if not _is_open(node):
             out.append(node)
             index += 1
@@ -661,7 +806,19 @@ def emit(node: Node | None) -> str | None:
         body = emit(node.kids[0])
         if body is None:
             return None
-        return _powered(f"sqrt({body})", node)
+        if len(node.kids) > 1:
+            index = emit(node.kids[1])
+            if index is None:
+                return None
+            rendered = f"(({body})**(1/({index})))"
+        else:
+            rendered = f"sqrt({body})"
+        return _powered(rendered, node)
+    if node.kind == "abs":
+        body = emit(node.kids[0])
+        if body is None:
+            return None
+        return _powered(f"Abs({body})", node)
     if node.kind in {"paren", "floor"}:
         body = emit(node.kids[0])
         if body is None:
@@ -812,6 +969,10 @@ def _argument_follows(nodes: list[Node], index: int) -> bool:
     return True
 
 
+def _starts_call(nodes: list[Node], index: int) -> bool:
+    return index < len(nodes) and _callable(nodes[index]) is not None and _argument_follows(nodes, index + 1)
+
+
 def _parse_factor(nodes: list[Node], index: int) -> tuple[str | None, int]:
     node = nodes[index]
     if _is_integral_node(node):
@@ -824,7 +985,19 @@ def _parse_factor(nodes: list[Node], index: int) -> tuple[str | None, int]:
             arg = emit(nxt)
             cursor = index + 2
         else:
+            # sin 2x is one argument. The next function starts a new factor: sin x cos x.
             arg, cursor = _parse_factor(nodes, index + 1)
+            if arg is None:
+                return None, index
+            parts = [arg]
+            while cursor < len(nodes) and _argument_follows(nodes, cursor) and not _starts_call(nodes, cursor):
+                piece, nxt_cursor = _parse_factor(nodes, cursor)
+                if piece is None or nxt_cursor == cursor:
+                    break
+                parts.append(piece)
+                cursor = nxt_cursor
+            if len(parts) > 1:
+                arg = "(" + "*".join(f"({part})" for part in parts) + ")"
         if arg is None:
             return None, index
         call = f"{name}({arg})"
@@ -974,13 +1147,18 @@ def readings_from_pdf(path: str) -> dict[int, list[Node]]:
             chosen, region_bars = _region_nodes(nodes, bars, top, bottom, node)
             extra = []
             for bar in region_bars:
+                band = [glyph for glyph in chosen if _overlaps_bar(glyph, bar) and _below(glyph, bar)]
+                anchor = min((glyph.y0 for glyph in band), default=bar.y)
                 for glyph in nodes:
                     if glyph is node or glyph in chosen or glyph in extra:
                         continue
                     if glyph.cy <= bottom:
                         continue
-                    if _overlaps_bar(glyph, bar) and _below(glyph, bar):
-                        extra.append(glyph)
+                    if not (_overlaps_bar(glyph, bar) and _below(glyph, bar)):
+                        continue
+                    if bar.w < 12 and glyph.y0 > anchor + 8.0:
+                        continue
+                    extra.append(glyph)
             chosen = chosen + extra
             if not chosen:
                 continue
