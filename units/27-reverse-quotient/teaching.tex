@@ -18,6 +18,7 @@ The quotient rule says $(f/g)'=(f'g-fg')/g^2$. Integrating the right-hand side r
 \begin{enumerate}
   \item Read a numerator $f'g-fg'$ and a denominator $g^2$ as $(f/g)'$.
   \item Guess $f/g$ when the denominator is a square, then differentiate to check.
+  \item Refuse a logarithmic derivative, and refuse the product rule, when the minus sign is the whole method.
 \end{enumerate}
 
 \section{Worked --- \texttt{U27-D01}}
@@ -26,23 +27,43 @@ The quotient rule says $(f/g)'=(f'g-fg')/g^2$. Integrating the right-hand side r
 \]
 Here $f=\sin x$ and $g=x$. Then $f'g-fg'=x\cos x-\sin x$ and $g^2=x^2$. The antiderivative is $\sin x/x$. That is the stored answer.
 
-\texttt{U27-D04} is $( \sin x-x\cos x)/\sin^2 x$, so $f=x$ and $g=\sin x$, and the answer is $x/\sin x$. \texttt{U27-D07} is $(x\sec^2 x-\tan x)/x^2$, so $f=\tan x$ and $g=x$. \texttt{U27-D08} is $(x^2\cos x-2x\sin x)/x^4=(f'g-fg')/g^2$ with $f=\sin x$ and $g=x^2$, answer $\sin x/x^2$.
+The worked dose stops there. The next two drills are the faded blank and the bare integral.
 
-\section{Exponentials and logarithms}
+\section{Faded --- \texttt{U27-D04}}
+\[
+\int\frac{\sin x-x\cos x}{\sin^2 x}\,dx.
+\]
+The denominator is a square, so name $g$ before you name $f$. The blank is the pair. Here $g=\sin x$ and $f=x$. Differentiate $x/\sin x$. The numerator matches, and the stored antiderivative is $x/\sin x$.
+
+\texttt{U27-D07} is the same blank with another pair: $f=\tan x$ and $g=x$. The stored antiderivative is $\tan x/x$.
+
+\section{Bare --- \texttt{U27-D08}}
+Set
+\[
+\int\frac{x^2\cos x-2x\sin x}{x^4}\,dx
+\]
+and show nothing else. The bare dose hides $f$ and $g$. After a line is written, uncover $f=\sin x$, $g=x^2$, and the stored antiderivative $\sin x/x^2$.
+
+\section{Same rule on an exponential}
 \texttt{U27-D02} is $e^x(x-1)/x^2$. Take $f=e^x$ and $g=x$:
 \[
 f'g-fg'=e^x\cdot x-e^x\cdot 1=e^x(x-1).
 \]
-The antiderivative is $e^x/x$. \texttt{U27-D06} is the same with $g=x+1$, answer $e^x/(x+1)$.
+The stored antiderivative is $e^x/x$. \texttt{U27-D06} uses $g=x+1$ and stores $e^x/(x+1)$.
 
-\texttt{U27-D03} is $(1-\ln x)/x^2$. Take $f=\ln x$ and $g=x$. Then $f'g-fg'=1-\ln x$, so the answer is $\ln x/x$. \texttt{U27-D05} flips the sign and stores $-\ln x/x$.
+\section{Refusal --- not a logarithmic derivative}
+\texttt{U27-D03} is $(1-\ln x)/x^2$. The numerator is $f'g-fg'$ with $f=\ln x$ and $g=x$. It is not $f'$ alone. Unit 24 integrates $f'/f$. Refuse that reading. The stored antiderivative is $\ln x/x$.
 
-\section{Faded check}
-Differentiate the proposed answer before you box it. If the denominator of the derivative is not the square in the integrand, the guess had the wrong $g$. A numerator that is $f'$ with no minus term is a logarithmic derivative, unit 24, not this one.
+\texttt{U27-D05} is $(\ln x-1)/x^2$, the sign flip of \texttt{U27-D03}. The stored antiderivative is $-\ln x/x$. Copying the answer of \texttt{U27-D03} is the miss.
+
+A plus in the numerator, $f'g+fg'$, is the product rule, unit 07. The minus is this unit. \texttt{U27-D02} carries the minus. Do not send it to the product.
+
+\section{Dose}
+Worked reads \texttt{U27-D01}, then the faded blank on \texttt{U27-D04}, then sets \texttt{U27-D08}. Faded gives only that blank. Bare sets \texttt{U27-D08} and hides the pair. A logarithmic-derivative attempt, or a copied sign, opens the refusal and sets \texttt{U27-D03}, then \texttt{U27-D05}.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit27.json}.
 
 \section*{On a miss}
-Teach this file. Name $f$ and $g$, then differentiate $f/g$. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. Name $f$ and $g$, then differentiate $f/g$. If the numerator has no minus term, refuse this unit and open unit 24. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

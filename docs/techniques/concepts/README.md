@@ -8,7 +8,7 @@ The gap index admits exactly six headings, and it rejects an extra file placed d
 
 ## Which card
 
-Read the integrand, then open one card. If two seem to fit, open the earlier one in this list and try it. Stop when the integral is finished.
+Read the integrand, then open one card. If two seem to fit, open the earlier one in this list and try it. Stop when the integral is finished. A Round 1 paper uses the same shapes. The route from a paper shape to a unit is `pedagogy/past-paper-routing.md`. That note does not quote a pack final.
 
 | You see | Open |
 |---|---|

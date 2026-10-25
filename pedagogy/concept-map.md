@@ -57,11 +57,11 @@ The card states the move. Stored numbers stay in the unit.
 | `gamma` | 2.4 | `integration-by-parts.md` | \(J_n=n J_{n-1}\) with \(J_0=1\). Values stay the unit 14 drills. The speed unroll is in that unit's teaching note. |
 | `parts-regular` | 2.5 | `integration-by-parts.md` | One step, then the cyclic stop. `U15-D04` is the faded definite case. |
 | `awkward-parts` | 3.5 | `integration-by-parts.md` | Pointer to unit 22 after ordinary parts is solid. |
-| `semi-parts` | 5.1 | `integration-by-parts.md` | Match coefficients on \(p(x)e^x\). Longer drills stay in unit 28. |
-| `reverse-quotient` | 4.6 | `integration-by-parts.md` | \((f/g)'\). The antiderivative of `U27-D01`, then the limit \(2/\pi-1\) on \((0,\pi/2]\). |
+| `semi-parts` | 5.1 | `integration-by-parts.md` | Match coefficients on \(p(x)e^x\). Unit 28 works `U28-D01`, fades `U28-D03`, and sets bare `U28-D08`. |
+| `reverse-quotient` | 4.6 | `integration-by-parts.md` | \((f/g)'\). Unit 27 works `U27-D01`, fades `U27-D04`, and sets bare `U27-D08`. The limit \(2/\pi-1\) on \((0,\pi/2]\) stays this card's reading of the stored antiderivative. |
 | `trig-identities` | 2.6 | `trigonometric.md` | Odd and even powers, then unit 16. |
 | `intermediate-trig-sub-ch2` | 2.7 | `trigonometric.md` | The three-row radical table. |
-| `advanced-trig-integrals` | 5.2 | `trigonometric.md` | Same powers. Unit 29 keeps secant. |
+| `advanced-trig-integrals` | 5.2 | `trigonometric.md` | Unit 29 works `U29-D04`, fades `U29-D03`, and sets bare `U29-D06`. Secant stays `U29-D05`. |
 | `advanced-trig-substitution` | 3.4 | `trigonometric.md` | \(\sec\), \(\sinh\), or \(\tan\) after the basic table is solid. |
 | `weierstrass` | 4.5 | `trigonometric.md` | The three replacements and an original \(\int_0^{\pi/2} dx/(2+\cos x)=\pi\sqrt{3}/9\). Unit 26 is the miss file. |
 | `wallis` | 3.3 | `trigonometric.md` | \(I_n=((n-1)/n)I_{n-2}\). `U20-D01` is \(I_4=3\pi/16\). Even, odd, and alternating speed unrolls are in the unit note. |
@@ -72,7 +72,7 @@ The card states the move. Stored numbers stay in the unit.
 | `advanced-gaussian` | 5.3 | `gaussian-dirichlet.md` | Quote \(\sqrt{\pi}\), then scale. Original \(\int_0^{\infty} e^{-4x^2}\,dx=\sqrt{\pi}/4\). |
 | `dirichlet` | 5.4 | `gaussian-dirichlet.md` | Quote `U30-D05`, then scale by \(u=bx\). |
 | `intermediate-partial-fractions` | 3.6 | `partial-fractions.md` | A repeated factor needs two terms. |
-| `feynman` | 6.7 | `algebra.md` | Fixed interval versus a moving endpoint. The unit 34 case \(I'(2)=6\) stays the unit's example. |
+| `feynman` | 6.7 | `algebra.md` | The Adaptive table names this node. Fixed interval versus a moving endpoint. The unit 34 case \(I'(2)=6\) stays the unit's example. |
 | `modified-textbook` | 2.1 | `habits.md` | Scale of `U12-D01` on \([0,1]\), value \(e^e-e\). The four textbook drills stay in unit 12. |
 | `sneaky-algebra` | 2.2 | `habits.md` | Scale of `U12-D05` with \(3\) in place of \(2\), value \(11/3\). |
 | `sneaky-u-sub` | 3.2 | `habits.md` | Numerator form of the `U19-D05` substitution on \([0,3]\), value \(4\sqrt{3}\). |
@@ -93,7 +93,7 @@ Open the unit file. The move is already there.
 |---|---|---|---|
 | `undertow` | 4.1 | `units/24-undertow-square/teaching.tex` | Divide by a power of \(x\) until the numerator is the derivative of the denominator. `U24-D01`. |
 | `square-square` | 4.2 | the same file | \((\sqrt{x}\pm 1/\sqrt{x})^2\) under the radical. `U24-D07` stores \(20/3\). |
-| `inverse-jailbreaking` | 6.1 | `units/31-inverse-jailbreak/teaching.tex` | Inverse in the \(u\) slot. The area identity is the symmetry card. |
+| `inverse-jailbreaking` | 6.1 | `units/31-inverse-jailbreak/teaching.tex` | Inverse in the \(u\) slot. Worked `U31-D01`, faded `U31-D05`, bare `U31-D07`. The area identity is the symmetry card. |
 | `frullani` | 6.6 | `units/34-frullani-feynman/teaching.tex` | Difference of exponentials as an integral in a parameter. `U34-D01`. |
 
 ## Still thin
@@ -116,7 +116,7 @@ Yang inventory 4.3 has no node. It stays skipped.
 
 ## Practice indexes
 
-These nine nodes are not concepts. Round formats are `docs/techniques/formats.md`. The session scripts are `pedagogy/round2-coach.md` and `pedagogy/round3-coach.md`. Per-question tags are not a lesson, and this map does not add any.
+These nine nodes are not concepts. Round formats are `docs/techniques/formats.md`. The session scripts are `pedagogy/round2-coach.md` and `pedagogy/round3-coach.md`. A shape on a Round 1 paper opens `pedagogy/past-paper-routing.md`, then a coach card and a unit drill. Per-question tags are not a lesson, and this map does not add any.
 
 | Node | What the tree already says |
 |---|---|

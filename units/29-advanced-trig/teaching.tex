@@ -19,6 +19,7 @@ An odd power wants one factor saved for a substitution. An even power on $[0,\pi
   \item If a factor $\sin x\,dx$ or $\cos x\,dx$ is the derivative of the other function, substitute.
   \item If every power is even, reduce or use a double angle.
   \item Know $\int\sec x\,dx=\ln|\sec x+\tan x|+C$ because its derivative is $\sec x$.
+  \item Refuse the reduction when a factor is already a derivative.
 \end{enumerate}
 
 \section{Worked odd power --- \texttt{U29-D04}}
@@ -29,26 +30,46 @@ Let $u=\cos x$. Then $du=-\sin x\,dx$, and the limits run from 1 to 0.
 \[
 \int_1^0 -u^5\,du=\int_0^1 u^5\,du=\frac16.
 \]
-\texttt{U29-D03} is $\int\tan x\sec^2 x\,dx$. Let $u=\tan x$. The stored antiderivative is $\frac12\tan^2 x$. \texttt{U29-D07} is $\int\sin 2x\cos 2x\,dx=\frac14\sin^2 2x$, by $u=\sin 2x$.
+That is the stored answer. A leftover factor of $\sin x$ means this substitution. Refuse $I_n$ on this drill. Unit 20 stores the same refusal shape as \texttt{U20-D06}, value $2/15$.
 
 \section{Worked even power --- \texttt{U29-D01}}
 \[
 \int_0^{\pi/2}\sin^6 x\,dx.
 \]
-Unit 20 gives $I_6=(5/6)I_4$ and $I_4=3\pi/16$, so $I_6=5\pi/32$. That is the stored answer. \texttt{U29-D06} is $\int_0^{\pi/2}\cos^2 x\sin^4 x\,dx$. Write $\sin^2 x\cos^2 x\cdot\sin^2 x$ or reduce both even powers. The stored value is $\pi/32$. A double-angle on \texttt{U20-D02} is the smaller version of this product.
+Unit 20 gives $I_6=(5/6)I_4$ and $I_4=3\pi/16$, so $I_6=5\pi/32$. That is the stored answer. \texttt{U20-D05} stores the cosine twin, the same value.
 
-\section{Secant and tangent}
-\texttt{U29-D08} is $\int_0^{\pi/4}\sec^2 x\,dx=\tan x\big|_0^{\pi/4}=1$.
-\texttt{U29-D02} is $\int_0^{\pi/4}\tan^2 x\,dx=\int_0^{\pi/4}(\sec^2 x-1)\,dx=1-\pi/4$.
-\texttt{U29-D05} is $\int_0^{\pi/3}\sec x\,dx$. Differentiate $\ln|\sec x+\tan x|$:
+\section{Faded --- \texttt{U29-D03}}
+\[
+\int\tan x\sec^2 x\,dx.
+\]
+The blank is the substitution. Let $u=\tan x$, so $du=\sec^2 x\,dx$. The stored antiderivative is $\frac12\tan^2 x$.
+
+\texttt{U29-D07} is the same blank with a double angle. Let $u=\sin 2x$. The stored antiderivative is $\frac14\sin^2 2x$. A reduction $I_n$ does not apply. One factor is already a derivative.
+
+\section{Bare --- \texttt{U29-D06}}
+Set
+\[
+\int_0^{\pi/2}\cos^2 x\sin^4 x\,dx
+\]
+and show nothing else. Both powers are even. The bare dose hides the reduction. The stored value is $\pi/32$.
+
+\section{Refusal --- the derivative is already there}
+\texttt{U29-D08} is $\int_0^{\pi/4}\sec^2 x\,dx$. The antiderivative is $\tan x$, and the stored value is $1$. Refuse a Wallis reduction and refuse $t=\tan(x/2)$. The factor $\sec^2 x$ is already $d(\tan x)$.
+
+\texttt{U29-D02} is $\int_0^{\pi/4}\tan^2 x\,dx$. Write $\tan^2 x=\sec^2 x-1$. The stored value is $1-\pi/4$. Refuse treating the power as $I_n$. \texttt{U09-D04} stores the same value.
+
+\texttt{U29-D05} is the secant that is not already a derivative of tangent. Differentiate $\ln|\sec x+\tan x|$:
 \[
 \frac{\sec x\tan x+\sec^2 x}{\sec x+\tan x}=\sec x.
 \]
-The definite value is $\ln(2+\sqrt{3})-\ln 1=\ln(2+\sqrt{3})$.
+On $[0,\pi/3]$ the stored value is $\ln(2+\sqrt{3})$. Use this only when no factor of $\sec^2 x$ is waiting to be the substitution.
+
+\section{Dose}
+Worked reads \texttt{U29-D04}, then the even line \texttt{U29-D01}, then the faded substitution on \texttt{U29-D03}, then sets \texttt{U29-D06}. Faded gives only the blank $u$ on \texttt{U29-D03}. Bare sets \texttt{U29-D06}. A reduction on a derivative that is already present opens the refusal and sets \texttt{U29-D08}, then \texttt{U29-D02}.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit29.json}.
 
 \section*{On a miss}
-Teach this file. Say whether you saved a factor or reduced an even power. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. Say whether you saved a factor or reduced an even power. If a factor of $\sec^2 x$ or $\sin x$ was already the differential, refuse the reduction. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

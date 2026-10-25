@@ -14,6 +14,19 @@ Coach card. Original examples on this page were checked with SymPy, including th
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 
+### Miss to the next drill
+
+| Miss | Next drill |
+|---|---|
+| A polynomial was expanded as an infinite series | `U08-D01`, stored \(25/12\). A shorter polynomial is `U08-D04`, stored \(5/6\). |
+| The closed form was skipped on a safe geometric interval | `U08-D02`, stored \(\ln 2\) on \([0,1/2]\). `U08-D05` stores \(\ln(4/3)\) on \([0,1/3]\). |
+| The interval was pushed to the pole at \(1\) | Refuse the value. Return to `U08-D02`. |
+| Three terms were treated as an infinite sum | After `basic-series` is solid, `U17-D09`, stored \(11/6\). |
+| A geometric kernel was expanded term by term when the closed form is one integral | `U17-D01`, stored \(\ln 2\). The shorter interval is `U17-D08`, stored \(\ln(3/2)\). A coefficient \(n\) is `U17-D07`, stored \(1\). |
+| A substitution was replaced by a series | `U17-D02`, stored \(\ln 2\). In unit 32, `U32-D03` stores \(\frac12 e^{x^2}\). |
+| The endpoint \(x=1\) of an alternating series was the worry | `U32-D01`, stored \(\ln 2\), after the unit 08 drills are solid. |
+| A named constant was replaced, or a new zeta value was written | Refuse. Unit 35 keeps the series it already prints. This card does not quote a zeta value. `zeta` stays unticked. |
+
 ## A finite sum
 
 Integrate a polynomial term by term. Unit 08 stores
@@ -80,4 +93,4 @@ A named constant from a later unit was replaced by a decimal or by a logarithm. 
 
 ## On a miss
 
-Teach this file, then unit 08. Set `U08-D01`, then `U08-D02`. Taylor and complex exponentials wait until unit 32. A right closed form on an interval where the series diverges still needs the interval named.
+Teach this file, then unit 08. Use the miss table. Set `U08-D01`, then `U08-D02`. Taylor and complex exponentials wait until unit 32. A right closed form on an interval where the series diverges still needs the interval named.

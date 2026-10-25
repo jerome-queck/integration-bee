@@ -18,37 +18,52 @@ Unit 10 already integrates $\arcsin$, $\arctan$, and $\arccos$ on $[0,1]$. This 
 \begin{enumerate}
   \item Put the inverse in the $u$ slot. The derivative is algebraic.
   \item On a definite integral of an inverse with no extra factor, the area identity avoids the remaining square root.
+  \item Refuse a definite number when the blank wants an antiderivative.
 \end{enumerate}
 
 \section{Worked parts --- \texttt{U31-D01}}
 \[
 \int_0^1\arcsin x\,dx=\frac\pi2-1.
 \]
-This is \texttt{U10-D01}. The area form is shorter to remember. If $f=\sin$ on $[0,\pi/2]$, then
+This is the same value as \texttt{U10-D01}. The area form is shorter to remember. If $f=\sin$ on $[0,\pi/2]$, then
 \[
 \int_0^1\arcsin y\,dy=1\cdot\frac\pi2-\int_0^{\pi/2}\sin x\,dx=\frac\pi2-1.
 \]
-\texttt{U31-D03} is $\int_0^1\arccos x\,dx=1$. \texttt{U31-D02} is $\int_0^1\arctan x\,dx=\pi/4-(\ln 2)/2$. Parts: the boundary term is $\pi/4$, and $\int_0^1 x/(1+x^2)\,dx=(\ln 2)/2$.
-
-\section{A product --- \texttt{U31-D07}}
-\[
-\int_0^1 x\arcsin x\,dx=\frac\pi8.
-\]
-Parts with $u=\arcsin x$ and $dv=x\,dx$ leaves $\int_0^1 x^2/(2\sqrt{1-x^2})\,dx$. The substitution $x=\sin\theta$ turns that into a cosine power on $[0,\pi/2]$. The stored indefinite forms are \texttt{U31-D08}, $x\arcsin x+\sqrt{1-x^2}$, and \texttt{U31-D04}, $x\arctan x-\frac12\ln(1+x^2)$, and \texttt{U31-D06},
-\[
-\int x\arctan x\,dx=\frac{x^2+1}{2}\arctan x-\frac x2.
-\]
-Differentiate \texttt{U31-D06} if the coefficient of $\arctan x$ looks unlikely. It matches.
+\texttt{U31-D03} is $\int_0^1\arccos x\,dx=1$. The area identity again. \texttt{U31-D02} is $\int_0^1\arctan x\,dx=\pi/4-(\ln 2)/2$. Parts: the boundary term is $\pi/4$, and $\int_0^1 x/(1+x^2)\,dx=(\ln 2)/2$.
 
 \section{Faded --- \texttt{U31-D05}}
 \[
 \int_0^{1/2}\arcsin x\,dx.
 \]
-The boundary term is $(1/2)(\pi/6)=\pi/12$. The remaining integral produces $\sqrt{3}/2-1$. The stored value is $\pi/12+\sqrt{3}/2-1$, the same as \texttt{U10-D08}.
+Put $\arcsin x$ in the $u$ slot. The blank is the boundary term and the sign in front of $\int x/\sqrt{1-x^2}\,dx$. The boundary term is $(1/2)\arcsin(1/2)=\pi/12$. The remaining integral equals $1-\sqrt{3}/2$. Subtracting it from $\pi/12$ stores $\pi/12+\sqrt{3}/2-1$, the same value as \texttt{U10-D08}.
+
+\section{Bare --- \texttt{U31-D07}}
+Set
+\[
+\int_0^1 x\arcsin x\,dx
+\]
+and show nothing else. The bare dose hides the substitution. Parts with $u=\arcsin x$ and $dv=x\,dx$ leaves $\int_0^1 x^2/(2\sqrt{1-x^2})\,dx$. The substitution $x=\sin\theta$ turns that into a cosine power on $[0,\pi/2]$. After a line is written, uncover the stored value $\pi/8$.
+
+\section{Indefinite products}
+\texttt{U31-D06} stores
+\[
+\int x\arctan x\,dx=\frac{x^2+1}{2}\arctan x-\frac x2.
+\]
+Differentiate it if the coefficient of $\arctan x$ looks unlikely. It matches. \texttt{U31-D04} is the no-factor antiderivative $x\arctan x-\frac12\ln(1+x^2)$. \texttt{U31-D08} is $x\arcsin x+\sqrt{1-x^2}$.
+
+\section{Refusal --- a definite value is not an antiderivative}
+The area identity returns a number. It does not return $+C$. \texttt{U31-D08} is the indefinite arcsine. Refuse writing $\pi/2-1$, the value of \texttt{U31-D01}, in its place. The stored antiderivative is $x\arcsin x+\sqrt{1-x^2}$.
+
+\texttt{U31-D04} is the indefinite arctangent. Refuse writing $\pi/4-(\ln 2)/2$, the value of \texttt{U31-D02}, in its place.
+
+\texttt{U31-D06} carries an extra factor of $x$. Refuse the no-factor antiderivative of \texttt{U31-D04}.
+
+\section{Dose}
+Worked reads \texttt{U31-D01}, then the faded boundary on \texttt{U31-D05}, then sets \texttt{U31-D07}. Faded gives only that boundary blank. Bare sets \texttt{U31-D07}. A definite number written as an antiderivative opens the refusal and sets \texttt{U31-D08}.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit31.json}.
 
 \section*{On a miss}
-Teach this file. Name $u$ as the inverse and write $du$. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. Name $u$ as the inverse and write $du$. If the blank wants $+C$, refuse the area number and differentiate the stored indefinite form. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

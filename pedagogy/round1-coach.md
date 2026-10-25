@@ -11,7 +11,7 @@ The companion reads ticks and chooses a page. This note does not change session 
 5. If this node is `solid`, skip the lecture. Set the next due drill in the same unit.
 6. If this node is `skipped`, a non-cold mock still waits until the node is solid. A later miss on that node's drill returns the tick to `learning`. Teach the card at the difficulty in its table.
 
-Past-paper integrals are not the lesson. The practice rows in the concept map are indexes.
+Past-paper integrals are not the lesson. The practice rows in the concept map are indexes. The shape-to-unit route is `pedagogy/past-paper-routing.md`. It names a coach card and a unit drill. It does not open a paper.
 
 ## Difficulty
 

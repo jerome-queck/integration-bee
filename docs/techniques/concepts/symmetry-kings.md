@@ -14,6 +14,19 @@ Coach card. Original examples on this page were checked with SymPy. They are not
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 
+### Miss to the next drill
+
+| Miss | Next drill |
+|---|---|
+| Oddness was quoted on an interval that is not symmetric about 0 | `U02-D01`, stored \(0\), then the split `U02-D03`, stored \(2/3\). |
+| The two copies were added when they do not form a constant | `U10-D06`, stored \(1-\ln 2\). The faded drill that does add is `U10-D05`, stored \(\pi/4\). |
+| The area identity was skipped for a bare inverse | `U10-D01`, stored \(\pi/2-1\). `U31-D01` stores the same value. |
+| A definite number was written as an antiderivative | Unit 31 refusal. Set `U31-D08`. |
+| An inverse times \(x\) was given the no-factor value | `U31-D07`, stored \(\pi/8\). The faded boundary is `U31-D05`, stored \(\pi/12+\sqrt{3}/2-1\). |
+| An advanced copy was quoted as \(\pi/4\) when the sum is not 1 | `U25-D04`, stored \(\pi/8+(\ln 2)/4\). |
+
+`inverse-jailbreaking` has no separate card. The unit note is the lesson. This table only points at its stored drills.
+
 ## Odd and even
 
 On an interval \([-a,a]\), an odd integrand that possesses an integral contributes 0. An even integrand doubles the half-interval.
@@ -82,4 +95,4 @@ A value of \(\pi/4\) was quoted because the interval was \([0,\pi/2]\). The leng
 
 ## On a miss
 
-Teach this file, then unit 02 or unit 10. Set `U02-D01` at difficulty 1 and `U10-D07` at difficulty 2. Advanced copies wait until unit 25. A right value from an even/odd shortcut on the wrong interval still needs the interval named.
+Teach this file, then unit 02 or unit 10. Use the miss table. Set `U02-D01` at difficulty 1 and `U10-D07` at difficulty 2. Advanced copies wait until unit 25. A product \(x f^{-1}(x)\) waits until unit 31. A right value from an even/odd shortcut on the wrong interval still needs the interval named.
