@@ -21,6 +21,7 @@ progress.local.json
 runlog.md
 trackers/live/**
 !trackers/live/.gitkeep
+/submissions.local/
 
 # Plaintext reconstruction of the Yang guide, and a duplicate of the committed PDF.
 sources/user/jerome-attached.txt

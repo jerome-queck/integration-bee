@@ -21,6 +21,9 @@ def ignored(path: str) -> bool:
 if not ignored("trackers/live/attempts.json"):
     print("FAIL trackers/live/attempts.json is not ignored")
     fail = 1
+if not ignored("trackers/live/submissions/default/photo.png"):
+    print("FAIL submission photo is not ignored")
+    fail = 1
 problems = "sources/past/r1/2020/2020_Integration_Competition_Problems.pdf"
 if ignored(problems):
     print(f"FAIL {problems} is ignored")

@@ -10,7 +10,7 @@ Send `{"kind":"teach"}`. Read the path in `drill.teaching`. Say the integral in 
 
 ## Flow 2 — Mark a photo
 
-Read the photo, or take a typed final answer. Send a mark turn with `source` set to `photo` or `typed`, and put the expression in `extract.final_answer`. A manual problem also needs `verdict` set to `correct` or `incorrect`. Speak `say`. Do not invent a mark scheme.
+Read the photo, or take a typed final answer. For a photo, set `source` to `photo`, put the expression in `extract.final_answer`, and set `image` to the chat file path. The CLI copies that file to `submissions/<IB_USER>/` under the data directory and returns `mark.picture`. `progress show` lists the same relative path. `IB_USER` defaults to `default`. A second learner uses a separate `IB_DATA_DIR`. A typed answer sets `source` to `typed` and omits `image`. A manual problem also needs `verdict` set to `correct` or `incorrect`. Speak `say`. Do not invent a mark scheme. Do not commit the copied file.
 
 ## Flow 3 — Timed mock
 
