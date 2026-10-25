@@ -26,6 +26,18 @@ term integrals, integration by parts down to a beta integral, an explicit
 arcsine antiderivative, and the Fourier series of the real part of exp(c e^{ix}).
 A single letter of integration other than x is stored as x when x is not
 already a parameter. The letter i in a layout reading is the imaginary unit.
+The letter G in a mark scheme is Catalan's constant. Further checked forms
+are the Catalan series for log(tan) on [0, π/4], the semicircle substitution
+for log(x)/sqrt(4x-x^2), the shift x = tan θ - 1 for log(x)/(x^2+2x+2),
+integration by parts of log(1-x)log(1+x), Fubini for x csc(x), the odd-zeta
+series for log((e^x+1)/(e^x-1)), atan(x^n)/x, log(1+x)/(1+x^2), a symmetric
+cosine product, a power substitution for 1/(n x^n+x), the gamma reflection
+on [0, 1], a finite ceiling-floor sum, a quadratic log of sine and cosine,
+and a square-root branch fixed by one interior point. Further checked
+forms are ∫(x**p-x**q)/log(x) on [0, 1], log(x)/(x**2+3) on [1, 3],
+1/(a**2-sin**2 x) on [0, π/2] for a>1, 1/(x**4+2 a x**2+1) on [0, ∞),
+(1-x)/((1+x) sqrt(x+x**2+x**3)) on [0, 1], and a constant on each
+integer interval of a power of floor.
 Further checked forms are a constant sum of reciprocal square roots of
 logarithms on a finite interval, the beta evaluation of a power of tangent,
 a cosine modulus through the half-angle
@@ -69,6 +81,7 @@ def namespace(variable: str) -> dict:
     ns["coth"] = sp.coth
     ns["zeta"] = sp.zeta
     ns["gamma"] = sp.gamma
+    ns["G"] = sp.Catalan
     ns["i"] = sp.I
     ns[variable] = sp.symbols(variable, real=True)
     ns["C"] = sp.Symbol("C")
@@ -255,6 +268,11 @@ def _exponential_limit(integrand, answer, symbol, lo, hi) -> bool:
 
 def _reduced_integrals(integrand, symbol, lo, hi):
     """Algebraic identities SymPy can check. Each item is a candidate value."""
+    # x**2023 makes the reflection simplify blow the proof budget. Rows with a
+    # large integer power are handled by a direct antiderivative, a tangent
+    # average, or _power_log_gap.
+    if _large_integer_power(integrand):
+        return []
     found = []
     if lo == -hi or _zero(lo + hi):
         half = sp.simplify((integrand + integrand.subs(symbol, -symbol)) / 2)
@@ -712,13 +730,46 @@ def _drop_log_abs(expr):
     )
 
 
+def _radical_branch(answer, integrand, symbol) -> bool:
+    """sqrt(1±sin) and sqrt(1±cos) hide an absolute value.
+
+    The squared derivative matches the squared integrand, and one real sample
+    where both sides are defined picks the printed sign.
+    """
+    if not _has_square_root(integrand):
+        return False
+    if not integrand.has(sp.sin) and not integrand.has(sp.cos):
+        return False
+    wild = sp.Wild("w")
+    patterns = (
+        sp.sqrt(1 + sp.sin(wild)),
+        sp.sqrt(1 - sp.sin(wild)),
+        sp.sqrt(1 + sp.cos(wild)),
+        sp.sqrt(1 - sp.cos(wild)),
+    )
+    if not any(integrand.match(pattern) for pattern in patterns):
+        return False
+    slope = sp.diff(answer, symbol)
+    if not _zero(slope**2 - integrand**2):
+        return False
+    for sample in (sp.Integer(0), sp.Integer(1), sp.Rational(1, 2)):
+        try:
+            if _zero((slope - integrand).subs(symbol, sample)):
+                return True
+        except Exception:
+            continue
+    return False
+
+
 def _antiderivative(answer, integrand, variable: str) -> bool:
     symbol = namespace(variable)[variable]
     plain = _drop_log_abs(answer)
     if plain != answer and _zero(sp.diff(plain, symbol) - integrand):
         return True
     delta = sp.diff(answer, symbol) - integrand
-    return _zero(delta)
+    if _zero(delta):
+        return True
+    return _radical_branch(answer, integrand, symbol)
 
 
 _FACT_CACHE: dict = {}
@@ -2007,6 +2058,722 @@ def _sin_product(integrand, symbol, lo, hi):
         return None
     return sp.simplify(sp.log((coeff_a + coeff_b) / (coeff_a - coeff_b)) / 2)
 
+def _catalan_tangent():
+    """∫_0^{π/4} log(tan θ) dθ = -G, from the geometric series of 1/(1+u^2)."""
+
+    def build():
+        u = sp.Symbol("_u")
+        index = sp.Symbol("_k", integer=True, nonnegative=True)
+        series = sp.summation((-1) ** index * u ** (2 * index), (index, 0, sp.oo))
+        piece = sp.simplify(series)
+        branch = None
+        if isinstance(piece, sp.Piecewise):
+            for expr, cond in piece.args:
+                if cond == True or expr.has(sp.Sum):
+                    continue
+                branch = expr
+                break
+        else:
+            branch = piece
+        _require(branch is not None and _zero(branch - 1 / (1 + u**2)), "geo")
+        term = sp.integrate(((-1) ** index) * u ** (2 * index) * sp.log(u), (u, 0, 1))
+        _require(_closed(term) and _zero(term + (-1) ** index / (2 * index + 1) ** 2), "term")
+        total = sp.summation(term, (index, 0, sp.oo))
+        _require(_closed(total) and _zero(total + sp.Catalan), "sum")
+        _require(_zero(sp.diff(sp.atan(u), u) * (1 + u**2) - 1), "jac")
+        _require(_zero(sp.simplify(sp.tan(sp.atan(u)) - u)), "tan")
+        _require(_zero(sp.tan(sp.pi / 4) - 1) and _zero(sp.tan(0)), "ends")
+        return -sp.Catalan
+
+    return _fact("catalan-tangent", build)
+
+
+def _quarter_log_sums():
+    """∫_0^{π/4} log(sin) and ∫_0^{π/4} log(cos), from the half-period value and Catalan."""
+
+    def build():
+        theta = sp.Symbol("_th", real=True)
+        sine = sp.log(sp.sin(theta))
+        cosine = sp.log(sp.cos(theta))
+        full = _log_sine_quarter(sine, theta, 0, sp.pi / 2)
+        _require(full is not None and _zero(full + sp.pi * sp.log(2) / 2), "full")
+        ident = sine + cosine - sp.log(sp.sin(2 * theta)) + sp.log(2)
+        _require(sp.simplify(sp.exp(ident)) == 1, "exp")
+        _require(sp.simplify(sp.logcombine(ident.subs(theta, sp.pi / 8), force=True)) == 0, "point")
+        _require(_zero(sp.diff(2 * theta, theta) - 2), "jac")
+        summed = sp.simplify(full / 2 - sp.pi * sp.log(2) / 4)
+        _require(_zero(summed + sp.pi * sp.log(2) / 2), "pair")
+        difference = _catalan_tangent()
+        _require(difference is not None and _zero(difference + sp.Catalan), "diff")
+        sine_quarter = sp.simplify((summed + difference) / 2)
+        cosine_quarter = sp.simplify((summed - difference) / 2)
+        return {"sum": summed, "sin": sine_quarter, "cos": cosine_quarter, "full": full}
+
+    return _fact("quarter-log-sums", build)
+
+
+def _semicircle_log(integrand, symbol, lo, hi):
+    """x = 2+2 cos θ turns ∫_0^4 log(x)/sqrt(4x-x^2) dx into a cosine quarter that cancels."""
+    if not (_zero(lo) and _zero(hi - 4)) or not integrand.has(sp.log):
+        return None
+    target = sp.log(symbol) / sp.sqrt(4 * symbol - symbol**2)
+    if not _zero(integrand - target):
+        return None
+    theta = sp.Symbol("_th", real=True)
+    line = 2 + 2 * sp.cos(theta)
+    _require(_zero(sp.diff(line, theta) + 2 * sp.sin(theta)), "dx")
+    _require(_zero(sp.simplify(4 * line - line**2 - 4 * sp.sin(theta) ** 2)), "rad")
+    _require(_zero(1 + sp.cos(theta) - 2 * sp.cos(theta / 2) ** 2), "half")
+    logged = sp.log(2 * (1 + sp.cos(theta))) - (2 * sp.log(2) + 2 * sp.log(sp.cos(theta / 2)))
+    _require(sp.simplify(sp.exp(logged.subs(theta, sp.pi / 2))) == 1, "log-point")
+    _require(sp.simplify(sp.exp(logged)) == 1, "log-exp")
+    quarter = _log_sine_quarter(sp.log(sp.cos(theta)), theta, 0, sp.pi / 2)
+    _require(quarter is not None, "quarter")
+    _require(_zero(sp.diff(theta / 2, theta) - sp.Rational(1, 2)), "sub")
+    total = sp.simplify(2 * sp.pi * sp.log(2) + 4 * quarter)
+    _require(_zero(total), "cancel")
+    return sp.Integer(0)
+
+
+def _shifted_log_quadratic(integrand, symbol, lo, hi):
+    """x = tan θ - 1 turns ∫_0^∞ log(x)/(x^2+2x+2) dx into π log 2 / 8."""
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.log):
+        return None
+    target = sp.log(symbol) / (symbol**2 + 2 * symbol + 2)
+    if not _zero(integrand - target):
+        return None
+    theta = sp.Symbol("_th", real=True)
+    line = sp.tan(theta) - 1
+    measure = sp.diff(line, theta) / (line**2 + 2 * line + 2)
+    _require(_zero(sp.simplify(measure - 1)), "dx")
+    _require(_zero(sp.tan(sp.pi / 4) - 1), "lo")
+    shift = theta - sp.pi / 4
+    sine_diff = sp.sin(theta) - sp.cos(theta) - sp.sqrt(2) * sp.sin(shift)
+    _require(_zero(sp.expand_trig(sine_diff)), "shift")
+    _require(
+        _zero(sp.expand_trig(sp.cos(shift + sp.pi / 4) - (sp.cos(shift) - sp.sin(shift)) / sp.sqrt(2))),
+        "cos",
+    )
+    values = _quarter_log_sums()
+    _require(values is not None, "quarters")
+    # ∫_{π/4}^{π/2} log(tan θ-1) dθ = ∫_0^{π/4} [log 2 / 2 + log sin φ - log cos(φ+π/4)] dφ
+    # and ∫_0^{π/4} log cos(φ+π/4) dφ = ∫_0^{π/2} log cos - ∫_0^{π/4} log cos.
+    total = sp.simplify(sp.pi * sp.log(2) / 8 + values["sum"] - values["full"])
+    _require(_zero(total - sp.pi * sp.log(2) / 8), "value")
+    return sp.pi * sp.log(2) / 8
+
+
+def _log_product_unit(integrand, symbol, lo, hi):
+    """∫_0^1 log(1-x)log(1+x) dx by parts, down to ∫ log(1-x)/(1+x) dx."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.log):
+        return None
+    target = sp.log(1 - symbol) * sp.log(1 + symbol)
+    if not _zero(integrand - target):
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        primitive = (x - 1) * sp.log(1 - x) - x
+        _require(_zero(sp.diff(primitive, x) - sp.log(1 - x)), "parts")
+        _require(_zero(sp.limit(sp.log(1 + x) * primitive, x, 0)), "edge0")
+        _require(_zero(sp.limit(sp.log(1 + x) * primitive, x, 1) + sp.log(2)), "edge1")
+        _require(_zero((x - 1) / (x + 1) - (1 - 2 / (x + 1))), "split")
+        plain = sp.integrate(sp.log(1 - x), (x, 0, 1))
+        weight = sp.integrate(x / (1 + x), (x, 0, 1))
+        folded = sp.integrate(sp.log(1 - x) / (1 + x), (x, 0, 1))
+        _require(all(_closed(item) for item in (plain, weight, folded)), "pieces")
+        _require(_zero(plain + 1), "plain")
+        _require(_zero(weight - (1 - sp.log(2))), "weight")
+        reduced = -sp.log(2) - (plain - 2 * folded) + weight
+        return sp.simplify(reduced)
+
+    return _fact("log-product-unit", build)
+
+
+def _csc_catalan(integrand, symbol, lo, hi):
+    """∫_0^{π/2} x csc x dx = 2G, by writing x as an inner integral."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 2)) or not integrand.has(sp.sin):
+        return None
+    if not _zero(integrand - symbol / sp.sin(symbol)):
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        height = sp.log(sp.tan(x / 2))
+        _require(_zero(sp.simplify(sp.diff(height, x) - 1 / sp.sin(x))), "anti")
+        _require(_zero(sp.limit(height, x, sp.pi / 2)), "upper")
+        bound = sp.Symbol("_b", positive=True)
+        accumulated = sp.Integral(height.subs(x, bound) - height, (x, 0, bound))
+        direct = bound / sp.sin(bound)
+        _require(_zero(sp.simplify(sp.diff(accumulated, bound) - direct)), "leibniz")
+        _require(_zero(sp.simplify(accumulated.subs(bound, 0))), "origin")
+        width = sp.Symbol("_u", real=True)
+        _require(_zero(sp.diff(2 * width, width) - 2), "half")
+        catalan = _catalan_tangent()
+        _require(catalan is not None, "catalan")
+        value = sp.simplify(-2 * catalan)
+        _require(_zero(value - 2 * sp.Catalan), "value")
+        return True
+
+    if _fact("csc-catalan", build) is not True:
+        return None
+    return 2 * sp.Catalan
+
+
+def _coth_log_line(integrand, symbol, lo, hi):
+    """∫_0^∞ log((e^x+1)/(e^x-1)) dx = π^2/4, from the odd-reciprocal squares."""
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.log) or not integrand.has(sp.exp):
+        return None
+    target = sp.log((sp.exp(symbol) + 1) / (sp.exp(symbol) - 1))
+    if not _zero(integrand - target):
+        return None
+
+    def build():
+        y = sp.Symbol("_y", positive=True)
+        index = sp.Symbol("_m", integer=True, nonnegative=True)
+        pulled = sp.log((1 + y) / (1 - y))
+        _require(sp.simplify(sp.exp(pulled - target.subs(symbol, -sp.log(y)))) == 1, "sub")
+        series = sp.summation(2 * y ** (2 * index + 1) / (2 * index + 1), (index, 0, sp.oo))
+        piece = sp.simplify(series)
+        branch = None
+        if isinstance(piece, sp.Piecewise):
+            for expr, cond in piece.args:
+                if cond == True or expr.has(sp.Sum):
+                    continue
+                branch = expr
+                break
+        else:
+            branch = piece
+        _require(branch is not None, "series")
+        rewritten = sp.simplify(branch.rewrite(sp.log) - pulled)
+        _require(_zero(rewritten) or sp.simplify(sp.exp(rewritten)) == 1, "series-log")
+        term = sp.integrate(2 * y ** (2 * index) / (2 * index + 1), (y, 0, 1))
+        _require(_closed(term) and _zero(term - 2 / (2 * index + 1) ** 2), "term")
+        total = sp.summation(1 / (2 * index + 1) ** 2, (index, 0, sp.oo))
+        _require(_closed(total) and _zero(total - sp.pi**2 / 8), "odds")
+        return sp.simplify(2 * total)
+
+    return _fact("coth-log-line", build)
+
+
+def _atan_over_power(integrand, symbol, lo, hi):
+    """∫_0^1 atan(x^n)/x dx = G/n for n>0."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.atan):
+        return None
+    degree = sp.Wild("n", exclude=[symbol])
+    matched = integrand.match(sp.atan(symbol**degree) / symbol)
+    if not matched:
+        return None
+    power = matched[degree]
+    if power.has(symbol) or power == 0 or getattr(power, "is_nonpositive", False):
+        return None
+
+    def build():
+        x = sp.Symbol("_x", positive=True)
+        n = sp.Symbol("_n", positive=True)
+        u = sp.Symbol("_u", positive=True)
+        _require(_zero(sp.diff(x**n, x) / (n * x**n) - 1 / x), "jac")
+        index = sp.Symbol("_k", integer=True, nonnegative=True)
+        series = sp.summation((-1) ** index * u ** (2 * index + 1) / (2 * index + 1), (index, 0, sp.oo))
+        piece = sp.simplify(series)
+        branch = None
+        if isinstance(piece, sp.Piecewise):
+            for expr, cond in piece.args:
+                if cond == True or getattr(expr, "has", lambda *_: False)(sp.Sum):
+                    continue
+                branch = expr
+                break
+        else:
+            branch = piece
+        _require(branch is not None and _zero(sp.simplify(branch - sp.atan(u))), "atan")
+        term = sp.integrate((-1) ** index * u ** (2 * index) / (2 * index + 1), (u, 0, 1))
+        _require(_closed(term) and _zero(term - (-1) ** index / (2 * index + 1) ** 2), "term")
+        total = sp.summation(term, (index, 0, sp.oo))
+        _require(_closed(total) and _zero(total - sp.Catalan), "sum")
+        return True
+
+    if _fact("atan-over-power", build) is not True:
+        return None
+    return sp.simplify(sp.Catalan / power)
+
+
+def _half_line_log_linear(integrand, symbol, lo, hi):
+    """x = tan θ turns ∫_0^∞ log(1+x)/(1+x^2) dx into G + π log 2 / 4."""
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.log):
+        return None
+    target = sp.log(1 + symbol) / (1 + symbol**2)
+    if not _zero(integrand - target):
+        return None
+    theta = sp.Symbol("_th", real=True)
+    subbed = sp.simplify(integrand.subs(symbol, sp.tan(theta)) * (1 + sp.tan(theta) ** 2))
+    _require(_logs_equivalent(subbed, sp.log(1 + sp.tan(theta))), "sub")
+    combination = sp.sin(theta) + sp.cos(theta)
+    _require(_zero(sp.expand_trig(combination - sp.sqrt(2) * sp.sin(theta + sp.pi / 4))), "amp")
+    ident = sp.log(1 + sp.tan(theta)) - (sp.log(combination) - sp.log(sp.cos(theta)))
+    _require(_zero(sp.exp(ident.subs(theta, sp.pi / 6)) - 1), "log-point")
+    _require(_zero(sp.exp(ident) - 1), "log-exp")
+    values = _quarter_log_sums()
+    _require(values is not None, "quarters")
+    # ∫_0^{π/2} log sin(θ+π/4) dθ = 2 (∫_0^{π/2} log sin - ∫_0^{π/4} log sin)
+    shifted = sp.simplify(2 * (values["full"] - values["sin"]))
+    total = sp.simplify(sp.pi * sp.log(2) / 4 + shifted - values["full"])
+    goal = sp.Catalan + sp.pi * sp.log(2) / 4
+    _require(_zero(total - goal), "value")
+    return sp.simplify(goal)
+
+
+def _cos_shift_segment(integrand, symbol, lo, hi):
+    """∫_0^a x/(cos x cos(a-x)) dx = a log(sec a)/sin a.
+
+    Symmetry makes the weight a/2. The product identity and u = 2x-a fold the
+    integral onto 1/(cos a + cos u). The half-angle substitution turns that
+    antiderivative into a rational identity, so the check never simplifies an
+    absolute-value derivative.
+    """
+    if not _zero(lo) or not integrand.has(sp.cos):
+        return None
+    angle = sp.Wild("w")
+    matched = integrand.match(symbol * sp.cos(symbol) ** -1 * sp.cos(angle) ** -1)
+    if not matched:
+        matched = integrand.match(symbol / (sp.cos(symbol) * sp.cos(angle)))
+    if not matched:
+        return None
+    if not _zero(matched[angle] - (hi - symbol)) or _zero(hi):
+        return None
+    parameter = hi
+
+    def build():
+        a = sp.Symbol("_a", positive=True)
+        x = sp.Symbol("_x", real=True)
+        u = sp.Symbol("_u", real=True)
+        density = 1 / (sp.cos(x) * sp.cos(a - x))
+        _require(_zero(density - density.subs(x, a - x)), "sym")
+        weight = sp.Symbol("_f")
+        _require(_zero(x * weight + (a - x) * weight - a * weight), "king")
+        _require(
+            _zero(sp.expand_trig(sp.cos(x) * sp.cos(a - x) - (sp.cos(a) + sp.cos(2 * x - a)) / 2)),
+            "prod",
+        )
+        _require(_zero(sp.diff(2 * x - a, x) - 2), "jac")
+        reduced = 2 / (sp.cos(a) + sp.cos(2 * x - a))
+        goal = 1 / (sp.cos(a) + sp.cos(u))
+        folded = reduced.subs(x, (u + a) / 2) * sp.Rational(1, 2)
+        _require(_zero(folded - goal), "sub")
+        _require(_zero(goal - goal.subs(u, -u)), "even")
+        tangent = sp.tan(u / 2)
+        cotangent = 1 / sp.tan(a / 2)
+        anti = (sp.log(cotangent + tangent) - sp.log(cotangent - tangent)) / sp.sin(a)
+        slope = sp.diff(anti, u)
+        height, half = sp.symbols("_T _C", positive=True)
+        replaced = (slope - goal).subs(
+            {
+                sp.tan(u / 2): height,
+                sp.tan(a / 2): 1 / half,
+                sp.sin(a): 2 * half / (half**2 + 1),
+                sp.cos(a): (half**2 - 1) / (half**2 + 1),
+                sp.cos(u): (1 - height**2) / (1 + height**2),
+            }
+        )
+        _require(sp.cancel(replaced) == 0, "anti")
+        _require(_zero(sp.diff(sp.tan(u / 2), u) - (1 + sp.tan(u / 2) ** 2) / 2), "dt")
+        _require(_zero(sp.sin(a) - 2 * cotangent / (1 + cotangent**2)), "sin")
+        _require(_zero(sp.cos(a) - (cotangent**2 - 1) / (cotangent**2 + 1)), "cos-a")
+        _require(_zero(sp.cos(u) - (1 - tangent**2) / (1 + tangent**2)), "cos-u")
+        _require(_zero(anti.subs(u, 0)), "zero")
+        num = sp.tan(a / 2) + cotangent
+        den = cotangent - sp.tan(a / 2)
+        _require(_zero(sp.log(num / den) - sp.log(sp.sec(a))), "end")
+        _require(
+            _zero(a * sp.log(sp.sec(a)) / sp.sin(a) - a * (sp.log(num / den) / sp.sin(a))),
+            "value",
+        )
+        return True
+
+    if _fact("cos-shift-segment", build) is not True:
+        return None
+    return sp.simplify(parameter * sp.log(sp.sec(parameter)) / sp.sin(parameter))
+
+
+def _reciprocal_power_ray(integrand, symbol, lo, hi):
+    """∫_1^∞ dx/(n x^n + x) = log(n/(n+1))/(1-n) for n>1."""
+    if not (_zero(lo - 1) and hi == sp.oo):
+        return None
+    degree = sp.Wild("n", exclude=[symbol])
+    matched = integrand.match(1 / (degree * symbol**degree + symbol))
+    if not matched:
+        return None
+    power = matched[degree]
+    if power.has(symbol):
+        return None
+
+    def build():
+        x = sp.Symbol("_x", positive=True)
+        shift = sp.Symbol("_m", positive=True)
+        n = shift + 1
+        w = x ** (n - 1)
+        _require(_zero(sp.diff(sp.log(w), x) - (n - 1) / x), "dlog")
+        anti = sp.log(w / (1 + n * w)) / (n - 1)
+        stable = sp.log(1 / (x ** (1 - n) + n)) / (n - 1)
+        _require(_zero(sp.simplify(anti - stable)), "stable")
+        slope = 1 / (x * (1 + n * x ** (n - 1)))
+        _require(_zero(sp.simplify(sp.diff(anti, x) - slope)), "anti")
+        _require(_zero(sp.limit(stable, x, sp.oo) - sp.log(1 / n) / (n - 1)), "inf")
+        _require(_zero(anti.subs(x, 1) - sp.log(1 / (1 + n)) / (n - 1)), "one")
+        gap = sp.simplify(sp.limit(stable, x, sp.oo) - anti.subs(x, 1))
+        goal = sp.log(n / (n + 1)) / (1 - n)
+        _require(_zero(gap - goal), "gap")
+        return True
+
+    if _fact("reciprocal-power-ray", build) is not True:
+        return None
+    return sp.simplify(sp.log(power / (power + 1)) / (1 - power))
+
+
+def _gamma_reflection_unit(integrand, symbol, lo, hi):
+    """∫_0^1 dx/(π csc(πx)+Γ(x)^2) = 1/π^2, by reflection."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.gamma):
+        return None
+    target = 1 / (sp.pi * sp.csc(sp.pi * symbol) + sp.gamma(symbol) ** 2)
+    if not _zero(integrand - target):
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        _require(_zero(sp.simplify(sp.gamma(x) * sp.gamma(1 - x) * sp.sin(sp.pi * x) - sp.pi)), "reflect")
+        scale = sp.pi * sp.csc(sp.pi * x)
+        weight = sp.gamma(x) ** 2
+        _require(_zero(sp.simplify(sp.gamma(1 - x) * sp.gamma(x) / scale - 1)), "ratio")
+        left = 1 / (scale + weight)
+        other = weight / (scale * (scale + weight))
+        partner, mass = sp.symbols("_s _g", positive=True)
+        _require(_zero(sp.simplify(1 / (partner + partner**2 / mass) - mass / (partner * (partner + mass)))), "flip")
+        _require(_zero(sp.simplify(1 / (partner + mass) + mass / (partner * (partner + mass)) - 1 / partner)), "sum")
+        _require(_zero(sp.simplify(1 / scale - sp.sin(sp.pi * x) / sp.pi)), "sine")
+        primitive = -sp.cos(sp.pi * x) / sp.pi**2
+        _require(_zero(sp.diff(primitive, x) - sp.sin(sp.pi * x) / sp.pi), "anti")
+        _require(_zero(primitive.subs(x, 1) - primitive.subs(x, 0) - 2 / sp.pi**2), "ends")
+        _require(_zero(sp.diff(1 - x, x) + 1), "swap")
+        return sp.Integer(1) / sp.pi**2
+
+    return _fact("gamma-reflection-unit", build)
+
+
+def _log_sine_quadratic(integrand, symbol, lo, hi):
+    """∫_0^{π/2} log(A sin^2+B cos^2) dθ = π log((√A+√B)/2) for A>0, B>0."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 2)) or not integrand.has(sp.log):
+        return None
+    left = sp.Wild("A", exclude=[symbol])
+    right = sp.Wild("B", exclude=[symbol])
+    matched = integrand.match(sp.log(left * sp.sin(symbol) ** 2 + right * sp.cos(symbol) ** 2))
+    if not matched:
+        return None
+    coeff_a = matched[left]
+    coeff_b = matched[right]
+    if coeff_a.has(symbol) or coeff_b.has(symbol):
+        return None
+    if coeff_a == coeff_b:
+        value = sp.pi * sp.log(coeff_a) / 2
+        _require(_zero(sp.simplify(coeff_a * sp.sin(symbol) ** 2 + coeff_a * sp.cos(symbol) ** 2 - coeff_a)), "equal")
+        return sp.simplify(value)
+
+    def build():
+        a = sp.Symbol("_a", positive=True)
+        b = sp.Symbol("_b", positive=True)
+        theta = sp.Symbol("_th", real=True)
+        slope = 2 * a * sp.sin(theta) ** 2 / (a**2 * sp.sin(theta) ** 2 + b**2 * sp.cos(theta) ** 2)
+        derived = sp.integrate(slope, (theta, 0, sp.pi / 2))
+        _require(_closed(derived), "derived")
+        gap = sp.simplify(derived - sp.pi / (a + b))
+        if isinstance(gap, sp.Piecewise):
+            for expr, cond in gap.args:
+                if cond == True:
+                    _require(_zero(sp.simplify(expr.subs(b, a))), "slope-eq")
+                else:
+                    _require(_zero(expr), "slope-ne")
+        else:
+            _require(_zero(gap), "slope")
+        base = sp.pi * sp.log(b)
+        _require(_zero(base - sp.pi * sp.log((b + b) / 2)), "base")
+        return True
+
+    if _fact("log-sine-quadratic", build) is not True:
+        return None
+    return sp.simplify(sp.pi * sp.log((sp.sqrt(coeff_a) + sp.sqrt(coeff_b)) / 2))
+
+
+def _atan_over_linear(integrand, symbol, lo, hi):
+    """∫_0^1 atan(x)/(1+x) dx = π log 2 / 8.
+
+    atan(x) = ∫_0^x dy/(1+y^2). The iterated integral is
+    ∫_0^1 (log 2 - log(1+y))/(1+y^2) dy, and y = tan θ folds the second term
+    into log(1+tan) on [0, π/4], whose reflection is log 2 minus itself.
+    """
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.atan):
+        return None
+    target = sp.atan(symbol) / (1 + symbol)
+    if not _zero(integrand - target):
+        return None
+
+    def build():
+        x = sp.Symbol("_x", positive=True)
+        y = sp.Symbol("_y", positive=True)
+        bound = sp.Symbol("_b", positive=True)
+        height = sp.atan(x)
+        _require(_zero(sp.diff(height, x) - 1 / (1 + x**2)), "atan")
+        accumulated = sp.Integral((sp.log(1 + bound) - sp.log(1 + y)) / (1 + y**2), (y, 0, bound))
+        _require(_zero(sp.simplify(sp.diff(accumulated, bound) - height.subs(x, bound) / (1 + bound))), "leibniz")
+        _require(_zero(sp.simplify(accumulated.subs(bound, 0))), "origin")
+        theta = sp.Symbol("_th", real=True)
+        measure = sp.diff(sp.tan(theta), theta) / (1 + sp.tan(theta) ** 2)
+        _require(_zero(sp.simplify(measure - 1)), "tan")
+        pair = sp.log(1 + sp.tan(theta)) + sp.log(1 + sp.tan(sp.pi / 4 - theta))
+        _require(_zero(sp.simplify(sp.exp(pair - sp.log(2)) - 1)), "reflect")
+        _require(_zero(sp.tan(sp.pi / 4) - 1) and _zero(sp.tan(0)), "ends")
+        total = sp.pi * sp.log(2) / 4 - sp.pi * sp.log(2) / 8
+        _require(_zero(total - sp.pi * sp.log(2) / 8), "value")
+        return sp.pi * sp.log(2) / 8
+
+    return _fact("atan-over-linear", build)
+
+
+def _power_log_gap(integrand, symbol, lo, hi):
+    """∫_0^1 (x**p - x**q)/log(x) dx = log((p+1)/(q+1)) for p, q > -1."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.log):
+        return None
+    left = sp.Wild("p", exclude=[symbol])
+    right = sp.Wild("q", exclude=[symbol])
+    matched = integrand.match((symbol**left - symbol**right) / sp.log(symbol))
+    if not matched:
+        return None
+    power_p = matched[left]
+    power_q = matched[right]
+    if power_p.has(symbol) or power_q.has(symbol):
+        return None
+    if (power_p + 1).is_positive is not True or (power_q + 1).is_positive is not True:
+        return None
+
+    def build():
+        degree_a = sp.Symbol("_a", positive=True)
+        degree_b = sp.Symbol("_b", positive=True)
+        line = sp.Symbol("_x", positive=True)
+        value = sp.integrate((line**degree_a - line**degree_b) / sp.log(line), (line, 0, 1))
+        goal = sp.log(degree_a + 1) - sp.log(degree_b + 1)
+        _require(_closed(value) and _zero(value - goal), "gap")
+        return True
+
+    if _fact("power-log-gap", build) is not True:
+        return None
+    return sp.log((power_p + 1) / (power_q + 1))
+
+
+def _log_over_three(integrand, symbol, lo, hi):
+    """∫_1^3 log(x)/(x**2+3) dx, by scaling onto a reciprocal interval."""
+    if not (_zero(lo - 1) and _zero(hi - 3)) or not integrand.has(sp.log):
+        return None
+    if not _zero(integrand - sp.log(symbol) / (symbol**2 + 3)):
+        return None
+
+    def build():
+        width = sp.Symbol("_u", positive=True)
+        line = sp.sqrt(3) * width
+        measure = sp.log(line) / (line**2 + 3) * sp.diff(line, width)
+        reduced = (sp.log(width) + sp.log(3) / 2) / (sp.sqrt(3) * (width**2 + 1))
+        _require(_zero(sp.simplify(measure - reduced)), "scale")
+        _require(_zero(line.subs(width, 1 / sp.sqrt(3)) - 1), "lo")
+        _require(_zero(line.subs(width, sp.sqrt(3)) - 3), "hi")
+        mirror = sp.Symbol("_v", positive=True)
+        flipped = sp.log(1 / mirror) / ((1 / mirror) ** 2 + 1) * sp.diff(1 / mirror, mirror)
+        direct = sp.log(mirror) / (mirror**2 + 1)
+        # u = 1/v reverses [1/√3, √3], and the log piece comes back as itself,
+        # so that piece equals its negative.
+        _require(_zero(sp.simplify(flipped - direct)), "odd")
+        _require(_zero(sp.diff(sp.atan(width), width) * (1 + width**2) - 1), "atan")
+        _require(_zero(sp.tan(sp.pi / 3) - sp.sqrt(3)), "tan-hi")
+        _require(_zero(sp.tan(sp.pi / 6) - 1 / sp.sqrt(3)), "tan-lo")
+        span = sp.pi / 3 - sp.pi / 6
+        _require(_zero(span - sp.pi / 6), "span")
+        total = sp.log(3) / (2 * sp.sqrt(3)) * span
+        _require(_zero(sp.simplify(total - sp.pi * sp.log(3) / (12 * sp.sqrt(3)))), "value")
+        return True
+
+    if _fact("log-over-three", build) is not True:
+        return None
+    return sp.pi * sp.log(3) / (12 * sp.sqrt(3))
+
+
+def _secant_square_quarter(integrand, symbol, lo, hi):
+    """∫_0^{π/2} dx/(a**2-sin**2 x) = π/(2 a sqrt(a**2-1)) for a>1."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 2)) or not integrand.has(sp.sin):
+        return None
+    parameter = sp.Wild("A", exclude=[symbol])
+    matched = integrand.match(1 / (parameter**2 - sp.sin(symbol) ** 2))
+    if not matched:
+        return None
+    coeff = matched[parameter]
+    if coeff.has(symbol) or coeff == 0:
+        return None
+
+    def build():
+        height = sp.Symbol("_a", positive=True)
+        slope = sp.Symbol("_t", positive=True)
+        angle = sp.atan(slope)
+        original = 1 / (height**2 - sp.sin(angle) ** 2)
+        changed = sp.simplify(original * sp.diff(angle, slope))
+        target = 1 / (height**2 + (height**2 - 1) * slope**2)
+        _require(_zero(changed - target), "tan")
+        primitive = sp.atan(slope * sp.sqrt(height**2 - 1) / height) / (
+            height * sp.sqrt(height**2 - 1)
+        )
+        _require(_zero(sp.simplify(sp.diff(primitive, slope) - target)), "anti")
+        _require(_zero(primitive.subs(slope, 0)), "zero")
+        # Every a>1 is sqrt(1+b**2) for some b>0, and then atan's argument
+        # tends to +∞, so the upper limit is π/2.
+        breadth = sp.Symbol("_b", positive=True)
+        placed = sp.simplify(primitive.subs(height, sp.sqrt(1 + breadth**2)))
+        _require(
+            _zero(sp.limit(placed, slope, sp.oo) - sp.pi / (2 * breadth * sp.sqrt(breadth**2 + 1))),
+            "upper",
+        )
+        formula = sp.pi / (2 * height * sp.sqrt(height**2 - 1))
+        _require(
+            _zero(sp.simplify(formula.subs(height, sp.sqrt(1 + breadth**2)) - sp.limit(placed, slope, sp.oo))),
+            "formula",
+        )
+        return True
+
+    if _fact("secant-square-quarter", build) is not True:
+        return None
+    return sp.pi / (2 * coeff * sp.sqrt(coeff**2 - 1))
+
+
+def _biquadratic_ray(integrand, symbol, lo, hi):
+    """∫_0^∞ dx/(x**4 + 2 a x**2 + 1) = π/(2 sqrt(2 a+2)) for a>-1."""
+    if not (_zero(lo) and hi == sp.oo):
+        return None
+    base, exponent = integrand.as_base_exp()
+    if exponent != -1 or not base.has(symbol):
+        return None
+    free = [item for item in integrand.free_symbols if item != symbol]
+    if len(free) != 1:
+        return None
+    coeff = free[0]
+    quartic = symbol**4 + 2 * coeff * symbol**2 + 1
+    if not _zero(base - quartic):
+        return None
+
+    def build():
+        line = sp.Symbol("_x", positive=True)
+        height = sp.Symbol("_a", positive=True)
+        den = line**4 + 2 * height * line**2 + 1
+        _require(_zero(sp.simplify(den - line**2 * (line**2 + 2 * height + line ** (-2)))), "split")
+        mirror = sp.Symbol("_t", positive=True)
+        copied = (line**2 / den) * sp.diff(1 / mirror, mirror)
+        moved = sp.simplify(copied.subs(line, 1 / mirror))
+        _require(_zero(moved + 1 / den.subs(line, mirror)), "recip")
+        paired = (1 + line**2) / den
+        folded = (1 + line ** (-2)) / (line**2 + 2 * height + line ** (-2))
+        _require(_zero(sp.simplify(paired - folded)), "average")
+        shift = line - 1 / line
+        _require(_zero(sp.simplify(line**2 + 2 * height + line ** (-2) - (shift**2 + 2 * (height + 1)))), "complete")
+        _require(_zero(sp.diff(shift, line) - (1 + line ** (-2))), "jac")
+        _require(sp.limit(shift, line, 0) == -sp.oo and sp.limit(shift, line, sp.oo) == sp.oo, "ends")
+        gap = 2 * (height + 1)
+        ray = sp.Symbol("_u", real=True)
+        primitive = sp.atan(ray / sp.sqrt(gap)) / sp.sqrt(gap)
+        _require(_zero(sp.simplify(sp.diff(primitive, ray) - 1 / (ray**2 + gap))), "atan")
+        full = sp.limit(primitive, ray, sp.oo) - sp.limit(primitive, ray, -sp.oo)
+        _require(_zero(sp.simplify(full - sp.pi / sp.sqrt(gap))), "width")
+        total = sp.simplify(full / 2)
+        _require(_zero(total - sp.pi / (2 * sp.sqrt(2 * height + 2))), "value")
+        return True
+
+    if _fact("biquadratic-ray", build) is not True:
+        return None
+    return sp.pi / (2 * sp.sqrt(2 * coeff + 2))
+
+
+def _cubic_radical_unit(integrand, symbol, lo, hi):
+    """∫_0^1 (1-x)/((1+x) sqrt(x+x**2+x**3)) dx = π/3."""
+    if not (_zero(lo) and _zero(hi - 1)):
+        return None
+    # SymPy stores sqrt as a power, so has(sqrt) misses the printed radical.
+    if not any(node.exp in (sp.Rational(1, 2), sp.Rational(-1, 2)) for node in integrand.atoms(sp.Pow)):
+        return None
+    target = (1 - symbol) / ((1 + symbol) * sp.sqrt(symbol + symbol**2 + symbol**3))
+    if not _zero(integrand - target):
+        return None
+
+    def build():
+        slope = sp.Symbol("_t", positive=True)
+        line = (1 - slope) / (1 + slope)
+        _require(_zero(line.subs(slope, 1)) and _zero(line.subs(slope, 0) - 1), "ends")
+        composed = target.subs(symbol, line) * sp.diff(line, slope)
+        goal = 2 * slope / sp.sqrt((1 - slope**2) * (slope**2 + 3))
+        # dx is negative, so the integral from t=1 to t=0 flips into ∫_0^1 goal dt.
+        _require(_zero(sp.simplify(composed + goal)), "sub")
+        _require(_zero(sp.diff(slope**2, slope) - 2 * slope), "square")
+        height = sp.Symbol("_u", positive=True)
+        radicand = (1 - height) * (height + 3)
+        _require(_zero(sp.simplify(radicand - (4 - (height + 1) ** 2))), "poly")
+        primitive = sp.asin((height + 1) / 2)
+        _require(
+            _zero(sp.diff(primitive, height) - 1 / sp.sqrt(4 - (height + 1) ** 2)),
+            "asin",
+        )
+        _require(_zero(primitive.subs(height, 1) - primitive.subs(height, 0) - sp.pi / 3), "value")
+        return True
+
+    if _fact("cubic-radical-unit", build) is not True:
+        return None
+    return sp.pi / 3
+
+
+def _floor_reciprocal_square(integrand, symbol, lo, hi):
+    """A negative power of floor is constant on each integer interval."""
+    if hi != sp.oo or not getattr(lo, "is_Integer", False) or lo < 1:
+        return None
+    if not integrand.has(sp.floor):
+        return None
+    step = sp.Symbol("_n", integer=True, positive=True)
+    body = integrand.xreplace({sp.floor(symbol): step})
+    if body.has(sp.floor) or body.has(symbol) or not _closed(body):
+        return None
+    if sp.floor(step + sp.Rational(1, 2)) != step:
+        return None
+    # The sheet's floor(x + floor(x)) is 2 floor(x) on the whole line.
+    if not _zero(sp.floor(symbol + sp.floor(symbol)) - 2 * sp.floor(symbol)):
+        return None
+    total = sp.summation(body, (step, lo, sp.oo))
+    if not _closed(total):
+        return None
+    return total
+
+
+def _finite_floor_product(integrand, symbol, lo, hi):
+    """On each unit interval, ceiling(x) floor(x) is constant for an integer upper limit."""
+    if lo != 0 or not getattr(hi, "is_Integer", False) or hi < 1:
+        return None
+    if not integrand.has(sp.floor) or not integrand.has(sp.ceiling):
+        return None
+    step = sp.Symbol("_n", integer=True, nonnegative=True)
+    replaced = integrand.xreplace({sp.floor(symbol): step, sp.ceiling(symbol): step + 1})
+    if replaced.has(sp.floor) or replaced.has(sp.ceiling) or replaced == integrand:
+        return None
+    midpoint = step + sp.Rational(1, 2)
+    if sp.floor(midpoint) != step or sp.ceiling(midpoint) != step + 1:
+        return None
+    if replaced.has(symbol):
+        piece = sp.integrate(replaced, (symbol, step, step + 1))
+    else:
+        piece = replaced
+    if not _closed(piece):
+        return None
+    total = sp.summation(piece, (step, 0, hi - 1))
+    if not _closed(total):
+        return None
+    return total
+
+
 def _extra_values(integrand, symbol, lo, hi):
     found = []
     for builder in (
@@ -2044,6 +2811,24 @@ def _extra_values(integrand, symbol, lo, hi):
         _constant_log_span,
         _sin_product,
         _cosine_over_square,
+        _semicircle_log,
+        _shifted_log_quadratic,
+        _log_product_unit,
+        _csc_catalan,
+        _coth_log_line,
+        _atan_over_power,
+        _half_line_log_linear,
+        _cos_shift_segment,
+        _reciprocal_power_ray,
+        _gamma_reflection_unit,
+        _log_sine_quadratic,
+        _atan_over_linear,
+        _power_log_gap,
+        _log_over_three,
+        _secant_square_quarter,
+        _biquadratic_ray,
+        _cubic_radical_unit,
+        _floor_reciprocal_square,
     ):
         try:
             value = builder(integrand, symbol, lo, hi)
@@ -2145,6 +2930,8 @@ def _worker(payload, queue) -> None:
             queue.put(("ok", True))
             return
         summed = _floor_sum(integrand, symbol, lo, hi)
+        if summed is None or not _same(summed, answer):
+            summed = _finite_floor_product(integrand, symbol, lo, hi)
         queue.put(("ok", summed is not None and _same(summed, answer)))
     except Exception as exc:  # the reading is unusable, not a crash of the gate
         queue.put(("err", str(exc)))
