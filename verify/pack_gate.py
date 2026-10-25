@@ -55,7 +55,8 @@ complement of two square-root logarithms on [2, 4], a fifth power of a
 cosine-sine mean on [0, π/2], a root-exponential reflection on [-π/2, π/2],
 1/(1+|cos x|) on [0, 2π], a shifted square-root logarithm reduced to a gamma
 value, an arcsec substitution on [1, ∞), and an even power of cosine on a full
-period reduced by the Wallis recurrence. Numeric agreement is not a proof.
+period reduced by the Wallis recurrence. Those seven patterns are checked before
+the general reductions. Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -2962,8 +2963,8 @@ def _even_cosine_period(integrand, symbol, lo, hi):
     return sp.simplify(full)
 
 
-def _extra_values(integrand, symbol, lo, hi):
-    found = []
+def _structural_values(integrand, symbol, lo, hi):
+    """Exact integrand patterns. A miss returns before any search."""
     for builder in (
         _paired_log_span,
         _fifth_sqrt_quarter,
@@ -2972,6 +2973,15 @@ def _extra_values(integrand, symbol, lo, hi):
         _sqrt_log_tail,
         _arcsec_exp_ray,
         _even_cosine_period,
+    ):
+        value = builder(integrand, symbol, lo, hi)
+        if value is not None:
+            yield value
+
+
+def _extra_values(integrand, symbol, lo, hi):
+    found = []
+    for builder in (
         _log_sine_quarter,
         _half_line_log_square,
         _x_cot_quarter,
@@ -3075,6 +3085,10 @@ def _worker(payload, queue) -> None:
         if _matches(cleared, answer):
             queue.put(("ok", True))
             return
+        for value in _structural_values(integrand, symbol, lo, hi):
+            if _matches(value, answer):
+                queue.put(("ok", True))
+                return
         for value in _reduced_integrals(integrand, symbol, lo, hi):
             if _matches(value, answer):
                 queue.put(("ok", True))
