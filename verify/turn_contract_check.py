@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import subprocess
@@ -195,6 +196,177 @@ def placement(data: Path, check) -> None:
     check(dosed["detail"] == "worked", "a miss restores the worked dosage")
 
 
+NOTE_PATHS = (
+    "units/10-inverse-kings/teaching.tex",
+    "units/20-wallis/teaching.tex",
+    "units/26-weierstrass/teaching.tex",
+    "docs/techniques/floor.md",
+    "docs/techniques/introduce-constant.md",
+    "docs/techniques/formats.md",
+)
+
+
+def note_hash() -> str:
+    digest = hashlib.sha256()
+    for rel in NOTE_PATHS:
+        digest.update((ROOT / rel).read_bytes())
+    return digest.hexdigest()
+
+
+def reopen(data: Path, problem_id: str, node: str) -> None:
+    session = json.loads((data / "session.json").read_text())
+    session["phase"] = "awaiting_answer"
+    session["problem_id"] = problem_id
+    session["node"] = node
+    session["mock_id"] = None
+    (data / "session.json").write_text(json.dumps(session, indent=2) + "\n")
+
+
+def gap_cases(data: Path, check) -> None:
+    before = note_hash()
+    missed = apply(
+        data,
+        {
+            "kind": "mark",
+            "problem_id": "U01-D07",
+            "source": "typed",
+            "extract": {"final_answer": "1", "gap": "floor", "method_note": "split the interval"},
+        },
+    )
+    doc = load(missed)
+    check(missed.returncode == 1, "floor miss exits 1")
+    check("docs/techniques/floor.md" in doc["say"], "floor miss names floor.md")
+    check("beyond-yang.md" not in doc["say"], "floor miss names one file")
+    attempts = json.loads((data / "attempts.json").read_text())["items"]
+    row = next(item for item in attempts if item["problem_id"] == "U01-D07")
+    check(
+        row["gap"] == "floor" and row["note"] == "final answer differed",
+        "floor miss stores the gap id and the answer note",
+    )
+    check("split the interval" not in json.dumps(attempts), "a wrong answer drops method_note")
+    journal = data / "journal.json"
+    check(not journal.exists() or "split the interval" not in journal.read_text(), "a wrong answer writes no method journal")
+    check(note_hash() == before, "a mark does not edit a teaching note")
+
+    count = len(json.loads((data / "attempts.json").read_text())["items"])
+    unknown = apply(
+        data,
+        {
+            "kind": "mark",
+            "problem_id": "U01-D08",
+            "source": "typed",
+            "extract": {"final_answer": "1", "gap": "batis"},
+        },
+    )
+    check(unknown.returncode == 2 and "unknown gap" in unknown.stderr, "unknown gap exits 2")
+    after_unknown = json.loads((data / "attempts.json").read_text())["items"]
+    check(
+        len(after_unknown) == count and not any(item["problem_id"] == "U01-D08" for item in after_unknown),
+        "unknown gap writes nothing",
+    )
+
+    bare = apply(
+        data,
+        {
+            "kind": "mark",
+            "problem_id": "U26-D01",
+            "source": "typed",
+            "extract": {"final_answer": "1", "gap": "weierstrass"},
+        },
+    )
+    check(
+        bare.returncode == 2 and "correct mark needs method_note when gap is set" in bare.stderr,
+        "correct gap without method_note exits 2",
+    )
+    check(
+        not any(
+            item["problem_id"] == "U26-D01"
+            for item in json.loads((data / "attempts.json").read_text())["items"]
+        ),
+        "correct gap without method_note writes nothing",
+    )
+
+    method = apply(
+        data,
+        {
+            "kind": "mark",
+            "problem_id": "U26-D01",
+            "source": "typed",
+            "extract": {"final_answer": "1", "gap": "weierstrass", "method_note": "half angle"},
+        },
+    )
+    method_doc = load(method)
+    check(method.returncode == 0, "weierstrass method gap exits 0")
+    check("units/26-weierstrass/teaching.tex" in method_doc["say"], "method gap names the unit note")
+    marks = json.loads((data / "marks.json").read_text())["marks"]["U26-D01"]
+    check(marks["method_ok"] is False and marks["answer_ok"] is True, "method gap keeps method_ok false")
+    stored = next(
+        item
+        for item in json.loads((data / "attempts.json").read_text())["items"]
+        if item["problem_id"] == "U26-D01"
+    )
+    check(stored["gap"] == "weierstrass", "method gap stores the id")
+
+    contest = apply(
+        data,
+        {
+            "kind": "mark",
+            "problem_id": "R1-2024-Q01",
+            "source": "typed",
+            "verdict": "incorrect",
+            "extract": {"final_answer": "0"},
+        },
+    )
+    contest_doc = load(contest)
+    check(
+        contest.returncode == 1 and contest_doc["say"] == "The final answer does not match.",
+        "a contest miss with no unit names no note",
+    )
+    check("teaching.tex" not in contest_doc["say"], "a contest miss does not invent teaching.tex")
+
+    fresh = data / "retry"
+    fresh.mkdir()
+    first = apply(
+        fresh,
+        {
+            "kind": "mark",
+            "problem_id": "U01-D07",
+            "source": "typed",
+            "extract": {"final_answer": "1"},
+        },
+    )
+    check(first.returncode == 1, "open retry starts from a recorded miss")
+    reopen(fresh, "U01-D07", "basic-integration")
+    filled = apply(
+        fresh,
+        {
+            "kind": "mark",
+            "problem_id": "U01-D07",
+            "source": "typed",
+            "extract": {"final_answer": "1", "gap": "floor"},
+        },
+    )
+    filled_doc = load(filled)
+    filled_items = json.loads((fresh / "attempts.json").read_text())["items"]
+    check(filled.returncode == 1 and len(filled_items) == 1, "an open retry does not append")
+    check(filled_items[0].get("gap") == "floor", "an open retry fills the stored gap")
+    check("already recorded" in filled_doc["say"] and "docs/techniques/floor.md" in filled_doc["say"], "the fill names the recorded line and the note")
+    reopen(fresh, "U01-D07", "basic-integration")
+    refused = apply(
+        fresh,
+        {
+            "kind": "mark",
+            "problem_id": "U01-D07",
+            "source": "typed",
+            "extract": {"final_answer": "1", "gap": "reflection"},
+        },
+    )
+    refused_items = json.loads((fresh / "attempts.json").read_text())["items"]
+    check(refused.returncode == 2 and "gap does not match the recorded gap" in refused.stderr, "an open retry refuses a different gap")
+    check(len(refused_items) == 1 and refused_items[0].get("gap") == "floor", "a refused retry leaves the stored gap")
+    check(note_hash() == before, "gap marks leave the notes unchanged")
+
+
 def main() -> int:
     fail = 0
 
@@ -220,6 +392,10 @@ def main() -> int:
         )
         check(set(schema_doc["result"]["phases"]) == model.SESSION_PHASES, "schema phases match")
         check(schema_doc["request"]["confirm"]["required"] == ["kind", "nodes"], "confirm requires nodes")
+        check(
+            schema_doc["request"]["mark"].get("extract_optional") == ["method_note", "gap"],
+            "mark extract may name a gap",
+        )
 
         shown = run(data, ["turn", "show", "--format", "json"])
         show_doc = load(shown)
@@ -255,6 +431,11 @@ def main() -> int:
         )
         wrong_doc = load(wrong)
         check(wrong.returncode == 1 and wrong_doc["mark"]["correct"] is False, "wrong photo mark fails closed")
+        check(
+            "units/01-foundations-substitution/teaching.tex" in wrong_doc["say"],
+            "a unit miss names the unit note",
+        )
+        check("beyond-yang.md" not in wrong_doc["say"], "a unit miss does not name the index")
         check(wrong_doc["session"]["phase"] == "idle", "wrong mark closes the drill")
         heat = json.loads((data / "heatmap.json").read_text())
         check(heat["topics"]["yang:1.1"]["fails"] == 1, "wrong mark bumps the heatmap")
@@ -473,6 +654,48 @@ def main() -> int:
     )
     check(plan["mark"]["idempotent"] is True and plan["effects"] == {}, "a repeated open mark does not append")
     check(plan["session"]["phase"] == "idle", "the repeated mark closes the drill")
+    filled = turn_contract.plan_mark(
+        session,
+        attempts,
+        {},
+        [],
+        drills,
+        [],
+        {
+            "kind": "mark",
+            "problem_id": "U01-D07",
+            "source": "photo",
+            "extract": {"final_answer": "1", "gap": "floor", "method_note": "do not store"},
+        },
+        "t3",
+    )
+    check(
+        filled["exit"] == 1
+        and filled["effects"] == {"gap_fill": {"problem_id": "U01-D07", "gap": "floor"}}
+        and "attempt" not in filled["effects"],
+        "an open miss can record the gap without a second attempt",
+    )
+    check("docs/techniques/floor.md" in filled["say"], "the fill names the floor note")
+    rejected = turn_contract.plan_mark(
+        session,
+        [{"problem_id": "U01-D07", "correct": False, "submitted": "1", "gap": "floor"}],
+        {},
+        [],
+        drills,
+        [],
+        {
+            "kind": "mark",
+            "problem_id": "U01-D07",
+            "source": "photo",
+            "extract": {"final_answer": "1", "gap": "reflection"},
+        },
+        "t4",
+    )
+    check(
+        rejected["exit"] == 2 and rejected["error"] == "gap does not match the recorded gap",
+        "a different gap on the open mark is refused",
+    )
+    check(rejected["effects"] == {}, "a refused gap writes no effect")
     check(model.session_problem({"phase": "nope"}) == "bad session phase", "bad phase is a session error")
     weak = turn_contract.recommend_node(
         [
@@ -487,6 +710,9 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory() as tmp:
         placement(Path(tmp), check)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        gap_cases(Path(tmp), check)
 
     if fail:
         print("FAIL turn contract")

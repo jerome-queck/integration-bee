@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import check_math
+import gap_index
 import model
 import problem_catalog
 import sympy as sp
@@ -390,14 +391,20 @@ def describe_open_probe(session: dict, drills: list[dict], records: list[dict]) 
     return _probe_payload(probe, drills, records)
 
 
-def _miss_say(graded: dict) -> str:
-    row = graded.get("row") or {}
-    unit = row.get("unit")
-    path = f"units/{unit}/teaching.tex" if unit else "teaching.tex"
-    return (
-        "The final answer does not match. "
-        f"Teach the gap from {path} and from docs/techniques/beyond-yang.md."
-    )
+def _requested_gap(extract: dict):
+    if "gap" not in extract:
+        return None, None
+    index, err = gap_index.load_index()
+    if err or index is None:
+        return None, err or "gap index is unreadable"
+    return gap_index.parse_gap(extract.get("gap"), index)
+
+
+def _stored_gap(gap_id: str):
+    index, err = gap_index.load_index()
+    if err or index is None:
+        return None, err or "gap index is unreadable"
+    return gap_index.parse_gap(gap_id, index)
 
 
 def find_drill(drills: list[dict], drill_id: str) -> dict | None:
@@ -954,6 +961,9 @@ def plan_mark(
     if not problem_id or submitted is None or str(submitted).strip() == "":
         return _fail(session, 2, "mark needs problem_id and extract.final_answer")
     submitted = str(submitted).strip()
+    gap, gap_err = _requested_gap(extract)
+    if gap_err:
+        return _fail(session, 2, gap_err)
     graded, err = grade_problem(problem_id, submitted, verdict, drills, feed, catalog_rows)
     if err:
         return _fail(session, 2, err)
@@ -967,6 +977,12 @@ def plan_mark(
     )
     open_match = session.get("problem_id") == problem_id and session.get("phase") in {PHASE_AWAITING, PHASE_MOCK_Q}
     if open_match and same_answer:
+        incoming = gap.id if gap is not None else None
+        repeat = gap_index.classify_repeat(latest.get("gap"), incoming)
+        if repeat is gap_index.Repeat.REJECT:
+            return _fail(session, 2, "gap does not match the recorded gap")
+        if repeat is gap_index.Repeat.FILL and graded["correct"] and not method_note:
+            return _fail(session, 2, "correct mark needs method_note when gap is set")
         new_session = _clear_to(session, updated)
         tick = None
         node = _node_for_problem(problem_id, catalog, drills, session)
@@ -976,13 +992,25 @@ def plan_mark(
         elif node is not None and _status(ticks, node["id"]) == "skipped":
             tick = {"node": node["id"], "status": "learning"}
         ledger, sticky = gap_rows(graded, problem_id, method_note) if method_note else (None, None)
+        effects = {}
+        if repeat is gap_index.Repeat.FILL:
+            effects = {"gap_fill": {"problem_id": problem_id, "gap": gap.id}}
+        say = "That mark was already recorded."
+        resolved = gap
+        if resolved is None and latest.get("gap"):
+            resolved, stored_err = _stored_gap(latest["gap"])
+            if stored_err:
+                return _fail(session, 2, stored_err)
+        if resolved is not None:
+            unit = (graded.get("row") or {}).get("unit")
+            say = f"{say} {gap_index.note_say(unit, resolved, graded['correct'])}"
         return {
             "exit": 0 if graded["correct"] else 1,
             "error": None,
             "session": new_session,
-            "effects": {},
+            "effects": effects,
             "drill": None,
-            "say": "That mark was already recorded.",
+            "say": say,
             "mark": {
                 "id": problem_id,
                 "correct": graded["correct"],
@@ -995,6 +1023,8 @@ def plan_mark(
             "ledger": ledger,
             "sticky": sticky,
         }
+    if gap is not None and graded["correct"] and not method_note:
+        return _fail(session, 2, "correct mark needs method_note when gap is set")
     aptitude_same = session.get("phase") == PHASE_APTITUDE and same_answer
     seen, tick, node, policy = _mark_decision(
         problem_id,
@@ -1030,6 +1060,8 @@ def plan_mark(
                 "row": stored_row,
             }
         }
+        if gap is not None:
+            effects["attempt"]["gap"] = gap.id
     phase = session.get("phase")
     problems = None
     extra = None
@@ -1049,7 +1081,8 @@ def plan_mark(
             drill_view = drill_public(alt[0])
     say = "That mark was already recorded." if aptitude_same else None
     if say is None:
-        say = "The final answer matches." if graded["correct"] else _miss_say(graded)
+        unit = (graded.get("row") or {}).get("unit")
+        say = gap_index.note_say(unit, gap, graded["correct"])
     if tick and tick.get("status") == "solid":
         say = f"{say} {tick['node']} is now solid."
     if extra:
