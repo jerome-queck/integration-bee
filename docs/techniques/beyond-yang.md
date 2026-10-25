@@ -49,3 +49,5 @@ Yang is one source among others. These notes are original exposition for moves t
 Pack and Yang integrands in `problems/records.jsonl` start from the PDF text layer. A pack row with `verify` set to `sympy` also stores the proved `integrand_latex` and `answer_latex`. Every other `integrand_latex` stays null. An answer with `verify` set to `manual` is a mark-scheme cite, or a short equality already printed in a Yang example. It is not a SymPy result. Yang practice rows with `verify` set to `unchecked` have no printed answer in the extract. Do not invent one.
 
 On a miss, teach the one file `say` names. Read that note and work its displayed example. Do not edit the note in the study session. A later commit is what fills a missing move, with an original example or a stored drill id.
+
+Round 1 families also have coach cards in `docs/techniques/concepts/`. Those cards are not gap ids. A mark still uses one of the six headings above. The map from a catalog node to a card is `pedagogy/concept-map.md`.

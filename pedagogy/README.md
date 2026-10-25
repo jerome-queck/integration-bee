@@ -21,6 +21,8 @@ A PDF is a reference for checking a printed value. It is not the lesson. Do not 
 
 The six headings in `docs/techniques/beyond-yang.md` are the gap list. How to teach each one, including the Round 1 paper and the Round 2 and Round 3 games, is `pedagogy/contest-gaps.md`. The math stays in the note that heading names. Yang is one source. The Techniques Guide, the syllabus, and the participant guides are the others.
 
+Coach cards for the Round 1 families live in `docs/techniques/concepts/`. They are not gap ids. Which node opens which card, and which nodes are still thin, is `pedagogy/concept-map.md`. How a tick chooses the worked example or the next drill is `pedagogy/round1-coach.md`.
+
 ## Teach on a miss
 
 `turn apply` names exactly one file in `say`. Teach that file. A wrong final answer with a gap id opens the technique note. A wrong final answer with no gap id opens `units/<unit>/teaching.tex`. A correct final answer that used the wrong method names the same kind of file and keeps the method note.
