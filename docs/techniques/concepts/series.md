@@ -10,7 +10,7 @@ Coach card. Original examples on this page were checked with SymPy, including th
 | `infinite-functions` | 3 | `basic-series` | `units/17-infinite-functions/teaching.tex` |
 | `taylor-series` | 4 | `basic-series`, `basic-integration-by-parts` | `units/32-taylor-complex/teaching.tex` |
 
-`complexifying` shares unit 32. The unit replaces \(e^{ax}\cos bx\) by the real part of a complex exponential. Teach that file's stored drill. This card does not add a complex value.
+`complexifying` shares unit 32. The unit replaces \(e^{ax}\cos bx\) by the real part of a complex exponential. Teach that file's stored drill. The scaled fence is `habits.md`. This card does not add a zeta value.
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 

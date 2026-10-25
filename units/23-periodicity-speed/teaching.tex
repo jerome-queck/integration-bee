@@ -35,16 +35,54 @@ because $3\neq 5$. The product-to-sum formula gives the same zero in one line. \
 \]
 Expand. Three cross terms integrate to 0. Three squares remain, and each $\int_0^{2\pi}\sin^2(mx)\,dx$ equals $\pi$. The value is $3\pi$. If you drop the squares and keep only the cross terms, you will report 0.
 
-\section{Speed --- \texttt{U23-D08}}
+\section{Speed is a split --- \texttt{U23-D08} (\texttt{speed-bashing})}
 \[
-\int\Bigl(\frac{1}{x^2}+\frac{1}{x}+1-\frac{1}{x^2+1}\Bigr)dx
-=x+\ln|x|-\arctan x-\frac{1}{x}+C.
+\int\Bigl(\frac{1}{x^2}+\frac{1}{x}+1-\frac{1}{x^2+1}\Bigr)dx.
 \]
-The integrand was already a sum. \texttt{U23-D06} is $x^3 e^x$, three parts steps, stored answer $e^x(x^3-3x^2+6x-6)$. \texttt{U23-D07} splits $\sin^3 x+\cos^3 x$ into odd powers and substitutes. Do not start a recurrence when the power is 3 and a factor of $\sin x$ or $\cos x$ is already the derivative of the other.
+Each term has a textbook antiderivative. Add them:
+\[
+x+\ln|x|-\arctan x-\frac{1}{x}+C.
+\]
+That is the stored answer. A shorter sum, scaled from this split and not a drill, is
+\[
+\int_0^1\Bigl(x+\frac{1}{1+x}\Bigr)dx=\Bigl[\frac{x^2}{2}+\ln(1+x)\Bigr]_0^1=\frac12+\ln 2.
+\]
+SymPy checks $\frac12+\ln 2$.
+
+\section{Three parts steps --- \texttt{U23-D06}}
+\[
+\int x^3 e^x\,dx.
+\]
+Parts with $u=x^3$ and $dv=e^x\,dx$, three times:
+\begin{align*}
+\int x^3 e^x\,dx
+&= x^3 e^x-3\int x^2 e^x\,dx\\
+&= x^3 e^x-3x^2 e^x+6\int x e^x\,dx\\
+&= e^x(x^3-3x^2+6x-6)+C.
+\end{align*}
+That is the stored antiderivative. The same shape with a lower degree is unit 03 and unit 28. Here the speed is to unroll the three steps and stop.
+
+\section{Faded odd powers --- \texttt{U23-D07}}
+\[
+\int(\sin^3 x+\cos^3 x)\,dx.
+\]
+Split the sum. Write $\sin^3 x=\sin x(1-\cos^2 x)$ and set $u=\cos x$:
+\[
+\int\sin^3 x\,dx=-\cos x+\frac{\cos^3 x}{3}.
+\]
+Write $\cos^3 x=\cos x(1-\sin^2 x)$ and set $v=\sin x$:
+\[
+\int\cos^3 x\,dx=\sin x-\frac{\sin^3 x}{3}.
+\]
+The stored antiderivative is the sum
+\[
+-\cos x+\frac{\cos^3 x}{3}+\sin x-\frac{\sin^3 x}{3}+C.
+\]
+The power is 3, and a factor of $\sin x$ or $\cos x$ is already the derivative of the other function. A reduction $I_n$ waits for a higher even power. That reduction is unit 20.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit23.json}.
 
 \section*{On a miss}
-Teach this file. Say whether the term is a cross term or a square, then integrate that piece. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. For a product of sines, say whether the term is a cross term or a square, then integrate that piece. For \texttt{speed-bashing}, split the sum or unroll the parts steps. The value $\frac12+\ln 2$ is a fence, not a drill id. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

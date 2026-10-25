@@ -7,7 +7,7 @@
 \maketitle
 \section*{Status}
 Tags: \texttt{yang:6.9}; techniques: \texttt{unique-tricks}.
-Yang \S6.9 is a drawer of leftovers. In this drill set every integral is one of three things: a parameter integral from unit 34, a substitution $u=\ln x$, or Catalan's constant left as Catalan's constant. There is no fourth trick to memorize, and there is no elementary closed form hiding behind $G$.
+Yang \S6.9 is a drawer of leftovers. In this drill set every integral is one of three things: a parameter integral from unit 34, a substitution $u=\ln x$, or Catalan's constant left as Catalan's constant. There is no fourth trick to memorize, and there is no elementary closed form hiding behind $G$. The route is \texttt{docs/techniques/concepts/habits.md}. The catalog id \texttt{catalan} stays unticked.
 \section{Official anchors}
 \begin{itemize}
 \item Unit 34 for $\int_0^1 (x^b-x^a)/\ln x\,dx=\ln((b+1)/(a+1))$.
@@ -45,7 +45,34 @@ Integrate termwise. Each term contributes $(-1)^k/(2k+1)^2$. The series at $x=1$
 \[
 \int\frac{dx}{x\ln x}=\ln|\ln x|+C.
 \]
-Let $u=\ln x$. \texttt{U36-D05} on $[2,4]$ is $\ln(\ln 4)-\ln(\ln 2)=\ln 2$. \texttt{U36-D06} on $[e,e^e]$ is $\ln e-\ln 1=1$. \texttt{U36-D08} is $\int(\ln x)/x\,dx=\frac12(\ln x)^2$, the same substitution.
+Let $u=\ln x$, so $du=dx/x$. \texttt{U36-D08} is the partner $\int(\ln x)/x\,dx$. The same $u$ gives $\int u\,du=\frac12(\ln x)^2$, the stored antiderivative.
+
+\section{Faded definite logarithms --- \texttt{U36-D05} and \texttt{U36-D06}}
+On $[2,4]$,
+\[
+\bigl[\ln|\ln x|\bigr]_2^4=\ln(\ln 4)-\ln(\ln 2)=\ln(2\ln 2)-\ln(\ln 2)=\ln 2,
+\]
+because $\ln 4=2\ln 2$. That is the stored value of \texttt{U36-D05}.
+
+On $[e,e^e]$,
+\[
+\bigl[\ln|\ln x|\bigr]_e^{e^e}=\ln\bigl(\ln(e^e)\bigr)-\ln(\ln e)=\ln e-\ln 1=1.
+\]
+That is the stored value of \texttt{U36-D06}.
+
+\section{Faded parameter --- \texttt{U36-D07}}
+\[
+\int_0^1\frac{x^2-1}{\ln x}\,dx.
+\]
+For $a>-1$, $\int_0^1 x^a\,dx=1/(a+1)$. Integrate in $a$ from $0$ to $2$:
+\[
+\ln(2+1)-\ln(0+1)=\ln 3.
+\]
+That is the stored value, and it is \texttt{U34-D04}. The same formula with the upper limit $4$ is a scale, not a drill:
+\[
+\int_0^1\frac{x^4-1}{\ln x}\,dx=\ln 5.
+\]
+SymPy checks $\ln 5$. The parameter from $0$ to $3$ is already stored as \texttt{U11-D15}, value $\ln 4$. Leave $G$ as $G$. The fence $\ln 5$ is a parameter value.
 
 \section{Already taught --- \texttt{U36-D02}}
 \[

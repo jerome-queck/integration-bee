@@ -1,4 +1,4 @@
-% Unit 18 teaching — Sneaky Symmetry \& Sneaky Product Rule (Yang Ch.2)
+% Unit 18 teaching — Sneaky Symmetry & Sneaky Product Rule (Yang Ch.2)
 \input{technique-note.tex}
 \title{Integration Bee --- Unit 18:\\ Sneaky Symmetry \& Sneaky Product Rule}
 \author{UK Uni Integration Bee prep\\ Yang Topics Guide 2nd Ed §§2.9 Sneaky Symmetry, 2.10 Sneaky Product Rule}
@@ -7,43 +7,113 @@
 \maketitle
 
 \section*{Status}
-Yang Chapter 2 concept unit (easy drills only; no past papers).
 Tags: \texttt{yang:2.9}, \texttt{yang:2.10}, \texttt{sneaky-symmetry}, \texttt{sneaky-product-rule}.
+Odd and even integrands are unit 02. The reflection $x\mapsto a+b-x$ is unit 10. This unit adds a shift that moves the midpoint to the origin, and a product whose derivative is already the integrand. The route is \texttt{docs/techniques/concepts/habits.md}.
 
 \section{Official anchors}
 \begin{itemize}
-  \item Yang Topics Guide 2nd Ed §§2.9 Sneaky Symmetry, 2.10 Sneaky Product Rule
-        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-  \item Syllabus §1 techniques support
-        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+  \item Yang Topics Guide 2nd Ed §§2.9 Sneaky Symmetry, 2.10 Sneaky Product Rule.
+  \item Syllabus §1 symmetry and parts.
+  \item Unit 07 for the reverse product rule. Unit 10 for an even integrand that is not zero.
 \end{itemize}
 
 \section{Learning goals}
 \begin{enumerate}
-  \item Center an ugly product with $u=x-a$ so an odd integrand cancels.
-  \item Spot $f'g+fg'$ hiding as a sum of scary-looking terms.
-  \item Differentiate proposed answers mentally before grinding parts.
+  \item Shift a product so the interval is symmetric, then read off the odd part.
+  \item Leave an integrand alone when it is already odd on a symmetric interval.
+  \item When the integrand is even, substitute. The value need not be zero.
+  \item Guess $fg$ and differentiate it when the integrand is $f'g+fg'$.
 \end{enumerate}
 
 \section{Pedagogy}
-Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
+Worked $\to$ faded $\to$ the stored drills. See \texttt{pedagogy/README.md}.
 
-\section{Worked example --- \texttt{U18-D01} (\texttt{yang:2.9})}
+\section{Worked shift --- \texttt{U18-D01} (\texttt{sneaky-symmetry})}
 \[
 \int_{2}^{4}(x-1)(x-2)(x-3)(x-4)(x-5)\,dx.
 \]
-$u=x-3$ makes an odd integrand on $[-1,1]$ $\Rightarrow 0$.
+The five roots are centered at $3$. Set $u=x-3$. The interval becomes $[-1,1]$, and the integrand becomes
+\[
+(u+2)(u+1)\,u\,(u-1)(u-2)=u(u^{2}-4)(u^{2}-1)=u^{5}-5u^{3}+4u.
+\]
+That polynomial is odd, and the interval is symmetric, so the integral is $0$. That is the stored value.
 
-\section{Worked example --- \texttt{U18-D05} (\texttt{yang:2.10})}
+A shorter product with the same center is a scale, not a drill. On $[1,3]$,
+\[
+\int_{1}^{3}(x-1)(x-2)(x-3)\,dx=0,
+\]
+because $u=x-2$ produces the odd integrand $u(u^{2}-1)$ on $[-1,1]$. SymPy checks the zero.
+
+\section{Already odd --- \texttt{U18-D02} and \texttt{U18-D03}}
+\[
+\int_{-1}^{1}x(x^{2}-1)(x^{2}-4)\,dx=0.
+\]
+The factor $x$ is odd and $(x^{2}-1)(x^{2}-4)$ is even, so the product is odd. No shift is required.
+
+\[
+\int_{-\pi/2}^{\pi/2}x^{3}\cos x\,dx=0.
+\]
+The factor $x^{3}$ is odd and $\cos x$ is even. The integral exists, so the value is $0$. Both values are stored.
+
+\section{Faded even case --- \texttt{U18-D04}}
+\[
+\int_{-1}^{1}\frac{(\arctan x)^{2}}{1+x^{2}}\,dx.
+\]
+The interval is symmetric. The integrand is even, because $(\arctan x)^{2}$ and $1+x^{2}$ are both even. The integral is not zero. Set $u=\arctan x$, so $du=dx/(1+x^{2})$ and $u$ runs from $-\pi/4$ to $\pi/4$:
+\[
+\int_{-\pi/4}^{\pi/4}u^{2}\,du=2\int_{0}^{\pi/4}u^{2}\,du=\frac{2}{3}\Bigl(\frac\pi4\Bigr)^{3}=\frac{\pi^{3}}{96}.
+\]
+That is the stored value. Reporting $0$ because the interval looks symmetric is the miss.
+
+\section{Worked product --- \texttt{U18-D05} (\texttt{sneaky-product-rule})}
 \[
 \int\bigl(\sec^{3}x+\sec x\tan^{2}x\bigr)\,dx.
 \]
-Rewrite as $\sec\cdot\sec^{2}+(\sec\tan)\tan=\frac{d}{dx}(\sec\tan)$.
+Differentiate the guess $\sec x\tan x$:
+\[
+\frac{d}{dx}(\sec x\tan x)=\sec x\tan x\cdot\tan x+\sec x\cdot\sec^{2}x=\sec x\tan^{2}x+\sec^{3}x.
+\]
+The stored antiderivative is $\sec x\tan x+C$.
 
-\section{Faded example}
-Try U18-D07: $\int e^{x}(\sin x-\cos x)\,dx=-\,e^{x}\cos x+C$.
+\section{Worked exponential product --- \texttt{U18-D06}}
+\[
+\int e^{x}\bigl(2\sqrt{x}+x^{-1/2}\bigr)\,dx.
+\]
+Differentiate $2\sqrt{x}\,e^{x}$:
+\[
+e^{x}\cdot x^{-1/2}+2\sqrt{x}\,e^{x}=e^{x}\bigl(2\sqrt{x}+x^{-1/2}\bigr).
+\]
+The stored antiderivative is $2\sqrt{x}\,e^{x}+C$.
+
+Halving the coefficient is a scale, not a drill. The derivative of $\sqrt{x}\,e^{x}$ is $e^{x}\bigl(\sqrt{x}+1/(2\sqrt{x})\bigr)$, so
+\[
+\int_{1}^{4}e^{x}\Bigl(\sqrt{x}+\frac{1}{2\sqrt{x}}\Bigr)\,dx=\bigl[\sqrt{x}\,e^{x}\bigr]_{1}^{4}=2e^{4}-e.
+\]
+SymPy checks $2e^{4}-e$.
+
+\section{Faded product --- \texttt{U18-D07}}
+\[
+\int e^{x}(\sin x-\cos x)\,dx.
+\]
+Differentiate the guess $-e^{x}\cos x$:
+\[
+-e^{x}\cos x+e^{x}\sin x=e^{x}(\sin x-\cos x).
+\]
+The stored antiderivative is $-e^{x}\cos x+C$. The blank the learner fills is the guess.
+
+\section{Logarithm in the product --- \texttt{U18-D08}}
+\[
+\int\bigl(\sin(\ln x)+\cos(\ln x)\bigr)\,dx.
+\]
+Differentiate $x\sin(\ln x)$:
+\[
+\sin(\ln x)+x\cos(\ln x)\cdot\frac1x=\sin(\ln x)+\cos(\ln x).
+\]
+The stored antiderivative is $x\sin(\ln x)+C$.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit18.json}.
 
+\section*{On a miss}
+Teach this file. For a symmetric interval, say whether the integrand is odd or even before you quote a value. For a product, differentiate the guess and match it to the integrand. The zero on $[1,3]$ and the value $2e^{4}-e$ are fences, not drill ids. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

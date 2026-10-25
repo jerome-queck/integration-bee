@@ -83,11 +83,20 @@ That is the stored answer.
 \]
 Put $t=x-1$, so the integral is $\int_0^1\sqrt{(1-t)/t}\,dt$. Then $t=\sin^2\theta$ runs from $0$ to $\pi/2$ and the integrand becomes $2\cos^2\theta$. The stored value is $\pi/2$.
 
-\texttt{U19-D08} is $\int_0^\infty dx/(1+x^2)=\pi/2$. It does not want a root. If you reach for $x=u^n$ on an arctangent, stop.
+\texttt{U19-D08} is $\int_0^\infty dx/(1+x^2)=\pi/2$. It does not want a root. If you reach for $x=u^n$ on an arctangent, stop. That refusal is the faded step for \texttt{sneaky-u-sub}: the stored value is $\pi/2$.
+
+\section{Sneaky, after the power}
+\texttt{U19-D01} through \texttt{U19-D04} are \texttt{power-substitution}. \texttt{U19-D05} through \texttt{U19-D08} are \texttt{sneaky-u-sub}. The inside is a quadratic under a radical, a fractional linear factor, a shifted square root, or an arctangent. The four derivations above are the lesson.
+
+The numerator form of the \texttt{U19-D05} substitution stops one step earlier. With $u=\sqrt{x^2+x}$,
+\[
+\int\frac{2x+1}{\sqrt{x^2+x}}\,dx=2\sqrt{x^2+x}+C.
+\]
+On $[0,3]$ the value is $4\sqrt{3}$. SymPy checks the antiderivative and the definite value. Neither reading is a drill id. \texttt{U19-D05} puts $2x+1$ in the denominator and finishes at $\arctan(2u)$.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit19.json}.
 
 \section*{On a miss}
-Teach this file. Name $u$ as the root, write $dx$, and divide. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. For a power, name $u$ as the root, write $dx$, and divide. For a sneaky drill, name the inside that is not a pure power. The value $4\sqrt{3}$ is a fence, not a drill id. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

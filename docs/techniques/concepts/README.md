@@ -21,6 +21,7 @@ Read the integrand, then open one card. If two seem to fit, open the earlier one
 | \(e^{-x^2}\), or \((\sin x)/x\) on a half-line | `gaussian-dirichlet.md` |
 | An absolute value, a floor, or a fractional part | `piecewise.md` and, for the floor, `docs/techniques/floor.md` |
 | A numerator that is almost a denominator or almost its derivative | `algebra.md` and `docs/techniques/introduce-constant.md` |
+| A textbook form with one extra factor, a cancelled radical, a shift to an odd product, a hidden product, a sum of textbook terms, \(e^{ax}\cos bx\), \(1+x^2\) beside a logarithm, or \(x\mapsto 1/x\) | `habits.md`, after the earlier row that also fits |
 
 ## Wildcard drills
 

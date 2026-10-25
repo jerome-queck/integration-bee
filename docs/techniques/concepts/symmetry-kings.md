@@ -68,9 +68,9 @@ An inverse multiplied by another factor goes to parts. Put the inverse in the \(
 
 Unit 25 is the same identity on an exponential, a tangent, and a factor of \(x\). Open it when `kings-queens-rule` is solid. The constant-complement test stays the unit 10 test.
 
-Unit 18 centers a product with a shift so an odd part cancels, and it spots a hidden product rule. Those drills stay in that file. This card does not add a new one.
+Unit 18 centers a product with a shift so an odd part cancels, and it spots a hidden product rule. Those drills stay in that file. The scaled fences are `habits.md`.
 
-Unit 10 also names \(x\mapsto 1/x\) as the same idea on a half-line. The worked pattern is unit 33. Teach that file's stored drill. This card does not add an inversion value.
+Unit 10 also names \(x\mapsto 1/x\) as the same idea on a half-line. The worked pattern is unit 33. Teach that file's stored drill. The finite fence is `habits.md`.
 
 ## Where this goes wrong
 

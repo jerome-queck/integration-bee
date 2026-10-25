@@ -15,7 +15,7 @@ The longer writeup of adding and subtracting a constant, and of a small paramete
 
 `dutis` is deferred in `trackers/catalog.json` because it has no unit. The fixed-interval drills are `U11-D13` through `U11-D15` on `special-wildcard`. A moving endpoint is unit 34. Leave `dutis` unticked.
 
-`sneaky-algebra` and `modified-textbook` are habits on top of this card. Their worked numbers stay in unit 12. This card does not add one.
+`sneaky-algebra` and `modified-textbook` are habits on top of this card. Their stored drills are unit 12. The scaled fences are `habits.md`.
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 

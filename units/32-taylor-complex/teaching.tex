@@ -37,21 +37,35 @@ and $\int_0^1 x^n\,dx=1/(n+1)$, so the integral is $\sum_{n=0}^{\infty}(-1)^n/(n
 \]
 \texttt{U32-D04} is $\int_0^1 x^3\,dx=1/4$. \texttt{U32-D03} is $\int x e^{x^2}\,dx=\frac12 e^{x^2}$, a substitution. A series for $e^{x^2}$ would be the long way around.
 
-\section{Worked complex exponential --- \texttt{U32-D07}}
+\section{Worked complex exponential --- \texttt{U32-D05} (\texttt{complexifying})}
+\[
+\int_0^{\infty}e^{-x}\cos x\,dx.
+\]
+$e^{-x}\cos x$ is the real part of $e^{-x}e^{ix}=e^{-(1-i)x}$, and $e^{-x}\sin x$ is the imaginary part. The integral of the complex exponential is
+\[
+\int_0^{\infty}e^{-(1-i)x}\,dx=\frac{1}{1-i}=\frac{1+i}{2}.
+\]
+The real part is $1/2$ and the imaginary part is $1/2$. Those are the stored values of \texttt{U32-D05} and \texttt{U32-D06}. The same two numbers are \texttt{U30-D08} and \texttt{U30-D07}.
+
+A larger decay is a scale, not a drill. For
+\[
+\int_0^{\infty}e^{-2x}\cos x\,dx,
+\]
+the complex integral is $1/(2-i)=(2+i)/5$, and the real part is $2/5$. SymPy checks $2/5$.
+
+\section{Faded indefinite --- \texttt{U32-D07}}
 \[
 \int e^x\cos x\,dx.
 \]
-$e^x\cos x$ is the real part of $e^x e^{ix}=e^{(1+i)x}$.
+$e^x\cos x$ is the real part of $e^{(1+i)x}$.
 \[
 \int e^{(1+i)x}\,dx=\frac{e^{(1+i)x}}{1+i}=\frac{1-i}{2}\,e^{(1+i)x}.
 \]
-The real part is $\frac12 e^x(\cos x+\sin x)$, the stored answer. The imaginary part is \texttt{U32-D08}, $\frac12 e^x(\sin x-\cos x)$.
-
-On $[0,\infty)$, \texttt{U32-D05} is $\int_0^{\infty}e^{-x}\cos x\,dx=1/2$ and \texttt{U32-D06} is the sine partner, also $1/2$. Both are
+Multiply $(1-i)(\cos x+i\sin x)$. The real part is $\cos x+\sin x$, so the stored antiderivative is
 \[
-\mathrm{Re}\int_0^{\infty}e^{-(1-i)x}\,dx\quad\text{or its imaginary part.}
+\frac12 e^x(\cos x+\sin x)+C.
 \]
-The same two values are \texttt{U30-D08} and \texttt{U30-D07}.
+The imaginary part of the same product is \texttt{U32-D08}, stored as $\frac12 e^x(\sin x-\cos x)+C$. The blank is which part you keep.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit32.json}.

@@ -19,7 +19,7 @@ Coach card. Original examples on this page were checked with SymPy. They are not
 | `advanced-trig-substitution` | 3 | `intermediate-trig-substitution` | `units/21-advanced-trig-sub/teaching.tex` |
 | `periodicity` | 3 | `basic-trig-integrals` | `units/23-periodicity-speed/teaching.tex` |
 
-`speed-bashing` shares unit 23. The unit's rule is to split a sum and integrate the pieces. This card does not add a speed example.
+`speed-bashing` shares unit 23. The unit's rule is to split a sum and integrate the pieces. The scaled fence is `habits.md`.
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 

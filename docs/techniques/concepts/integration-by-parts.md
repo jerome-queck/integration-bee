@@ -74,7 +74,7 @@ Unit 07 stores
 
 as `U07-D04`, which is \([x\sin x]_0^{\pi/2}\). The faded drill `U07-D05` is the derivative of \(e^x\sin x\).
 
-Name \(f\) and \(g\) before expanding. If you cannot name them, you are in ordinary parts.
+Name \(f\) and \(g\) before expanding. If you cannot name them, you are in ordinary parts. Unit 18 hides the same product inside a longer expression. Those drills, and the fence \(2e^4-e\), are `habits.md`.
 
 ## Reverse quotient rule
 
