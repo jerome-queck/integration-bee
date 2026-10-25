@@ -15,8 +15,11 @@ Yang \S\S6.6--6.7 is one writeup. The move is older: differentiate a parameter u
 \item Yang Topics Guide 2nd Ed \S\S6.6 Frullani Integrals, 6.7 Feynman Technique.
 \end{itemize}
 \section{Learning goals}
-Differentiate a parameter when the integrand is a derivative in that parameter.
-Know when a plain substitution already finishes the integral, so you do not build a parameter you do not need.
+\begin{enumerate}
+  \item Differentiate a parameter when the integrand is a derivative in that parameter.
+  \item Know when a plain substitution or one parts step already finishes the integral, so you do not build a parameter you do not need.
+  \item Refuse $\pi/2$ on a difference of cosines. That value is the Dirichlet integral, not Frullani.
+\end{enumerate}
 
 \section{The rule you are using}
 If $f$ and $\partial f/\partial a$ are continuous for $x$ in a compact interval $[c,d]$ and $a$ in a compact interval of parameters, then
@@ -42,8 +45,31 @@ I(t)=\int_0^t tx\,dx=\frac{t^3}{2},\qquad I'(t)=\frac{3t^2}{2}.
 \]
 At $t=2$ the integral equals 4 and the derivative equals 6. The formula at that point is $\int_0^2 x\,dx=2$ from the parameter, plus the upper boundary term $f(2,2)\cdot 1=4$, and the lower boundary is 0. The sum is 6. Adding and subtracting a constant in the integrand is \texttt{docs/techniques/introduce-constant.md}. This derivative is not that algebra. Do not tick \texttt{dutis}.
 
-\section{Faded moving limit}
-Cover the example. If $f$ does not depend on $t$ and the upper limit is $t$, the derivative is $f(t)$. For $\int_0^t\sin x\,dx$, that derivative is $\sin t$. If you only needed this sentence, do not introduce a parameter inside the integrand.
+If $f$ does not depend on $t$ and the upper limit is $t$, the derivative is $f(t)$. For $\int_0^t\sin x\,dx$, that derivative is $\sin t$. That sentence is not a drill. If you only needed it, do not introduce a parameter inside the integrand.
+
+\section{Worked Frullani --- \texttt{U34-D01}}
+For $b>a>0$ and $x>0$,
+\[
+\frac{e^{-ax}-e^{-bx}}{x}=\int_a^b e^{-xt}\,dt.
+\]
+The integrand is positive. Integrate in $x$ from 0 to $\infty$ and switch the order:
+\[
+\int_0^\infty\frac{e^{-ax}-e^{-bx}}{x}\,dx=\int_a^b\int_0^\infty e^{-xt}\,dx\,dt=\int_a^b\frac{dt}{t}=\ln\frac{b}{a}.
+\]
+\texttt{U34-D01} is $a=1$, $b=2$, stored answer $\ln 2$. The worked dose stops there. \texttt{U35-D07} is the same integral.
+
+\section{Faded --- \texttt{U34-D02}}
+\[
+\int_0^\infty\frac{e^{-x}-e^{-3x}}{x}\,dx.
+\]
+The blank is the ratio $b/a$. Here $a=1$ and $b=3$. After that ratio is written, uncover $\ln 3$. Refuse $\ln 2$, the stored answer of \texttt{U34-D01}.
+
+\section{Bare --- \texttt{U34-D03}}
+Set
+\[
+\int_0^\infty\frac{\cos x-\cos 2x}{x}\,dx
+\]
+and show nothing else. The bare dose hides the parameter. After a line is written, uncover it. The same count as \texttt{U34-D01} produces $\ln 2$. The printed sheet may still show letters. The SymPy row is the concrete pair. Refuse $\pi/2$.
 
 \section{Worked parameter --- \texttt{U34-D05}}
 For $a>-1$,
@@ -54,35 +80,37 @@ On $[\varepsilon,1]$ the Leibniz rule applies. Let $\varepsilon\to 0$. Different
 \[
 \int_0^1 x^a\ln x\,dx=-\frac{1}{(a+1)^2}.
 \]
-At $a=2$ the value is $-1/9$, the stored answer of \texttt{U34-D05}.
+At $a=2$ the value is $-1/9$, the stored answer of \texttt{U34-D05}. The worked dose stops there.
 The drill file stores $x^2\log x$ on $[0,1]$. It does not store the parameter $a$. The note \texttt{docs/techniques/introduce-constant.md} runs the same family at $a=3$.
 
-\section{Integrate the parameter --- \texttt{U34-D04}}
-Integrate the identity $\int_0^1 x^a\,dx=1/(a+1)$ for $a$ from 0 to 2:
+\section{Faded --- \texttt{U34-D04}}
 \[
-\int_0^1\frac{x^2-1}{\ln x}\,dx=\ln 3.
+\int_0^1\frac{x^2-1}{\ln x}\,dx.
 \]
-The left side is the stored drill. \texttt{U36-D07} is the same integral, and \texttt{U36-D01} is the same argument from $a=0$ to $a=1$, stored value $\ln 2$. One parameter, three drills.
+The blank is the interval of $a$. Integrate $\int_0^1 x^a\,dx=1/(a+1)$ for $a$ from 0 to 2. After that interval is written, uncover $\ln 3$. Refuse $-1/9$, the stored answer of \texttt{U34-D05}. \texttt{U36-D07} is this integral. \texttt{U36-D01} is the same argument from $a=0$ to $a=1$, stored value $\ln 2$.
 
-\section{Frullani by switching integrals --- \texttt{U34-D01}}
-For $b>a>0$ and $x>0$,
+\section{Bare --- \texttt{U34-D08}}
+Set
 \[
-\frac{e^{-ax}-e^{-bx}}{x}=\int_a^b e^{-xt}\,dt.
+\int_0^\infty x e^{-x}\,dx
 \]
-The integrand is positive. Integrate in $x$ from 0 to $\infty$ and switch the order:
-\[
-\int_0^\infty\frac{e^{-ax}-e^{-bx}}{x}\,dx=\int_a^b\int_0^\infty e^{-xt}\,dx\,dt=\int_a^b\frac{dt}{t}=\ln\frac{b}{a}.
-\]
-\texttt{U34-D01} is $a=1$, $b=2$, stored answer $\ln 2$. \texttt{U34-D02} is $b=3$, stored answer $\ln 3$. \texttt{U35-D07} is the same integral as \texttt{U34-D01}.
+and show nothing else. The bare dose hides the decision to skip the parameter. After a line is written, uncover $J_1$ from unit 20. The stored answer is $1$.
 
-\texttt{U34-D03} replaces the exponentials by cosines, $( \cos x-\cos 2x)/x$ on $[0,\infty)$, stored answer $\ln 2$. The same parameter count produces it. The printed sheet may still show letters. The SymPy row is the concrete pair.
+\section{Refusal --- a parameter you do not need, or $\pi/2$}
+\texttt{U34-D07} is $\int_0^1 \ln(1+x)/(1+x)\,dx$. Let $u=\ln(1+x)$. Then $du=dx/(1+x)$ and the limits run from 0 to $\ln 2$, so the value is $(\ln 2)^2/2$. Refuse a parameter. That is the stored answer.
 
-\section{A substitution wearing a parameter's clothes}
-\texttt{U34-D07} is $\int_0^1 \ln(1+x)/(1+x)\,dx$. Let $u=\ln(1+x)$. Then $du=dx/(1+x)$ and the limits run from 0 to $\ln 2$, so the value is $(\ln 2)^2/2$. No parameter is required. \texttt{U34-D08} is $\int_0^\infty x e^{-x}\,dx=1$, which is $J_1$ from unit 20. \texttt{U34-D06} is $\int_0^\infty e^{-x}\sin x\,dx=1/2$, also the real or imaginary part of a complex exponential (unit 32).
+\texttt{U34-D06} is $\int_0^\infty e^{-x}\sin x\,dx$. The stored answer is $1/2$. One parts step finishes it, or the imaginary part of a complex exponential. The same number is \texttt{U32-D06} and \texttt{U30-D07}. Refuse a parameter, and refuse $\pi/2$.
+
+\texttt{U34-D03} stores $\ln 2$. The Dirichlet value $\pi/2$ is \texttt{U30-D05}, a different integrand. Refuse it here.
+
+\section{Dose}
+For \texttt{frullani}, worked reads \texttt{U34-D01}, then the faded ratio on \texttt{U34-D02}, then sets \texttt{U34-D03}. Faded gives only that ratio. Bare sets \texttt{U34-D03}. The value $\pi/2$ opens the refusal and sets \texttt{U34-D03}.
+
+For \texttt{feynman}, worked reads \texttt{U34-D05}. The moving-limit case, derivative $6$ at $t=2$, stays in this file and is not a drill. Then the faded interval on \texttt{U34-D04}, then sets \texttt{U34-D08}. Faded gives only that interval of $a$. Bare sets \texttt{U34-D08}. A parameter built for a substitution opens the refusal and sets \texttt{U34-D07}. A parameter built for $e^{-x}\sin x$ opens the refusal and sets \texttt{U34-D06}. Do not tick \texttt{dutis}.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit34.json}.
 
 \section*{On a miss}
-Teach this file when the attempt missed a parameter, and teach \texttt{docs/techniques/introduce-constant.md} when it missed only the algebra. Do not invent an answer that is not in \texttt{drills.md}. Do not tick \texttt{dutis}.
+Teach this file when the attempt missed a parameter, and teach \texttt{docs/techniques/introduce-constant.md} when it missed only the algebra. If $\ln 2$ was written for the ratio $3$, set \texttt{U34-D02}. If $\pi/2$ was written for a difference of cosines, set \texttt{U34-D03}. If a substitution already finished the integral, set \texttt{U34-D07}. Do not invent an answer that is not in \texttt{drills.md}. Do not tick \texttt{dutis}.
 \end{document}

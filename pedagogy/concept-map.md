@@ -72,7 +72,7 @@ The card states the move. Stored numbers stay in the unit.
 | `advanced-gaussian` | 5.3 | `gaussian-dirichlet.md` | Quote \(\sqrt{\pi}\), then scale. Original \(\int_0^{\infty} e^{-4x^2}\,dx=\sqrt{\pi}/4\). Unit 30 works `U30-D01`, fades `U30-D04`, and sets bare `U30-D06`. |
 | `dirichlet` | 5.4 | `gaussian-dirichlet.md` | Quote `U30-D05`, then scale by \(u=bx\). Bare `U30-D06` stores the same \(\pi/2\) after one parts step. `U30-D07` refuses that value on the damped sine. |
 | `intermediate-partial-fractions` | 3.6 | `partial-fractions.md` | A repeated factor needs two terms. |
-| `feynman` | 6.7 | `algebra.md` | The Adaptive table names this node. Fixed interval versus a moving endpoint. The unit 34 case \(I'(2)=6\) stays the unit's example. |
+| `feynman` | 6.7 | `algebra.md` | The Adaptive table names this node. Fixed interval versus a moving endpoint. The unit 34 case \(I'(2)=6\) stays the unit's example and is not a drill. Unit 34 works `U34-D05`, fades `U34-D04`, and sets bare `U34-D08`. `U34-D07` refuses a parameter. |
 | `modified-textbook` | 2.1 | `habits.md` | Scale of `U12-D01` on \([0,1]\), value \(e^e-e\). The four textbook drills stay in unit 12. |
 | `sneaky-algebra` | 2.2 | `habits.md` | Scale of `U12-D05` with \(3\) in place of \(2\), value \(11/3\). |
 | `sneaky-u-sub` | 3.2 | `habits.md` | Numerator form of the `U19-D05` substitution on \([0,3]\), value \(4\sqrt{3}\). |
@@ -82,8 +82,8 @@ The card states the move. Stored numbers stay in the unit.
 | `complexifying` | 6.3 | `habits.md` | Decay \(2\) in place of the stored decay \(1\), value \(2/5\). Unit 32 works `U32-D05`, fades `U32-D07`, and sets bare `U32-D08`. `U32-D05` stays \(1/2\). |
 | `ninja-substitution` | 6.4 | `habits.md` | \(\int_0^1 \arctan x/(1+x^2)\,dx=\pi^2/32\). Unit 33 works `U33-D04`, fades `U33-D03`, and sets bare `U33-D02`. `U33-D01` refuses the tangent substitution. |
 | `inversion` | 6.5 | `habits.md` | Finite copy of `U33-D08` on \([0,1]\), value \(1/4\). Unit 33 works `U33-D06`, fades `U33-D07`, and sets bare `U33-D05`. `U33-D08` is the refusal. |
-| `modified-famous` | 6.8 | `habits.md` | Gaussian scale \(e^{-9x^2}\) equals \(\sqrt{\pi}/6\), and \(\sin(3x)/x\) equals \(\pi/2\). Series values stay the ones unit 35 prints. |
-| `unique-tricks` | 6.9 | `habits.md` | Parameter from \(0\) to \(4\), value \(\ln 5\). `U36-D03` stays \(G\). |
+| `modified-famous` | 6.8 | `habits.md` | Gaussian scale \(e^{-9x^2}\) equals \(\sqrt{\pi}/6\), and \(\sin(3x)/x\) equals \(\pi/2\). Unit 35 works `U35-D01`, fades `U35-D02`, and sets bare `U35-D03`. The series works `U35-D04`, fades `U35-D05`, and sets bare `U35-D08`. Those two series stay the printed zeta values. |
+| `unique-tricks` | 6.9 | `habits.md` | Parameter from \(0\) to \(4\), value \(\ln 5\). Unit 36 works `U36-D01`, fades `U36-D07`, and sets bare `U36-D06`. `U36-D03` stays \(G\). |
 
 ## Unit lessons, no new example
 
@@ -94,7 +94,7 @@ Open the unit file. The move is already there.
 | `undertow` | 4.1 | `units/24-undertow-square/teaching.tex` | Divide by a power of \(x\) until the numerator is the derivative of the denominator. `U24-D01`. |
 | `square-square` | 4.2 | the same file | \((\sqrt{x}\pm 1/\sqrt{x})^2\) under the radical. `U24-D07` stores \(20/3\). |
 | `inverse-jailbreaking` | 6.1 | `units/31-inverse-jailbreak/teaching.tex` | Inverse in the \(u\) slot. Worked `U31-D01`, faded `U31-D05`, bare `U31-D07`. The area identity is the symmetry card. |
-| `frullani` | 6.6 | `units/34-frullani-feynman/teaching.tex` | Difference of exponentials as an integral in a parameter. `U34-D01`. |
+| `frullani` | 6.6 | `units/34-frullani-feynman/teaching.tex` | Difference of exponentials as an integral in a parameter. Unit 34 works `U34-D01`, fades `U34-D02`, and sets bare `U34-D03`. `U34-D03` refuses \(\pi/2\). |
 
 ## Still thin
 
