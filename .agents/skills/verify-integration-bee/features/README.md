@@ -15,6 +15,7 @@ Read this index, then follow one feature file. The operator is the companion age
 - Start from the baseline unless the feature says otherwise.
 - Treat each command as literal.
 - `--format json` is the stable output for a recorded result.
+- `practice list`, `drills list`, and `problems list` print a text table when the format is text. The first line is `count=<n>`. A `--limit` that cuts the rows adds `shown=<k>`. The next line is a tab-separated header. `problems show` and `problems select` stay JSON either way.
 - Redirect stdout and stderr into `$IB_EVIDENCE`. Record the CLI exit code from that process. A pipe into `tee` reports `tee`'s status.
 
 ## Proof and skip reporting

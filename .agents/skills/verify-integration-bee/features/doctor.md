@@ -30,4 +30,4 @@ Preconditions:
 - `units` counts every `units/[0-9][0-9]-*` directory. Chapters 3 to 6 are units 19 to 36 on that list.
 - Doctor reads `IB_DATA_DIR` only as a label. `doctor --data-dir` does not change that label. With the variable unset, the printed label is the absolute path of `trackers/live`. Doctor still creates no files.
 - `--format json` prints the same fields and omits the `READY integration-bee` line.
-- If SymPy cannot be imported, the process exits 2. Stderr is `FAIL: sympy missing. Use /workspace/integration-bee/.venv`.
+- If SymPy cannot be imported, the math checker import prints `FAIL: sympy missing. Use /workspace/integration-bee/.venv` and the process exits 2 before doctor prints a report.
