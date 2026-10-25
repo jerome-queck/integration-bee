@@ -501,6 +501,28 @@ def grade_problem(
         catalog_row = next((row for row in (catalog_rows or []) if row.get("id") == problem_id), None)
         if catalog_row is None:
             return None, f"unknown problem {problem_id}"
+        if catalog_row.get("verify") == "sympy":
+            answer = catalog_row.get("answer_sympy")
+            if not isinstance(answer, str) or not answer or catalog_row.get("variable") != "x":
+                return None, "catalog problem is not sympy-checked"
+            try:
+                correct = expressions_match(answer, submitted, _indefinite(catalog_row))
+            except Exception as exc:
+                return None, f"answer did not parse: {exc}"
+            tags = list(catalog_row.get("technique_tags") or [])
+            tags.extend(catalog_row.get("yang") or [])
+            return {
+                "correct": correct,
+                "tags": tags,
+                "display": catalog_row.get("answer_latex") or answer,
+                "row": {
+                    "id": problem_id,
+                    "answer_sympy": answer,
+                    "kind": catalog_row.get("kind"),
+                    "limits": catalog_row.get("limits"),
+                },
+                "manual": False,
+            }, None
         if catalog_row.get("answer_sympy") or catalog_row.get("integrand_latex"):
             return None, "catalog problem is not sympy-checked"
         if catalog_row.get("verify") != "manual" or not catalog_row.get("answer_plain"):

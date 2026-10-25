@@ -11,6 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "verify"))
 
+import pack_gate  # noqa: E402
 import problem_catalog  # noqa: E402
 
 CLI = ROOT / "scripts" / "control-integration-bee"
@@ -110,6 +111,21 @@ def main() -> int:
     if err:
         print(f"FAIL catalog {err}")
         return 1
+    proof = pack_gate.reprove_rows(rows)
+    if proof:
+        print(f"FAIL catalog {proof}")
+        return 1
+    tampered = [dict(row) for row in rows]
+    for row in tampered:
+        if row.get("verify") == "sympy":
+            row["answer_sympy"] = "999"
+            row["answer_latex"] = "999"
+            lied = pack_gate.reprove_rows([row])
+            if not lied:
+                print("FAIL tampered sympy row was accepted")
+                return 1
+            print(f"PASS tampered sympy row ({lied})")
+            break
     print(f"OK catalog {problem_catalog.EXPECTED_COUNT} records")
     fail = drive()
     if fail:

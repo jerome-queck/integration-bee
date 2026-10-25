@@ -8,11 +8,12 @@ RECORDS = ROOT / "problems" / "records.jsonl"
 
 ROUNDS = frozenset({"r1", "r2", "r3", "yang"})
 SOURCES = frozenset({"resource_pack", "yang_book"})
-VERIFIES = frozenset({"manual", "unchecked"})
+VERIFIES = frozenset({"manual", "unchecked", "sympy"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
 EXPECTED_COUNT = 949
-EXPECTED_MANUAL = 474
+EXPECTED_MANUAL = 422
+EXPECTED_SYMPY = 52
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 207, "r3": 190, "yang": 272}
 PINNED_CITE = {
@@ -129,6 +130,28 @@ def _blank(value) -> bool:
     return value is None or value == ""
 
 
+def _sympy_shape(row: dict) -> str | None:
+    ident = row.get("id")
+    if row.get("round") == "yang" or row.get("source") != "resource_pack":
+        return f"{ident} sympy outside the resource pack"
+    if row.get("variable") != "x":
+        return f"{ident} sympy variable is not x"
+    if row.get("kind") not in {"definite", "indefinite"}:
+        return f"{ident} sympy kind"
+    for key in ("sympy_expr", "answer_sympy", "integrand_latex", "answer_latex"):
+        if _blank(row.get(key)) or not isinstance(row.get(key), str):
+            return f"{ident} missing {key}"
+    limits = row.get("limits")
+    if row.get("kind") == "indefinite":
+        if limits not in ([],):
+            return f"{ident} indefinite limits"
+    elif not isinstance(limits, list) or len(limits) != 2 or any(_blank(item) or not isinstance(item, str) for item in limits):
+        return f"{ident} definite limits"
+    if row.get("worked_solution_latex") is not None:
+        return f"{ident} invented worked latex"
+    return None
+
+
 def catalog_problem(rows: list[dict]) -> str | None:
     if len(rows) != EXPECTED_COUNT:
         return f"catalog count {len(rows)}"
@@ -140,17 +163,12 @@ def catalog_problem(rows: list[dict]) -> str | None:
     if ids != sorted(ids):
         return "catalog not sorted by id"
     manual = 0
+    sympy_n = 0
     pdf_copy = 0
     rounds = {key: 0 for key in EXPECTED_ROUNDS}
     yang_answered = []
     pinned = None
     for row in rows:
-        if "answer_sympy" in row:
-            return f"{row.get('id')} invented answer_sympy"
-        if row.get("integrand_latex") is not None:
-            return f"{row.get('id')} invented integrand_latex"
-        if row.get("answer_latex") is not None or row.get("worked_solution_latex") is not None:
-            return f"{row.get('id')} invented latex answer"
         if row.get("round") not in ROUNDS:
             return f"{row.get('id')} bad round"
         if row.get("source") not in SOURCES:
@@ -167,10 +185,24 @@ def catalog_problem(rows: list[dict]) -> str | None:
         has_cite = not _blank(row.get("answer_source_pdf"))
         if has_answer != has_cite:
             return f"{row.get('id')} answer and cite diverged"
-        if has_answer and row.get("verify") != "manual":
-            return f"{row.get('id')} answered row is not manual"
-        if not has_answer and row.get("verify") != "unchecked":
-            return f"{row.get('id')} unanswered row is not unchecked"
+        if row.get("verify") == "sympy":
+            if not has_answer:
+                return f"{row.get('id')} sympy row has no cited answer"
+            shape = _sympy_shape(row)
+            if shape:
+                return shape
+            sympy_n += 1
+        else:
+            if "answer_sympy" in row or "sympy_expr" in row or "variable" in row:
+                return f"{row.get('id')} invented answer_sympy"
+            if row.get("integrand_latex") is not None:
+                return f"{row.get('id')} invented integrand_latex"
+            if row.get("answer_latex") is not None or row.get("worked_solution_latex") is not None:
+                return f"{row.get('id')} invented latex answer"
+            if has_answer and row.get("verify") != "manual":
+                return f"{row.get('id')} answered row is not manual"
+            if not has_answer and row.get("verify") != "unchecked":
+                return f"{row.get('id')} unanswered row is not unchecked"
         worked = not _blank(row.get("worked_solution_plain"))
         origin = row.get("worked_solution_origin")
         if worked != (origin == "pdf_copy"):
@@ -186,7 +218,7 @@ def catalog_problem(rows: list[dict]) -> str | None:
         elif row.get("section") or row.get("section_title"):
             return f"{row.get('id')} pack row has a yang section"
         rounds[row["round"]] += 1
-        if has_answer:
+        if has_answer and row.get("verify") == "manual":
             manual += 1
         if origin == "pdf_copy":
             pdf_copy += 1
@@ -194,6 +226,8 @@ def catalog_problem(rows: list[dict]) -> str | None:
             pinned = row
     if manual != EXPECTED_MANUAL:
         return f"manual count {manual}"
+    if sympy_n != EXPECTED_SYMPY:
+        return f"sympy count {sympy_n}"
     if pdf_copy != EXPECTED_PDF_COPY:
         return f"pdf_copy count {pdf_copy}"
     if rounds != EXPECTED_ROUNDS:

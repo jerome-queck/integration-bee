@@ -20,8 +20,9 @@ Preconditions:
 - Doctor has printed `READY integration-bee`.
 - `IB_DATA_DIR` is empty.
 
-- **Round list.** Run `scripts/control-integration-bee problems list --round r1 --format json >"$IB_EVIDENCE/problems-round.json"`. Exit code is 0. Stdout contains `R1-2024-Q01` and `"count": 280`. Stdout does not contain `answer_plain`.
+- **Round list.** Run `scripts/control-integration-bee problems list --round r1 --format json >"$IB_EVIDENCE/problems-round.json"`. Exit code is 0. Stdout contains `R1-2024-Q01` and `"count": 280`. Stdout does not contain `answer_plain` or `answer_sympy`.
 - **Show one.** Run `scripts/control-integration-bee problems show --id R1-2024-Q01 --format json >"$IB_EVIDENCE/problems-show.json"`. Exit code is 0. Stdout contains `sin(1)`, `manual`, and `Mark_Scheme_2024_Round_1_UK_University_Integration_Bee.pdf`.
+- **Show a proved row.** Run `scripts/control-integration-bee problems show --id R1-2020-Q08 --format json >"$IB_EVIDENCE/problems-show-sympy.json"`. Exit code is 0. Stdout contains `"verify": "sympy"`, `answer_sympy`, and `Virtual_integration_competition_answers.pdf`.
 - **Select one.** Run `scripts/control-integration-bee problems select --id YANG-1.1-P01 --format json >"$IB_EVIDENCE/problems-select.json"`. Exit code is 0. Stdout contains `unchecked` and `integrand_plain`. Stdout does not contain `answer_plain`.
 - **Ambiguous select.** Run `scripts/control-integration-bee problems select --round r1 --format json >"$IB_EVIDENCE/problems-ambiguous.txt" 2>"$IB_EVIDENCE/problems-ambiguous.err"`. Exit code is 2. Stderr contains `matched`.
 - **Confirm no write.** Run `find "$IB_DATA_DIR" -type f >"$IB_EVIDENCE/problems-files.txt"`. That file is empty.
@@ -31,5 +32,5 @@ Preconditions:
 - `problems list` and `problems select` omit `answer_plain` and `worked_solution_plain`. `problems show` prints both when the extract stored them.
 - A select with no filter, or with a filter that matches many ids, exits 2. An unknown id on show or select exits 1.
 - These commands do not write learner state. A mark still goes through `turn apply`.
-- `verify` on a pack row stays `manual` until the integrand is clean LaTeX. Do not treat `answer_plain` as a SymPy expression.
+- A pack row with `verify` `sympy` was proved from the committed PDF. `problems list` still omits `answer_sympy`. `problems show` prints it. A `manual` row is a cited answer that has not been proved. Do not treat its `answer_plain` as a SymPy expression.
 - Yang practice with `verify` `unchecked` has no printed answer. Do not fill one in.

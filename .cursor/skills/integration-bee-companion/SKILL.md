@@ -51,6 +51,8 @@ Read the image. Set `source` to `photo` and put the expression you read in `extr
 
 Use `problems list` to find an id. Use `problems select --id` for the integrand the learner sees. That command omits the answer. Use `problems show --id` only after the learner has answered.
 
+When `verify` is `sympy`, send `extract.final_answer` as the expression you read. Do not send `verdict`. The CLI grades that expression against `answer_sympy`. A verdict does not override a wrong expression.
+
 When `verify` is `manual`, compare the learner's answer with `answer_plain` and the worked text when `has_worked` is true. Then send a mark turn with `verdict` set to `correct` or `incorrect`. Do not send the lossy integrand to SymPy.
 
 When `verify` is `unchecked`, the source prints no answer. Say so. Do not invent an answer and do not send `verdict`.

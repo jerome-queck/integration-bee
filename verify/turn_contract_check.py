@@ -622,6 +622,29 @@ def main() -> int:
         check("R1-2024-Q01" in shown.stdout, "progress show reads the catalog attempt")
         after = json.loads((data / "attempts.json").read_text())
         check(len(after["items"]) == before + 1, "catalog mark appends one attempt")
+        gated = apply(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "R1-2020-Q08",
+                "source": "typed",
+                "extract": {"final_answer": "1/2"},
+            },
+        )
+        gated_doc = load(gated)
+        check(gated.returncode == 0 and gated_doc["mark"]["correct"] is True, "sympy catalog mark needs no verdict")
+        overridden = apply(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "R1-2020-Q08",
+                "source": "typed",
+                "verdict": "correct",
+                "extract": {"final_answer": "1"},
+            },
+        )
+        overridden_doc = load(overridden)
+        check(overridden.returncode == 1 and overridden_doc["mark"]["correct"] is False, "a verdict cannot override a wrong sympy answer")
         invented = apply(
             data,
             {

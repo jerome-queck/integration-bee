@@ -44,4 +44,4 @@ The six headings below are the gap index. `verify/gap_index.py` is the only pars
 - contains: group, crossnumber, relay, Shuttle, chainlink, dichotomy, tournament, Crossword, 2024_Participant_Guide_R2, Round_3_Integration_Bee_Participant_Guide
 - examples: 0
 
-Pack and Yang integrands in `problems/records.jsonl` are the PDF text layer. `integrand_latex` is null. An answer with `verify` set to `manual` is a mark-scheme cite, or a short equality already printed in a Yang example. It is not a SymPy result. Yang practice rows with `verify` set to `unchecked` have no printed answer in the extract. Do not invent one.
+Pack and Yang integrands in `problems/records.jsonl` start from the PDF text layer. A Round 1 row with `verify` set to `sympy` also stores the proved `integrand_latex` and `answer_latex`. Every other `integrand_latex` stays null. An answer with `verify` set to `manual` is a mark-scheme cite, or a short equality already printed in a Yang example. It is not a SymPy result. Yang practice rows with `verify` set to `unchecked` have no printed answer in the extract. Do not invent one.
