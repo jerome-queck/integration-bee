@@ -465,6 +465,13 @@ TOURNAMENT_CHECKS = (
     check_r3_2024_tournament_q09_v7,
 )
 
+from pack_checks_tournament_rem import REM_CHECKS, REM_PACK_IDS
+
+if set(TOURNAMENT_PACK_IDS) & set(REM_PACK_IDS):
+    raise AssertionError("duplicate tournament pack ids")
+TOURNAMENT_PACK_IDS = TOURNAMENT_PACK_IDS + REM_PACK_IDS
+TOURNAMENT_CHECKS = TOURNAMENT_CHECKS + REM_CHECKS
+
 
 if __name__ == "__main__":
     for check in TOURNAMENT_CHECKS:
