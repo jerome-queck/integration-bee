@@ -18,7 +18,7 @@ Yang \S6.9 is a drawer of leftovers. In this drill set every integral is one of 
 \begin{enumerate}
   \item Recognise $(x^b-x^a)/\ln x$ and integrate the geometric parameter. Do not series-expand $\ln x$ in the denominator.
   \item Leave $G$ as $G$. Do not replace it by a rational number or a logarithm.
-  \item For $1/(x\ln x)$, substitute $u=\ln x$.
+  \item For $1/(x\ln x)$, substitute $u=\ln x$. Refuse that antiderivative when the numerator is already $\ln x$.
 \end{enumerate}
 
 \section{Worked parameter --- \texttt{U36-D01}}
@@ -29,9 +29,25 @@ For $a>-1$, $\int_0^1 x^a\,dx=1/(a+1)$. Integrate in $a$ from 0 to 1:
 \[
 \int_0^1\frac{x-1}{\ln x}\,dx=\ln\frac{1+1}{0+1}=\ln 2.
 \]
-\texttt{U36-D07} runs the parameter from 0 to 2 and stores $\ln 3$. That is \texttt{U34-D04}. The improper endpoint is the same limit used in unit 34.
+That is the stored answer. The worked dose stops there. The improper endpoint is the same limit used in unit 34.
 
-\section{Catalan's constant --- \texttt{U36-D03}}
+\section{Faded parameter --- \texttt{U36-D07}}
+\[
+\int_0^1\frac{x^2-1}{\ln x}\,dx.
+\]
+The blank is the upper limit of $a$. It is $2$, not $1$. For $a>-1$, $\int_0^1 x^a\,dx=1/(a+1)$. Integrate in $a$ from $0$ to $2$:
+\[
+\ln(2+1)-\ln(0+1)=\ln 3.
+\]
+After that limit is written, uncover $\ln 3$. Refuse $\ln 2$. This integral is \texttt{U34-D04}.
+
+The same formula with the upper limit $4$ is a fence on \texttt{docs/techniques/concepts/habits.md}, not a drill:
+\[
+\int_0^1\frac{x^4-1}{\ln x}\,dx=\ln 5.
+\]
+SymPy checks $\ln 5$. The parameter from $0$ to $3$ is already stored as \texttt{U11-D15}, value $\ln 4$. Leave \texttt{batis} unticked. The fence $\ln 5$ is a parameter value, not a replacement for $G$.
+
+\section{Worked constant --- \texttt{U36-D03}}
 \[
 \int_0^1\frac{\arctan x}{x}\,dx=G.
 \]
@@ -39,50 +55,70 @@ On $[0,1)$, $\arctan x=\sum_{k=0}^{\infty}(-1)^k x^{2k+1}/(2k+1)$, so
 \[
 \frac{\arctan x}{x}=\sum_{k=0}^{\infty}(-1)^k\frac{x^{2k}}{2k+1}.
 \]
-Integrate termwise. Each term contributes $(-1)^k/(2k+1)^2$. The series at $x=1$ is the definition of $G$. The integrand extends continuously through $x=0$ by the value $1$. The stored answer is the constant $G$, written \texttt{Catalan} in the drill feed. Stop there.
+Integrate termwise. Each term contributes $(-1)^k/(2k+1)^2$. The series at $x=1$ is the definition of $G$. The integrand extends continuously through $x=0$ by the value $1$. The stored answer is the constant $G$, written \texttt{Catalan} in the drill feed. The worked dose stops there.
 
-\section{The logarithm substitution --- \texttt{U36-D04}}
+\section{Faded term --- \texttt{U36-D03}}
+The blank is the general term $(-1)^k/(2k+1)^2$. There is no second stored drill for this constant. After the term is written, uncover $G$.
+
+\section{Bare --- \texttt{U36-D03}}
+Set
+\[
+\int_0^1\frac{\arctan x}{x}\,dx
+\]
+and show nothing else. The bare dose hides the series. After a line is written, uncover $G$.
+
+\section{Refusal --- $G$ stays $G$}
+A logarithm or a rational in place of $G$ is the miss. The stored answer of \texttt{U36-D03} is $G$. Leave the catalog id \texttt{catalan} unticked. Do not invent a closed form.
+
+\section{Worked logarithm --- \texttt{U36-D04}}
 \[
 \int\frac{dx}{x\ln x}=\ln|\ln x|+C.
 \]
-Let $u=\ln x$, so $du=dx/x$. \texttt{U36-D08} is the partner $\int(\ln x)/x\,dx$. The same $u$ gives $\int u\,du=\frac12(\ln x)^2$, the stored antiderivative.
+Let $u=\ln x$, so $du=dx/x$. The worked dose stops there.
 
-\section{Faded definite logarithms --- \texttt{U36-D05} and \texttt{U36-D06}}
+\section{Faded --- \texttt{U36-D05}}
 On $[2,4]$,
 \[
-\bigl[\ln|\ln x|\bigr]_2^4=\ln(\ln 4)-\ln(\ln 2)=\ln(2\ln 2)-\ln(\ln 2)=\ln 2,
+\int_2^4\frac{dx}{x\ln x}.
 \]
-because $\ln 4=2\ln 2$. That is the stored value of \texttt{U36-D05}.
+The blank is the subtraction $\ln(\ln 4)-\ln(\ln 2)$. Because $\ln 4=2\ln 2$,
+\[
+\ln(2\ln 2)-\ln(\ln 2)=\ln 2.
+\]
+After that subtraction is written, uncover $\ln 2$. That is the stored value.
 
-On $[e,e^e]$,
+\section{Bare --- \texttt{U36-D06}}
+Set
+\[
+\int_e^{e^e}\frac{dx}{x\ln x}
+\]
+and show nothing else. The bare dose hides the endpoints. After a line is written, uncover
 \[
 \bigl[\ln|\ln x|\bigr]_e^{e^e}=\ln\bigl(\ln(e^e)\bigr)-\ln(\ln e)=\ln e-\ln 1=1.
 \]
-That is the stored value of \texttt{U36-D06}.
+That is the stored value.
 
-\section{Faded parameter --- \texttt{U36-D07}}
-\[
-\int_0^1\frac{x^2-1}{\ln x}\,dx.
-\]
-For $a>-1$, $\int_0^1 x^a\,dx=1/(a+1)$. Integrate in $a$ from $0$ to $2$:
-\[
-\ln(2+1)-\ln(0+1)=\ln 3.
-\]
-That is the stored value, and it is \texttt{U34-D04}. The same formula with the upper limit $4$ is a scale, not a drill:
-\[
-\int_0^1\frac{x^4-1}{\ln x}\,dx=\ln 5.
-\]
-SymPy checks $\ln 5$. The parameter from $0$ to $3$ is already stored as \texttt{U11-D15}, value $\ln 4$. Leave $G$ as $G$. The fence $\ln 5$ is a parameter value.
+\section{Refusal --- the numerator is already $\ln x$}
+\texttt{U36-D08} is $\int(\ln x)/x\,dx$. The same $u=\ln x$ gives $\int u\,du=\frac12(\ln x)^2$, the stored antiderivative. Refuse $\ln|\ln x|$, the answer of \texttt{U36-D04}.
 
 \section{Already taught --- \texttt{U36-D02}}
 \[
 \int_0^{\pi/2}\ln(\sin x)\,dx=-\frac\pi2\ln 2
 \]
-is \texttt{U35-D06}. Use the double-angle argument in that note. Calling it a unique trick does not change the proof.
+is \texttt{U35-D06}. Use the double-angle argument in that note. Calling it a unique trick does not change the proof. The stored value is not $G$.
+
+\section{Dose}
+For a parameter quotient, worked reads \texttt{U36-D01}, then the faded upper limit on \texttt{U36-D07}. Faded gives only that limit. A copied $\ln 2$ opens the refusal and sets \texttt{U36-D07}. The value $\ln 5$ is the fence on \texttt{docs/techniques/concepts/habits.md}, not a drill. Leave \texttt{batis} unticked.
+
+For $1/(x\ln x)$, worked reads \texttt{U36-D04}, then the faded subtraction on \texttt{U36-D05}, then sets \texttt{U36-D06}. Faded gives only that subtraction. Bare sets \texttt{U36-D06}. Writing $\ln|\ln x|$ for $\int(\ln x)/x\,dx$ opens the refusal and sets \texttt{U36-D08}.
+
+For Catalan's constant, worked reads the series for \texttt{U36-D03} and stops at $G$. Faded gives only the general term. Bare sets \texttt{U36-D03}. A logarithm or a rational opens the refusal and sets \texttt{U36-D03}. Leave \texttt{catalan} unticked.
+
+\texttt{U36-D02} is \texttt{U35-D06}. Use that note. The stored value is $-(\pi/2)\ln 2$.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit36.json}.
 
 \section*{On a miss}
-Teach this file. If the answer is $G$, say so and stop. If the denominator is $\ln x$, build the parameter or the substitution $u=\ln x$. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. If the answer is $G$, say so and stop. If the denominator is $\ln x$, build the parameter or the substitution $u=\ln x$. If $\ln 2$ was written for $(x^2-1)/\ln x$, set \texttt{U36-D07}. If $\ln|\ln x|$ was written for $(\ln x)/x$, set \texttt{U36-D08}. Do not invent an answer that is not in \texttt{drills.md}. Do not tick \texttt{catalan}.
 \end{document}

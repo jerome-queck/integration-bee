@@ -26,7 +26,10 @@ Open the earlier row when two shapes fit. Stop when the integral is finished. Th
 | \(\ln(1+x)/(1+x^2)\) on a finite interval | the same card | Unit 33. Worked `U33-D04`, faded `U33-D03`, bare `U33-D02`. |
 | A half-line integral that wants the copy at \(1/x\) | the same card | Unit 33. Worked `U33-D06`, faded `U33-D07`, bare `U33-D05`. |
 | A parameter on a fixed interval | `docs/techniques/concepts/algebra.md` and `docs/techniques/introduce-constant.md` | `U11-D13` through `U11-D15`. Leave `batis` unticked. |
-| An endpoint that moves with the parameter, or a difference of exponentials over \(x\) | the same card | Unit 34. `U34-D07` is the substitution that needs no parameter. |
+| A difference of exponentials or cosines over \(x\) | the same card | Unit 34. Worked `U34-D01`, faded `U34-D02`, bare `U34-D03`. |
+| An endpoint that moves with the parameter, or \(x^a\ln x\) on \([0,1]\) | the same card | Unit 34. Worked `U34-D05`, faded `U34-D04`, bare `U34-D08`. The case \(I'(2)=6\) is not a drill. `U34-D07` needs no parameter. Leave `batis` unticked. |
+| A scaled \(e^{-ax^2}\) or \((\sin bx)/x\), or \(\ln x/(1\pm x)\) | `docs/techniques/concepts/habits.md` | Unit 35. Worked `U35-D01`, faded `U35-D02`, bare `U35-D03`. The series works `U35-D04`, fades `U35-D05`, and sets bare `U35-D08`. |
+| \((x^b-x^a)/\ln x\), or \(1/(x\ln x)\) | the same card | Unit 36. Worked `U36-D01`, faded `U36-D07`, bare `U36-D06`. `U36-D03` stays \(G\). Leave `catalan` unticked. |
 
 `vector-calc`, `beta`, `zeta`, `euler-mascheroni`, and `catalan` stay without an invented value. Unit 35 keeps the series it already prints. Unit 36 leaves \(G\) as \(G\).
 

@@ -94,7 +94,7 @@ For \(b>0\), the substitution \(u=bx\) gives
 \int_0^{\infty}\frac{\sin(bx)}{x}\,dx=\frac{\pi}{2}.
 \]
 
-The \(b\) in the sine and the \(b\) in \(dx\) cancel against the chain rule, and the integral is again `U30-D05`. In particular \(b=3\) is the same \(\pi/2\). Unit 35 stores a scaled Dirichlet drill as `U35-D02`. Open that file for the stored limits. Past the scaling, unit 35 also has series and a logarithm of sine. Those stay in the unit. The Gaussian scale \(e^{-9x^2}\) and the Dirichlet scale at \(b=3\) are checked on `habits.md`. This card does not quote a zeta number.
+The \(b\) in the sine and the \(b\) in \(dx\) cancel against the chain rule, and the integral is again `U30-D05`. In particular \(b=3\) is the same \(\pi/2\). Unit 35 stores a scaled Dirichlet drill as `U35-D02`. That unit works `U35-D01`, fades `U35-D02`, and sets bare `U35-D03`. Open that file for the stored limits. Past the scaling, unit 35 also has series and a logarithm of sine. Those stay in the unit. The Gaussian scale \(e^{-9x^2}\) and the Dirichlet scale at \(b=3\) are checked on `habits.md`. This card does not quote a zeta number.
 
 ## Faded step
 

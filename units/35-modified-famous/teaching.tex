@@ -17,10 +17,11 @@ A famous integral with one constant changed is still that integral after a subst
 \section{Learning goals}
 \begin{enumerate}
   \item Scale the limit and the constant in the exponent or the argument. Write the substitution.
-  \item Expand $1/(1\pm x)$ and integrate $x^n\ln x$ termwise when the famous value is a zeta number.
+  \item Expand $1/(1\pm x)$ and integrate $x^n\ln x$ termwise when the famous value is a zeta number this unit already stores.
+  \item Refuse a Gaussian value on a linear exponent, a series on a Frullani difference, and any zeta number this file does not print.
 \end{enumerate}
 
-\section{Scale the Gaussian --- \texttt{U35-D01} (\texttt{modified-famous})}
+\section{Worked Gaussian scale --- \texttt{U35-D01}}
 \[
 \int_0^{\infty}e^{-2x^2}\,dx.
 \]
@@ -28,31 +29,38 @@ A famous integral with one constant changed is still that integral after a subst
 \[
 \int_0^{\infty}e^{-u^2}\,\frac{du}{\sqrt{2}}=\frac{1}{\sqrt{2}}\cdot\frac{\sqrt{\pi}}{2}=\frac{\sqrt{\pi}}{2\sqrt{2}}=\frac{\sqrt{2\pi}}{4}.
 \]
-That is the stored value. The same substitution with $u=3x$ is a scale, not a drill:
+That is the stored value. The worked dose stops there.
+
+The same substitution with $u=3x$ is a fence on \texttt{docs/techniques/concepts/habits.md}, not a drill:
 \[
 \int_0^{\infty}e^{-9x^2}\,dx=\frac{1}{3}\cdot\frac{\sqrt{\pi}}{2}=\frac{\sqrt{\pi}}{6}.
 \]
 SymPy checks $\sqrt{\pi}/6$.
 
-\texttt{U35-D03} is $\int_0^{\infty}e^{-3x}\,dx=1/3$. The exponent is linear, so the value is the elementary integral $1/a$ at $a=3$.
-
-\section{Scale the Dirichlet integral --- \texttt{U35-D02}}
+\section{Faded Dirichlet scale --- \texttt{U35-D02}}
 \[
 \int_0^{\infty}\frac{\sin 2x}{x}\,dx.
 \]
-\texttt{U30-D05} stores $\int_0^{\infty}(\sin u)/u\,du=\pi/2$. Set $u=2x$, so $dx=du/2$ and
+The blank is the cancellation. \texttt{U30-D05} stores $\int_0^{\infty}(\sin u)/u\,du=\pi/2$. Set $u=2x$, so $dx=du/2$ and
 \[
 \frac{\sin 2x}{x}\,dx=\frac{\sin u}{u/2}\cdot\frac{du}{2}=\frac{\sin u}{u}\,du.
 \]
-The integral equals \texttt{U30-D05}, value $\pi/2$. That is the stored value. The factor $2$ cancels.
+The factor $2$ cancels. After that line is written, uncover $\pi/2$.
 
 The Gaussian card already records the same cancellation for a general $b>0$. In particular
 \[
-\int_0^{\infty}\frac{\sin 3x}{x}\,dx=\frac\pi2.
+\int_0^{\infty}\frac{\sin 3x}{x}\,dx=\frac\pi2
 \]
-SymPy returns $\pi/2$. That line is a scale of \texttt{U30-D05}, and it is not a drill id.
+is the fence on \texttt{docs/techniques/concepts/habits.md}, not a drill. SymPy returns $\pi/2$.
 
-\section{Series --- \texttt{U35-D04} and \texttt{U35-D05}}
+\section{Bare --- \texttt{U35-D03}}
+Set
+\[
+\int_0^{\infty}e^{-3x}\,dx
+\]
+and show nothing else. The bare dose hides that the exponent is linear. After a line is written, uncover the elementary integral $1/a$ at $a=3$. The stored answer is $1/3$. Refuse a Gaussian quote on this integral.
+
+\section{Worked series --- \texttt{U35-D04}}
 On $[0,1)$,
 \[
 \frac{1}{1-x}=\sum_{n=0}^{\infty}x^n,\qquad \int_0^1 x^n\ln x\,dx=-\frac{1}{(n+1)^2}.
@@ -61,13 +69,26 @@ So
 \[
 \int_0^1\frac{\ln x}{1-x}\,dx=-\sum_{m=1}^{\infty}\frac{1}{m^2}=-\frac{\pi^2}{6}.
 \]
-The alternating expansion of $1/(1+x)$ produces
-\[
-\int_0^1\frac{\ln x}{1+x}\,dx=-\sum_{m=1}^{\infty}\frac{(-1)^{m-1}}{m^2}=-\frac{\pi^2}{12}.
-\]
-Those are the stored answers. They are the Basel values this unit already prints. A further zeta value is not part of the drill set. The endpoint $x=1$ in \texttt{U35-D04} is improper. The series of positive terms and the integral agree as improper integrals. \texttt{U35-D08} is the elementary cousin $\int_0^1 -\ln x\,dx=1$.
+That is the stored answer. The worked dose for a series stops there. The endpoint $x=1$ is improper. The series of positive terms and the integral agree as improper integrals.
 
-\section{Logarithm of sine --- \texttt{U35-D06}}
+\section{Faded series --- \texttt{U35-D05}}
+\[
+\int_0^1\frac{\ln x}{1+x}\,dx.
+\]
+The blank is the sign in $\sum_{m=1}^{\infty}(-1)^{m-1}/m^2$. The alternating expansion of $1/(1+x)$ produces
+\[
+-\sum_{m=1}^{\infty}\frac{(-1)^{m-1}}{m^2}=-\frac{\pi^2}{12}.
+\]
+That is the stored answer. Refuse $-\pi^2/6$, the stored answer of \texttt{U35-D04}.
+
+\section{Bare logarithm --- \texttt{U35-D08}}
+Set
+\[
+\int_0^1 -\ln x\,dx
+\]
+and show nothing else. The bare dose hides the series. After a line is written, uncover the stored answer $1$.
+
+\section{Worked logarithm of sine --- \texttt{U35-D06}}
 \[
 I=\int_0^{\pi/2}\ln(\sin x)\,dx.
 \]
@@ -75,13 +96,21 @@ The reflection $x\mapsto\pi/2-x$ shows $I=\int_0^{\pi/2}\ln(\cos x)\,dx$, so
 \[
 2I=\int_0^{\pi/2}\ln(\sin x\cos x)\,dx=\int_0^{\pi/2}\ln(\sin 2x)\,dx-\int_0^{\pi/2}\ln 2\,dx.
 \]
-The second integral is $(\pi/2)\ln 2$. For the first, $v=2x$ gives $\frac12\int_0^{\pi}\ln(\sin v)\,dv=\int_0^{\pi/2}\ln(\sin v)\,dv=I$, because $\sin(\pi-v)=\sin v$. Therefore $2I=I-(\pi/2)\ln 2$, and $I=-(\pi/2)\ln 2$. \texttt{U36-D02} is the same integral.
+The second integral is $(\pi/2)\ln 2$. For the first, $v=2x$ gives $\frac12\int_0^{\pi}\ln(\sin v)\,dv=\int_0^{\pi/2}\ln(\sin v)\,dv=I$, because $\sin(\pi-v)=\sin v$. Therefore $2I=I-(\pi/2)\ln 2$, and $I=-(\pi/2)\ln 2$. The worked dose stops there. \texttt{U36-D02} is the same integral. This value is not $G$.
 
-\texttt{U35-D07} is $(e^{-x}-e^{-2x})/x$ on $[0,\infty)$, stored value $\ln 2$. That is \texttt{U34-D01}. Use the parameter argument there. Do not start a series.
+\section{Refusal --- the wrong famous integral}
+\texttt{U35-D07} is $(e^{-x}-e^{-2x})/x$ on $[0,\infty)$, stored value $\ln 2$. That is \texttt{U34-D01}. Use the parameter argument there. Refuse a series.
+
+The only zeta numbers in this drill set are $-\pi^2/6$ and $-\pi^2/12$, stored as \texttt{U35-D04} and \texttt{U35-D05}. A further zeta value is not part of the drill set. Do not tick \texttt{zeta}. An elementary antiderivative of $e^{-x^2}$ is not in this drill set. Scale \texttt{U35-D01} from \texttt{U30-D01}. Do not replace \texttt{U35-D06} by $G$. Leave \texttt{catalan} for unit 36.
+
+\section{Dose}
+For a scale, worked reads \texttt{U35-D01}, then the faded cancellation on \texttt{U35-D02}, then sets \texttt{U35-D03}. Faded gives only that cancellation. Bare sets \texttt{U35-D03}. A Gaussian value on a linear exponent opens the refusal and sets \texttt{U35-D03}.
+
+For a series, worked reads \texttt{U35-D04}, then the faded sign on \texttt{U35-D05}, then sets \texttt{U35-D08}. Faded gives only that sign. Bare sets \texttt{U35-D08}. A series on a difference of exponentials opens the refusal and sets \texttt{U35-D07}. A new zeta value is refused. The logarithm of sine is the worked reading of \texttt{U35-D06}, stored $-(\pi/2)\ln 2$.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit35.json}.
 
 \section*{On a miss}
-Teach this file. Name the famous integral you scaled, or the series you integrated. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. Name the famous integral you scaled, or the series you integrated. If the exponent was linear, set \texttt{U35-D03}. If the integrand was $(e^{-x}-e^{-2x})/x$, set \texttt{U35-D07}. If the answer was $G$, set \texttt{U35-D06} and leave $G$ for unit 36. Do not invent an answer that is not in \texttt{drills.md}. Do not tick \texttt{zeta}.
 \end{document}
