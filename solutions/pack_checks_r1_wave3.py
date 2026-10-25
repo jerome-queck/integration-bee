@@ -82,6 +82,7 @@ R1_WAVE3_PACK_IDS = (
     "R1-2022-TB2022-Q18",
     "R1-2022-TB2022-Q19",
     "R1-2022-TB2022-Q20",
+    "R1-2025-Online-Q07",
     "R1-2025-Online-Q08",
     "R1-2025-Online-Q10",
     "R1-2025-Online-Q12",
@@ -922,6 +923,17 @@ def check_r1_2022_tb2022_q20() -> None:
     _cos_over_double()
 
 
+def check_r1_2025_online_q07() -> None:
+    x = sp.symbols("x")
+    k = sp.symbols("k", integer=True)
+    powers = sp.summation(x**k, (k, 0, 2025)) - sp.summation(x**k, (k, 1, 2025))
+    _eq(sp.simplify(powers), 1)
+    _eq(sp.integrate(1, (x, 0, 1)), 1)
+    for n in range(1, 6):
+        value = sp.Rational(1, 2) ** n
+        _eq(sp.frac(value), value)
+
+
 def check_r1_2025_online_q08() -> None:
     _nested_exp()
 
@@ -1044,6 +1056,7 @@ R1_WAVE3_CHECKS = (
     check_r1_2022_tb2022_q18,
     check_r1_2022_tb2022_q19,
     check_r1_2022_tb2022_q20,
+    check_r1_2025_online_q07,
     check_r1_2025_online_q08,
     check_r1_2025_online_q10,
     check_r1_2025_online_q12,
