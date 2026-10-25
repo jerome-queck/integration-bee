@@ -23,6 +23,7 @@ Preconditions:
 - **One id.** Run `scripts/control-integration-bee drills list --id U01-D08 --format json >"$IB_EVIDENCE/drills-one.json" 2>"$IB_EVIDENCE/drills-one.err"`. The exit code is 0. Stdout contains `U01-D08` and `answer_display`. Stdout does not contain `U01-D01`.
 - **Later unit.** Run `scripts/control-integration-bee drills list --unit 19 --format json >"$IB_EVIDENCE/drills-later-unit.json" 2>"$IB_EVIDENCE/drills-later-unit.err"`. The exit code is 0. Stdout contains `U19-D01` and `answer_display`.
 - **Empty filter.** Run `scripts/control-integration-bee drills list --unit 37 --format json >"$IB_EVIDENCE/drills-empty.json" 2>"$IB_EVIDENCE/drills-empty.err"`. The exit code is 1. Stdout contains `"drills": []`. Stderr is empty.
+- **Practice list hides the answer.** Run `scripts/control-integration-bee practice list --unit 37 --format json >"$IB_EVIDENCE/practice-empty.json" 2>"$IB_EVIDENCE/practice-empty.err"`. The exit code is 0. Stdout contains `"drills": []` and does not contain `answer_display`. Stderr is empty.
 
 ## Gotchas
 

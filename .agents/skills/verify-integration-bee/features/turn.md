@@ -4,6 +4,7 @@ The companion sends one JSON turn. The CLI teaches, marks a photo extract, opens
 
 ## Sub-features
 
+- `turn-show` prints the idle session and writes nothing.
 - `turn-teach` serves `U01-D07` with the answer hidden and stores phase `awaiting_answer`.
 - `turn-mark` records a wrong photo extract, then a correct one, and reads both from `progress show`.
 - `turn-mock-blocked` refuses a mock before Round 1 nodes are solid.
@@ -33,6 +34,7 @@ Preconditions:
 - The directory has no session file yet.
 
 - **Schema.** Run `scripts/control-integration-bee turn schema --format json >"$IB_EVIDENCE/turn-schema.json"`. Exit code is 0. Stdout contains `aptitude`, `confirm`, `cover`, `proposing`, `mark`, and `awaiting_answer`.
+- **Show.** Run `scripts/control-integration-bee turn show --format json >"$IB_EVIDENCE/turn-session.json" 2>"$IB_EVIDENCE/turn-session.err"`. Exit code is 0. Stdout contains `"phase": "idle"` and `The session is unchanged.` Stderr is empty. The data directory stays empty.
 - **Teach.** Write `{"kind":"teach"}` to `$IB_DATA_DIR/turn.json`. Run `scripts/control-integration-bee turn apply --file "$IB_DATA_DIR/turn.json" --format json >"$IB_EVIDENCE/turn-teach.json"`. Exit code is 0. Stdout contains `U01-D07` and `awaiting_answer`, and does not contain `answer_display`.
 - **Wrong mark.** Write `{"kind":"mark","problem_id":"U01-D07","source":"photo","extract":{"final_answer":"1"}}` to `$IB_DATA_DIR/turn.json`. Run `scripts/control-integration-bee turn apply --file "$IB_DATA_DIR/turn.json" --format json >"$IB_EVIDENCE/turn-wrong.json"`. Exit code is 1. Stdout contains `"correct": false`.
 - **Read back.** Run `scripts/control-integration-bee progress show --format json >"$IB_EVIDENCE/turn-show.json"`. Stdout contains `U01-D07`.
@@ -67,6 +69,6 @@ Preconditions:
 - `YANG-1.1-P01` has no printed answer. A verdict on that id exits 2 and adds no attempt.
 - `mock-start` with `"cold": true` bypasses the Round 1 gate. The blocked proof must omit `cold`.
 - `mock-start` with `pack` `pdf-round1` and `year` 2021 reports `count` 40 and `on_disk` true. The problems PDF is `sources/past/r1/2021/2021_Round_1_UK_University_Integration_Bee.pdf`.
-- `verify/turn_contract_check.py` also drives the second placement probe, the 2021 pack, and the open-retry gap fill. `make check` runs it from `verify/run.sh`. The feature drive records its own transcript for teach, mark, aptitude, confirm, cover, and the two sample grades.
+- `verify/turn_contract_check.py` also drives the second placement probe, the 2021 pack, and the open-retry gap fill. `make check` runs it from `verify/run.sh`. The feature drive records its own transcript for `turn show`, teach, mark, aptitude, confirm, cover, and the two sample grades.
 - A correct mark with `method_note` writes `marks.json` (`method_ok` false) and `stickies.json` (one card, no stored strength). A repeat of that same answer while the problem is still open does not append a second attempt. A wrong final answer does not invent `method_ok`.
 - `extract.gap` is one of the six headings in `docs/techniques/beyond-yang.md`. `say` names that heading's file. `turn apply` stores the id and does not write the file. A unit miss with no gap names `units/{unit}/teaching.tex` and does not name the index.
