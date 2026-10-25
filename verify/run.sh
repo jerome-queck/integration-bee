@@ -73,6 +73,9 @@ echo "== past_presence_check =="
 echo "== check_samples (sympy-safe official sample answers) =="
 "$PY" "$ROOT/verify/check_samples.py" || fail=1
 
+echo "== sample catalog and worked notes =="
+"$PY" "$ROOT/solutions/sample_self_check.py" || fail=1
+
 echo "== generate_practice seed yang smoke =="
 "$PY" "$ROOT/verify/generate_practice.py" --tag yang:1.1 --tag yang:1.5 --tag yang:1.18 --tag yang:1.19 >/tmp/ibe_practice.out || fail=1
 wc -l /tmp/ibe_practice.out

@@ -89,6 +89,22 @@ def drive() -> int:
         check(wide.returncode == 2 and "matched" in wide.stderr, "select refuses many matches")
         missing = run_cli(data, ["problems", "show", "--id", "NO-SUCH", "--format", "json"])
         check(missing.returncode == 1 and "unknown problem" in missing.stderr, "show misses an unknown id")
+        listed_sample = run_cli(data, ["problems", "list", "--round", "sample", "--format", "json"])
+        check(listed_sample.returncode == 0, "sample list exit")
+        sample_payload = json.loads(listed_sample.stdout)
+        sample_ids = [row["id"] for row in sample_payload["problems"]]
+        check(sample_payload["count"] == 20 and sample_ids[0] == "SAMPLE-Q01" and sample_ids[-1] == "SAMPLE-Q20", "sample list")
+        check("answer_plain" not in listed_sample.stdout and "answer_sympy" not in listed_sample.stdout, "sample list hides answers")
+        shown_sample = run_cli(data, ["problems", "show", "--id", "SAMPLE-Q17", "--format", "json"])
+        check(shown_sample.returncode == 0, "sample show exit")
+        sample_doc = json.loads(shown_sample.stdout)
+        check(sample_doc["verify"] == "sympy" and sample_doc["answer_sympy"] == "E*x", "SAMPLE-Q17 grades e*x")
+        check("x^(1/ln x)" in sample_doc["integrand_plain"], "SAMPLE-Q17 shows the power")
+        selected_sample = run_cli(data, ["problems", "select", "--id", "SAMPLE-Q05", "--format", "json"])
+        check(selected_sample.returncode == 0, "sample select exit")
+        selected_doc = json.loads(selected_sample.stdout)
+        check(selected_doc["verify"] == "manual" and selected_doc["has_answer"] is True, "manual sample keeps a cited answer")
+        check("answer_plain" not in selected_sample.stdout, "sample select hides the answer")
         check(list(data.glob("*")) == [], "catalog commands write nothing")
     return fail
 
@@ -129,7 +145,10 @@ def main() -> int:
                 return 1
             print(f"PASS tampered sympy row ({lied})")
             break
-    print(f"OK catalog {problem_catalog.EXPECTED_COUNT} records")
+    print(
+        f"OK catalog {problem_catalog.EXPECTED_COUNT} pack records, "
+        f"{problem_catalog.SAMPLE_COUNT} sample records"
+    )
     fail = drive()
     if fail:
         print("FAIL catalog drive")

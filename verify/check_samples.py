@@ -7,51 +7,27 @@ import sys
 from pathlib import Path
 
 try:
-    import sympy as sp
+    import sympy  # noqa: F401
 except ImportError:
     sys.stderr.write("FAIL: sympy missing\n")
     sys.exit(2)
 
-import check_math
+import pack_gate
 
 ROOT = Path(__file__).resolve().parent.parent
 FEED = ROOT / "past" / "samples" / "answers_feed.json"
 
-NS = {
-    "x": sp.symbols("x", real=True),
-    "pi": sp.pi,
-    "exp": sp.exp,
-    "log": sp.log,
-    "sin": sp.sin,
-    "cos": sp.cos,
-    "tan": sp.tan,
-    "sec": sp.sec,
-    "csc": sp.csc,
-    "cot": sp.cot,
-    "sqrt": sp.sqrt,
-    "oo": sp.oo,
-}
-
 
 def check_one(d: dict) -> None:
-    x = NS["x"]
-    expr = sp.sympify(d["sympy_expr"], locals=NS)
-    ans = sp.sympify(d["answer_sympy"], locals=NS)
     kind = d["kind"]
     if kind == "definite":
-        lo = sp.sympify(d["limits"][0], locals=NS)
-        hi = sp.sympify(d["limits"][1], locals=NS)
-        partner = sp.simplify(expr + expr.subs(x, lo + hi - x))
-        if partner == 1 and sp.simplify(ans - (hi - lo) / 2) == 0:
-            return
-        val = sp.integrate(expr, (x, lo, hi)).simplify()
-        if sp.simplify(val - ans) != 0:
-            raise AssertionError(f"{d['id']}: got {val}, expected {ans}")
+        limits = (str(d["limits"][0]), str(d["limits"][1]))
     elif kind == "indefinite":
-        if not check_math.is_antiderivative(ans, expr):
-            raise AssertionError(f"{d['id']}: d/dx({ans}) != {expr}")
+        limits = None
     else:
         raise AssertionError(f"{d['id']}: unknown kind {kind}")
+    if not pack_gate.proven(kind, d["sympy_expr"], limits, d["answer_sympy"], "x"):
+        raise AssertionError(f"{d['id']}: not proved")
 
 
 def check_suspect(d: dict) -> None:
@@ -61,12 +37,9 @@ def check_suspect(d: dict) -> None:
         raise AssertionError(f"{d['id']}: suspect row missing {', '.join(missing)}")
     if d["kind"] != "indefinite":
         raise AssertionError(f"{d['id']}: suspect row kind {d['kind']}")
-    expr = sp.sympify(d["sympy_expr"], locals=check_math.NS)
-    ans = sp.sympify(d["answer_sympy"], locals=check_math.NS)
-    pdf = sp.sympify(d["answer_pdf_sympy"], locals=check_math.NS)
-    if not check_math.is_antiderivative(ans, expr):
+    if not pack_gate.proven(d["kind"], d["sympy_expr"], None, d["answer_sympy"], "x"):
         raise AssertionError(f"{d['id']}: stated answer is not an antiderivative")
-    if check_math.is_antiderivative(pdf, expr):
+    if pack_gate.proven(d["kind"], d["sympy_expr"], None, d["answer_pdf_sympy"], "x"):
         raise AssertionError(f"{d['id']}: PDF answer matches the integrand")
 
 
@@ -95,8 +68,12 @@ def main() -> int:
         check_one(d)
         checked += 1
     q17 = next((row for row in rows if row.get("id") == "SAMPLE-Q17"), None)
-    if q17 is None or not q17.get("pdf_answer_suspect"):
-        print("FAIL SAMPLE-Q17 must stay a checked pdf-suspect row")
+    if q17 is None or q17.get("pdf_answer_suspect") or q17.get("answer_sympy") != "E*x":
+        print("FAIL SAMPLE-Q17 must grade e*x and is not a pdf-suspect row")
+        return 1
+    q15 = next((row for row in rows if row.get("id") == "SAMPLE-Q15"), None)
+    if q15 is None or not q15.get("pdf_answer_suspect"):
+        print("FAIL SAMPLE-Q15 must stay the printed-sign suspect")
         return 1
     if suspects < 1:
         print("FAIL no pdf-suspect sample was checked")

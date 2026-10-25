@@ -1,40 +1,49 @@
 [
   {
     "id": "SAMPLE-Q01",
-    "verify": "manual",
-    "answer_display": "\\ln 6",
+    "verify": "sympy",
+    "kind": "definite",
+    "answer_display": "ln 6",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "dutis"
     ],
     "yang": [
       "yang:1.20"
+    ],
+    "note": "Answers PDF prints ln 6.",
+    "sympy_expr": "(x**5 - 1)/log(x)",
+    "answer_sympy": "log(6)",
+    "limits": [
+      "0",
+      "1"
     ]
   },
   {
     "id": "SAMPLE-Q02",
-    "verify": "manual",
-    "answer_display": "\\pi/2",
+    "verify": "sympy",
+    "kind": "definite",
+    "answer_display": "π/2",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "dirichlet"
     ],
     "yang": [
       "yang:1.20"
+    ],
+    "note": "Answers PDF prints π/2.",
+    "sympy_expr": "sin(x)/x",
+    "answer_sympy": "pi/2",
+    "limits": [
+      "0",
+      "oo"
     ]
   },
   {
     "id": "SAMPLE-Q03",
     "verify": "sympy",
     "kind": "definite",
-    "latex": "\\int_0^{\\pi/2} \\frac{\\sqrt{\\sin x}}{\\sqrt{\\sin x}+\\sqrt{\\cos x}}\\,dx",
-    "sympy_expr": "sqrt(sin(x))/(sqrt(sin(x))+sqrt(cos(x)))",
-    "limits": [
-      0,
-      "pi/2"
-    ],
-    "answer_sympy": "pi/4",
-    "answer_display": "\\pi/4",
+    "answer_display": "π/4",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "kings-rule",
@@ -43,19 +52,18 @@
     "yang": [
       "yang:1.18"
     ],
-    "note": "King's rule; SymPy may be slow \u2014 checker uses closed answer match via numerical/heuristic path if integrate hangs"
+    "note": "Answers PDF prints π/4.",
+    "sympy_expr": "sqrt(sin(x))/(sqrt(sin(x)) + sqrt(cos(x)))",
+    "answer_sympy": "pi/4",
+    "limits": [
+      "0",
+      "pi/2"
+    ]
   },
   {
     "id": "SAMPLE-Q04",
     "verify": "sympy",
     "kind": "definite",
-    "latex": "\\int_0^{\\infty} \\frac{\\ln x}{x^2+1}\\,dx",
-    "sympy_expr": "log(x)/(x**2+1)",
-    "limits": [
-      0,
-      "oo"
-    ],
-    "answer_sympy": "0",
     "answer_display": "0",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
@@ -64,36 +72,54 @@
     ],
     "yang": [
       "yang:1.11"
+    ],
+    "note": "Answers PDF prints 0.",
+    "sympy_expr": "log(x)/(x**2 + 1)",
+    "answer_sympy": "0",
+    "limits": [
+      "0",
+      "oo"
     ]
   },
   {
     "id": "SAMPLE-Q05",
     "verify": "manual",
-    "answer_display": "\\pi\\ln 2/8",
+    "kind": "definite",
+    "answer_display": "(π ln 2)/8",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "trig-sub"
     ],
     "yang": [
       "yang:1.7"
-    ]
+    ],
+    "note": "Answers PDF prints (π ln 2)/8. The pack gate does not finish this integral inside its time limit, so the row stays manual."
   },
   {
     "id": "SAMPLE-Q06",
-    "verify": "manual",
-    "answer_display": "-\\pi^2/6",
+    "verify": "sympy",
+    "kind": "definite",
+    "answer_display": "−π^2/6",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "series"
     ],
     "yang": [
       "yang:1.14"
+    ],
+    "note": "Answers PDF prints −π^2/6.",
+    "sympy_expr": "log(1 - x)/x",
+    "answer_sympy": "-pi**2/6",
+    "limits": [
+      "0",
+      "1"
     ]
   },
   {
     "id": "SAMPLE-Q07",
-    "verify": "manual",
-    "answer_display": "\\Gamma(n)=(n-1)!",
+    "verify": "sympy",
+    "kind": "definite",
+    "answer_display": "Γ(n) = (n−1)!",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "gamma",
@@ -101,12 +127,20 @@
     ],
     "yang": [
       "yang:1.6"
+    ],
+    "note": "Answers PDF prints Γ(n)=(n−1)! for positive integers n.",
+    "sympy_expr": "x**(n - 1)*exp(-x)",
+    "answer_sympy": "gamma(n)",
+    "limits": [
+      "0",
+      "oo"
     ]
   },
   {
     "id": "SAMPLE-Q08",
     "verify": "manual",
-    "answer_display": "\\Gamma(s)\\zeta(s)",
+    "kind": "definite",
+    "answer_display": "Γ(s)ζ(s)",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "series",
@@ -114,32 +148,28 @@
     ],
     "yang": [
       "yang:1.14"
-    ]
+    ],
+    "note": "Answers PDF prints Γ(s)ζ(s). The pack gate does not close the full integral, so the row stays manual."
   },
   {
     "id": "SAMPLE-Q09",
     "verify": "manual",
-    "answer_display": "1/2 - \\zeta(3)/3",
+    "kind": "definite",
+    "answer_display": "1/2 − ζ(3)/3",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "floor"
     ],
     "yang": [
       "yang:1.20"
-    ]
+    ],
+    "note": "Answers PDF prints 1/2 − ζ(3)/3. The pack gate does not close the floor integrand, so the row stays manual."
   },
   {
     "id": "SAMPLE-Q10",
     "verify": "sympy",
     "kind": "definite",
-    "latex": "\\int_{-2}^{2}\\left(x^3\\cos\\frac{x}{2}+\\frac12\\sqrt{4-x^2}\\right)dx",
-    "sympy_expr": "x**3*cos(x/2) + (1/2)*sqrt(4-x**2)",
-    "limits": [
-      -2,
-      2
-    ],
-    "answer_sympy": "pi",
-    "answer_display": "\\pi",
+    "answer_display": "π",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "odd-even",
@@ -148,32 +178,36 @@
     "yang": [
       "yang:1.3",
       "yang:1.9"
+    ],
+    "note": "The problems PDF multiplies the whole parenthesis by √(4−x^2). Answers PDF prints π.",
+    "sympy_expr": "sqrt(4 - x**2)*(x**3*cos(x/2) + 1/2)",
+    "answer_sympy": "pi",
+    "limits": [
+      "-2",
+      "2"
     ]
   },
   {
     "id": "SAMPLE-Q11",
     "verify": "sympy",
     "kind": "indefinite",
-    "latex": "\\int \\frac{dx}{1+\\tan x}",
-    "sympy_expr": "1/(1+tan(x))",
-    "answer_sympy": "(1/2)*(x + log(sin(x)+cos(x)))",
-    "answer_display": "\\frac12(x+\\ln(\\sin x+\\cos x))+C",
+    "answer_display": "(1/2)(x + ln(sin x + cos x)) + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "trig-identities"
     ],
     "yang": [
       "yang:1.5"
-    ]
+    ],
+    "note": "Answers PDF prints (1/2)(x + ln(sin x + cos x)) + c.",
+    "sympy_expr": "1/(tan(x) + 1)",
+    "answer_sympy": "x/2 + log(sin(x) + cos(x))/2"
   },
   {
     "id": "SAMPLE-Q12",
     "verify": "sympy",
     "kind": "indefinite",
-    "latex": "\\int \\frac{\\sqrt{\\tan x}}{\\sin(2x)}\\,dx",
-    "sympy_expr": "sqrt(tan(x))/sin(2*x)",
-    "answer_sympy": "sqrt(tan(x))",
-    "answer_display": "\\sqrt{\\tan x}+C",
+    "answer_display": "√(tan x) + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "reverse-product",
@@ -182,87 +216,97 @@
     "yang": [
       "yang:1.13",
       "yang:1.5"
-    ]
+    ],
+    "note": "Answers PDF prints √(tan x), up to a constant.",
+    "sympy_expr": "sqrt(tan(x))/sin(2*x)",
+    "answer_sympy": "sqrt(tan(x))"
   },
   {
     "id": "SAMPLE-Q13",
     "verify": "sympy",
     "kind": "indefinite",
-    "latex": "\\int \\frac{dx}{1+e^x}",
-    "sympy_expr": "1/(1+exp(x))",
-    "answer_sympy": "-log(1+exp(-x))",
-    "answer_display": "-\\ln(1+e^{-x})+C",
+    "answer_display": "−ln(1+e^(−x)) + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "basic-exp"
     ],
     "yang": [
       "yang:1.4"
-    ]
+    ],
+    "note": "Answers PDF prints −ln(1+e^(−x)), up to a constant.",
+    "sympy_expr": "1/(exp(x) + 1)",
+    "answer_sympy": "-log(1 + exp(-x))"
   },
   {
     "id": "SAMPLE-Q14",
-    "verify": "manual",
-    "answer_display": "(1/\\sqrt{2})\\arctan(\\sqrt{2}\\tan(\\ln x))+C",
+    "verify": "sympy",
+    "kind": "indefinite",
+    "answer_display": "(1/√2) arctan(√2 tan(ln x)) + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "intermediate-u-sub"
     ],
     "yang": [
       "yang:1.11"
-    ]
+    ],
+    "note": "Answers PDF prints (1/√2) arctan(√2 tan(ln x)) + c.",
+    "sympy_expr": "1/(x*(sin(log(x))**2 + 1))",
+    "answer_sympy": "sqrt(2)*atan(sqrt(2)*tan(log(x)))/2"
   },
   {
     "id": "SAMPLE-Q15",
-    "verify": "manual",
-    "answer_display": "see answers PDF",
-    "source": "Integration_bee_sample_problems_answers.pdf",
+    "verify": "sympy",
+    "kind": "indefinite",
+    "answer_display": "(1/3) ln(x+1) − (1/6) ln(x^2−x+1) + arctan((2x−1)/√3)/√3 + C",
+    "source": "UK_University_integration_bee_sample_problems_solutions.pdf",
     "technique_tags": [
       "partial-fractions"
     ],
     "yang": [
       "yang:1.8"
-    ]
+    ],
+    "note": "The answers PDF and the last line of the solutions PDF print a minus sign in front of the arctan term. That printed expression is not an antiderivative. The previous line of the solutions PDF is the correct split; finishing its positive arctan integral is the graded answer, marked authored+verified.",
+    "sympy_expr": "1/(x**3 + 1)",
+    "answer_sympy": "log(x + 1)/3 - log(x**2 - x + 1)/6 + sqrt(3)*atan(2*sqrt(3)*x/3 - sqrt(3)/3)/3",
+    "pdf_answer_suspect": true,
+    "answer_pdf_sympy": "log(x + 1)/3 - (log(x**2 - x + 1) + 2*sqrt(3)*atan((2*x - 1)/sqrt(3)))/6",
+    "answer_display_pdf": "(1/3) ln(x+1) − (1/6)(ln(x^2−x+1) + 2√3 arctan((2x−1)/√3)) + C"
   },
   {
     "id": "SAMPLE-Q16",
-    "verify": "manual",
-    "answer_display": "see answers PDF (Weierstrass form)",
+    "verify": "sympy",
+    "kind": "indefinite",
+    "answer_display": "(2/√3) arctan((2 tan(x/2) + 1)/√3) + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "weierstrass"
     ],
     "yang": [
       "yang:1.16"
-    ]
+    ],
+    "note": "Answers PDF prints (2/√3) arctan((2 tan(x/2)+1)/√3) + c.",
+    "sympy_expr": "1/(sin(x) + 2)",
+    "answer_sympy": "2*sqrt(3)*atan(2*sqrt(3)*tan(x/2)/3 + sqrt(3)/3)/3"
   },
   {
     "id": "SAMPLE-Q17",
-    "verify": "manual",
-    "pdf_answer_suspect": true,
+    "verify": "sympy",
     "kind": "indefinite",
-    "sympy_expr": "1/(x*log(x))",
-    "answer_sympy": "log(Abs(log(x)))",
-    "answer_pdf_sympy": "exp(x)",
-    "answer_display_pdf": "e^x+C",
-    "answer_display_correct": "\\ln\\|\\ln x\\|+C",
-    "note": "Answers PDF appears to misprint Q17; true \u222b dx/(x ln x)=ln|ln x|+C.",
+    "answer_display": "e x + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
-      "du/u"
+      "rewrite-exponent"
     ],
-    "yang": [
-      "yang:1.2"
-    ]
+    "yang": [],
+    "note": "The problems PDF prints x^(1/ln x). The solutions PDF shows that this equals e, so the integral is e*x + C. The answers sheet prints ex+c on one baseline, the product e*x, not e^x. An earlier feed read the integrand as 1/(x ln x); that reading is withdrawn.",
+    "sympy_expr": "E",
+    "answer_sympy": "E*x"
   },
   {
     "id": "SAMPLE-Q18",
     "verify": "sympy",
     "kind": "indefinite",
-    "latex": "\\int \\frac{dx}{1-\\sin x}",
-    "sympy_expr": "1/(1-sin(x))",
-    "answer_sympy": "sec(x)+tan(x)",
-    "answer_display": "\\sec x+\\tan x+C",
+    "answer_display": "sec x + tan x + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "trig-identities"
@@ -270,24 +314,30 @@
     "yang": [
       "yang:1.5",
       "yang:1.15"
-    ]
+    ],
+    "note": "Answers PDF prints sec x + tan x + c.",
+    "sympy_expr": "1/(1 - sin(x))",
+    "answer_sympy": "tan(x) + sec(x)"
   },
   {
     "id": "SAMPLE-Q19",
     "verify": "manual",
-    "answer_display": "see answers PDF",
+    "kind": "indefinite",
+    "answer_display": "(1/2)(sin(arccos(x^2)) − arccos(x^2)) + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "trig-sub"
     ],
     "yang": [
       "yang:1.7"
-    ]
+    ],
+    "note": "Answers PDF prints (1/2)(sin(arccos(x^2)) − arccos(x^2)) + c. The derivative matches the integrand numerically, and the pack gate does not close that derivative, so the row stays manual."
   },
   {
     "id": "SAMPLE-Q20",
-    "verify": "manual",
-    "answer_display": "see answers PDF",
+    "verify": "sympy",
+    "kind": "indefinite",
+    "answer_display": "e^x − arctan(e^x) + (1/2) sec^2(arctan(e^x)) + ln|cos(arctan(e^x))| + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
     "technique_tags": [
       "basic-exp",
@@ -295,6 +345,9 @@
     ],
     "yang": [
       "yang:1.4"
-    ]
+    ],
+    "note": "Answers PDF prints e^x − arctan(e^x) + (1/2) sec^2(arctan(e^x)) + ln|cos(arctan(e^x))| + c.",
+    "sympy_expr": "(exp(3*x) + exp(2*x))/(exp(x) + exp(-x))",
+    "answer_sympy": "exp(2*x)/2 + exp(x) - log(exp(2*x) + 1)/2 - atan(exp(x)) + 1/2"
   }
 ]

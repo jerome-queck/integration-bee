@@ -33,7 +33,7 @@ COMMANDS = [
     {"path": "progress journal", "summary": "Store a technique note."},
     {"path": "progress streak", "summary": "Count today as a study day."},
     {"path": "drills list", "summary": "List drill ids. Includes the display answer."},
-    {"path": "problems list", "summary": "List contest and Yang problems without answers."},
+    {"path": "problems list", "summary": "List contest, Yang, and sample problems without answers."},
     {"path": "problems show", "summary": "Print one stored problem, including a cited answer when the extract has one."},
     {"path": "problems select", "summary": "Print one problem prompt. Omits the answer and any worked solution."},
     {"path": "turn schema", "summary": "Print the teach, mark, and mock turn schemas."},

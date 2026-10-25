@@ -28,7 +28,7 @@ make check
 
 Concept units `01-foundations-substitution` through `36-unique-tricks` (36 directories) have machine drills in `verify/drills_unit*.json` (284 drills).
 
-`problems/records.jsonl` holds 949 contest and Yang problems. `problems list` hides answers. `problems show` prints a stored cite.
+`problems/records.jsonl` holds 969 contest, Yang, and sample problems. `problems list` hides answers. `problems show` prints a stored cite.
 
 ## Harness
 
@@ -78,7 +78,7 @@ The map is `.agents/skills/verify-integration-bee/features/`.
 | `progress journal` | Store a technique note. |
 | `progress streak` | Count today as a study day. |
 | `drills list` | List drill ids. Includes the display answer. |
-| `problems list` | List contest and Yang problems without answers. |
+| `problems list` | List contest, Yang, and sample problems without answers. |
 | `problems show` | Print one stored problem, including a cited answer when the extract has one. |
 | `problems select` | Print one problem prompt. Omits the answer and any worked solution. |
 | `turn schema` | Print the teach, mark, and mock turn schemas. |
