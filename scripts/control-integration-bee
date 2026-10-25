@@ -635,6 +635,12 @@ def cmd_mock_start(args) -> int:
 
 def cmd_mock_finish(args) -> int:
     directory = data_dir(args.data_dir)
+    learner = load_session(read_json(directory, "session"))
+    phase = learner.get("phase")
+    if phase in {"awaiting_answer", "aptitude"}:
+        die("an integral is still open", 2)
+    if phase == "proposing":
+        die("confirm the skip offer first", 2)
     mocks = read_json(directory, "mocks")
     found = None
     for session in mocks["sessions"]:

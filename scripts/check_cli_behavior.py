@@ -241,6 +241,24 @@ def main() -> int:
             detail(nxt),
         )
 
+    with tempfile.TemporaryDirectory(prefix="ib-cli-units-done-") as tmp:
+        data = Path(tmp)
+        listed = run(["drills", "list", "--format", "json"], data)
+        listed_doc = body(listed)
+        check(listed.returncode == 0 and isinstance(listed_doc, dict) and listed_doc.get("drills"), "drill ids", detail(listed))
+        items = [
+            {"problem_id": row["id"], "correct": True, "next_due": "2099-01-01"}
+            for row in listed_doc["drills"]
+        ]
+        (data / "attempts.json").write_text(json.dumps({"items": items}))
+        nxt = run(["practice", "next", "--format", "json"], data)
+        nxt_doc = body(nxt)
+        check(
+            nxt.returncode == 0 and isinstance(nxt_doc, dict) and nxt_doc.get("id") is None and nxt_doc.get("reason") == "unit_clear",
+            "correct drills with open nodes do not restart unit 1",
+            detail(nxt),
+        )
+
     with tempfile.TemporaryDirectory(prefix="ib-cli-mock-") as tmp:
         data = Path(tmp)
         opened = turn(data, {"kind": "mock-start", "cold": True, "id": "m1"})
@@ -294,6 +312,21 @@ def main() -> int:
         mocks = json.loads((data / "mocks.json").read_text())
         check(session["phase"] == "awaiting_answer" and session["problem_id"] == "U01-D07", "the open drill is still stored", detail(refused))
         check(mocks["sessions"][0]["score"] is None, "the refused finish does not store a score", detail(refused))
+        progress_finish = run(
+            ["progress", "mock-finish", "--id", "sneak", "--score", "1", "--out-of", "30", "--format", "json"],
+            data,
+        )
+        session = json.loads((data / "session.json").read_text())
+        mocks = json.loads((data / "mocks.json").read_text())
+        check(
+            progress_finish.returncode == 2
+            and "an integral is still open" in progress_finish.stderr
+            and session["phase"] == "awaiting_answer"
+            and session["problem_id"] == "U01-D07"
+            and mocks["sessions"][0]["score"] is None,
+            "progress mock-finish does not store a score over an open integral",
+            detail(progress_finish),
+        )
 
     with tempfile.TemporaryDirectory(prefix="ib-cli-err-") as tmp:
         data = Path(tmp)

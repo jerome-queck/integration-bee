@@ -167,7 +167,7 @@ The session file is `session.json` in the data directory. One replace holds the 
 
 `problems/records.jsonl` is the contest catalog. `problems list` and `problems select` hide answers. A `sympy` row is a resource-pack integral whose layout reading was proved against the cited mark scheme. The companion sends `extract.final_answer` and does not send `verdict`. A `manual` row is a cited answer SymPy has not proved, and the companion judges it. An `unchecked` row has no printed answer and must not be invented. Unit drills are SymPy-checked too.
 
-`scripts/control-integration-bee --help` lists every command. `--format json` is the stable record. `problems list`, `practice list`, and `drills list` print a table unless you pass `--format json`. `problems select` names matching ids and exits 2 when the filter is not one row. `practice check` accepts an indefinite `+C` the same way a mark does. `doctor` prints `IB_DATA_DIR` and ignores `--data-dir`. Other commands honor `--data-dir`.
+`scripts/control-integration-bee --help` lists every command. `--format json` is the stable record. `problems list`, `practice list`, and `drills list` print a table unless you pass `--format json`. `problems select` names matching ids and exits 2 when the filter is not one row. `practice check` accepts an indefinite `+C` the same way a mark does. `mock-finish` on `turn apply` and on `progress` exits 2 while phase is `awaiting_answer`, `aptitude`, or `proposing`. `doctor` prints `IB_DATA_DIR` and ignores `--data-dir`. Other commands honor `--data-dir`.
 
 `make check` runs `verify/run.sh`. That script drives the turn contract, including aptitude, confirm, cover, and the gap index.
 
