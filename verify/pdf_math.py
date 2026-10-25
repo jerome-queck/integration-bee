@@ -66,6 +66,7 @@ INVERSES = {
 }
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
 PROBLEM_NO = re.compile(r"^(\d+)[.:]$")
+HEADING_NO = re.compile(r"^(?:Problem|Q)(\d+)$")
 FUNC_NAMES = (
     "arcsinh",
     "arccosh",
@@ -467,7 +468,10 @@ def merge_scripts(nodes: list[Node]) -> list[Node]:
                 band = _script_band(host, script)
                 if band is None:
                     continue
-                score = (-gap, host.x1)
+                # Touching boxes can report a tiny negative gap, and a flush
+                # superscript can report a sub-point gap. Neither should outrank
+                # the glyph immediately to the left of the script.
+                score = (0.0 if gap <= 0.4 else -gap, host.x1)
                 if best is None or score > best[0]:
                     best = (score, h_index, s_index, band)
         if best is None:
@@ -643,7 +647,9 @@ def extend_superscripts(nodes: list[Node]) -> list[Node]:
         while True:
             nxt = None
             for node in nodes:
-                if node is host or id(node) in consumed or node.sup or node.sub:
+                # e^{x+e^x} continues the exponent with a symbol that has its own
+                # superscript. A subscript is a different attachment.
+                if node is host or id(node) in consumed or node.sub:
                     continue
                 if abs(node.size - sup.size) > max(1.6, 0.25 * sup.size):
                     continue
@@ -822,6 +828,37 @@ def _apply_subscript(base: str, sub: str) -> str | None:
     return None
 
 
+def _variable_letter(token: str) -> str | None:
+    if token == "θ":
+        return "theta"
+    if LETTER.fullmatch(token):
+        return token
+    return None
+
+
+def _peel_trailing_dx(node: Node) -> str | None:
+    """(x dx) / g(x) is the integrand x/g(x), with x the variable."""
+    if node.kind != "frac" or len(node.kids) < 2:
+        return None
+    num = node.kids[0]
+    kids = list(num.kids) if num.kind == "row" else [num]
+    if len(kids) < 3:
+        return None
+    differential, var_node = kids[-2], kids[-1]
+    if differential.kind != "text" or differential.text.strip() != "d":
+        return None
+    if differential.sup or differential.sub or var_node.sup or var_node.sub:
+        return None
+    if var_node.kind != "text":
+        return None
+    variable = _variable_letter(var_node.text.strip())
+    if variable is None:
+        return None
+    kept = kids[:-2]
+    node.kids[0] = kept[0] if len(kept) == 1 else _as_row(kept)
+    return variable
+
+
 def _dx_numerator(node: Node) -> str | None:
     """A fraction whose numerator is exactly d<var> is dx over the denominator."""
     if node.kind != "frac" or len(node.kids) < 2:
@@ -841,6 +878,32 @@ def _dx_numerator(node: Node) -> str | None:
     if LETTER.fullmatch(letter):
         return letter
     return None
+
+
+def _only_letter(nodes: list[Node]) -> str | None:
+    """Use the single letter in the body when the sheet omits dθ or dx."""
+    found: list[str] = []
+
+    def walk(node: Node | None) -> None:
+        if node is None:
+            return
+        if node.kind == "text":
+            token = node.text.strip()
+            if token not in {"d", "e"} and token not in FUNCS:
+                var = _variable_letter(token)
+                if var:
+                    found.append(var)
+        for kid in node.kids:
+            walk(kid)
+        walk(node.sup)
+        walk(node.sub)
+
+    for node in nodes:
+        walk(node)
+    unique = set(found)
+    if len(unique) != 1:
+        return None
+    return found[0]
 
 
 def _dx_variables(nodes: list[Node]) -> list[str]:
@@ -1181,15 +1244,23 @@ def read_integral_row(nodes: list[Node]) -> tuple[str, str, tuple[str, str] | No
         if diff is not None:
             variable, cursor = diff
             break
+        peeled = _peel_trailing_dx(nodes[cursor])
+        if peeled is not None:
+            if variable is not None and variable != peeled:
+                return None
+            variable = peeled
         body.append(nodes[cursor])
         cursor += 1
     if not body:
         return None
     script_vars = _dx_variables(body)
     if variable is None:
-        if len(set(script_vars)) != 1:
-            return None
-        variable = script_vars[0]
+        if len(set(script_vars)) == 1:
+            variable = script_vars[0]
+        else:
+            variable = _only_letter(body)
+            if variable is None:
+                return None
     elif any(item != variable for item in script_vars):
         return None
     expr = _emit_sum(body)
@@ -1203,10 +1274,27 @@ def read_integral_row(nodes: list[Node]) -> tuple[str, str, tuple[str, str] | No
     return expr, variable, limits
 
 
+def _extra_closer(nodes: list[Node]) -> bool:
+    """A closer with no opener at this level is the next row's fence, not a factor."""
+    depth = 0
+    extra = False
+    for node in nodes:
+        if _is_open(node):
+            depth += 1
+        elif _is_close(node):
+            if depth == 0:
+                extra = True
+            else:
+                depth -= 1
+    return extra
+
+
 def read_answer_row(nodes: list[Node]) -> str | None:
     if _first_integral(nodes) is not None:
         return None
     expr = _emit_sum(nodes)
+    if expr is None and nodes and _extra_closer(nodes) and _is_close(nodes[-1]):
+        expr = _emit_sum(nodes[:-1])
     return expr
 
 
@@ -1214,6 +1302,33 @@ def _region_nodes(nodes: list[Node], bars: list[Bar], top: float, bottom: float,
     chosen = [n for n in nodes if n is not label and top <= n.cy <= bottom]
     region_bars = [b for b in bars if top - 4 <= b.y <= bottom + 4]
     return chosen, region_bars
+
+
+def _heading_numbers(nodes: list[Node]) -> list[tuple[int, Node, list[Node]]]:
+    """A sheet that labels a row 'Problem 12' or 'Q3' has no '12.' glyph.
+
+    The returned glyphs are the whole heading. Leaving them in the row makes
+    structure() treat the integrand as a subscript of the title.
+    """
+    lines: list[list[Node]] = []
+    for node in sorted((item for item in nodes if item.kind == "text"), key=lambda item: (item.y0, item.x0)):
+        if lines and abs(node.y0 - lines[-1][-1].y0) <= 1.2:
+            lines[-1].append(node)
+        else:
+            lines.append([node])
+    found = []
+    for line in lines:
+        ordered = sorted(line, key=lambda item: item.x0)
+        text = "".join(item.text.strip() for item in ordered)
+        match = HEADING_NO.fullmatch(text)
+        if match is None:
+            continue
+        number = int(match.group(1))
+        if not 1 <= number <= 80:
+            continue
+        digit = next(item for item in reversed(ordered) if item.text.strip()[:1].isdigit())
+        found.append((number, digit, ordered))
+    return found
 
 
 def readings_from_pdf(path: str) -> dict[int, list[Node]]:
@@ -1226,6 +1341,11 @@ def readings_from_pdf(path: str) -> dict[int, list[Node]]:
             match = PROBLEM_NO.match(node.text.strip())
             if match and node.x0 < 200 and int(match.group(1)) <= 80:
                 numbers.append((int(match.group(1)), node))
+        heading_ids: set[int] = set()
+        if not numbers:
+            headings = _heading_numbers(nodes)
+            numbers = [(number, digit) for number, digit, _line in headings]
+            heading_ids = {id(glyph) for _number, _digit, line in headings for glyph in line}
         numbers.sort(key=lambda item: item[1].y0)
         for index, (number, node) in enumerate(numbers):
             if index == 0:
@@ -1234,9 +1354,13 @@ def readings_from_pdf(path: str) -> dict[int, list[Node]]:
                 top = (numbers[index - 1][1].y0 + node.y0) / 2
             if index + 1 < len(numbers):
                 bottom = (node.y0 + numbers[index + 1][1].y0) / 2
+                next_top = numbers[index + 1][1].y0
             else:
                 bottom = 790
+                next_top = None
             chosen, region_bars = _region_nodes(nodes, bars, top, bottom, node)
+            if heading_ids:
+                chosen = [glyph for glyph in chosen if id(glyph) not in heading_ids]
             # A glyph entirely above the problem number belongs to the previous row.
             # A superscript on this row still crosses the number's top.
             above = node.y0 - 8
@@ -1255,6 +1379,16 @@ def readings_from_pdf(path: str) -> dict[int, list[Node]]:
                     if bar.w < 12 and glyph.y0 > anchor + 8.0:
                         continue
                     if glyph.y1 < above:
+                        continue
+                    # A tall numerator on the next row can sit above that row's
+                    # number and still overlap this fraction bar. It is not a
+                    # denominator of this row once it crosses the next number.
+                    # A glyph whose center is already within a line of that
+                    # number is the next row as well (a subscript leaking up
+                    # into this denominator).
+                    if next_top is not None and (
+                        glyph.y1 > next_top or glyph.cy > next_top - 11
+                    ):
                         continue
                     extra.append(glyph)
             chosen = chosen + extra
