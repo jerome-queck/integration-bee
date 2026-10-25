@@ -34,23 +34,69 @@ python3 solutions/self_check.py
 | R1-2020-Q39 | \(\pi^2/6\) | [pack/R1-2020-Q39.md](pack/R1-2020-Q39.md) |
 | R1-2020-Q40 | \((\pi/8)\ln 2\) | [pack/R1-2020-Q40.md](pack/R1-2020-Q40.md) |
 | R1-2021-Q01 | \(x^{e-1}/(e-1)+C\) | [pack/R1-2021-Q01.md](pack/R1-2021-Q01.md) |
+| R1-2021-Q02 | \(\pi\,2^{-419}\binom{420}{210}\) | [pack/R1-2021-Q02.md](pack/R1-2021-Q02.md) |
+| R1-2021-Q03 | \(1/6\) | [pack/R1-2021-Q03.md](pack/R1-2021-Q03.md) |
+| R1-2021-Q09 | \(2\arctan\sqrt{(x^2+x+1)/x}+C\) | [pack/R1-2021-Q09.md](pack/R1-2021-Q09.md) |
 | R1-2021-Q11 | \(2011!/2010^{2012}\) | [pack/R1-2021-Q11.md](pack/R1-2021-Q11.md) |
+| R1-2021-Q12 | \(\sin((1-n)\pi/2)\,\Gamma(1-n)\) | [pack/R1-2021-Q12.md](pack/R1-2021-Q12.md) |
+| R1-2021-Q13 | \(1/3\) | [pack/R1-2021-Q13.md](pack/R1-2021-Q13.md) |
 | R1-2021-Q15 | \(x+\sec x-\tan x+C\) | [pack/R1-2021-Q15.md](pack/R1-2021-Q15.md) |
+| R1-2021-Q16 | \(\frac12\bigl(\pi-\ln(\sinh\pi/\pi)\bigr)\) | [pack/R1-2021-Q16.md](pack/R1-2021-Q16.md) |
 | R1-2021-Q18 | \(\arcsin\sqrt{x}+\sqrt{x(1-x)}+C\) | [pack/R1-2021-Q18.md](pack/R1-2021-Q18.md) |
 | R1-2021-Q20 | \(\frac{x}{2}\sqrt{x^2-1}-\frac12\operatorname{acosh} x+C\) | [pack/R1-2021-Q20.md](pack/R1-2021-Q20.md) |
+| R1-2021-Q26 | \(\operatorname{arccot}(1+e)\) | [pack/R1-2021-Q26.md](pack/R1-2021-Q26.md) |
+| R1-2021-Q30 | \(\frac1{16}\ln^2(3-2\sqrt{2})\) | [pack/R1-2021-Q30.md](pack/R1-2021-Q30.md) |
 | R1-2021-Q31 | \(2-\pi^2/6\) | [pack/R1-2021-Q31.md](pack/R1-2021-Q31.md) |
 | R1-2021-Q32 | \(\pi(b-a)/2\) for \(a>0\), \(b>0\) | [pack/R1-2021-Q32.md](pack/R1-2021-Q32.md) |
+| R1-2021-Q36 | \(\pi G/2-7\zeta(3)/8\) | [pack/R1-2021-Q36.md](pack/R1-2021-Q36.md) |
 | R1-2021-Q37 | \(0\) | [pack/R1-2021-Q37.md](pack/R1-2021-Q37.md) |
 | R1-2021-Q39 | \(\arctan(\tan(2x)/\sqrt{2})/\sqrt{2}+C\) | [pack/R1-2021-Q39.md](pack/R1-2021-Q39.md) |
 | R1-2021-Q40 | \(\pi/\sinh\pi\) | [pack/R1-2021-Q40.md](pack/R1-2021-Q40.md) |
 | R1-2022-Q02 | \(333300\) | [pack/R1-2022-Q02.md](pack/R1-2022-Q02.md) |
 | R1-2022-Q04 | \(\frac{5}{12}(1+\sqrt{5})\) | [pack/R1-2022-Q04.md](pack/R1-2022-Q04.md) |
 | R1-2022-Q05 | \(1-\gamma\) | [pack/R1-2022-Q05.md](pack/R1-2022-Q05.md) |
+| R1-2022-Q07 | \(1\) | [pack/R1-2022-Q07.md](pack/R1-2022-Q07.md) |
+| R1-2022-Q11 | \(1/2\) | [pack/R1-2022-Q11.md](pack/R1-2022-Q11.md) |
 | R1-2022-Q15 | \((\pi-2)/4\) | [pack/R1-2022-Q15.md](pack/R1-2022-Q15.md) |
+| R1-2022-Q16 | \(1-\gamma\) | [pack/R1-2022-Q16.md](pack/R1-2022-Q16.md) |
+| R1-2022-Q17 | \(\pi\operatorname{sech}(\pi/2)\) | [pack/R1-2022-Q17.md](pack/R1-2022-Q17.md) |
+| R1-2022-Q20 | \(\pi^2/9\) | [pack/R1-2022-Q20.md](pack/R1-2022-Q20.md) |
+| R1-2022-Q21 | \(e\sqrt{\pi}/2\) | [pack/R1-2022-Q21.md](pack/R1-2022-Q21.md) |
 | R1-2022-Q22 | \(\pi^2/4\) | [pack/R1-2022-Q22.md](pack/R1-2022-Q22.md) |
+| R1-2022-Q23 | \(\pi/(2\sqrt{2})\) | [pack/R1-2022-Q23.md](pack/R1-2022-Q23.md) |
+| R1-2022-Q24 | \(2\pi/n!\) for \(n=0,1,2,\ldots\) | [pack/R1-2022-Q24.md](pack/R1-2022-Q24.md) |
+| R1-2022-Q25 | \(-\gamma\pi/2\) | [pack/R1-2022-Q25.md](pack/R1-2022-Q25.md) |
+| R1-2022-Q28 | \(4G\) | [pack/R1-2022-Q28.md](pack/R1-2022-Q28.md) |
+| R1-2022-Q30 | \(\pi\ln^2(1+a)/(2a^2)\) for \(a>0\) | [pack/R1-2022-Q30.md](pack/R1-2022-Q30.md) |
+| R1-2023-Q04 | \(2xX+C\) | [pack/R1-2023-Q04.md](pack/R1-2023-Q04.md) |
+| R1-2023-Q05 | \(0\) | [pack/R1-2023-Q05.md](pack/R1-2023-Q05.md) |
+| R1-2023-Q08 | \(3/(2\ln 2)\) | [pack/R1-2023-Q08.md](pack/R1-2023-Q08.md) |
+| R1-2023-Q09 | \(\ln 2\) | [pack/R1-2023-Q09.md](pack/R1-2023-Q09.md) |
+| R1-2023-Q14 | \(-1\) | [pack/R1-2023-Q14.md](pack/R1-2023-Q14.md) |
+| R1-2023-Q17 | \(e^{\pi/2}+1\) | [pack/R1-2023-Q17.md](pack/R1-2023-Q17.md) |
+| R1-2023-Q20 | \(1/4\) | [pack/R1-2023-Q20.md](pack/R1-2023-Q20.md) |
+| R1-2023-Q21 | \(x-\ln\bigl(1+(2024/2023)^x\bigr)/\ln(2024/2023)+C\) | [pack/R1-2023-Q21.md](pack/R1-2023-Q21.md) |
+| R1-2023-Q25 | \(e+1/2\) | [pack/R1-2023-Q25.md](pack/R1-2023-Q25.md) |
+| R1-2023-Q28 | \(9\) | [pack/R1-2023-Q28.md](pack/R1-2023-Q28.md) |
+| R1-2023-Q30 | \(\pi\) | [pack/R1-2023-Q30.md](pack/R1-2023-Q30.md) |
 | R1-2024-Q01 | \(\sin 1\) | [pack/R1-2024-Q01.md](pack/R1-2024-Q01.md) |
+| R1-2024-Q04 | \(s^2\mathrm{in}^2/2+\mathrm{cos}^3/3+C\) | [pack/R1-2024-Q04.md](pack/R1-2024-Q04.md) |
+| R1-2024-Q07 | \(\pi^4/120\) | [pack/R1-2024-Q07.md](pack/R1-2024-Q07.md) |
+| R1-2024-Q09 | \(4\) | [pack/R1-2024-Q09.md](pack/R1-2024-Q09.md) |
+| R1-2024-Q10 | \(\sqrt{\pi}\,e^{-x^2}/2\) | [pack/R1-2024-Q10.md](pack/R1-2024-Q10.md) |
+| R1-2024-Q11 | \(\pi^2/8\) | [pack/R1-2024-Q11.md](pack/R1-2024-Q11.md) |
+| R1-2024-Q13 | \(\pi/2\) | [pack/R1-2024-Q13.md](pack/R1-2024-Q13.md) |
+| R1-2024-Q15 | \(1\) | [pack/R1-2024-Q15.md](pack/R1-2024-Q15.md) |
+| R1-2024-Q17 | \((1+\ln 2)/2\) | [pack/R1-2024-Q17.md](pack/R1-2024-Q17.md) |
+| R1-2024-Q20 | \(4950\) | [pack/R1-2024-Q20.md](pack/R1-2024-Q20.md) |
+| R1-2024-Q21 | \(0\) | [pack/R1-2024-Q21.md](pack/R1-2024-Q21.md) |
+| R1-2024-Q22 | \((\pi/2)\ln(b/a)\) for \(a>0\), \(b>0\) | [pack/R1-2024-Q22.md](pack/R1-2024-Q22.md) |
+| R1-2024-Q24 | \(\pi^2/4\) | [pack/R1-2024-Q24.md](pack/R1-2024-Q24.md) |
+| R1-2024-Q26 | \(\pi/4\) | [pack/R1-2024-Q26.md](pack/R1-2024-Q26.md) |
+| R1-2024-Q28 | \(\pi^2/4\) | [pack/R1-2024-Q28.md](pack/R1-2024-Q28.md) |
+| R1-2024-Q30 | \((\pi/2)\ln 2\) | [pack/R1-2024-Q30.md](pack/R1-2024-Q30.md) |
 
-35 pack manuals.
+81 pack manuals.
 
 ## Yang
 
