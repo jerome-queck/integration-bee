@@ -18,6 +18,7 @@ Two moves carry this unit. \texttt{ninja-substitution} tries $x=\tan\theta$ when
 \begin{enumerate}
   \item Try $x=\tan\theta$ when you see $1+x^2$ in the denominator and a logarithm or a trig function of $x$ in the numerator.
   \item On $(0,\infty)$, write the integral at $1/x$ and add the two copies.
+  \item Refuse either move when the numerator is already the derivative of the inside.
 \end{enumerate}
 
 \section{Worked tangent substitution --- \texttt{U33-D04}}
@@ -28,23 +29,35 @@ Put $x=\tan\theta$, so $\theta$ runs from $0$ to $\pi/4$ and $dx/(1+x^2)=d\theta
 \[
 1+\tan(\pi/4-\theta)=\frac{2}{1+\tan\theta},
 \]
-so $\ln(1+\tan(\pi/4-\theta))=\ln 2-\ln(1+\tan\theta)$. Adding the two copies gives $2I=(\pi/4)\ln 2$, hence $I=\pi\ln 2/8$. That is the stored answer.
+so $\ln(1+\tan(\pi/4-\theta))=\ln 2-\ln(1+\tan\theta)$. Adding the two copies gives $2I=(\pi/4)\ln 2$, hence $I=\pi\ln 2/8$. That is the stored answer. The worked dose stops there.
 
-\texttt{U33-D01} is the plain substitution $\int_0^1 x/(1+x^2)\,dx=(\ln 2)/2$. The numerator is already the derivative of the inside. A tangent substitution is the long way around.
-
-A scale of the tangent differential, not a drill, drops the logarithm:
+A scale of the tangent differential drops the logarithm. It is the fence on \texttt{docs/techniques/concepts/habits.md}, not a drill:
 \[
 \int_0^1\frac{\arctan x}{1+x^2}\,dx.
 \]
 Set $u=\arctan x$. Then $u$ runs from $0$ to $\pi/4$ and the integral is $\int_0^{\pi/4}u\,du=\pi^2/32$. SymPy checks $\pi^2/32$.
 
-\section{A rational trig integral --- \texttt{U33-D02}}
+\section{Faded radical --- \texttt{U33-D03}}
 \[
-\int_0^{\pi/2}\frac{dx}{1+\sin^2 x}=\frac{\pi}{2\sqrt{2}}.
+\int\frac{dx}{x\sqrt{x^2-1}}.
 \]
-Write $\sin^2 x=(1-\cos 2x)/2$, so $1+\sin^2 x=(3-\cos 2x)/2$. The integral becomes $\int_0^{\pi} du/(3-\cos u)$ after $u=2x$. Unit 26 evaluates $\int_0^{\pi} du/(a+b\cos u)=\pi/\sqrt{a^2-b^2}$ for $a>|b|$. Here $a=3$ and $b=-1$, and $\sqrt{9-1}=2\sqrt{2}$. The drill feed prints the rationalized form $\sqrt{2}\,\pi/4$. A 30-digit evaluation of the original integral matches that number.
+The blank is the substitution. Set $u=\sqrt{x^2-1}$, so $x^2=u^2+1$ and $2x\,dx=2u\,du$. Then $dx/x=u\,du/x^2=u\,du/(u^2+1)$, and dividing by the remaining $u$ leaves
+\[
+\int\frac{du}{u^2+1}=\arctan u=\arctan\sqrt{x^2-1}.
+\]
+That is the stored antiderivative, on $x>1$. Differentiating the stored answer recovers the integrand.
 
-\section{Worked inversion --- \texttt{U33-D06} (\texttt{inversion})}
+\section{Bare --- \texttt{U33-D02}}
+Set
+\[
+\int_0^{\pi/2}\frac{dx}{1+\sin^2 x}
+\]
+and show nothing else. The bare dose hides the reduction. After a line is written, uncover it. Write $\sin^2 x=(1-\cos 2x)/2$, so $1+\sin^2 x=(3-\cos 2x)/2$. The integral becomes $\int_0^{\pi} du/(3-\cos u)$ after $u=2x$. Unit 26 evaluates $\int_0^{\pi} du/(a+b\cos u)=\pi/\sqrt{a^2-b^2}$ for $a>|b|$. Here $a=3$ and $b=-1$, and $\sqrt{9-1}=2\sqrt{2}$. The stored value is $\pi/(2\sqrt{2})$. The feed prints $\sqrt{2}\,\pi/4$.
+
+\section{Refusal --- the numerator is already $du$}
+\texttt{U33-D01} is $\int_0^1 x/(1+x^2)\,dx$. The numerator is the derivative of the inside. The stored value is $(\ln 2)/2$. Refuse $x=\tan\theta$, and refuse $t=\tan(x/2)$.
+
+\section{Worked inversion --- \texttt{U33-D06}}
 \[
 I=\int_0^{\infty}\frac{dx}{(1+x^2)(1+x)}.
 \]
@@ -52,47 +65,49 @@ The substitution $x=1/t$ produces $\int_0^{\infty} t\,dt/((1+t^2)(1+t))$. Add th
 \[
 2I=\int_0^{\infty}\frac{dx}{1+x^2}=\frac\pi2,
 \]
-so $I=\pi/4$. That is the stored value.
+so $I=\pi/4$. That is the stored value. The worked dose stops there.
 
-\texttt{U33-D05} is $\int_0^{\infty} dx/(1+x^2)=\pi/2$. Inversion reproduces the same integral. Stop at the arctangent.
-
-\section{The logarithm changes sign --- \texttt{U33-D07}}
+\section{Faded sign --- \texttt{U33-D07}}
 \[
 I=\int_0^{\infty}\frac{\ln x}{1+x^2}\,dx.
 \]
-Set $x=1/t$. Then $\ln x=-\ln t$ and $dx/(1+x^2)=-dt/(1+t^2)$. The product of those two minuses is positive, so the integrand in $t$ is $\ln t/(1+t^2)$. The endpoint $x=0^+$ maps to $t=\infty$ and $x=\infty$ maps to $t=0^+$:
+The blank is the sign of $\ln x$ after $x=1/t$. Then $\ln x=-\ln t$ and $dx/(1+x^2)=-dt/(1+t^2)$. The product of those two minuses leaves $\ln t/(1+t^2)$, and the endpoints swap:
 \[
 I=\int_{\infty}^{0}\frac{\ln t}{1+t^2}\,dt=-I.
 \]
 Hence $I=0$, the stored value. The same sign flip is unit 10.
 
-\section{Faded, skip the inversion --- \texttt{U33-D08}}
+\section{Bare --- \texttt{U33-D05}}
+Set
 \[
-\int_0^{\infty}\frac{x}{(1+x^2)^2}\,dx.
+\int_0^{\infty}\frac{dx}{1+x^2}
 \]
-The numerator is half the derivative of the inside. Set $u=1+x^2$, so $du=2x\,dx$ and $u$ runs from $1$ to $\infty$:
+and show nothing else. The bare dose hides the decision to stop. After a line is written, uncover the arctangent. Inversion reproduces the same integral. The stored value is $\pi/2$.
+
+\section{Refusal --- inversion is the long path}
+\[
+\int_0^{\infty}\frac{x}{(1+x^2)^2}\,dx
+\]
+is \texttt{U33-D08}. The numerator is half the derivative of the inside. Set $u=1+x^2$, so $du=2x\,dx$ and $u$ runs from $1$ to $\infty$:
 \[
 \frac12\int_1^{\infty}u^{-2}\,du=\frac12.
 \]
-That is the stored value. Inversion is a longer path. The same substitution on the finite interval $[0,1]$ is a scale, not a drill:
+That is the stored value. Refuse $x=1/t$.
+
+The same substitution on the finite interval $[0,1]$ is the fence on \texttt{docs/techniques/concepts/habits.md}, not a drill:
 \[
 \int_0^1\frac{x}{(1+x^2)^2}\,dx=\frac14.
 \]
 SymPy checks $1/4$.
 
-\section{Faded radical --- \texttt{U33-D03}}
-\[
-\int\frac{dx}{x\sqrt{x^2-1}}.
-\]
-Set $u=\sqrt{x^2-1}$, so $x^2=u^2+1$ and $2x\,dx=2u\,du$. Then $dx/x=u\,du/x^2=u\,du/(u^2+1)$, and dividing by the remaining $u$ leaves
-\[
-\int\frac{du}{u^2+1}=\arctan u=\arctan\sqrt{x^2-1}.
-\]
-That is the stored antiderivative, on $x>1$. Differentiating the stored answer recovers the integrand. The blank is the substitution $u$.
+\section{Dose}
+For \texttt{ninja-substitution}, worked reads \texttt{U33-D04}, then the faded substitution on \texttt{U33-D03}, then sets \texttt{U33-D02}. Faded gives only the blank $u$. Bare sets \texttt{U33-D02}. A numerator that is already a derivative opens the refusal and sets \texttt{U33-D01}.
+
+For \texttt{inversion}, worked reads \texttt{U33-D06}, then the faded sign on \texttt{U33-D07}, then sets \texttt{U33-D05}. Faded gives only that sign. Bare sets \texttt{U33-D05}. Inversion of a derivative opens the refusal and sets \texttt{U33-D08}.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit33.json}.
 
 \section*{On a miss}
-Teach this file. For a half-line integral, write the copy at $1/x$ before you add. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. For a half-line integral, write the copy at $1/x$ before you add. If the numerator is already the derivative, set \texttt{U33-D01} or \texttt{U33-D08} and stop. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

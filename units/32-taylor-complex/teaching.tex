@@ -19,6 +19,7 @@ A geometric series on $[0,1)$ and Euler's formula $e^{ix}=\cos x+i\sin x$ are st
   \item Integrate a geometric series term by term on $[0,1)$, then take the endpoint as a limit.
   \item If a closed antiderivative is one substitution, use it. The series explains the number. It is not always the fastest path.
   \item Replace $e^{ax}\cos bx$ by the real part of $e^{(a+ib)x}$.
+  \item Refuse a series for a substitution, and refuse a definite value when the blank wants an antiderivative.
 \end{enumerate}
 
 \section{Worked series --- \texttt{U32-D01}}
@@ -29,15 +30,26 @@ The antiderivative is the fast path. The series path is the reason the value is 
 \[
 \frac{1}{1+x}=\sum_{n=0}^{\infty}(-1)^n x^n,\qquad 0\le x<1,
 \]
-and $\int_0^1 x^n\,dx=1/(n+1)$, so the integral is $\sum_{n=0}^{\infty}(-1)^n/(n+1)=\ln 2$. At $x=1$ the series converges, and the integral of the limit matches the limit of the integrals.
+and $\int_0^1 x^n\,dx=1/(n+1)$, so the integral is $\sum_{n=0}^{\infty}(-1)^n/(n+1)=\ln 2$. At $x=1$ the series converges, and the integral of the limit matches the limit of the integrals. The worked dose stops there.
 
-\texttt{U32-D02} is a polynomial, not an infinite series. Integrate termwise:
+\section{Faded --- \texttt{U32-D02}}
 \[
-\int_0^1\Bigl(1-x^2+\frac{x^4}{2}-\frac{x^6}{6}\Bigr)dx=1-\frac13+\frac{1}{10}-\frac{1}{42}=\frac{26}{35}.
+\int_0^1\Bigl(1-x^2+\frac{x^4}{2}-\frac{x^6}{6}\Bigr)dx.
 \]
-\texttt{U32-D04} is $\int_0^1 x^3\,dx=1/4$. \texttt{U32-D03} is $\int x e^{x^2}\,dx=\frac12 e^{x^2}$, a substitution. A series for $e^{x^2}$ would be the long way around.
+The blank is the four separate integrals. This is a polynomial. Refuse an infinite series. Integrate termwise:
+\[
+1-\frac13+\frac{1}{10}-\frac{1}{42}=\frac{26}{35}.
+\]
+That is the stored answer.
 
-\section{Worked complex exponential --- \texttt{U32-D05} (\texttt{complexifying})}
+\section{Bare --- \texttt{U32-D04}}
+Set
+\[
+\int_0^1 x^3\,dx
+\]
+and show nothing else. The bare dose hides the instruction to skip the series. After a line is written, uncover the stored answer $1/4$.
+
+\section{Worked complex exponential --- \texttt{U32-D05}}
 \[
 \int_0^{\infty}e^{-x}\cos x\,dx.
 \]
@@ -45,9 +57,9 @@ $e^{-x}\cos x$ is the real part of $e^{-x}e^{ix}=e^{-(1-i)x}$, and $e^{-x}\sin x
 \[
 \int_0^{\infty}e^{-(1-i)x}\,dx=\frac{1}{1-i}=\frac{1+i}{2}.
 \]
-The real part is $1/2$ and the imaginary part is $1/2$. Those are the stored values of \texttt{U32-D05} and \texttt{U32-D06}. The same two numbers are \texttt{U30-D08} and \texttt{U30-D07}.
+The real part is $1/2$ and the imaginary part is $1/2$. Those are the stored values of \texttt{U32-D05} and \texttt{U32-D06}. The same two numbers are \texttt{U30-D08} and \texttt{U30-D07}. The value $1/2$ does not record which part was taken. The indefinite pair below is where that choice is visible.
 
-A larger decay is a scale, not a drill. For
+A larger decay is the fence on \texttt{docs/techniques/concepts/habits.md}, not a drill. For
 \[
 \int_0^{\infty}e^{-2x}\cos x\,dx,
 \]
@@ -57,7 +69,7 @@ the complex integral is $1/(2-i)=(2+i)/5$, and the real part is $2/5$. SymPy che
 \[
 \int e^x\cos x\,dx.
 \]
-$e^x\cos x$ is the real part of $e^{(1+i)x}$.
+The blank is which part of $e^{(1+i)x}$ you keep. $e^x\cos x$ is the real part.
 \[
 \int e^{(1+i)x}\,dx=\frac{e^{(1+i)x}}{1+i}=\frac{1-i}{2}\,e^{(1+i)x}.
 \]
@@ -65,11 +77,30 @@ Multiply $(1-i)(\cos x+i\sin x)$. The real part is $\cos x+\sin x$, so the store
 \[
 \frac12 e^x(\cos x+\sin x)+C.
 \]
-The imaginary part of the same product is \texttt{U32-D08}, stored as $\frac12 e^x(\sin x-\cos x)+C$. The blank is which part you keep.
+
+\section{Bare --- \texttt{U32-D08}}
+Set
+\[
+\int e^x\sin x\,dx
+\]
+and show nothing else. The bare dose hides the part. After a line is written, uncover the imaginary part of the same product. The stored antiderivative is
+\[
+\frac12 e^x(\sin x-\cos x)+C.
+\]
+
+\section{Refusal --- a series, or a definite number}
+\texttt{U32-D03} is $\int x e^{x^2}\,dx$. One substitution stores $\frac12 e^{x^2}$. A series for $e^{x^2}$ is the long path. Refuse it.
+
+\texttt{U32-D08} wants an antiderivative. Refuse the definite value $1/2$ from \texttt{U32-D05} or \texttt{U32-D06}. Refuse the cosine antiderivative of \texttt{U32-D07} when the integrand is sine.
+
+\section{Dose}
+For \texttt{taylor-series}, worked reads \texttt{U32-D01}, then the faded four terms on \texttt{U32-D02}, then sets \texttt{U32-D04}. Faded gives only those four integrals. Bare sets \texttt{U32-D04}. A series in place of a substitution opens the refusal and sets \texttt{U32-D03}.
+
+For \texttt{complexifying}, worked reads \texttt{U32-D05}, then the faded part on \texttt{U32-D07}, then sets \texttt{U32-D08}. Faded gives only the choice of part. Bare sets \texttt{U32-D08}. A definite value, or the cosine antiderivative, written for the sine opens the refusal and sets \texttt{U32-D08}.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit32.json}.
 
 \section*{On a miss}
-Teach this file. Either write the geometric term and integrate it, or write $e^{(a+ib)x}$ and take the real or imaginary part. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. Either write the geometric term and integrate it, or write $e^{(a+ib)x}$ and take the real or imaginary part. If a substitution already finished the integral, set \texttt{U32-D03}. If a definite value was written as an antiderivative, set \texttt{U32-D08}. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

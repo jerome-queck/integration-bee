@@ -49,6 +49,7 @@ First pass: `units/09-intermediate-trig/teaching.tex`. The note a miss names: `u
 2. Faded. The learner writes the three limits and the new denominator for `U26-D01`, then reads unit 26.
 3. Unit 26 adds \(\tan x = 2t/(1-t^2)\), the pattern on \([0,\pi]\), and the warning that \(t=\tan(x/2)\) is unbounded at \(x=\pi\).
 4. Refuse the substitution when a sine power is a reduction (unit 20) or when \(\sec^2 x\) is already the derivative of \(\tan x\) (unit 09's ordinary substitution).
+5. Once unit 26 is open, its own faded dose is `U26-D08`, stored \(\sqrt{3}\pi/9\). Worked reads `U26-D01`. Bare sets `U26-D02`, stored \(\pi/\sqrt{3}\). `U26-D07` is that integrand on \([0,\pi/3]\). Its stored value is \(\frac{2\sqrt{3}}{3}\arctan\frac{1}{3}\). The value of `U26-D02` does not transfer.
 
 ## Floor
 

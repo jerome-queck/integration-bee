@@ -35,6 +35,7 @@ Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the
 | Both powers were even and the reduction was skipped | Bare `U29-D06`, stored \(\pi/32\). |
 | A radical was expanded as a binomial | `U04-D01`, stored \(\pi/2\). A later radical is `U21-D08`, stored \(\pi/4\). |
 | A full-period cross term was given the value of the square | `U23-D01`, stored \(0\). The square of a sum is `U23-D02`, stored \(3\pi\). |
+| The \([0,\pi]\) formula was quoted on a shorter interval | `U26-D07`, stored \(\frac{2\sqrt{3}}{3}\arctan\frac{1}{3}\). The full interval is `U26-D02`, stored \(\pi/\sqrt{3}\). |
 
 ## Basic antiderivatives
 
@@ -129,7 +130,7 @@ The limits are \(t=0\) and \(t=1\). Then \(2+\cos x=(3+t^2)/(1+t^2)\), so the in
 
 This integral is original exposition. It is not a stored drill.
 
-Unit 09 works \(\int_0^{\pi/3} dx/(1+\cos x)=\sqrt{3}/3\), whose antiderivative is \(\tan(x/2)\). That pass is not a drill. Unit 26 stores \(\int_0^{\pi/2} dx/(1+\sin x)=1\) as `U26-D01`. The limits there are \(0\) and \(1\), not \(0\) and \(\infty\). Unit 26 is the file a miss of this substitution names.
+Unit 09 works \(\int_0^{\pi/3} dx/(1+\cos x)=\sqrt{3}/3\), whose antiderivative is \(\tan(x/2)\). That pass is not a drill. Unit 26 stores \(\int_0^{\pi/2} dx/(1+\sin x)=1\) as `U26-D01`. The limits there are \(0\) and \(1\), not \(0\) and \(\infty\). Unit 26 works `U26-D01`, fades the limits on `U26-D08` (stored \(\sqrt{3}\pi/9\)), and sets bare `U26-D02` (stored \(\pi/\sqrt{3}\)). That file is the note a miss of this substitution names.
 
 ## Periodicity
 
@@ -157,4 +158,4 @@ A full-period cross term was given the value of the square. The square is the ca
 
 ## On a miss
 
-Teach this file. Use the miss table. A half-angle miss then opens unit 26. A power miss opens unit 09, unit 20, or unit 29. Set `U02-D06` at difficulty 1, `U04-D01` at difficulty 2, `U29-D04` when a factor should have been saved, and `U26-D01` only after the early pass in unit 09 is familiar. A correct value from the wrong substitution still needs the substitution named.
+Teach this file. Use the miss table. A half-angle miss then opens unit 26. A power miss opens unit 09, unit 20, or unit 29. Set `U02-D06` at difficulty 1, `U04-D01` at difficulty 2, `U29-D04` when a factor should have been saved, and `U26-D01` only after the early pass in unit 09 is familiar. A shorter interval than \([0,\pi]\) sets `U26-D07`. A correct value from the wrong substitution still needs the substitution named.

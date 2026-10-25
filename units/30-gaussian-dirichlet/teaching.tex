@@ -19,47 +19,59 @@ Two named values do the heavy lifting: $\int_{-\infty}^{\infty}e^{-x^2}\,dx=\sqr
   \item Quote $\int_0^{\infty}e^{-x^2}\,dx=\sqrt{\pi}/2$, then scale. Do not invent an elementary antiderivative of $e^{-x^2}$.
   \item Integrate $x e^{-x^2}$ by substituting $u=x^2$. That one is elementary.
   \item Quote $\int_0^{\infty}(\sin x)/x\,dx=\pi/2$, then change variables or integrate by parts.
+  \item Refuse $\pi/2$ on a damped sine that one parts step finishes.
 \end{enumerate}
 
-\section{The Gaussian}
+\section{Worked Gaussian --- \texttt{U30-D01}}
 Evenness gives
 \[
 \int_0^{\infty}e^{-x^2}\,dx=\frac12\int_{-\infty}^{\infty}e^{-x^2}\,dx=\frac{\sqrt{\pi}}{2},
 \]
-which is \texttt{U30-D01}. The full line is \texttt{U30-D03}. One evaluation of the square, optional here, is the polar computation
+which is the stored answer of \texttt{U30-D01}. The full line is \texttt{U30-D03}, stored value $\sqrt{\pi}$. Quoting \texttt{U30-D03} on the half-line is the miss. The worked dose stops at the half-line.
+
+One evaluation of the square, optional here, is the polar computation
 \[
 \Bigl(\int_{-\infty}^{\infty}e^{-x^2}\,dx\Bigr)^2=\int_0^{2\pi}\int_0^{\infty}e^{-r^2}r\,dr\,d\theta=\pi.
 \]
-For $a>0$, the substitution $u=x\sqrt{a}$ yields $\int_0^{\infty}e^{-a x^2}\,dx=\frac12\sqrt{\pi/a}$. \texttt{U35-D01} is $a=2$.
+The positive square root of that value is the stored full-line value $\sqrt{\pi}$. Vector calculus is not required for Round 1.
 
-\texttt{U30-D02} is elementary:
-\[
-\int_0^{\infty}x e^{-x^2}\,dx=\frac12.
-\]
-\texttt{U30-D04} differentiates the scaled Gaussian in $a$ and sets $a=1$:
-\[
-\int_0^{\infty}x^2 e^{-x^2}\,dx=\frac{\sqrt{\pi}}{4}.
-\]
-The differentiation is the Leibniz rule from unit 34, taken as a limit of compact intervals.
+For $a>0$, the substitution $u=x\sqrt{a}$ yields $\int_0^{\infty}e^{-a x^2}\,dx=\frac12\sqrt{\pi/a}$. \texttt{U35-D01} is the case $a=2$. That drill lives in unit 35.
 
-\section{The Dirichlet integral --- \texttt{U30-D05}}
+\section{Faded --- \texttt{U30-D04}}
+\[
+\int_0^{\infty}x^2 e^{-x^2}\,dx.
+\]
+The blank is the parameter. Differentiate $\int_0^{\infty}e^{-a x^2}\,dx$ in $a$, then set $a=1$. The differentiation is the Leibniz rule from unit 34, taken as a limit of compact intervals. The stored answer is $\sqrt{\pi}/4$.
+
+\section{Worked Dirichlet --- \texttt{U30-D05}}
 For $a>0$ set $I(a)=\int_0^{\infty}e^{-ax}(\sin x)/x\,dx$. Differentiating in $a$ under the integral gives
 \[
 I'(a)=-\int_0^{\infty}e^{-ax}\sin x\,dx=-\frac{1}{a^2+1}.
 \]
-$I(a)\to 0$ as $a\to\infty$, so $I(a)=\pi/2-\arctan a$. The limit $a\to 0^+$ is $\pi/2$. That is the stored answer of \texttt{U30-D05}. The switch of derivative and integral is a limit; unit 34 states the compact case.
+$I(a)\to 0$ as $a\to\infty$, so $I(a)=\pi/2-\arctan a$. The limit $a\to 0^+$ is $\pi/2$. That is the stored answer of \texttt{U30-D05}. The family $I(a)$ is the argument. It is not a second drill id. The switch of derivative and integral is a limit; unit 34 states the compact case.
 
-\section{One parts step --- \texttt{U30-D06}}
+\section{Bare --- \texttt{U30-D06}}
+Set
 \[
-\int_0^{\infty}\frac{\sin^2 x}{x^2}\,dx.
+\int_0^{\infty}\frac{\sin^2 x}{x^2}\,dx
 \]
-Parts with $u=\sin^2 x$ and $dv=x^{-2}\,dx$ kills the boundary term in the limit and leaves $\int_0^{\infty}\sin(2x)/x\,dx$. The substitution $u=2x$ turns that into $\int_0^{\infty}(\sin u)/u\,du=\pi/2$.
+and show nothing else. The bare dose hides the parts step. After a line is written, uncover it. Parts with $u=\sin^2 x$ and $dv=x^{-2}\,dx$ kills the boundary term in the limit and leaves $\int_0^{\infty}\sin(2x)/x\,dx$. The substitution $u=2x$ turns that into \texttt{U30-D05}. The stored answer is $\pi/2$. The same number as \texttt{U30-D05} is not a reason to skip the parts step.
 
-\texttt{U30-D07} and \texttt{U30-D08} are $\int_0^{\infty}e^{-x}\sin x\,dx$ and the cosine partner. Both equal $1/2$. They are one-line parts, or the real and imaginary parts of $\int_0^{\infty}e^{-x}e^{ix}\,dx$ in unit 32. They do not need the Dirichlet value.
+\section{Refusal --- elementary, or one parts step}
+\texttt{U30-D02} is
+\[
+\int_0^{\infty}x e^{-x^2}\,dx=\frac12.
+\]
+The extra factor of $x$ makes the substitution $u=x^2$ elementary. Refuse an elementary antiderivative of $e^{-x^2}$ in its place. The named Gaussian stays \texttt{U30-D01}.
+
+\texttt{U30-D07} and \texttt{U30-D08} are $\int_0^{\infty}e^{-x}\sin x\,dx$ and the cosine partner. Each stores $1/2$. Refuse $\pi/2$. Both are one-line parts, or the imaginary and real parts of $\int_0^{\infty}e^{-x}e^{ix}\,dx$ in unit 32, where the same numbers are \texttt{U32-D06} and \texttt{U32-D05}. They do not use the Dirichlet value.
+
+\section{Dose}
+Worked reads \texttt{U30-D01}, names \texttt{U30-D03} as the full line, then reads \texttt{U30-D05} when the node is \texttt{dirichlet}. Faded gives only the parameter blank on \texttt{U30-D04}. Bare sets \texttt{U30-D06}. An elementary antiderivative of $e^{-x^2}$ opens the refusal and sets \texttt{U30-D02}. The value $\pi/2$ on a damped sine opens the refusal and sets \texttt{U30-D07}, then \texttt{U30-D08}.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit30.json}.
 
 \section*{On a miss}
-Teach this file. Say which named value you used, then the scaling or the parts step. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. Say which named value you used, then the scaling or the parts step. If the integrand has an extra factor of $x$ against $e^{-x^2}$, set \texttt{U30-D02}. If a damped sine was given $\pi/2$, set \texttt{U30-D07}. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}
