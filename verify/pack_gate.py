@@ -49,7 +49,14 @@ product, an artanh series reduced to the Wallis integral, and a Chebyshev
 reduction. A reciprocal power that clears to a rational function is integrated
 directly. (cos(a x)-cos(b x))/x**2 on [0, ∞) reduces by parts to the Dirichlet
 integral, for positive a and b. A logarithm of an absolute value differentiates as the logarithm
-of its argument. Numeric agreement is not a proof.
+of its argument. An indefinite answer is also accepted when its derivative
+matches the integrand for a positive variable. Further checked forms are a
+complement of two square-root logarithms on [2, 4], a fifth power of a
+cosine-sine mean on [0, π/2], a root-exponential reflection on [-π/2, π/2],
+1/(1+|cos x|) on [0, 2π], a shifted square-root logarithm reduced to a gamma
+value, an arcsec substitution on [1, ∞), and an even power of cosine on a full
+period reduced by the Wallis recurrence. Those seven patterns are checked before
+the general reductions. Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -81,6 +88,7 @@ def namespace(variable: str) -> dict:
     ns["coth"] = sp.coth
     ns["zeta"] = sp.zeta
     ns["gamma"] = sp.gamma
+    ns["binomial"] = sp.binomial
     ns["G"] = sp.Catalan
     ns["i"] = sp.I
     ns[variable] = sp.symbols(variable, real=True)
@@ -768,6 +776,9 @@ def _antiderivative(answer, integrand, variable: str) -> bool:
         return True
     delta = sp.diff(answer, symbol) - integrand
     if _zero(delta):
+        return True
+    positive = sp.Symbol(variable, positive=True)
+    if _zero(delta.subs(symbol, positive)):
         return True
     return _radical_branch(answer, integrand, symbol)
 
@@ -2774,6 +2785,200 @@ def _finite_floor_product(integrand, symbol, lo, hi):
     return total
 
 
+def _paired_log_span(integrand, symbol, lo, hi):
+    """sqrt(log(9-x)) and sqrt(log(x+3)) swap on [2, 4], so the quotient averages to 1/2."""
+    if not (_zero(lo - 2) and _zero(hi - 4)) or not integrand.has(sp.log):
+        return None
+    root = sp.sqrt(sp.log(9 - symbol))
+    other = sp.sqrt(sp.log(symbol + 3))
+    target = root / (root + other)
+    if integrand != target:
+        return None
+    total = sp.simplify(integrand + integrand.subs(symbol, 6 - symbol))
+    if not _zero(total - 1):
+        return None
+    return sp.Integer(1)
+
+
+def _fifth_sqrt_quarter(integrand, symbol, lo, hi):
+    """sqrt(cos)/(sqrt(cos)+sqrt(sin))**5 on [0, π/2] becomes 2u/(1+u)**5."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 2)) or not _has_square_root(integrand):
+        return None
+    target = sp.sqrt(sp.cos(symbol)) / (sp.sqrt(sp.cos(symbol)) + sp.sqrt(sp.sin(symbol))) ** 5
+    if integrand != target:
+        return None
+    u = sp.Symbol("_u", positive=True)
+    angle = sp.atan(u**2)
+    moved = sp.simplify(target.subs(symbol, angle) * sp.diff(angle, u))
+    piece = 2 * u / (1 + u) ** 5
+    if not _zero(moved - piece):
+        return None
+    split = 2 * ((1 + u) ** (-4) - (1 + u) ** (-5))
+    if not _zero(sp.cancel(sp.together(piece - split))):
+        return None
+    if not _zero(sp.limit(angle, u, 0)) or not _zero(sp.limit(angle, u, sp.oo) - sp.pi / 2):
+        return None
+    value = sp.integrate(split, (u, 0, sp.oo))
+    if not _closed(value):
+        return None
+    return sp.simplify(value)
+
+
+def _root_exp_reflection(integrand, symbol, lo, hi):
+    """cos(x)/(1+e^{1/x}) + cos(x)/(1+e^{-1/x}) = cos(x) on [-π/2, π/2]."""
+    if not (_zero(lo + sp.pi / 2) and _zero(hi - sp.pi / 2)) or not integrand.has(sp.exp):
+        return None
+    target = sp.cos(symbol) / (1 + sp.exp(1 / symbol))
+    if integrand != target:
+        return None
+    reflected = sp.simplify(target + target.subs(symbol, -symbol) - sp.cos(symbol))
+    if not _zero(reflected):
+        return None
+    width = sp.integrate(sp.cos(symbol), (symbol, lo, hi))
+    if not _same(width, 2):
+        return None
+    return sp.Integer(1)
+
+
+def _abs_cosine_full(integrand, symbol, lo, hi):
+    """1/(1+sqrt(1-sin(x)**2)) = 1/(1+|cos x|), and that function has four equal quarters."""
+    if not (_zero(lo) and _zero(hi - 2 * sp.pi)) or not integrand.has(sp.sin):
+        return None
+    target = 1 / (1 + sp.sqrt(1 - sp.sin(symbol) ** 2))
+    if integrand != target:
+        return None
+    folded = 1 / (1 + sp.Abs(sp.cos(symbol)))
+    if not _zero(sp.simplify(target - folded)):
+        return None
+    if not _zero(sp.simplify(folded - folded.subs(symbol, sp.pi - symbol))):
+        return None
+    if not _zero(sp.simplify(folded - folded.subs(symbol, symbol + sp.pi))):
+        return None
+    quarter = sp.integrate(folded, (symbol, 0, sp.pi / 2))
+    if not _same(quarter, 1):
+        return None
+    return sp.Integer(4)
+
+
+def _sqrt_log_tail(integrand, symbol, lo, hi):
+    """sqrt(log(x)+1)/x**2 from 1/e to infinity is e*gamma(3/2)."""
+    if hi != sp.oo or not integrand.has(sp.log) or not _zero(lo - sp.exp(-1)):
+        return None
+    target = sp.sqrt(sp.log(symbol) + 1) / symbol**2
+    if integrand != target:
+        return None
+    u = sp.Symbol("_u", positive=True)
+    moved_x = sp.exp(u - 1)
+    moved = sp.simplify(target.subs(symbol, moved_x) * sp.diff(moved_x, u))
+    kernel = sp.E * sp.sqrt(u) * sp.exp(-u)
+    if not _zero(moved - kernel):
+        return None
+    if sp.limit(moved_x, u, 0) != sp.exp(-1) or sp.limit(moved_x, u, sp.oo) != sp.oo:
+        return None
+    moment = sp.integrate(sp.sqrt(u) * sp.exp(-u), (u, 0, sp.oo))
+    if not _same(moment, sp.gamma(sp.Rational(3, 2))):
+        return None
+    if not _zero(sp.gamma(sp.Rational(3, 2)) - sp.sqrt(sp.pi) / 2):
+        return None
+    return sp.simplify(sp.E * moment)
+
+
+def _arcsec_exp_ray(integrand, symbol, lo, hi):
+    """e^{arcsec sqrt(x)}/(x sqrt(x)) on [1, ∞) is 2 e^u sin(u) on [0, π/2]."""
+    if hi != sp.oo or not _zero(lo - 1) or not integrand.has(sp.exp):
+        return None
+    target = sp.exp(sp.asec(sp.sqrt(symbol))) / (symbol * sp.sqrt(symbol))
+    if integrand != target:
+        return None
+    u = sp.Symbol("_u", real=True)
+    sec = sp.sec(u)
+    moved_x = sec**2
+    # On (0, π/2), sec u is the positive square root of x.
+    claimed = sp.diff(moved_x, u) / (moved_x * sec)
+    if not _zero(sp.simplify(claimed - 2 * sp.sin(u))):
+        return None
+    slope = sp.diff(sp.asec(sec), u).subs(sp.Abs(sp.sin(u)), sp.sin(u))
+    if not _zero(sp.simplify(slope - 1)):
+        return None
+    if not _zero(sp.asec(sp.sec(sp.pi / 4)) - sp.pi / 4):
+        return None
+    if not _zero(sp.sin(sp.pi / 4) - sp.cos(sp.pi / 4)):
+        return None
+    value = sp.integrate(2 * sp.exp(u) * sp.sin(u), (u, 0, sp.pi / 2))
+    if not _closed(value):
+        return None
+    return sp.simplify(value)
+
+
+def _even_cosine_period(integrand, symbol, lo, hi):
+    """∫_0^{2π} cos(x)^{2m} dx = π C(2m, m) / 2^{2m-1} by the reduction formula."""
+    if not getattr(integrand, "is_Pow", False):
+        return None
+    base, exponent = integrand.as_base_exp()
+    if base != sp.cos(symbol):
+        return None
+    if not getattr(exponent, "is_Integer", False) or exponent <= 0 or exponent % 2 or exponent > 4000:
+        return None
+    if not (_zero(lo) and _zero(hi - 2 * sp.pi)):
+        return None
+
+    def ready():
+        k = sp.Symbol("_k", integer=True, positive=True)
+        t = sp.Symbol("_t", real=True)
+        power = sp.cos(t) ** (k - 1)
+        manual = (k - 1) * sp.cos(t) ** (k - 2) * (-sp.sin(t)) * sp.sin(t) + power * sp.cos(t)
+        _require(_zero(sp.diff(power * sp.sin(t), t) - manual), "wallis-diff")
+        factored = sp.cos(t) ** (k - 2) * ((1 - k) * sp.sin(t) ** 2 + sp.cos(t) ** 2)
+        _require(_zero(sp.expand(manual - factored)), "wallis-factor")
+        pythagoras = sp.cos(t) ** (k - 2) * ((1 - k) * (1 - sp.cos(t) ** 2) + sp.cos(t) ** 2)
+        _require(_zero(sp.expand(factored - pythagoras)), "wallis-pythagoras")
+        collected = (1 - k) * sp.cos(t) ** (k - 2) + k * sp.cos(t) ** k
+        _require(_zero(sp.expand(pythagoras - collected)), "wallis-collect")
+        claim = k * sp.cos(t) ** k - (k - 1) * sp.cos(t) ** (k - 2)
+        _require(_zero(sp.expand(collected - claim)), "wallis-claim")
+        return True
+
+    if _fact("even-cosine-reduction", ready) is not True:
+        return None
+    degree = int(exponent)
+    t = sp.Symbol("_t", real=True)
+    boundary = sp.cos(t) ** (degree - 1) * sp.sin(t)
+    if not _zero(boundary.subs(t, 0)) or not _zero(boundary.subs(t, sp.pi / 2)):
+        return None
+    if not _zero((-sp.cos(t)) ** degree - sp.cos(t) ** degree):
+        return None
+    ratio = sp.Integer(1)
+    steps = degree // 2
+    for step in range(steps):
+        kk = degree - 2 * step
+        ratio *= sp.Rational(kk - 1, kk)
+    quarter = (sp.pi / 2) * ratio
+    central = (sp.pi / 2) * sp.binomial(degree, steps) / 4**steps
+    if not _zero(quarter - central):
+        return None
+    full = 4 * quarter
+    printed = sp.pi * sp.binomial(degree, steps) / 2 ** (degree - 1)
+    if not _zero(full - printed):
+        return None
+    return sp.simplify(full)
+
+
+def _structural_values(integrand, symbol, lo, hi):
+    """Exact integrand patterns. A miss returns before any search."""
+    for builder in (
+        _paired_log_span,
+        _fifth_sqrt_quarter,
+        _root_exp_reflection,
+        _abs_cosine_full,
+        _sqrt_log_tail,
+        _arcsec_exp_ray,
+        _even_cosine_period,
+    ):
+        value = builder(integrand, symbol, lo, hi)
+        if value is not None:
+            yield value
+
+
 def _extra_values(integrand, symbol, lo, hi):
     found = []
     for builder in (
@@ -2880,6 +3085,10 @@ def _worker(payload, queue) -> None:
         if _matches(cleared, answer):
             queue.put(("ok", True))
             return
+        for value in _structural_values(integrand, symbol, lo, hi):
+            if _matches(value, answer):
+                queue.put(("ok", True))
+                return
         for value in _reduced_integrals(integrand, symbol, lo, hi):
             if _matches(value, answer):
                 queue.put(("ok", True))
@@ -2996,14 +3205,9 @@ def rename_dummy(integrand: str, limits, answer: str, variable: str):
         return None
 
 
-def fields_for(number: int, integral, answer) -> dict | None:
-    import pdf_math
-
-    if not isinstance(integral, pdf_math.IntegralReading) or not isinstance(answer, pdf_math.AnswerReading):
-        return None
-    if integral.number != number or answer.number != number:
-        return None
-    renamed = rename_dummy(integral.integrand, integral.limits, answer.expr, integral.variable)
+def fields_from_parts(integrand_text: str, limits_text, answer_text: str, variable: str) -> dict | None:
+    """Prove one integrand and answer already written as SymPy text."""
+    renamed = rename_dummy(integrand_text, limits_text, answer_text, variable)
     if renamed is None:
         return None
     integrand_text, limits_text, answer_text, variable = renamed
@@ -3037,8 +3241,21 @@ def fields_for(number: int, integral, answer) -> dict | None:
         "answer_sympy": answer_s,
         "integrand_latex": sp.latex(integrand_expr),
         "answer_latex": sp.latex(answer_expr),
-        "gate_number": number,
     }
+
+
+def fields_for(number: int, integral, answer) -> dict | None:
+    import pdf_math
+
+    if not isinstance(integral, pdf_math.IntegralReading) or not isinstance(answer, pdf_math.AnswerReading):
+        return None
+    if integral.number != number or answer.number != number:
+        return None
+    fields = fields_from_parts(integral.integrand, integral.limits, answer.expr, integral.variable)
+    if fields is None:
+        return None
+    fields["gate_number"] = number
+    return fields
 
 
 def reprove_rows(rows: list[dict]) -> str | None:

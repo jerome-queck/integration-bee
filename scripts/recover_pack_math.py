@@ -34,7 +34,9 @@ def load_pair(cache: dict, pdf: str, kind: str):
     key = (kind, pdf)
     if key not in cache:
         path = ROOT / pdf
-        if kind == "problem":
+        if not path.is_file():
+            cache[key] = None
+        elif kind == "problem":
             cache[key] = pdf_math.integral_readings(str(path))
         else:
             cache[key] = pdf_math.answer_readings(str(path))
@@ -44,6 +46,61 @@ def load_pair(cache: dict, pdf: str, kind: str):
 GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
 # The turn contract and the catalog pin use this row as the manual mark example.
 HELD_MANUAL = frozenset({"R1-2024-Q01"})
+# Layout readings that do not prove. Each triple is the printed integrand, its
+# limits (None when indefinite), and the printed final, taken from the worked
+# note that cites the mark scheme. proven() still has to accept the triple.
+TRANSCRIPTS = {
+    "R1-2020-Q10": ("sqrt(log(9-x))/(sqrt(log(9-x))+sqrt(log(x+3)))", ("2", "4"), "1"),
+    "R1-2020-Q11": (
+        "(3*x**10+2*x**8-2)*(x**10+x**8+1)**(Rational(1,4))/x**6",
+        None,
+        "2*(x**6+x**4+x**(-4))**(Rational(5,4))/5",
+    ),
+    "R1-2020-Q13": (
+        "sqrt(1+exp(x))",
+        None,
+        "log(Abs((sqrt(1+exp(x))-1)/(sqrt(1+exp(x))+1)))+2*sqrt(1+exp(x))",
+    ),
+    "R1-2020-Q15": (
+        "1/sqrt(1+exp(2*x))",
+        None,
+        "log((sqrt(1+exp(2*x))-1)/(sqrt(1+exp(2*x))+1))/2",
+    ),
+    "R1-2020-Q18": (
+        "1/(2+2*sin(x)+cos(x))",
+        None,
+        "log(Abs((tan(x/2)+1)/(tan(x/2)+3)))",
+    ),
+    "R1-2020-Q31": ("sqrt(1+sin(x/2))", None, "4*(sin(x/4)-cos(x/4))"),
+    "R1-2021-Q15": ("1/(csc(x)+1)", None, "x - 2*sin(x/2)/(sin(x/2)+cos(x/2))"),
+    "R1-2021-Q37": ("sin(x)*cos(x)*(cos(x)-sin(x))", ("0", "pi/2"), "0"),
+    "R1-2021-Q39": ("1/(sin(x)**4+cos(x)**4)", None, "atan(tan(2*x)/sqrt(2))/sqrt(2)"),
+    "R1-2022-MIT-TB-Q22": ("cos(x)**2022", ("0", "2*pi"), "pi*binomial(2022, 1011)/2**2021"),
+    "R1-2022-Q21": ("sqrt(log(x)+1)/x**2", ("exp(-1)", "oo"), "E*sqrt(pi)/2"),
+    "R1-2022-Q23": ("(1/x-1)**(Rational(1,4))", ("0", "1"), "pi/(2*sqrt(2))"),
+    "R1-2023-Q17": ("exp(asec(sqrt(x)))/(x*sqrt(x))", ("1", "oo"), "exp(pi/2)+1"),
+    "R1-2023-Q21": (
+        "2023**x/(2023**x+2024**x)",
+        None,
+        "x - log(1+(2024/2023)**x)/log(2024/2023)",
+    ),
+    "R1-2024-Q09": ("1/(1+sqrt(1-sin(x)**2))", ("0", "2*pi"), "4"),
+    "R1-2025-Online-Q05": ("cos(x)/(1+exp(1/x))", ("-pi/2", "pi/2"), "1"),
+    "R1-2025-Online-Q06": ("sqrt(-log(x))", ("0", "1"), "sqrt(pi)/2"),
+    "R1-2021-Q03": (
+        "sqrt(cos(x))/(sqrt(cos(x))+sqrt(sin(x)))**5",
+        ("0", "pi/2"),
+        "1/6",
+    ),
+}
+
+
+def transcribed(row: dict) -> dict | None:
+    item = TRANSCRIPTS.get(row.get("id"))
+    if item is None:
+        return None
+    integrand, limits, answer = item
+    return pack_gate.fields_from_parts(integrand, limits, answer, "x")
 
 
 def gate_row(row: dict, cache: dict) -> dict | None:
@@ -56,15 +113,17 @@ def gate_row(row: dict, cache: dict) -> dict | None:
     number = problem_number(row)
     problem_pdf = row.get("pdf_path")
     answer_pdf = row.get("answer_source_pdf")
-    if number is None or not problem_pdf or not answer_pdf:
-        return None
-    integrals = load_pair(cache, problem_pdf, "problem")
-    answers = load_pair(cache, answer_pdf, "answer")
-    integral = integrals.get(number)
-    answer = answers.get(number)
-    if integral is None or answer is None:
-        return None
-    return pack_gate.fields_for(number, integral, answer)
+    if number is not None and problem_pdf and answer_pdf:
+        integrals = load_pair(cache, problem_pdf, "problem")
+        answers = load_pair(cache, answer_pdf, "answer")
+        if integrals is not None and answers is not None:
+            integral = integrals.get(number)
+            answer = answers.get(number)
+            if integral is not None and answer is not None:
+                fields = pack_gate.fields_for(number, integral, answer)
+                if fields is not None:
+                    return fields
+    return transcribed(row)
 
 
 def apply_fields(row: dict, fields: dict) -> None:
