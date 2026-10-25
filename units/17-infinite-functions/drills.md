@@ -11,3 +11,6 @@ Machine JSON: `../../verify/drills_unit17.json`.
 | U17-D04 | infinite-functions | yang:2.8 | definite | `exp(x)` | [0, 1] | `-1+E` | $e-1$ |
 | U17-D05 | infinite-functions | yang:2.8 | definite | `x + x/sqrt(1-x**2)` | [0, 1] | `3/2` | $3/2$ |
 | U17-D06 | infinite-functions | yang:2.8 | definite | `exp(x)-1` | [0, 1] | `E-2` | $e-2$ |
+| U17-D07 | infinite-functions | yang:2.8 | definite | `1/(1-x)**2` | [0, '1/2'] | `1` | $1$ |
+| U17-D08 | infinite-functions | yang:2.8 | definite | `1/(1-x)` | [0, '1/3'] | `log(3/2)` | $\ln(3/2)$ |
+| U17-D09 | infinite-functions | yang:2.8 | definite | `1+x+x**2` | [0, 1] | `11/6` | $11/6$ |

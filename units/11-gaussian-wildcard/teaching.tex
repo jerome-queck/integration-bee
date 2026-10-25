@@ -1,41 +1,75 @@
-% Unit 11 teaching — Gaussian Integrals \& Special Wildcard
+% Unit 11 teaching — Gaussian Integrals, floor, and a fixed-interval parameter
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 11:\\ Gaussian Integrals \& Special Wildcard}
-\author{UK Uni Integration Bee prep (Jerome)\\ Official: integration.soc.srcf.net\\ Yang Topics Guide 2nd Ed}
+\title{Integration Bee --- Unit 11:\\ Gaussian Integrals, Floor, and a Parameter}
+\author{UK Uni Integration Bee prep\\ Yang \S\S1.19--1.20, Guide \S1.7, syllabus DUTIS}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Concept teaching only. Tags: \texttt{gaussian}, \texttt{wildcard}, \texttt{yang:1.19}, \texttt{yang:1.20}.
+Tags: \texttt{gaussian}, \texttt{wildcard}, \texttt{floor}, \texttt{dutis}; \texttt{yang:1.19}, \texttt{yang:1.20}.
+Yang \S1.19 is the Gaussian. Yang \S1.20 is the wildcard that the sample list uses for a floor integral and for a parameter integral. The floor note is \texttt{docs/techniques/floor.md}. The algebra of adding a constant is \texttt{docs/techniques/introduce-constant.md}. The catalog ids \texttt{floor} and \texttt{dutis} have no unit of their own, so these drills ride on \texttt{special-wildcard}. Do not tick either id.
 \section{Official anchors}
 \begin{itemize}
   \item Yang §§1.19 Gaussian Integrals, 1.20 Special Wildcard.
-  \item Syllabus §2 Gamma (related); treat $\int_{-\infty}^{\infty}e^{-x^2}=\sqrt\pi$ as known.
+  \item Techniques Guide §1.7 for the floor split. Syllabus §2 lists the floor.
+  \item Syllabus §1 DUTIS, the fixed-interval form. A moving endpoint is unit 34.
+  \item Treat $\int_{-\infty}^{\infty}e^{-x^2}\,dx=\sqrt\pi$ as known.
 \end{itemize}
 \section{Learning goals}
 \begin{enumerate}
-  \item Evaluate elementary Gaussian cousins.
-  \item Quote the full Gaussian integral.
-  \item Mix easy openers (wildcard).
+  \item Evaluate an elementary Gaussian cousin, and quote the full Gaussian when it is the integrand.
+  \item Split a floor or a fractional part at the integers and add the pieces.
+  \item Differentiate or integrate a parameter on a fixed interval. Do not build a parameter when a substitution already finishes the integral.
 \end{enumerate}
-\section{Pedagogy}
-Worked $\to$ faded $\to$ interleaved. See \texttt{pedagogy/README.md}.
 
-\section{Worked --- \texttt{U11-D01} (\texttt{yang:1.19})}
+\section{Worked Gaussian --- \texttt{U11-D01}}
 \[
-\int_0^1 x e^{-x^2}\,dx = \frac{1-e^{-1}}{2}.
+\int_0^1 x e^{-x^2}\,dx=\frac{1-e^{-1}}{2}.
 \]
+Let $u=x^2$. \texttt{U11-D02} is the same integrand on $[-1,1]$ and is odd, so the value is 0. \texttt{U11-D03} is the full Gaussian, $\sqrt\pi$. \texttt{U11-D04} is $\int_0^{\infty}e^{-x}\,dx=1$. \texttt{U11-D08} is $\int_0^{\infty}x e^{-x}\,dx=1$, which is $J_1$ from unit 14.
 
-\section{Known identity --- \texttt{U11-D03}}
+\section{Wildcard openers}
+\texttt{U11-D05} is $\int_{-1}^{1}dx/(1+x^2)=\pi/2$. \texttt{U11-D06} is even, so split $|x|e^{-|x|}$ at 0. \texttt{U11-D07} is the reflection $\int_0^{\pi/2}\sin x/(\sin x+\cos x)\,dx=\pi/4$, the same move as unit 10.
+
+\section{Worked floor --- \texttt{U11-D09}}
+On each half-open interval $[k,k+1)$ the floor is the constant $k$. You split at integers, pull that constant out, and add the areas. A single endpoint does not change the value.
 \[
-\int_{-\infty}^{\infty}e^{-x^2}\,dx=\sqrt\pi.
+\int_0^4\lfloor x\rfloor\,dx=0\cdot 1+1\cdot 1+2\cdot 1+3\cdot 1=6.
 \]
+That is the stored answer. The machine feed stores the piecewise split, because a direct call to \texttt{floor} stays unevaluated. The number is the floor integral.
 
-\section{Wildcard --- \texttt{U11-D05} (\texttt{yang:1.20})}
+\section{Faded floor}
+\texttt{U11-D11} stops at $5/2$, not at an integer. The last piece has length $1/2$ and height $2$, so it contributes $1$, and the total is $2$. Do not quote $n(n-1)/2$.
+
+\texttt{U11-D10} is the fractional part $\{x\}=x-\lfloor x\rfloor$ on $[0,3]$. Each tooth integrates to $1/2$, so three teeth give $3/2$.
+
+\texttt{U11-D12} is a negative argument. On $[-2,-1)$ the floor is $-2$, and on $[-1,0)$ it is $-1$. The value is $-3$. Do not replace the floor by truncation toward zero.
+
+The worked fences, including a non-constant factor left inside a piece, stay in \texttt{docs/techniques/floor.md}. An infinite upper limit becomes a series. Do not quote a zeta value.
+
+\section{Worked parameter --- \texttt{U11-D13}}
+For $a>-1$,
 \[
-\int_{-1}^{1}\frac{1}{1+x^2}\,dx=\frac\pi2.
+\int_0^1 x^a\,dx=\frac{1}{a+1}.
 \]
+On $[\varepsilon,1]$ the derivative in $a$ passes under the integral sign. Let $\varepsilon\to 0$. The integral of $x^a\ln x$ is $-1/(a+1)^2$. At $a=4$ the value is $-1/25$, the stored answer of \texttt{U11-D13}. The fence at $a=3$ is in \texttt{docs/techniques/introduce-constant.md}. \texttt{U34-D05} is the same family at $a=2$.
 
-\section{Practice}
-\texttt{U11-D01}\ldots\texttt{U11-D08} in \texttt{drills.tex}; \texttt{verify/run.sh}.
+\section{Two more fixed intervals}
+\texttt{U11-D14} starts from $\int_0^{\infty}e^{-ax}\,dx=1/a$ for $a>0$. Differentiate in $a$ and set $a=2$:
+\[
+\int_0^{\infty}x e^{-2x}\,dx=\frac14.
+\]
+Take a compact upper limit first, then let it tend to infinity.
+
+\texttt{U11-D15} integrates the parameter instead of differentiating it. Integrate $1/(a+1)$ for $a$ from 0 to 3:
+\[
+\int_0^1\frac{x^3-1}{\ln x}\,dx=\ln 4.
+\]
+A moving endpoint is a different syllabus formula. It is unit 34, and it is not one of these three drills.
+
+\section{Drill pointers}
+See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit11.json}.
+
+\section*{On a miss}
+Teach this file for a Gaussian, a floor split, or a fixed-interval parameter. Teach \texttt{docs/techniques/floor.md} when the gap is the floor, and \texttt{docs/techniques/introduce-constant.md} when the gap is only the algebra. Do not tick \texttt{floor} or \texttt{dutis}. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

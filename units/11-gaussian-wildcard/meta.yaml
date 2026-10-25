@@ -8,12 +8,14 @@ problem_id_prefix: "U11-D"
 technique_tags:
   - gaussian
   - wildcard
+  - floor
+  - dutis
 yang_tags:
   - "yang:1.19"
   - "yang:1.20"
 syllabus_refs:
   - source: UK_University_Integration_Bee_Syllabus.pdf
-    section: "§2 Gamma-related / special forms (adjacent)"
+    section: "§1 DUTIS; §2 floor; Gamma-related special forms (adjacent)"
   - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
     section: "§§1.19 Gaussian Integrals, 1.20 Special Wildcard"
 prerequisites:

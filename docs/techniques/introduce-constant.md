@@ -2,7 +2,7 @@
 
 Guide section 1.9 is an algebraic move. You add and subtract a constant so the numerator matches the derivative of the denominator, or so a fraction becomes 1 plus a remainder. You can also multiply and divide by a constant that does not depend on \(x\), when that constant is the numerator an addition formula wants. This move is not dutis.
 
-The syllabus names DUTIS as its own technique, in two forms: a fixed interval, and an interval whose endpoints move with the parameter. The catalog id `dutis` stays deferred, and nothing in this note ticks it. Differentiating under the integral sign is a later, separate move. The chapter for that move, including the moving-limit form, is `units/34-frullani-feynman/teaching.tex`.
+The syllabus names DUTIS as its own technique, in two forms: a fixed interval, and an interval whose endpoints move with the parameter. The catalog id `dutis` has no unit of its own, and nothing in this note ticks it. The fixed-interval drills are `U11-D13`, `U11-D14`, and `U11-D15` on the special-wildcard node. Differentiating under the integral sign when an endpoint moves is `units/34-frullani-feynman/teaching.tex`.
 
 ## Rewrite the fraction
 
@@ -116,6 +116,26 @@ The Leibniz rule you are using, on a rectangle where \(f\) and \(\partial f/\par
 
 An infinite limit or an endpoint blow-up needs the limit argument above, or a sign that lets you switch the integrals. Unit 34 writes that out for the Frullani shape \((e^{-x}-e^{-2x})/x\), and it writes the syllabus form whose endpoints move with the parameter. A moving endpoint is not the algebra on this page.
 
+## Stored DUTIS drills
+
+These three are the fixed-interval form. The moving-limit form stays in unit 34.
+
+`U11-D13` is the smaller parameter at a new power. Differentiate \(1/(a+1)\) and set \(a=4\):
+
+\[
+\int_0^1 x^4\ln x\,dx=-\frac{1}{25}.
+\]
+
+`U11-D14` differentiates \(\int_0^\infty e^{-ax}\,dx=1/a\) at \(a=2\). The integral of \(x e^{-2x}\) from 0 to \(\infty\) is \(1/4\). Take the limit of a compact interval \([0, R]\) before you quote the value.
+
+`U11-D15` integrates the parameter instead of differentiating it. For \(a>-1\), \(\int_0^1 x^a\,dx=1/(a+1)\). Integrate in \(a\) from 0 to 3:
+
+\[
+\int_0^1\frac{x^3-1}{\ln x}\,dx=\ln 4.
+\]
+
+That is the stored answer of `U11-D15`. It is an original power, not a contest row.
+
 ## On a miss
 
-Teach this file when the miss is the algebra, and teach `units/34-frullani-feynman/teaching.tex` when the miss is the parameter or a moving limit. Do not invent an unchecked answer. A correct final answer that used the wrong method still needs the method named in the mark.
+Teach this file when the miss is the algebra, and teach `units/34-frullani-feynman/teaching.tex` when the miss is a moving limit. For a fixed-interval parameter, set `U11-D13`, `U11-D14`, or `U11-D15`. Do not invent an unchecked answer. Do not tick `dutis`. A correct final answer that used the wrong method still needs the method named in the mark.

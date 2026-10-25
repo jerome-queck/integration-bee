@@ -1,43 +1,65 @@
-% Unit 17 teaching — Infinite Functions (Yang Ch.2)
+% Unit 17 — termwise geometric series
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 17:\\ Infinite Functions}
-\author{UK Uni Integration Bee prep\\ Yang Topics Guide 2nd Ed §2.8 Infinite Functions}
+\title{Integration Bee --- Unit 17:\\ Termwise geometric series}
+\author{UK Uni Integration Bee prep\\ Close the sum, then integrate}
 \date{}
 \begin{document}
 \maketitle
-
 \section*{Status}
-Yang Chapter 2 concept unit (easy drills only; no past papers).
 Tags: \texttt{yang:2.8}, \texttt{infinite-functions}.
-
+A geometric series on a compact subinterval of $[0,1)$ may be integrated term by term. Yang \S2.8 is the contest packaging. The speed move is to sum first. Unit 08 is the first finite truncation. Unit 32 returns to the same geometric sum on $[0,1]$.
 \section{Official anchors}
 \begin{itemize}
-  \item Yang Topics Guide 2nd Ed §2.8 Infinite Functions
-        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-  \item Syllabus §1 techniques support
-        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+  \item $\sum_{n=0}^{\infty}x^n=1/(1-x)$ for $|x|<1$, and $\sum_{n=1}^{\infty}n x^{n-1}=1/(1-x)^2$.
+  \item Syllabus §1 series.
+  \item Yang Topics Guide 2nd Ed §2.8 Infinite Functions.
 \end{itemize}
-
 \section{Learning goals}
 \begin{enumerate}
-  \item Collapse a geometric / exponential series inside an integral to a closed form.
-  \item Evaluate easy nested-structure integrals after one $u$-sub.
-  \item Stay on concept drills — no contest-paper answers invented.
+  \item Recognise a geometric kernel and replace the sum by its closed form before integrating.
+  \item Differentiate the geometric sum when the coefficient is $n$.
+  \item Integrate a finite truncation directly. Do not open an infinite series for three terms.
 \end{enumerate}
 
-\section{Pedagogy}
-Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
-
-\section{Worked example --- \texttt{U17-D01} (\texttt{yang:2.8})}
+\section{Worked geometric sum --- \texttt{U17-D01}}
+On $[0,1/2]$,
 \[
-\int_{0}^{1/2}\sum_{n=0}^{\infty}x^{n}\,dx=\int_{0}^{1/2}\frac{dx}{1-x}.
+\sum_{n=0}^{\infty}x^n=\frac{1}{1-x},
 \]
-Geometric sum $\Rightarrow\ln 2$.
+so
+\[
+\int_0^{1/2}\sum_{n=0}^{\infty}x^n\,dx=\int_0^{1/2}\frac{dx}{1-x}=\ln 2.
+\]
+That is the stored answer. The endpoint $1/2$ is safely inside the disk. \texttt{U17-D08} is the same kernel on the shorter interval $[0,1/3]$:
+\[
+\int_0^{1/3}\frac{dx}{1-x}=\ln\frac32.
+\]
+\texttt{U17-D03} is $\int_0^{1/2}dx/(1-x^2)=(\ln 3)/2$, the even cousin, summed as a difference of geometrics or integrated directly.
 
-\section{Faded example}
-Try U17-D04: recognise $\int_{0}^{1}e^{x}\,dx$ as termwise Taylor of $e^{x}$.
+\section{Worked derivative of the sum --- \texttt{U17-D07}}
+Differentiate $\sum_{n=0}^{\infty}x^n=1/(1-x)$ for $|x|<1$:
+\[
+\sum_{n=1}^{\infty}n x^{n-1}=\frac{1}{(1-x)^2}.
+\]
+Integrate on $[0,1/2]$:
+\[
+\int_0^{1/2}\frac{dx}{(1-x)^2}=\frac{1}{1-x}\Big|_0^{1/2}=1.
+\]
+That is the stored answer. Termwise, $\int_0^{1/2} n x^{n-1}\,dx=(1/2)^n$, and $\sum_{n=1}^{\infty}(1/2)^n=1$. Either path is the check. Use the closed form in a contest.
+
+\section{Faded --- stop early}
+\texttt{U17-D09} is the truncation $1+x+x^2$ on $[0,1]$:
+\[
+\int_0^1(1+x+x^2)\,dx=1+\frac12+\frac13=\frac{11}{6}.
+\]
+Three terms are not an infinite sum. Integrate them. \texttt{U17-D04} is $\int_0^1 e^x\,dx=e-1$, the Taylor series of $e^x$ summed first. \texttt{U17-D06} is the same integral with the constant term removed, $e-2$.
+
+\section{One substitution}
+\texttt{U17-D02} is $\int_0^{\infty}e^{-x}/(1+e^{-x})\,dx=\ln 2$. Let $u=e^{-x}$. \texttt{U17-D05} splits into a power and a square root. A series is the long way around either one.
 
 \section{Drill pointers}
-See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit17.json}.
+See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit17.json}.
 
+\section*{On a miss}
+Teach this file. Write the closed form of the series, then integrate that. If only finitely many powers are present, integrate those powers. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

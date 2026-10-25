@@ -73,9 +73,9 @@ Personal/session ticks live in gitignored `progress.local.json` (CLI-owned); nev
 | modified-famous | 6.8 | 35-modified-famous | content ready |
 | unique-tricks | 6.9 | 36-unique-tricks | content ready |
 
-**Still deferred:** official syllabus nodes that have no Yang unit (DUTIS, vector calculus, Beta, zeta, floor, Euler-Mascheroni, Catalan's constant). Yang inventory 4.3 is skipped. See `sources/user/yang-topics-inventory.md`.
+**Still deferred:** official syllabus nodes that have no drill (vector calculus, Beta, zeta, Euler-Mascheroni, Catalan's constant). Yang inventory 4.3 is skipped. See `sources/user/yang-topics-inventory.md`.
 
-The Yang chapters are one source. Teaching for the deferred floor node is `docs/techniques/floor.md`, including a negative argument and a piece that ends between integers. Introducing a constant, which is not a catalog id, is `docs/techniques/introduce-constant.md`: add and subtract, scale the numerator, or multiply and divide by a constant, plus a smaller parameter. Round 1 is a 30-problem paper. Round 2 and Round 3 formats, with the 2024 scoring, are `docs/techniques/formats.md`. Those notes do not tick a node. Reflection, the recurrence $I_n$, and the half-angle substitution are taught in units 10, 20, and 26. A first pass of $t=\tan(x/2)$ is in unit 09, before the named note in unit 26. Both syllabus forms of DUTIS, including a moving limit, are taught in unit 34 and do not tick `dutis`. The index of the six gaps is `docs/techniques/beyond-yang.md`. How to teach a miss is `pedagogy/contest-gaps.md`.
+The Yang chapters are one source. Floor is taught: Guide §1.7, `docs/techniques/floor.md`, and drills `U11-D09` through `U11-D12`. Introducing a constant, which is not a catalog id, is `docs/techniques/introduce-constant.md`: add and subtract, scale the numerator, or multiply and divide by a constant, plus a smaller parameter. DUTIS drills `U11-D13` through `U11-D15` are the fixed-interval parameter on the same wildcard node. A moving limit stays in unit 34. Round 1 is a 30-problem paper. Round 2 and Round 3 formats, with the 2024 scoring, are `docs/techniques/formats.md`. Those notes do not tick a node. The catalog ids `floor` and `dutis` still have no unit, so the coach serves the new drills with `special-wildcard`. Do not tick `floor` or `dutis`. Reflection, the recurrence $I_n$, and the half-angle substitution are taught in units 10, 20, and 26. A first pass of $t=\tan(x/2)$ is in unit 09, before the named note in unit 26. The factorial reduction is unit 14. The parts reduction for $x^n\ln x$, and the rational family $x^n/(1+x)$, are unit 15. The index of the six gaps is `docs/techniques/beyond-yang.md`. How to teach a miss is `pedagogy/contest-gaps.md`.
 
 Prerequisites (soft): 1.1 then 1.2 then 1.11. 1.5 then 1.7 then 1.15 and 1.16. 1.3 with 1.18. 1.6 before reverse-product (1.13).
 
@@ -87,12 +87,12 @@ Yang ids in the tables above run from yang:1.1 through yang:1.20, yang:2.1 throu
 
 | Node | Syllabus | Status in curriculum |
 |---|---|---|
-| dutis | §1 DUTIS, fixed interval and moving limits, unit 34, no tick | deferred |
+| dutis | §1 DUTIS, drills U11-D13 through U11-D15, moving limit in unit 34 | content ready |
 | weierstrass | §1 Weierstrass, Yang 4.5, unit 26 | content ready |
 | vector-calc | §1 vector calculus, not required for Round 1 | deferred |
 | beta | §2 Beta | deferred |
 | zeta | §2 zeta | deferred |
-| floor | §2 floor, Guide §1.7, `docs/techniques/floor.md` | deferred |
+| floor | §2 floor, Guide §1.7, drills U11-D09 through U11-D12 | content ready |
 | wallis | Guide §1.4 Wallis product, Yang 3.3, unit 20 | content ready |
 | euler-mascheroni | §2 Euler-Mascheroni constant | deferred |
 | catalan | §2 Catalan's constant | deferred |

@@ -1,43 +1,62 @@
-% Unit 15 teaching — Integration by Parts (Regular Round) (Yang Ch.2)
+% Unit 15 — parts, then two reductions
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 15:\\ Integration by Parts (Regular Round)}
-\author{UK Uni Integration Bee prep\\ Yang Topics Guide 2nd Ed §2.5 Integration by Parts}
+\title{Integration Bee --- Unit 15:\\ Parts, then two reductions}
+\author{UK Uni Integration Bee prep\\ One parts step, then an index $I_n$}
 \date{}
 \begin{document}
 \maketitle
-
 \section*{Status}
-Yang Chapter 2 concept unit (easy drills only; no past papers).
 Tags: \texttt{yang:2.5}, \texttt{parts}.
-
+Yang \S2.5 is one parts step on a regular-round integrand. Two contest families need the step repeated as a reduction: $x^n\ln x$ on $[0,1]$, and $x^n/(1+x)$ on $[0,1]$. The second family is derived in unit 20 and stored here.
 \section{Official anchors}
 \begin{itemize}
-  \item Yang Topics Guide 2nd Ed §2.5 Integration by Parts
-        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-  \item Syllabus §1 techniques support
-        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+  \item Unit 03 for a single parts step. Unit 20 for $I_n=((n-1)/n)I_{n-2}$ and for the rational family.
+  \item Syllabus §1 parts.
+  \item Yang Topics Guide 2nd Ed §2.5 Integration by Parts.
 \end{itemize}
-
 \section{Learning goals}
 \begin{enumerate}
-  \item Choose $u$/$dv$ on slightly trickier regular-round parts.
-  \item Handle $\int x\ln(x+1)$, $\int e^{x}\sin x$, and $\int(\ln x)^{2}/x^{3}$.
-  \item Evaluate one-step definite parts cleanly.
+  \item Choose $u$ and $dv$ once, and read the boundary term before you drop it.
+  \item For $I_n=\int_0^1 x^n\ln x\,dx$, parts gives $I_n=-1/(n+1)^2$.
+  \item For $\int_0^1 x^n/(1+x)\,dx$, algebra gives $I_n+I_{n-1}=1/n$. The base is $\ln 2$.
 \end{enumerate}
 
-\section{Pedagogy}
-Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
-
-\section{Worked example --- \texttt{U15-D01} (\texttt{yang:2.5})}
+\section{Worked parts --- \texttt{U15-D01}}
 \[
-\int_{0}^{1}x\ln(x+1)\,dx.
+\int_0^1 x\ln(x+1)\,dx=\frac14.
 \]
-Parts with $u=\ln(x+1)$, $dv=x\,dx$ (or expand series). Value $1/4$.
+Take $u=\ln(x+1)$ and $dv=x\,dx$. The boundary term is the part you must write. \texttt{U15-D04} is $\int_0^{\pi/2}x\cos x\,dx=\pi/2-1$, one step with $u=x$. \texttt{U15-D05} is $\int_1^e(\ln x)/x^2\,dx=1-2/e$.
 
-\section{Faded example}
-Try U15-D03: $\int_{0}^{\pi}e^{x}\sin x\,dx$.
+\texttt{U15-D02} is $\int e^x\sin x\,dx=\frac12 e^x(\sin x-\cos x)$. Call the integral $I$, integrate by parts twice, and solve for $I$. \texttt{U15-D03} evaluates that antiderivative on $[0,\pi]$ and stores $(1+e^{\pi})/2$. \texttt{U15-D06} repeats parts on $(\ln x)^2/x^3$. \texttt{U15-D07} puts $\arctan x$ in the $u$ slot on $[1,\infty)$. \texttt{U15-D08} puts $\arcsin x$ in the $u$ slot.
+
+\section{Worked reduction --- $x^n\ln x$}
+For an integer $n\ge 0$,
+\[
+I_n=\int_0^1 x^n\ln x\,dx.
+\]
+Parts with $u=\ln x$ and $dv=x^n\,dx$: the boundary term $x^{n+1}\ln x/(n+1)$ vanishes at both ends (the endpoint $0$ is a limit). What remains is
+\[
+I_n=-\frac{1}{n+1}\int_0^1 x^n\,dx=-\frac{1}{(n+1)^2}.
+\]
+The index does not produce a second copy of $I_n$. It produces a power you can integrate. \texttt{U15-D09} is $n=5$, value $-1/36$. \texttt{U15-D10} is $n=6$, value $-1/49$.
+
+\section{Worked rational reduction --- \texttt{U15-D11}}
+\[
+I_n=\int_0^1\frac{x^n}{1+x}\,dx.
+\]
+Add and subtract in the numerator, as in \texttt{docs/techniques/introduce-constant.md}:
+\[
+\frac{x^n}{1+x}=x^{n-1}-\frac{x^{n-1}}{1+x},\qquad n\ge 1,
+\]
+so $I_n+I_{n-1}=1/n$. The base is $I_0=\ln 2$, and $I_1=1-\ln 2$. Then $I_2=\ln 2-1/2$ and
+\[
+I_3=\frac13-I_2=\frac56-\ln 2.
+\]
+That is the stored answer of \texttt{U15-D11}. Unit 20 derives the same value and does not store it. The sign of the step alternates. A leftover factor of $\sin x$ is still a substitution, not this reduction.
 
 \section{Drill pointers}
-See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit15.json}.
+See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit15.json}.
 
+\section*{On a miss}
+Teach this file. Name $u$ and $dv$. If the integrand is $x^n\ln x$ or $x^n/(1+x)$ on $[0,1]$, write the relation and the base before you unroll. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

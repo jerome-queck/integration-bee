@@ -1,43 +1,52 @@
-% Unit 14 teaching — Gamma Function Integral (Yang Ch.2)
+% Unit 14 — the factorial reduction
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 14:\\ Gamma Function Integral}
-\author{UK Uni Integration Bee prep\\ Yang Topics Guide 2nd Ed §2.4 Gamma Function Integral}
+\title{Integration Bee --- Unit 14:\\ A factorial reduction}
+\author{UK Uni Integration Bee prep\\ The integer Gamma integral, then Yang \S2.4}
 \date{}
 \begin{document}
 \maketitle
-
 \section*{Status}
-Yang Chapter 2 concept unit (easy drills only; no past papers).
 Tags: \texttt{yang:2.4}, \texttt{gamma}.
-
+The identity $n!=\int_0^{\infty}x^n e^{-x}\,dx$ is the integer case of the Gamma function. Yang \S2.4 is one writeup. The reduction itself is parts: the index drops by 1. Unit 20 names the same family and stores neither $J_2$ nor $J_4$.
 \section{Official anchors}
 \begin{itemize}
-  \item Yang Topics Guide 2nd Ed §2.4 Gamma Function Integral
-        (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-  \item Syllabus §1 techniques support
-        (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+  \item Parts on $[0,\infty)$, any calculus text. Unit 20 for the trigonometric $I_n$.
+  \item Syllabus §2 Gamma, as the name of this integral.
+  \item Yang Topics Guide 2nd Ed §2.4 Gamma Function Integral.
 \end{itemize}
-
 \section{Learning goals}
 \begin{enumerate}
-  \item Use $n!=\int_{0}^{\infty}x^{n}e^{-x}\,dx$ on easy integer $n$.
-  \item Convert $\int_{0}^{1}(\ln x)^{n}\,dx=(-1)^{n}n!$ by $x=e^{-t}$.
-  \item Recognise Gamma-shaped integrals after a short $u$-sub.
+  \item Define $J_n$, write $J_n=n J_{n-1}$, and compute the base $J_0=1$.
+  \item Unroll to $n!$. Do not start the reduction when a substitution removes the power in one step.
+  \item Convert $\int_0^1(\ln x)^n\,dx=(-1)^n n!$ by $x=e^{-t}$.
 \end{enumerate}
 
-\section{Pedagogy}
-Worked $\to$ faded $\to$ interleaved easy drills. Chat Flow 1.
-
-\section{Worked example --- \texttt{U14-D01} (\texttt{yang:2.4})}
+\section{The reduction}
+For an integer $n\ge 0$,
 \[
-\int_{0}^{\infty}x^{5}e^{-x}\,dx.
+J_n=\int_0^{\infty}x^n e^{-x}\,dx.
 \]
-By the factorial formula: $5!=120$.
+The base is $J_0=\int_0^{\infty}e^{-x}\,dx=1$. For $n\ge 1$, parts with $u=x^n$ and $dv=e^{-x}\,dx$ has boundary term 0 at both ends, and
+\[
+J_n=n J_{n-1}.
+\]
+Unroll: $J_n=n!$. The index drops by one each time. Stop at 0.
 
-\section{Faded example}
-Try U14-D03: $\int_{0}^{1}(\ln x)^{3}\,dx=(-1)^{3}3!=-6$.
+\section{Worked unroll}
+$J_1=1$. \texttt{U14-D10} is $J_2=2\cdot 1=2$. \texttt{U14-D02} is $J_3=3\cdot 2=6$. \texttt{U14-D09} is $J_4=4\cdot 6=24$. \texttt{U14-D01} is $J_5=5\cdot 24=120$.
+
+\texttt{U14-D05} expands $(x+1)^2 e^{-x}=x^2 e^{-x}+2x e^{-x}+e^{-x}$, so the value is $J_2+2J_1+J_0=2+2+1=5$. \texttt{U14-D06} is the same $J_2$ reflected to $(-\infty,0]$ by $x\mapsto -x$, value 2.
+
+\section{Faded --- a substitution, not a reduction}
+\texttt{U14-D08} is $\int_0^{\infty}x^5 e^{-x^2}\,dx$. Let $u=x^2$. Then $x^5\,dx=\frac12 u^2\,du$, and the integral is $\frac12 J_2=1$. The power of the exponential changed, so the plain factorial reduction does not apply until after the substitution. \texttt{U14-D07} is the same idea with $u=\sqrt x$.
+
+\section{Logarithms on $[0,1]$}
+Let $x=e^{-t}$. Then $\int_0^1(\ln x)^n\,dx=(-1)^n J_n=(-1)^n n!$.
+\texttt{U14-D04} is $n=2$, value $2$. \texttt{U14-D03} is $n=3$, value $-6$. \texttt{U14-D11} is $n=4$, value $24$. The sign is the only extra step. The reduction is the one already used for $J_n$.
 
 \section{Drill pointers}
-See \texttt{drills.tex} / \texttt{drills.md}. SymPy feed: \texttt{verify/drills\_unit14.json}.
+See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit14.json}.
 
+\section*{On a miss}
+Teach this file. Write $J_n=n J_{n-1}$ and the base $J_0=1$, then unroll. If the exponential is $e^{-x^2}$ or $e^{-\sqrt x}$, substitute before you quote a factorial. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}
