@@ -566,6 +566,7 @@ from pack_checks_r1_rem import R1_REM_CHECKS, R1_REM_PACK_IDS
 from pack_checks_r1_wave3 import R1_WAVE3_CHECKS, R1_WAVE3_PACK_IDS
 from pack_checks_r2_rem import R2_REM_CHECKS, R2_REM_PACK_IDS
 from pack_checks_r2_wave3 import R2_WAVE3_CHECKS, R2_WAVE3_PACK_IDS
+from pack_checks_r2_wave4 import R2_WAVE4_CHECKS, R2_WAVE4_PACK_IDS
 from pack_checks_r3_dichotomy import DICHOTOMY_CHECKS, DICHOTOMY_PACK_IDS
 from pack_checks_tournament import TOURNAMENT_CHECKS, TOURNAMENT_PACK_IDS
 from pack_checks_wave import WAVE_CHECKS, WAVE_PACK_IDS
@@ -579,6 +580,7 @@ EXTRA_PACK_IDS = (
     + R1_WAVE3_PACK_IDS
     + R2_REM_PACK_IDS
     + R2_WAVE3_PACK_IDS
+    + R2_WAVE4_PACK_IDS
 )
 
 EXTRA_CHECKS = (
@@ -628,4 +630,4 @@ EXTRA_CHECKS = (
     check_r1_2024_q26,
     check_r1_2024_q28,
     check_r1_2024_q30,
-) + WAVE_CHECKS + DICHOTOMY_CHECKS + TOURNAMENT_CHECKS + R1_REM_CHECKS + R1_WAVE3_CHECKS + R2_REM_CHECKS + R2_WAVE3_CHECKS
+) + WAVE_CHECKS + DICHOTOMY_CHECKS + TOURNAMENT_CHECKS + R1_REM_CHECKS + R1_WAVE3_CHECKS + R2_REM_CHECKS + R2_WAVE3_CHECKS + R2_WAVE4_CHECKS
