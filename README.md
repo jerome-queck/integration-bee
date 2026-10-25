@@ -28,7 +28,7 @@ A mark may set `extract.gap` to a heading in `docs/techniques/beyond-yang.md`, a
 
 The session file is `session.json` in the data directory. One replace holds the phase, the skip offer, declined ids, the coverage flag, and the per-node dosage. Set `IB_DATA_DIR`, or leave the files in `trackers/live`. `progress.local.json` and `trackers/live/` are gitignored.
 
-`problems/records.jsonl` is the contest catalog. `problems list` and `problems select` hide answers. A `sympy` row is a Round 1 integral whose layout reading was proved against the cited mark scheme. The companion sends `extract.final_answer` and does not send `verdict`. A `manual` row is a cited answer SymPy has not proved, and the companion judges it. An `unchecked` row has no printed answer and must not be invented. Unit drills are SymPy-checked too.
+`problems/records.jsonl` is the contest catalog. `problems list` and `problems select` hide answers. A `sympy` row is a resource-pack integral whose layout reading was proved against the cited mark scheme. The companion sends `extract.final_answer` and does not send `verdict`. A `manual` row is a cited answer SymPy has not proved, and the companion judges it. An `unchecked` row has no printed answer and must not be invented. Unit drills are SymPy-checked too.
 
 `make check` runs `verify/run.sh`. That script drives the turn contract, including aptitude, confirm, cover, and the gap index.
 
@@ -46,6 +46,6 @@ People changing this pack use the checks below. Learners do not.
 4. Teach from `units/` with the files in `templates/`.
 5. The Yang Topics Guide, 2nd edition, is `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`. Attribution is in `sources/user/README.md`.
 6. Contest and Yang problems are `problems/records.jsonl`. `problems list` hides answers. A mark still goes through `turn apply`.
-7. `scripts/recover_pack_math.py` rereads the committed Round 1 PDFs and rewrites a row only when SymPy proves the layout reading. `--write` is the whole catalog. Rows that do not prove stay `manual` or `unchecked`. PyMuPDF is required for that script. `make check` re-proves stored rows and does not open the PDFs.
+7. `scripts/recover_pack_math.py` rereads the committed Round 1, Round 2, and Round 3 PDFs and rewrites a row only when SymPy proves the layout reading. `--write` is the whole catalog. Rows that do not prove stay `manual` or `unchecked`. `R1-2024-Q01` stays manual. PyMuPDF is required for that script. `make check` re-proves stored rows and does not open the PDFs.
 
 Syllabus links are in `syllabus-map.md`. The skill tree is `skill-tree.md`.

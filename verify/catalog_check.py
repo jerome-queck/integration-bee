@@ -19,8 +19,11 @@ CLI = ROOT / "scripts" / "control-integration-bee"
 
 def mutate(rows: list[dict], name: str) -> None:
     if name == "invented-sympy":
-        rows[0]["answer_sympy"] = "1"
-        return
+        for row in rows:
+            if row.get("verify") != "sympy":
+                row["answer_sympy"] = "1"
+                return
+        raise SystemExit("no unproved row")
     if name == "missing-cite":
         for row in rows:
             if row.get("verify") == "manual":
