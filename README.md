@@ -24,11 +24,13 @@ After confirm, continue with `{"kind":"teach"}`. `coach.detail`, `coach.approach
 
 `turn apply` is the only writer of learner state. Kinds are empty, teach, mark, mock-start, mock-finish, aptitude, confirm, and cover. `confirm` is the only new writer of `skipped`, and only for ids in the open offer. `progress tick` can still set `skipped` by hand.
 
+A mark may set `extract.gap` to a heading in `docs/techniques/beyond-yang.md`, and `say` names that file. `turn apply` stores the id on the attempt and does not write the file.
+
 The session file is `session.json` in the data directory. One replace holds the phase, the skip offer, declined ids, the coverage flag, and the per-node dosage. Set `IB_DATA_DIR`, or leave the files in `trackers/live`. `progress.local.json` and `trackers/live/` are gitignored.
 
 `problems/records.jsonl` is the contest catalog. `problems list` and `problems select` hide answers. A `manual` row is a cited answer the companion judges. An `unchecked` row has no printed answer and must not be invented. Pack rows are not SymPy-checked. Unit drills are.
 
-`make check` runs `verify/run.sh`. That script drives the turn contract, including aptitude, confirm, and cover.
+`make check` runs `verify/run.sh`. That script drives the turn contract, including aptitude, confirm, cover, and the gap index.
 
 ## Learner
 

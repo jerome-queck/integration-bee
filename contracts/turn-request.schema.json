@@ -5,7 +5,8 @@
   "mark": {
     "required": ["kind", "problem_id", "source", "extract"],
     "source": ["photo", "typed"],
-    "extract": ["final_answer"]
+    "extract": ["final_answer"],
+    "extract_optional": ["method_note", "gap"]
   },
   "mock-start": {
     "pack": ["mock01", "pdf-round1"],

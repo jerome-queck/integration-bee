@@ -211,6 +211,7 @@ def record_attempt(
     note: str,
     tags: list[str],
     submitted: str | None = None,
+    gap: str | None = None,
 ) -> dict:
     attempts = read_json(directory, "attempts")
     heat = read_json(directory, "heatmap")
@@ -232,6 +233,8 @@ def record_attempt(
     }
     if submitted is not None:
         item["submitted"] = submitted
+    if gap:
+        item["gap"] = gap
     err = model.attempt_problem(item)
     if err:
         die(err)
@@ -726,10 +729,29 @@ def read_turn(path: str) -> dict:
     return body
 
 
+def fill_gap(directory: Path, problem_id: str, gap: str) -> None:
+    attempts = read_json(directory, "attempts")
+    found = None
+    for item in attempts["items"]:
+        if item.get("problem_id") == problem_id:
+            found = item
+    if found is None:
+        die("gap fill has no attempt", 2)
+    found["gap"] = gap
+    err = model.attempt_problem(found)
+    if err:
+        die(err, 2)
+    write_json(directory, "attempts", attempts)
+
+
 def finish_plan(directory: Path, plan: dict, fmt: str) -> int:
+    effects = plan.get("effects") or {}
+    attempt = effects.get("attempt")
+    gap_fill = effects.get("gap_fill")
+    if attempt and gap_fill:
+        die("attempt and gap_fill are both set", 2)
     if plan["exit"] == 2:
         die(plan["error"] or "turn refused", 2)
-    attempt = (plan.get("effects") or {}).get("attempt")
     if attempt:
         drills = load_drills()
         row = turn_contract.find_drill(drills, attempt["problem_id"]) or {"id": attempt["problem_id"]}
@@ -740,7 +762,10 @@ def finish_plan(directory: Path, plan: dict, fmt: str) -> int:
             attempt["note"],
             attempt["tags"],
             attempt.get("submitted"),
+            attempt.get("gap"),
         )
+    if gap_fill:
+        fill_gap(directory, gap_fill["problem_id"], gap_fill["gap"])
     apply_journal(directory, plan.get("journal"))
     apply_ledger(directory, plan.get("ledger"))
     apply_sticky(directory, plan.get("sticky"))

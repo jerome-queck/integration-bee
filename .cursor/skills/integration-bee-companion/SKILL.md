@@ -37,11 +37,15 @@ Send `{"kind":"teach"}`. Obey `say`. Teach from `drill.teaching`. When `coach.de
 
 ## Miss
 
-On a miss, teach the gap from `drill.teaching` and from `docs/techniques/beyond-yang.md`. If that unit note does not contain the move, add the move there. Never treat `answer_plain` or a worked solution as checked unless `verify` is sympy or the id is a unit drill graded by the CLI. Do not invent an answer for `unchecked`.
+On a miss, teach the file named in `say`. That file is one unit note or one technique note. `turn apply` stores `extract.gap` on the attempt and does not write that file. A study session does not edit a teaching note. If the named note lacks the move, add it in a later commit to that same file, using an original example or an existing drill id. Do not invent an unchecked answer or copy a contest answer.
+
+The gap ids are the six headings in `docs/techniques/beyond-yang.md`: reflection, recurrence, weierstrass, floor, introduce-constant, and formats. Before the mark, read that index only to choose an id. A wrong final answer does not store `method_note`. A correct final answer with a method gap needs both `extract.gap` and `extract.method_note`. An unknown id exits 2 and writes nothing.
+
+Never treat `answer_plain` or a worked solution as checked unless `verify` is sympy or the id is a unit drill graded by the CLI. Do not invent an answer for `unchecked`.
 
 ## Photo
 
-Read the image. Set `source` to `photo` and put the expression you read in `extract.final_answer`. If the value matches and the method does not, put the gap in `extract.method_note`. `turn apply` stores that gap as one mark row with `answer_ok` true and `method_ok` false, and as one technique card. It still appends the journal note. If the problem has no SymPy answer, set `verdict` from `past/samples/answers_feed.json` or from the solutions PDF named in the mock result. If `on_disk` is false, say so and mark a concept drill. Do not ask the learner to.
+Read the image. Set `source` to `photo` and put the expression you read in `extract.final_answer`. If the value matches and the method does not, put the diagnosis in `extract.method_note`. When that diagnosis is one of the six headings, also set `extract.gap` to that heading. `turn apply` stores the method gap as one mark row with `answer_ok` true and `method_ok` false, and as one technique card. It still appends the journal note. If the problem has no SymPy answer, set `verdict` from `past/samples/answers_feed.json` or from the solutions PDF named in the mock result. If `on_disk` is false, say so and mark a concept drill. Do not ask the learner to.
 
 ## Contest catalog
 
@@ -51,7 +55,7 @@ When `verify` is `manual`, compare the learner's answer with `answer_plain` and 
 
 When `verify` is `unchecked`, the source prints no answer. Say so. Do not invent an answer and do not send `verdict`.
 
-Read `docs/techniques/beyond-yang.md` when the integral uses a recurrence, a floor function, a t-substitution, a reflection, differentiating under the integral sign, or a Round 2 or Round 3 game format. Yang is one source among others.
+Read `docs/techniques/beyond-yang.md` before a mark when the move is a recurrence, a floor function, a t-substitution, a reflection, an introduced constant, or a Round 2 or Round 3 format. The six headings are the only gap ids. Yang is one source among others.
 
 ## Timed mock
 

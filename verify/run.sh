@@ -87,6 +87,10 @@ echo "== problem catalog =="
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail yang-invented || fail=1
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail dropped-record || fail=1
 
+echo "== gap index =="
+"$PY" "$ROOT/verify/gap_index.py" || fail=1
+"$PY" "$ROOT/verify/gap_index.py" --expect-fail extra-file || fail=1
+
 echo "== turn contract =="
 "$PY" "$ROOT/verify/turn_contract_check.py" || fail=1
 
