@@ -16,7 +16,7 @@ Guide section 1.6 is this move. The syllabus lists it in section 1, so it is an 
 \end{itemize}
 \section{Learning goals}
 Turn a rational function of sine and cosine into a rational function of $t$.
-The substitution is $t=\tan(x/2)$. Check the endpoints before you expand. A plain sine power is a reduction, unit 20, not this substitution. A rational function of $\tan x$ with a $\sec^2 x$ already present is $t=\tan x$, which is unit 09's ordinary substitution.
+The substitution is $t=\tan(x/2)$. Check the endpoints before you expand. Refuse the $[0,\pi]$ value on a shorter interval, and refuse a definite value when the blank wants an antiderivative. A plain sine power is a reduction, unit 20, not this substitution. A rational function of $\tan x$ with a $\sec^2 x$ already present is $t=\tan x$, which is unit 09's ordinary substitution.
 
 \section{The three replacements}
 The half-angle formulas give
@@ -43,24 +43,32 @@ so the integrand collapses to $2/(1+t)^2$.
 \[
 \int_0^1\frac{2}{(1+t)^2}\,dt=\Bigl[\frac{-2}{1+t}\Bigr]_0^1=1.
 \]
-That is the stored answer.
+That is the stored answer. The worked dose stops there.
 
-The indefinite integral of the same integrand is stored as \texttt{U26-D04}, $\tan x-\sec x$. The half-angle antiderivative $-2/(1+\tan(x/2))$ equals that expression plus 1 on $(0,\pi)$. Either form is valid. The drill stores $\tan x-\sec x$.
-
-\section{A definite pattern --- \texttt{U26-D02}}
-For $a>|b|$,
+\section{Faded --- \texttt{U26-D08}}
 \[
-\int_0^{\pi}\frac{dx}{a+b\cos x}=\frac{\pi}{\sqrt{a^2-b^2}}.
+\int_0^{\pi/2}\frac{dx}{2+\sin x}.
 \]
-The derivation is the same substitution. As $x$ runs over $[0,\pi)$, $t=\tan(x/2)$ runs over $[0,\infty)$, and
+The blank is the pair of limits in $t$. They are $0$ and $1$, not $0$ and $\infty$. After that line is written, uncover the stored answer $\sqrt{3}\,\pi/9$.
+
+\section{Bare --- \texttt{U26-D02}}
+Set
+\[
+\int_0^{\pi}\frac{dx}{2+\cos x}
+\]
+and show nothing else. The bare dose hides $a$ and $b$. After a line is written, uncover $a=2$, $b=1$, and
+\[
+\int_0^{\pi}\frac{dx}{a+b\cos x}=\frac{\pi}{\sqrt{a^2-b^2}}
+\]
+for $a>|b|$. The stored answer is $\pi/\sqrt{3}$. The feed prints $\sqrt{3}\,\pi/3$.
+
+As $x$ runs over $[0,\pi)$, $t=\tan(x/2)$ runs over $[0,\infty)$, and
 \[
 a+b\cos x=\frac{(a-b)t^2+(a+b)}{1+t^2}.
 \]
-The $1+t^2$ cancels the factor in $dx$, and
-\[
-\int_0^\infty\frac{2\,dt}{(a-b)t^2+(a+b)}=\frac{\pi}{\sqrt{a^2-b^2}}.
-\]
-\texttt{U26-D02} is $a=2$, $b=1$, so the value is $\pi/\sqrt{3}$. \texttt{U26-D03} is $a=3$, $b=2$, value $\pi/\sqrt{5}$. \texttt{U26-D05} is $a=5$, $b=4$, value $\pi/3$. The hypothesis $a>|b|$ keeps the denominator from vanishing. At $x=\pi$ the half-angle tangent is unbounded, so the definite integral is the improper integral in $t$, which converges.
+The factor $1+t^2$ cancels the factor in $dx$. The hypothesis $a>|b|$ keeps the denominator from vanishing. At $x=\pi$ the half-angle tangent is unbounded, so the definite integral is the improper integral in $t$.
+
+\texttt{U26-D03} is $a=3$, $b=2$, stored value $\pi/\sqrt{5}$. The feed prints $\sqrt{5}\,\pi/5$. \texttt{U26-D05} is $a=5$, $b=4$, stored value $\pi/3$.
 
 \section{Both sine and cosine --- \texttt{U26-D06}}
 \[
@@ -72,25 +80,36 @@ Here $t$ runs from 0 to 1. The numerator $2\,dt/(1+t^2)$ cancels against
 \]
 and the integral is $\int_0^1 dt/(1+t)=\ln 2$. That is the stored answer.
 
-\section{Faded step --- \texttt{U26-D08}}
+\section{Refusal --- a shorter interval, or an antiderivative}
+\texttt{U26-D07} is the integrand of \texttt{U26-D02} on $[0,\pi/3]$, not on $[0,\pi]$. Refuse $\pi/\sqrt{3}$. The upper limit in $t$ is $\tan(\pi/6)=1/\sqrt{3}$, which is finite, so the improper integral on $[0,\infty)$ does not apply. The stored value is
 \[
-\int_0^{\pi/2}\frac{dx}{2+\sin x}.
+\frac{2\sqrt{3}}{3}\arctan\frac{1}{3}.
 \]
-Put $t=\tan(x/2)$ again. The limits are $0$ and $1$, not $0$ and $\infty$. The stored answer is $\sqrt{3}\,\pi/9$. \texttt{U26-D07} shortens the upper limit of \texttt{U26-D02} to $\pi/3$. Do not quote the full $[0,\pi]$ formula when the interval is shorter.
+
+\texttt{U26-D04} is the indefinite integral of the integrand in \texttt{U26-D01}. Refuse the definite value $1$. The stored antiderivative is $\tan x-\sec x$. On $(0,\pi)$ the half-angle form differs from that expression by the constant $1$:
+\[
+\tan x-\sec x=-\frac{2}{1+\tan(x/2)}+1.
+\]
+The drill stores $\tan x-\sec x$.
+
+A pure sine power is unit 20. \texttt{U20-D01} stores $3\pi/16$. A factor $\sec^2 x$ that is already a derivative is \texttt{U29-D08}, stored $1$. Refuse $t=\tan(x/2)$ on those drills.
 
 \section{The early pass}
 Unit 09 works one integral before this drill set. On $[0,\pi/3]$,
 \[
 \int\frac{dx}{1+\cos x}=\tan\frac x2,
 \]
-and the definite value is $\sqrt{3}/3$. That value is not one of \texttt{U26-D01} through \texttt{U26-D08}. The same cancellation, $1+\cos x=2/(1+t^2)$, is the pattern to recognise. A miss of the substitution still teaches this file, then returns to that early integral if the limits were the part that failed.
+and the definite value is $\sqrt{3}/3$. That value is not one of \texttt{U26-D01} through \texttt{U26-D08}. The same cancellation, $1+\cos x=2/(1+t^2)$, is the pattern to recognise. A miss of the substitution still teaches this file, then returns to that early integral if the limits were the part that failed. The early-pass blank writes the limits of \texttt{U26-D01}. The faded dose inside this file is \texttt{U26-D08}.
 
 \section{What this is not}
 A reduction $I_n=((n-1)/n)I_{n-2}$ is unit 20. Adding a reflected copy is unit 10. Introducing a constant in a rational function of $x$ is \texttt{docs/techniques/introduce-constant.md}. If the integrand is not rational in sine and cosine, this substitution makes a harder integral. A rational function of $\tan x$ that already contains $\sec^2 x$ is $u=\tan x$, unit 09, not $t=\tan(x/2)$.
+
+\section{Dose}
+Worked reads \texttt{U26-D01}, then the faded limits on \texttt{U26-D08}, then sets \texttt{U26-D02}. Faded gives only those two limits. Bare sets \texttt{U26-D02} and hides $a$ and $b$. Quoting the $[0,\pi]$ value on a shorter interval opens the refusal and sets \texttt{U26-D07}. A definite number written as an antiderivative opens the refusal and sets \texttt{U26-D04}.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit26.json}.
 
 \section*{On a miss}
-Teach this file. Write the three replacements, change the limits, and simplify before you expand. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file. Write the three replacements, change the limits, and simplify before you expand. If the interval is shorter than $[0,\pi]$, set \texttt{U26-D07}. If the blank wants $+C$, differentiate \texttt{U26-D04}. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

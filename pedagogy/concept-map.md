@@ -63,14 +63,14 @@ The card states the move. Stored numbers stay in the unit.
 | `intermediate-trig-sub-ch2` | 2.7 | `trigonometric.md` | The three-row radical table. |
 | `advanced-trig-integrals` | 5.2 | `trigonometric.md` | Unit 29 works `U29-D04`, fades `U29-D03`, and sets bare `U29-D06`. Secant stays `U29-D05`. |
 | `advanced-trig-substitution` | 3.4 | `trigonometric.md` | \(\sec\), \(\sinh\), or \(\tan\) after the basic table is solid. |
-| `weierstrass` | 4.5 | `trigonometric.md` | The three replacements and an original \(\int_0^{\pi/2} dx/(2+\cos x)=\pi\sqrt{3}/9\). Unit 26 is the miss file. |
+| `weierstrass` | 4.5 | `trigonometric.md` | The three replacements and an original \(\int_0^{\pi/2} dx/(2+\cos x)=\pi\sqrt{3}/9\). Unit 26 works `U26-D01`, fades `U26-D08`, and sets bare `U26-D02`. `U26-D07` refuses the full-interval value. |
 | `wallis` | 3.3 | `trigonometric.md` | \(I_n=((n-1)/n)I_{n-2}\). `U20-D01` is \(I_4=3\pi/16\). Even, odd, and alternating speed unrolls are in the unit note. |
 | `periodicity` | 3.7 | `trigonometric.md` | Full-period products. `U23-D01` is the stored pair. |
 | `advanced-kings-queens` | 4.4 | `symmetry-kings.md` | The identity is on the card. Further copies stay in unit 25. The constant-complement speed minute is in that unit. |
 | `infinite-functions` | 2.8 | `series.md` | Closed form before integrating. Differentiating the sum is unit 17. |
-| `taylor-series` | 6.2 | `series.md` | Termwise log series equaling the parts value \(2\ln 2-1\). Endpoint limits stay in unit 32. |
-| `advanced-gaussian` | 5.3 | `gaussian-dirichlet.md` | Quote \(\sqrt{\pi}\), then scale. Original \(\int_0^{\infty} e^{-4x^2}\,dx=\sqrt{\pi}/4\). |
-| `dirichlet` | 5.4 | `gaussian-dirichlet.md` | Quote `U30-D05`, then scale by \(u=bx\). |
+| `taylor-series` | 6.2 | `series.md` | Termwise log series equaling the parts value \(2\ln 2-1\). Unit 32 works `U32-D01`, fades `U32-D02`, and sets bare `U32-D04`. |
+| `advanced-gaussian` | 5.3 | `gaussian-dirichlet.md` | Quote \(\sqrt{\pi}\), then scale. Original \(\int_0^{\infty} e^{-4x^2}\,dx=\sqrt{\pi}/4\). Unit 30 works `U30-D01`, fades `U30-D04`, and sets bare `U30-D06`. |
+| `dirichlet` | 5.4 | `gaussian-dirichlet.md` | Quote `U30-D05`, then scale by \(u=bx\). Bare `U30-D06` stores the same \(\pi/2\) after one parts step. `U30-D07` refuses that value on the damped sine. |
 | `intermediate-partial-fractions` | 3.6 | `partial-fractions.md` | A repeated factor needs two terms. |
 | `feynman` | 6.7 | `algebra.md` | The Adaptive table names this node. Fixed interval versus a moving endpoint. The unit 34 case \(I'(2)=6\) stays the unit's example. |
 | `modified-textbook` | 2.1 | `habits.md` | Scale of `U12-D01` on \([0,1]\), value \(e^e-e\). The four textbook drills stay in unit 12. |
@@ -79,9 +79,9 @@ The card states the move. Stored numbers stay in the unit.
 | `sneaky-symmetry` | 2.9 | `habits.md` | Three-factor shift on \([1,3]\), value \(0\). `U18-D04` stays the even warning, value \(\pi^3/96\). |
 | `sneaky-product-rule` | 2.10 | `habits.md` | Half the coefficient of `U18-D06` on \([1,4]\), value \(2e^4-e\). |
 | `speed-bashing` | 3.8 | `habits.md` | Two-term split on \([0,1]\), value \(\frac12+\ln 2\). `U23-D06` and `U23-D07` stay in the unit. |
-| `complexifying` | 6.3 | `habits.md` | Decay \(2\) in place of the stored decay \(1\), value \(2/5\). `U32-D05` stays \(1/2\). |
-| `ninja-substitution` | 6.4 | `habits.md` | \(\int_0^1 \arctan x/(1+x^2)\,dx=\pi^2/32\). `U33-D04` stays the stored logarithm. |
-| `inversion` | 6.5 | `habits.md` | Finite copy of `U33-D08` on \([0,1]\), value \(1/4\). |
+| `complexifying` | 6.3 | `habits.md` | Decay \(2\) in place of the stored decay \(1\), value \(2/5\). Unit 32 works `U32-D05`, fades `U32-D07`, and sets bare `U32-D08`. `U32-D05` stays \(1/2\). |
+| `ninja-substitution` | 6.4 | `habits.md` | \(\int_0^1 \arctan x/(1+x^2)\,dx=\pi^2/32\). Unit 33 works `U33-D04`, fades `U33-D03`, and sets bare `U33-D02`. `U33-D01` refuses the tangent substitution. |
+| `inversion` | 6.5 | `habits.md` | Finite copy of `U33-D08` on \([0,1]\), value \(1/4\). Unit 33 works `U33-D06`, fades `U33-D07`, and sets bare `U33-D05`. `U33-D08` is the refusal. |
 | `modified-famous` | 6.8 | `habits.md` | Gaussian scale \(e^{-9x^2}\) equals \(\sqrt{\pi}/6\), and \(\sin(3x)/x\) equals \(\pi/2\). Series values stay the ones unit 35 prints. |
 | `unique-tricks` | 6.9 | `habits.md` | Parameter from \(0\) to \(4\), value \(\ln 5\). `U36-D03` stays \(G\). |
 
