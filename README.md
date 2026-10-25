@@ -161,7 +161,7 @@ After confirm, continue with `{"kind":"teach"}`. `coach.detail`, `coach.approach
 
 `turn apply` is the only writer of learner state. Kinds are empty, teach, mark, mock-start, mock-finish, aptitude, confirm, and cover. `confirm` is the only new writer of `skipped`, and only for ids in the open offer. `progress tick` can still set `skipped` by hand.
 
-A mark may set `extract.gap` to a heading in `docs/techniques/beyond-yang.md`, and `say` names that file. `turn apply` stores the id on the attempt and does not write the file.
+A mark may set `extract.gap` to a heading in `docs/techniques/beyond-yang.md`, and `say` names that file. `turn apply` stores the id on the attempt and does not write the file. The lesson is that file: a unit `teaching.tex`, or one note under `docs/techniques/`. The Yang Topics Guide is one source among the syllabus, the Techniques Guide, and these notes.
 
 The session file is `session.json` in the data directory. One replace holds the phase, the skip offer, declined ids, the coverage flag, and the per-node dosage. Set `IB_DATA_DIR`, or leave the files in `trackers/live`. `progress.local.json` and `trackers/live/` are gitignored.
 
@@ -181,7 +181,7 @@ People changing this pack use the checks below. Learners do not.
 2. Point Git at the drift hook once with `make hooks`.
 3. Run `make check` before a pull request. CI runs the same command. Details are in `AGENTS.md`.
 4. The unpacked contest PDFs and the site PDFs are committed reference copies under `sources/past/` and `sources/`. The contest list is `past/inventory.json`. Do not commit `Resource_pack.zip`.
-5. Teach from `units/` with the files in `templates/`.
+5. Teach from `units/` with the files in `templates/`. The six contest gaps also have notes in `docs/techniques/`. A study session does not edit a teaching note.
 6. The Yang Topics Guide, 2nd edition, is `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`. Attribution is in `sources/user/README.md`.
 7. Contest and Yang problems are `problems/records.jsonl`. `problems list` hides answers. A mark still goes through `turn apply`.
 8. `scripts/recover_pack_math.py` rereads the committed Round 1, Round 2, and Round 3 PDFs and rewrites a row only when SymPy proves the layout reading. `--write` is the whole catalog. Rows that do not prove stay `manual` or `unchecked`. `R1-2024-Q01` stays manual. PyMuPDF is required for that script. `make check` re-proves stored rows and does not open the PDFs.

@@ -1,19 +1,54 @@
-% Unit 29 — Advanced Trig Integrals
+% Unit 29 — Advanced trig integrals
 \input{technique-note.tex}
 \title{Integration Bee --- Unit 29:\\ Advanced Trig Integrals}
-\author{UK Uni Integration Bee prep\\ Yang §5.2 Advanced Trig Integrals}
+\author{UK Uni Integration Bee prep\\ Save a factor, or reduce}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:5.2}; techniques: \texttt{advanced-trig-integrals}.
+Tags: \texttt{yang:5.2}; techniques: \texttt{advanced-trig-integrals}.
+An odd power wants one factor saved for a substitution. An even power on $[0,\pi/2]$ wants the reduction from unit 20. A secant wants the standard antiderivative $\ln|\sec x+\tan x|$, checked by differentiation. Yang \S5.2 arranges these in one chapter. The decisions are the earlier units.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §5.2 Advanced Trig Integrals
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 09 for $\sin^2$ and $\tan^2$. Unit 20 for $I_n=((n-1)/n)I_{n-2}$.
+\item Syllabus \S1 trig integrals.
+\item Yang Topics Guide 2nd Ed \S5.2 Advanced Trig Integrals.
 \end{itemize}
-\section{Learning goals} Higher trig powers/products.
+\section{Learning goals}
+\begin{enumerate}
+  \item If a factor $\sin x\,dx$ or $\cos x\,dx$ is the derivative of the other function, substitute.
+  \item If every power is even, reduce or use a double angle.
+  \item Know $\int\sec x\,dx=\ln|\sec x+\tan x|+C$ because its derivative is $\sec x$.
+\end{enumerate}
+
+\section{Worked odd power --- \texttt{U29-D04}}
+\[
+\int_0^{\pi/2}\sin x\cos^5 x\,dx.
+\]
+Let $u=\cos x$. Then $du=-\sin x\,dx$, and the limits run from 1 to 0.
+\[
+\int_1^0 -u^5\,du=\int_0^1 u^5\,du=\frac16.
+\]
+\texttt{U29-D03} is $\int\tan x\sec^2 x\,dx$. Let $u=\tan x$. The stored antiderivative is $\frac12\tan^2 x$. \texttt{U29-D07} is $\int\sin 2x\cos 2x\,dx=\frac14\sin^2 2x$, by $u=\sin 2x$.
+
+\section{Worked even power --- \texttt{U29-D01}}
+\[
+\int_0^{\pi/2}\sin^6 x\,dx.
+\]
+Unit 20 gives $I_6=(5/6)I_4$ and $I_4=3\pi/16$, so $I_6=5\pi/32$. That is the stored answer. \texttt{U29-D06} is $\int_0^{\pi/2}\cos^2 x\sin^4 x\,dx$. Write $\sin^2 x\cos^2 x\cdot\sin^2 x$ or reduce both even powers. The stored value is $\pi/32$. A double-angle on \texttt{U20-D02} is the smaller version of this product.
+
+\section{Secant and tangent}
+\texttt{U29-D08} is $\int_0^{\pi/4}\sec^2 x\,dx=\tan x\big|_0^{\pi/4}=1$.
+\texttt{U29-D02} is $\int_0^{\pi/4}\tan^2 x\,dx=\int_0^{\pi/4}(\sec^2 x-1)\,dx=1-\pi/4$.
+\texttt{U29-D05} is $\int_0^{\pi/3}\sec x\,dx$. Differentiate $\ln|\sec x+\tan x|$:
+\[
+\frac{\sec x\tan x+\sec^2 x}{\sec x+\tan x}=\sec x.
+\]
+The definite value is $\ln(2+\sqrt{3})-\ln 1=\ln(2+\sqrt{3})$.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit29.json}.
+
+\section*{On a miss}
+Teach this file. Say whether you saved a factor or reduced an even power. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

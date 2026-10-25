@@ -1,19 +1,62 @@
-% Unit 33 — Ninja Substitution and Inversion
+% Unit 33 — Substitutions that hide, and x maps to 1/x
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 33:\\ Ninja Substitution and Inversion}
-\author{UK Uni Integration Bee prep\\ Yang §§6.4 Ninja Substitution, 6.5 Inversion}
+\title{Integration Bee --- Unit 33:\\ Hidden Substitutions and Inversion}
+\author{UK Uni Integration Bee prep\\ $x=\tan\theta$, and $x=1/t$ on $(0,\infty)$}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:6.4}, \texttt{yang:6.5}; techniques: \texttt{ninja-substitution}, \texttt{inversion}.
+Tags: \texttt{yang:6.4}, \texttt{yang:6.5}; techniques: \texttt{ninja-substitution}, \texttt{inversion}.
+Two moves carry this unit. A substitution can be hidden inside a rational function of $\tan x$ or of $\sqrt{(1-x)/(1+x)}$. Separately, $x=1/t$ on $(0,\infty)$ reflects a integral through $1$, which is the half-line case of unit 10. Yang \S\S6.4--6.5 names them. The substitutions themselves are ordinary.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §§6.4 Ninja Substitution, 6.5 Inversion
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 10 for the sign flip of $\ln x/(1+x^2)$. Unit 26 for a rational function of sine and cosine.
+\item Syllabus \S1 substitution and reflection.
+\item Yang Topics Guide 2nd Ed \S\S6.4 Ninja Substitution, 6.5 Inversion.
 \end{itemize}
-\section{Learning goals} Clever $u$; $x\mapsto 1/x$ inversion.
+\section{Learning goals}
+\begin{enumerate}
+  \item Try $x=\tan\theta$ when you see $1+x^2$ in the denominator and a logarithm or a trig function of $x$ in the numerator.
+  \item On $(0,\infty)$, write the integral at $1/x$ and add the two copies.
+\end{enumerate}
+
+\section{Worked tangent substitution --- \texttt{U33-D04}}
+\[
+I=\int_0^1\frac{\ln(1+x)}{1+x^2}\,dx.
+\]
+Put $x=\tan\theta$, so $\theta$ runs from $0$ to $\pi/4$ and $dx/(1+x^2)=d\theta$. Then $I=\int_0^{\pi/4}\ln(1+\tan\theta)\,d\theta$. The reflection $\theta\mapsto\pi/4-\theta$ uses
+\[
+1+\tan(\pi/4-\theta)=\frac{2}{1+\tan\theta},
+\]
+so $\ln(1+\tan(\pi/4-\theta))=\ln 2-\ln(1+\tan\theta)$. Adding the two copies gives $2I=(\pi/4)\ln 2$, hence $I=\pi\ln 2/8$. That is the stored answer.
+
+\texttt{U33-D01} is the plain substitution $\int_0^1 x/(1+x^2)\,dx=(\ln 2)/2$. No reflection.
+
+\section{A rational trig integral --- \texttt{U33-D02}}
+\[
+\int_0^{\pi/2}\frac{dx}{1+\sin^2 x}=\frac{\pi}{2\sqrt{2}}.
+\]
+Write $\sin^2 x=(1-\cos 2x)/2$, so $1+\sin^2 x=(3-\cos 2x)/2$. The integral becomes $\int_0^{\pi} du/(3-\cos u)$ after $u=2x$. Unit 26 evaluates $\int_0^{\pi} du/(a+b\cos u)=\pi/\sqrt{a^2-b^2}$ for $a>|b|$. Here $a=3$ and $b=-1$, and $\sqrt{9-1}=2\sqrt{2}$.
+
+\section{Worked inversion --- \texttt{U33-D06}}
+\[
+I=\int_0^{\infty}\frac{dx}{(1+x^2)(1+x)}.
+\]
+The substitution $x=1/t$ produces $\int_0^{\infty} t\,dt/((1+t^2)(1+t))$. Add the two copies. The numerators $1$ and $x$ cancel $1+x$:
+\[
+2I=\int_0^{\infty}\frac{dx}{1+x^2}=\frac\pi2,
+\]
+so $I=\pi/4$. \texttt{U33-D05} is $\int_0^{\infty} dx/(1+x^2)=\pi/2$ with no extra factor. \texttt{U33-D07} is $\int_0^{\infty}\ln x/(1+x^2)\,dx=0$: the same substitution sends the integrand to its negative, as in unit 10. \texttt{U33-D08} is elementary, $u=1+x^2$, value $1/2$.
+
+\section{Faded --- \texttt{U33-D03}}
+\[
+\int\frac{dx}{x\sqrt{x^2-1}}.
+\]
+The stored antiderivative is $\arctan\sqrt{x^2-1}$. Differentiate it, or put $\sqrt{x^2-1}=u$.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit33.json}.
+
+\section*{On a miss}
+Teach this file. For a half-line integral, write the copy at $1/x$ before you add. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

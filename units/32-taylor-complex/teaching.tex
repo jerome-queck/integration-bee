@@ -1,19 +1,61 @@
-% Unit 32 — Taylor Series and Complexifying
+% Unit 32 — Series and complex exponentials
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 32:\\ Taylor Series and Complexifying}
-\author{UK Uni Integration Bee prep\\ Yang §§6.2 Taylor Series, 6.3 Complexifying the Integral}
+\title{Integration Bee --- Unit 32:\\ Series and Complex Exponentials}
+\author{UK Uni Integration Bee prep\\ Termwise geometric series, and $\mathrm{Re}\,e^{(a+ib)x}$}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:6.2}, \texttt{yang:6.3}; techniques: \texttt{taylor-series}, \texttt{complexifying}.
+Tags: \texttt{yang:6.2}, \texttt{yang:6.3}; techniques: \texttt{taylor-series}, \texttt{complexifying}.
+A geometric series on $[0,1)$ and Euler's formula $e^{ix}=\cos x+i\sin x$ are standard. Yang \S\S6.2--6.3 packages them as contest moves. Unit 08 is the first geometric integral. This unit says when the closed form is faster than the series, and when the complex exponential replaces two parts steps.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §§6.2 Taylor Series, 6.3 Complexifying the Integral
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 08. The geometric sum $\sum_{n=0}^{N}(-1)^n x^n$ and its limit on $[0,1)$.
+\item Syllabus \S1 series.
+\item Yang Topics Guide 2nd Ed \S\S6.2 Taylor Series, 6.3 Complexifying.
 \end{itemize}
-\section{Learning goals} Termwise Taylor; $\mathrm{Re}/\mathrm{Im}\,e^{ix}$.
+\section{Learning goals}
+\begin{enumerate}
+  \item Integrate a geometric series term by term on $[0,1)$, then take the endpoint as a limit.
+  \item If a closed antiderivative is one substitution, use it. The series explains the number. It is not always the fastest path.
+  \item Replace $e^{ax}\cos bx$ by the real part of $e^{(a+ib)x}$.
+\end{enumerate}
+
+\section{Worked series --- \texttt{U32-D01}}
+\[
+\int_0^1\frac{dx}{1+x}=\ln 2.
+\]
+The antiderivative is the fast path. The series path is the reason the value is the alternating harmonic number:
+\[
+\frac{1}{1+x}=\sum_{n=0}^{\infty}(-1)^n x^n,\qquad 0\le x<1,
+\]
+and $\int_0^1 x^n\,dx=1/(n+1)$, so the integral is $\sum_{n=0}^{\infty}(-1)^n/(n+1)=\ln 2$. At $x=1$ the series converges, and the integral of the limit matches the limit of the integrals.
+
+\texttt{U32-D02} is a polynomial, not an infinite series. Integrate termwise:
+\[
+\int_0^1\Bigl(1-x^2+\frac{x^4}{2}-\frac{x^6}{6}\Bigr)dx=1-\frac13+\frac{1}{10}-\frac{1}{42}=\frac{26}{35}.
+\]
+\texttt{U32-D04} is $\int_0^1 x^3\,dx=1/4$. \texttt{U32-D03} is $\int x e^{x^2}\,dx=\frac12 e^{x^2}$, a substitution. A series for $e^{x^2}$ would be the long way around.
+
+\section{Worked complex exponential --- \texttt{U32-D07}}
+\[
+\int e^x\cos x\,dx.
+\]
+$e^x\cos x$ is the real part of $e^x e^{ix}=e^{(1+i)x}$.
+\[
+\int e^{(1+i)x}\,dx=\frac{e^{(1+i)x}}{1+i}=\frac{1-i}{2}\,e^{(1+i)x}.
+\]
+The real part is $\frac12 e^x(\cos x+\sin x)$, the stored answer. The imaginary part is \texttt{U32-D08}, $\frac12 e^x(\sin x-\cos x)$.
+
+On $[0,\infty)$, \texttt{U32-D05} is $\int_0^{\infty}e^{-x}\cos x\,dx=1/2$ and \texttt{U32-D06} is the sine partner, also $1/2$. Both are
+\[
+\mathrm{Re}\int_0^{\infty}e^{-(1-i)x}\,dx\quad\text{or its imaginary part.}
+\]
+The same two values are \texttt{U30-D08} and \texttt{U30-D07}.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit32.json}.
+
+\section*{On a miss}
+Teach this file. Either write the geometric term and integrate it, or write $e^{(a+ib)x}$ and take the real or imaginary part. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

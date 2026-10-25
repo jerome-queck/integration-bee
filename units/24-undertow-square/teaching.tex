@@ -1,19 +1,63 @@
-% Unit 24 — Undertow and Square-Square
+% Unit 24 — Undertow and denesting
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 24:\\ Undertow and Square-Square}
-\author{UK Uni Integration Bee prep\\ Yang §§4.1 Undertow, 4.2 Square-Square (inventory skips 4.3)}
+\title{Integration Bee --- Unit 24:\\ Undertow and Denesting}
+\author{UK Uni Integration Bee prep\\ Logarithmic derivatives, then Yang \S\S4.1--4.2}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:4.1}, \texttt{yang:4.2}; techniques: \texttt{undertow}, \texttt{square-square}.
+Tags: \texttt{yang:4.1}, \texttt{yang:4.2}; techniques: \texttt{undertow}, \texttt{square-square}.
+Yang \S\S4.1--4.2 names two algebraic moves. Both are visible without that chapter: a logarithmic derivative $f'/f$, and the identity $(\sqrt{x}\pm 1/\sqrt{x})^2=x+2+1/x$ or $x-2+1/x$.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §§4.1 Undertow, 4.2 Square-Square (inventory skips 4.3)
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 01 for $\int f'/f=\ln|f|$, and unit 07 for a product rule hiding in a sum.
+\item Syllabus \S1 algebra and substitution.
+\item Yang Topics Guide 2nd Ed \S\S4.1 Undertow, 4.2 Square-Square. Inventory 4.3 is skipped.
 \end{itemize}
-\section{Learning goals} Undertow ÷$x$; denest square-square.
+\section{Learning goals}
+\begin{enumerate}
+  \item Divide numerator and denominator by a power of $x$ until the numerator is the derivative of the denominator.
+  \item Under a square root, look for $(\sqrt{x}\pm x^{-1/2})^2$ before any substitution.
+\end{enumerate}
+
+\section{Worked undertow --- \texttt{U24-D01}}
+\[
+\int\frac{2x^3-1}{x^4+x}\,dx.
+\]
+Divide numerator and denominator by $x^2$:
+\[
+\frac{2x-x^{-2}}{x^2+x^{-1}}.
+\]
+The denominator is $x^2+1/x$, and its derivative is $2x-1/x^2$. The integrand is that derivative over the function, so the antiderivative is $\ln|x^2+1/x|$. That is the stored answer.
+
+\texttt{U24-D04} is the same division on $(x^2-1)/(x^3+x)$, stored answer $\ln|x+1/x|$. \texttt{U24-D03} needs no division: the numerator $e^x-\sin x$ is the derivative of $e^x+\cos x$, so the integral is $\ln|e^x+\cos x|$.
+
+\section{A square in the denominator --- \texttt{U24-D02}}
+\[
+\int\frac{4x^5-1}{(x^5+x+1)^2}\,dx.
+\]
+The derivative of the inside $x^5+x+1$ is $5x^4+1$, which is not the numerator. The stored antiderivative is $-x/(x^5+x+1)$. Differentiate that guess:
+\[
+\frac{d}{dx}\frac{-x}{x^5+x+1}=\frac{-(x^5+x+1)+x(5x^4+1)}{(x^5+x+1)^2}=\frac{4x^5-1}{(x^5+x+1)^2}.
+\]
+When the denominator is already a square, try $x/f(x)$ or $1/f(x)$ before a partial-fraction attack.
+
+\section{Worked denesting --- \texttt{U24-D07}}
+\[
+\int_1^4\sqrt{x+2+\frac{1}{x}}\,dx.
+\]
+\[
+x+2+\frac{1}{x}=\frac{x^2+2x+1}{x}=\frac{(x+1)^2}{x},
+\]
+so the square root is $(x+1)/\sqrt{x}=\sqrt{x}+1/\sqrt{x}$ on $[1,4]$, where both roots are positive. The integral equals \texttt{U24-D06}:
+\[
+\int_1^4\Bigl(\sqrt{x}+x^{-1/2}\Bigr)dx=\Bigl[\frac23 x^{3/2}+2x^{1/2}\Bigr]_1^4=\frac{20}{3}.
+\]
+\texttt{U24-D08} is the minus sign, stored value $8/3$. \texttt{U24-D05} is the indefinite form of the plus sign.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit24.json}.
+
+\section*{On a miss}
+Teach this file. Either divide by the power of $x$, or multiply inside the square root by $x/x$. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

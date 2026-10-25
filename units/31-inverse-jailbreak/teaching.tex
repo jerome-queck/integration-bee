@@ -1,19 +1,54 @@
-% Unit 31 — Inverse Jailbreaking
+% Unit 31 — Inverses by parts and by area
 \input{technique-note.tex}
-\title{Integration Bee --- Unit 31:\\ Inverse Jailbreaking}
-\author{UK Uni Integration Bee prep\\ Yang §6.1 Inverse Jailbreaking}
+\title{Integration Bee --- Unit 31:\\ Inverses}
+\author{UK Uni Integration Bee prep\\ Parts, or the area of the inverse}
 \date{}
 \begin{document}
 \maketitle
 \section*{Status}
-Yang concept unit. Tags: \texttt{yang:6.1}; techniques: \texttt{inverse-jailbreaking}.
+Tags: \texttt{yang:6.1}; techniques: \texttt{inverse-jailbreaking}.
+Unit 10 already integrates $\arcsin$, $\arctan$, and $\arccos$ on $[0,1]$. This unit is that method on a product $x f^{-1}(x)$, and the area form of the same identity. Yang \S6.1 calls the escape from an inverse ``jailbreaking.'' The tool is still parts.
 \section{Official anchors}
 \begin{itemize}
-\item Yang Topics Guide 2nd Ed §6.1 Inverse Jailbreaking
-(\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
-\item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
+\item Unit 10 and Guide \S1.5, the area identity for an inverse.
+\item Syllabus \S1 parts.
+\item Yang Topics Guide 2nd Ed \S6.1 Inverse Jailbreaking.
 \end{itemize}
-\section{Learning goals} Integrate inverses by parts / geometry.
+\section{Learning goals}
+\begin{enumerate}
+  \item Put the inverse in the $u$ slot. The derivative is algebraic.
+  \item On a definite integral of an inverse with no extra factor, the area identity avoids the remaining square root.
+\end{enumerate}
+
+\section{Worked parts --- \texttt{U31-D01}}
+\[
+\int_0^1\arcsin x\,dx=\frac\pi2-1.
+\]
+This is \texttt{U10-D01}. The area form is shorter to remember. If $f=\sin$ on $[0,\pi/2]$, then
+\[
+\int_0^1\arcsin y\,dy=1\cdot\frac\pi2-\int_0^{\pi/2}\sin x\,dx=\frac\pi2-1.
+\]
+\texttt{U31-D03} is $\int_0^1\arccos x\,dx=1$. \texttt{U31-D02} is $\int_0^1\arctan x\,dx=\pi/4-(\ln 2)/2$. Parts: the boundary term is $\pi/4$, and $\int_0^1 x/(1+x^2)\,dx=(\ln 2)/2$.
+
+\section{A product --- \texttt{U31-D07}}
+\[
+\int_0^1 x\arcsin x\,dx=\frac\pi8.
+\]
+Parts with $u=\arcsin x$ and $dv=x\,dx$ leaves $\int_0^1 x^2/(2\sqrt{1-x^2})\,dx$. The substitution $x=\sin\theta$ turns that into a cosine power on $[0,\pi/2]$. The stored indefinite forms are \texttt{U31-D08}, $x\arcsin x+\sqrt{1-x^2}$, and \texttt{U31-D04}, $x\arctan x-\frac12\ln(1+x^2)$, and \texttt{U31-D06},
+\[
+\int x\arctan x\,dx=\frac{x^2+1}{2}\arctan x-\frac x2.
+\]
+Differentiate \texttt{U31-D06} if the coefficient of $\arctan x$ looks unlikely. It matches.
+
+\section{Faded --- \texttt{U31-D05}}
+\[
+\int_0^{1/2}\arcsin x\,dx.
+\]
+The boundary term is $(1/2)(\pi/6)=\pi/12$. The remaining integral produces $\sqrt{3}/2-1$. The stored value is $\pi/12+\sqrt{3}/2-1$, the same as \texttt{U10-D08}.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit31.json}.
+
+\section*{On a miss}
+Teach this file. Name $u$ as the inverse and write $du$. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}
