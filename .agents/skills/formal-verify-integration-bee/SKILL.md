@@ -5,7 +5,7 @@ description: Check Integration Bee unit order, Round 1 mock readiness, tracker r
 
 # Formal checks for Integration Bee
 
-Two checks. `verify/model.py` is a set of Python predicates over catalogs and tracker records. `verify/formal/` is a TLA+ model of one study session and of two writers sharing one data directory. TLC 1.7.4 checks the model. Read `/statechart` when you read a TLC result or redraw the chart. Do not copy that skill's commands into this file.
+Two checks. `verify/model.py` is a set of Python predicates over catalogs and tracker records. `verify/formal/` is a TLA+ model of one study session and of two writers sharing one data directory. TLC 1.7.4 checks the model. Read the pstack skill `statechart` when you read a TLC result or redraw the chart. Open it from the harness plugin cache named in `README.md`. Do not copy that skill's commands into this file.
 
 ## Catalog predicates
 
@@ -95,7 +95,7 @@ These are findings. Do not delete them to make TLC pass. `make formal` expects e
 
 ### Charts
 
-`verify/formal/charts/session-flow.mmd` is the session. `verify/formal/charts/tracker-writes.mmd` is the tracker, and `charts/bug-1.mmd` through `charts/bug-5.mmd` are the shortest paths TLC found. `charts/tracker-stories.md` is those paths in sentences. `make formal` checks that each chart names the current blob of its spec. After you change a spec and rerun TLC, redraw with `/statechart` and put the new `tla-blob` line back. The last session drawing had 33 states from 128 model states. The last tracker drawing had 45 states from 810 model states.
+`verify/formal/charts/session-flow.mmd` is the session. `verify/formal/charts/tracker-writes.mmd` is the tracker, and `charts/bug-1.mmd` through `charts/bug-5.mmd` are the shortest paths TLC found. `charts/tracker-stories.md` is those paths in sentences. `make formal` checks that each chart names the current blob of its spec. After you change a spec and rerun TLC, redraw with the pstack skill `statechart` and put the new `tla-blob` line back. The last session drawing had 33 states from 128 model states. The last tracker drawing had 45 states from 810 model states.
 
 ### Bounds
 
@@ -105,7 +105,7 @@ One node stands in for the Round 1 gate. `mock_block_reason` is all or nothing, 
 
 | Spec | Code |
 |---|---|
-| `SessionFlow.tla` | `verify/turn_contract.py` `distinct_correct`, `.cursor/skills/integration-bee-companion/SKILL.md` teach, photo, and mock sections, `scripts/control-integration-bee` `practice check`, `progress mistake`, `turn apply`, `mock-start`, `mock-finish` |
+| `SessionFlow.tla` | `verify/turn_contract.py` `distinct_correct`, `.agents/skills/integration-bee-companion/SKILL.md` teach, photo, and mock sections, `scripts/control-integration-bee` `practice check`, `progress mistake`, `turn apply`, `mock-start`, `mock-finish` |
 | `TrackerWrites.tla` | `record_attempt`, `write_json`, `project`, `cmd_tick`, `cmd_mock_start`, `cmd_mock_finish`, `finish_plan` in `scripts/control-integration-bee` |
 
 session_flow_blob: fcb8397f65fe9bcd2f15fc54acf50c0b13987742
@@ -113,4 +113,4 @@ tracker_writes_blob: eb39ca7919c658137f0c57af267560cd2e026877
 
 Move a blob only after `make formal` passes on that file. `git hash-object` prints it. If the spec changes and the blob line does not, `make formal` fails.
 
-`/maintain-formal-verification-skill` is the update path when covered code moves and this file was not rechecked.
+The pstack skill `maintain-formal-verification-skill` is the update path when covered code moves and this file was not rechecked. Read it from the harness plugin cache in `README.md`.

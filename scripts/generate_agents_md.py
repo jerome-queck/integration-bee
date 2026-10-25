@@ -25,20 +25,47 @@ ENFORCERS = [
     ("The check workflow still runs the pack targets", "scripts/check_ci.py"),
 ]
 
+SKILL_NAMES = (
+    "integration-bee-companion",
+    "verify-integration-bee",
+    "formal-verify-integration-bee",
+)
+CANONICAL_SKILL_ROOT = ".agents/skills"
+ADAPTER_ROOTS = (".cursor/skills", ".claude/skills")
+
+HARNESS_MD = """## Harness
+
+Canonical skill files are `.agents/skills/<name>/SKILL.md`. Codex loads that directory. `.cursor/skills/<name>` and `.claude/skills/<name>` are symlinks to the same directory. Cursor and Claude Code load that text. Edit `.agents/skills`. Git must store the symlinks (`core.symlinks=true`, the default on Linux and macOS).
+
+Claude Code reads this file when the repository has no `CLAUDE.md`.
+
+A new person follows one getting-started section in `README.md`: Codex, Claude, or Cursor. Each section lists the Python packages, the TeX and Java packages for `make check`, `scripts/control-integration-bee`, and the pstack plugin install for that harness. The plugin repository is https://github.com/michael-denyer/pstack-claude.
+
+When a row below names a pstack skill, open `skills/<name>/SKILL.md` in the cache for the harness you are running. The version directory is the one the installer created.
+
+| Harness | Skill cache |
+|---|---|
+| Codex | `${CODEX_HOME:-$HOME/.codex}/plugins/cache/pstack-claude/pstack/<version>/skills` |
+| Claude | `${CLAUDE_CODE_PLUGIN_CACHE_DIR:-${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins}/cache/pstack-claude/pstack/<version>/skills` |
+| Cursor | `~/.cursor/plugins/cache/<marketplace>/<plugin>/<version>/skills` |
+
+An installed Codex copy at version 0.9.102 keeps its skills in `~/.codex/plugins/cache/pstack-claude/pstack/0.9.102/skills`. If that file is missing, the person running the agent installs the plugin from the matching `README.md` section and starts a new session.
+"""
+
 SCENARIOS = [
-    ("You change what doctor, practice, drills, problems, progress, turn, or verify prints or records", ".cursor/skills/verify-integration-bee"),
-    ("You change unit order, mock readiness, or tracker writes", ".cursor/skills/formal-verify-integration-bee"),
-    ("You teach, mark a photo, or answer an empty message", ".cursor/skills/integration-bee-companion"),
-    ("The same mistake shows up twice", "pstack skill `correct`"),
-    ("You add a learner-facing command", "pstack skill `create-verification-skill`, then `maintain-verification-skill`"),
-    ("You change `verify/model.py`", "pstack skill `maintain-formal-verification-skill`"),
-    ("The work is large or easy to get wrong", "pstack skill `poteto-mode`"),
+    ("You change what doctor, practice, drills, problems, progress, turn, or verify prints or records", f"{CANONICAL_SKILL_ROOT}/verify-integration-bee"),
+    ("You change unit order, mock readiness, or tracker writes", f"{CANONICAL_SKILL_ROOT}/formal-verify-integration-bee"),
+    ("You teach, mark a photo, or answer an empty message", f"{CANONICAL_SKILL_ROOT}/integration-bee-companion"),
+    ("The same mistake shows up twice", "pstack skill `correct` from the harness plugin cache"),
+    ("You add a learner-facing command", "pstack skill `create-verification-skill`, then `maintain-verification-skill`, from the harness plugin cache"),
+    ("You change `verify/model.py`", "pstack skill `maintain-formal-verification-skill` from the harness plugin cache"),
+    ("The work is large or easy to get wrong", "pstack skill `poteto-mode` from the harness plugin cache"),
     ("You make a one-way design choice", "`docs/decisions/`"),
 ]
 
 
 def features() -> list[str]:
-    folder = ROOT / ".cursor" / "skills" / "verify-integration-bee" / "features"
+    folder = ROOT / CANONICAL_SKILL_ROOT / "verify-integration-bee" / "features"
     return sorted(path.name for path in folder.glob("*.md") if path.name != "README.md")
 
 
@@ -106,9 +133,10 @@ make check
 
 `problems/records.jsonl` holds {catalog_count()} contest and Yang problems. `problems list` hides answers. `problems show` prints a stored cite.
 
+{HARNESS_MD}
 ## Feature map
 
-The map is `.cursor/skills/verify-integration-bee/features/`.
+The map is `{CANONICAL_SKILL_ROOT}/verify-integration-bee/features/`.
 
 {feat_lines}
 
@@ -126,8 +154,8 @@ Regenerate this file with `python3 scripts/generate_agents_md.py` after you add 
 
 | Skill | When |
 |---|---|
-| `.cursor/skills/verify-integration-bee` | Drive the CLI and keep a transcript. |
-| `.cursor/skills/formal-verify-integration-bee` | Check unit order, Round 1 readiness, and tracker records. |
+| `{CANONICAL_SKILL_ROOT}/verify-integration-bee` | Drive the CLI and keep a transcript. |
+| `{CANONICAL_SKILL_ROOT}/formal-verify-integration-bee` | Check unit order, Round 1 readiness, and tracker records. |
 
 ## Pstack skills
 
