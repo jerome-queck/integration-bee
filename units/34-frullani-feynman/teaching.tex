@@ -25,6 +25,26 @@ If $f$ and $\partial f/\partial a$ are continuous for $x$ in a compact interval 
 \]
 An endpoint that blows up, or an infinite limit, is a limit of compact pieces. Take that limit after the derivative, or use a positive integrand so the integrals may be switched.
 
+\section{A moving limit}
+The syllabus writes a second form. If the endpoints move with the parameter and $f$ is continuously differentiable in the parameter on the region you use,
+\[
+\frac{d}{dt}\int_{a(t)}^{b(t)} f(x,t)\,dx
+=
+\int_{a(t)}^{b(t)}\partial_t f(x,t)\,dx
++ f(b(t),t)\,b'(t)
+- f(a(t),t)\,a'(t).
+\]
+The two new terms are the fundamental theorem. They are the whole answer when $f$ does not depend on $t$.
+
+This integral is not one of the eight drills. Let $f(x,t)=tx$, $a(t)=0$, and $b(t)=t$. Then
+\[
+I(t)=\int_0^t tx\,dx=\frac{t^3}{2},\qquad I'(t)=\frac{3t^2}{2}.
+\]
+At $t=2$ the integral equals 4 and the derivative equals 6. The formula at that point is $\int_0^2 x\,dx=2$ from the parameter, plus the upper boundary term $f(2,2)\cdot 1=4$, and the lower boundary is 0. The sum is 6. Adding and subtracting a constant in the integrand is \texttt{docs/techniques/introduce-constant.md}. This derivative is not that algebra. Do not tick \texttt{dutis}.
+
+\section{Faded moving limit}
+Cover the example. If $f$ does not depend on $t$ and the upper limit is $t$, the derivative is $f(t)$. For $\int_0^t\sin x\,dx$, that derivative is $\sin t$. If you only needed this sentence, do not introduce a parameter inside the integrand.
+
 \section{Worked parameter --- \texttt{U34-D05}}
 For $a>-1$,
 \[

@@ -25,7 +25,11 @@ The half-angle formulas give
 \cos x=\frac{1-t^2}{1+t^2},\qquad
 dx=\frac{2\,dt}{1+t^2},
 \]
-where $t=\tan(x/2)$. They are the double-angle formulas written in $t$, together with $x=2\arctan t$. Use them when the integrand is rational in $\sin x$ and $\cos x$.
+where $t=\tan(x/2)$. They are the double-angle formulas written in $t$, together with $x=2\arctan t$. The quotient of the first two is
+\[
+\tan x=\frac{2t}{1-t^2}.
+\]
+Use the three replacements, and this fourth when a tangent is present, only when the integrand is rational in $\sin x$ and $\cos x$. The map $t=\tan(x/2)$ is continuous on $(-\pi,\pi)$. On $[0,\pi/2]$ the new limits are finite. If an odd multiple of $\pi$ lies in the interior, split there: the half-angle tangent is discontinuous. If the endpoint is $x=\pi$, the integral in $t$ is improper. Take the limit. Do not paste an antiderivative across that point.
 
 \section{Worked --- \texttt{U26-D01}}
 \[
@@ -74,8 +78,15 @@ and the integral is $\int_0^1 dt/(1+t)=\ln 2$. That is the stored answer.
 \]
 Put $t=\tan(x/2)$ again. The limits are $0$ and $1$, not $0$ and $\infty$. The stored answer is $\sqrt{3}\,\pi/9$. \texttt{U26-D07} shortens the upper limit of \texttt{U26-D02} to $\pi/3$. Do not quote the full $[0,\pi]$ formula when the interval is shorter.
 
+\section{The early pass}
+Unit 09 works one integral before this drill set. On $[0,\pi/3]$,
+\[
+\int\frac{dx}{1+\cos x}=\tan\frac x2,
+\]
+and the definite value is $\sqrt{3}/3$. That value is not one of \texttt{U26-D01} through \texttt{U26-D08}. The same cancellation, $1+\cos x=2/(1+t^2)$, is the pattern to recognise. A miss of the substitution still teaches this file, then returns to that early integral if the limits were the part that failed.
+
 \section{What this is not}
-A reduction $I_n=((n-1)/n)I_{n-2}$ is unit 20. Adding a reflected copy is unit 10. Introducing a constant in a rational function of $x$ is \texttt{docs/techniques/introduce-constant.md}. If the integrand is not rational in sine and cosine, this substitution makes a harder integral.
+A reduction $I_n=((n-1)/n)I_{n-2}$ is unit 20. Adding a reflected copy is unit 10. Introducing a constant in a rational function of $x$ is \texttt{docs/techniques/introduce-constant.md}. If the integrand is not rational in sine and cosine, this substitution makes a harder integral. A rational function of $\tan x$ that already contains $\sec^2 x$ is $u=\tan x$, unit 09, not $t=\tan(x/2)$.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit26.json}.

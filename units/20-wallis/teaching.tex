@@ -72,6 +72,26 @@ J_n=\int_0^\infty x^n e^{-x}\,dx.
 \]
 Parts with $u=x^n$ gives $J_n=n J_{n-1}$, and $J_0=1$, so $J_n=n!$. In particular $J_3=6$. This is not one of the eight drills. It is the same index drop, and it is the integer case of the Gamma integral in unit 14. Stop when the index hits 0.
 
+\section{An alternating family}
+Guide section 1.3 also reduces a rational power by algebra, not only by parts. For an integer $n\ge 0$,
+\[
+I_n=\int_0^1\frac{x^n}{1+x}\,dx.
+\]
+Adding the neighbour cancels the denominator:
+\[
+I_n+I_{n-1}=\int_0^1 x^{n-1}\,dx=\frac1n,\qquad n\ge 1.
+\]
+The base is the add-and-subtract move of \texttt{docs/techniques/introduce-constant.md}:
+\[
+I_0=\int_0^1\frac{1}{1+x}\,dx=\ln 2,
+\qquad
+I_1=\int_0^1\frac{x}{1+x}\,dx=1-\ln 2.
+\]
+Then $I_2=1/2-I_1=\ln 2-1/2$ and $I_3=1/3-I_2=5/6-\ln 2$. This family is not one of the eight drills. Do not mark $I_3$ as \texttt{U20-D01}. The index still drops by a fixed integer, and the step changes sign. A leftover factor of $\sin x$ is still a substitution. A continuous parameter is still unit 34.
+
+\section{Faded step --- the rational base}
+Cover the values above. For $I_2$, write $I_2=1/2-I_1$ and substitute the base $1-\ln 2$. The result is $\ln 2-1/2$. If the integrand had been $\sin^2 x\cos^2 x$, you would be in the faded step for \texttt{U20-D02} instead, and you would not open this family.
+
 \section{Practice}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit20.json}.
 
