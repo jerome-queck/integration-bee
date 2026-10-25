@@ -167,6 +167,46 @@ def caught(name: str) -> str | None:
         err = model.session_problem({"phase": "teaching", "node": None, "problem_id": None, "mock_id": None})
         if err:
             return err
+    elif name == "aptitude-needs-problem":
+        err = model.session_problem({
+            "phase": "aptitude",
+            "node": "basic-integration",
+            "problem_id": None,
+            "mock_id": None,
+            "aptitude": {"full_coverage": False, "offer": [], "declined": []},
+        })
+        if err:
+            return err
+    elif name == "proposing-needs-offer":
+        err = model.session_problem({
+            "phase": "proposing",
+            "node": None,
+            "problem_id": None,
+            "mock_id": None,
+            "aptitude": {"full_coverage": False, "offer": [], "declined": []},
+        })
+        if err:
+            return err
+    elif name == "proposing-still-open":
+        err = model.session_problem({
+            "phase": "proposing",
+            "node": None,
+            "problem_id": "U01-D07",
+            "mock_id": None,
+            "aptitude": {"full_coverage": False, "offer": ["basic-integration"], "declined": []},
+        })
+        if err:
+            return err
+    elif name == "aptitude-bad-coverage":
+        err = model.session_problem({
+            "phase": "idle",
+            "node": None,
+            "problem_id": None,
+            "mock_id": None,
+            "aptitude": {"full_coverage": "yes", "offer": [], "declined": []},
+        })
+        if err:
+            return err
     elif name == "mark-one-bool":
         err = model.mark_problem({"U01-D01": {"answer_ok": True}})
         if err:
