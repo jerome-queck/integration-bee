@@ -51,3 +51,5 @@ Pack and Yang integrands in `problems/records.jsonl` start from the PDF text lay
 On a miss, teach the one file `say` names. Read that note and work its displayed example. Do not edit the note in the study session. A later commit is what fills a missing move, with an original example or a stored drill id.
 
 Round 1 families also have coach cards in `docs/techniques/concepts/`. Those cards are not gap ids. A mark still uses one of the six headings above. The map from a catalog node to a card is `pedagogy/concept-map.md`. Habit nodes are `docs/techniques/concepts/habits.md`.
+
+A formats miss still teaches `docs/techniques/formats.md`. The session order around that note is `pedagogy/round2-coach.md` for group, crossnumber, and relay, and `pedagogy/round3-coach.md` for chainlink, dichotomy, and tournament.

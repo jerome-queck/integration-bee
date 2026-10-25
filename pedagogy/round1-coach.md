@@ -35,3 +35,7 @@ Leave a pack final alone. Leave a Yang practice final alone when the extract doe
 The six headings in `docs/techniques/beyond-yang.md` are the only `extract.gap` values. `pedagogy/contest-gaps.md` is the script for those ids. A Round 1 miss with no gap id opens the coach card for the node's unit, then `units/<unit>/teaching.tex`.
 
 Worked, faded, and bare follow `pedagogy/README.md`. A study session does not edit a teaching note.
+
+## Round 2 and Round 3
+
+A format is not a Round 1 dose. Group, crossnumber, and relay use `pedagogy/round2-coach.md`. Chainlink, dichotomy, and tournament use `pedagogy/round3-coach.md`. The rules stay `docs/techniques/formats.md`. The integral is still a unit drill. Leave a pack final closed.

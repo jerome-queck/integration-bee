@@ -16,3 +16,7 @@ Machine JSON: `../../verify/drills_unit14.json`.
 | U14-D09 | gamma | yang:2.4 | definite | `x**4 * exp(-x)` | [0, 'oo'] | `24` | $24$ |
 | U14-D10 | gamma | yang:2.4 | definite | `x**2 * exp(-x)` | [0, 'oo'] | `2` | $2$ |
 | U14-D11 | gamma | yang:2.4 | definite | `log(x)**4` | [0, 1] | `24` | $24$ |
+
+## Speed unroll
+
+`teaching.tex` times \(J_2,J_3,J_4,J_5\) and the signs of \((\ln x)^n\) on \([0,1]\). The checks are `U14-D10`, `U14-D02`, `U14-D09`, `U14-D01`, `U14-D04`, `U14-D03`, `U14-D11`, and `U14-D05`. No new id.

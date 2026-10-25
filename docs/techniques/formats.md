@@ -55,7 +55,7 @@ n & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
 \end{array}
 \]
 
-A failed chain scores the bank value of the highest safety net already reached, not the row for the number solved. The nets you start with are 1, 3, and 6 solves. Failing after 5 solves, with only those nets, pays the value of 3 solves, which is 7, not the banked value 15 of five solves. Failing after 6 pays 20. Banking five pays 15. The gap between a net and the next bank row is the cost of continuing.
+A failed chain scores the bank value of the highest safety net already reached, not the row for the number solved. The nets you start with are 1, 3, and 6 solves. Failing after 2 solves, with only those nets, pays the value of 1 solve, which is 2. Banking two solves pays 4. Failing after 5 solves pays the value of 3 solves, which is 7. Banking five pays 15. Failing after 6 pays 20. The gap between a net and the next bank row is the cost of continuing.
 
 Lifelines, first half, and they may be combined in one game:
 
@@ -63,7 +63,7 @@ Lifelines, first half, and they may be combined in one game:
 - Take the money and run, once in the half. Before the third attempt, void the current problem and bank. The void is not a solve.
 - This problem is dread, twice in the half. Before the third attempt, void the current problem and continue. On the last problem of the game the void banks instead.
 
-The second half is the unused problems, in the same set order. A miss ends the chain and the next chain starts. There is no drop to a safety net. A skip counts as a miss. A chain of \(k\ge 1\) consecutive solves scores \(2k + \lfloor (k-1)/2 \rfloor\). The first few values are 2, 4, 7, 9 for \(k = 1, 2, 3, 4\). Dread may be used three times in this half: a void neither adds a solve nor breaks the chain. Four solves with a void between them are still a chain of length 4, worth 9.
+The second half is the unused problems, in the same set order. A miss ends the chain and the next chain starts. There is no drop to a safety net. A skip counts as a miss. A chain of \(k\ge 1\) consecutive solves scores \(2k + \lfloor (k-1)/2 \rfloor\). The first few values are 2, 4, 7, 9 for \(k = 1, 2, 3, 4\). Dread may be used three times in this half: a void neither adds a solve nor breaks the chain. Four solves with a void between them are still a chain of length 4, worth 9. The 2024 guide illustrates a half whose solves run yes, yes, void, yes, yes, miss, yes, miss, yes, yes. The void stays inside the first chain, so the lengths are 4, 1, and 2. Those scores are 9, 2, and 4, and the half scores 15.
 
 Train the decision, not only the integral. After each correct drill, say out loud whether you would bank, and say which net you would fall to if the next drill failed. Banking keeps the safety net. Continuing risks it for a longer chain. In the second half, treat a skip as the end of the chain.
 
@@ -95,10 +95,43 @@ Points per correct answer, and the extra from gambling one fight of three proble
 - Battle 3: 3 points, or 6 with a gamble. Winning is 3. The gamble adds 9.
 - Battle 4: 2 points, or 4 with a gamble. Winning is 2. The gamble adds 6.
 
+A team plays battle 1 or battle 2, then may play battle 3 and battle 4. The early battle fully taken, including its gamble, is \(80+24=104\). Battle 3 fully taken is \(9\times 3+3+9=39\). Battle 4 fully taken is \(9\times 2+2+6=26\). The published maximum is \(104+39+26=169\). Redemption points stay off that 169.
+
 An eliminated team can still submit a redemption answer on paper during battles 3 and 4, before any board is correct, and not while a board answer is being checked. One attempt per problem. Do not shout it. A gamble does not apply, and tiebreakers are not redeemed. A correct redemption in battle 3 scores 2, and in battle 4 scores 1. A team eliminated in battle 1 or 2 can still collect both, 27 points in all. A team eliminated in battle 3 has only the battle-4 paper, 9 points.
 
 Train by racing a partner on three drills. Call the gamble before you see the integrals, and only when you want the swing. Box the final line. Keep that line clean even when the board has moved on, because redemption is a written answer after elimination.
 
+## Attempt shape
+
+The lesson is the object on the page and the points that object earns. The integral is one stored unit drill. Its value is the row in that unit's `drills.md`. Quote that value. A pack file stays closed. Do not invent a contest answer.
+
+| Format | What is written | What may be said | How it scores |
+|---|---|---|---|
+| Group | the value | the team may talk for the whole hour | 6, or 0 for a blank or a wrong value |
+| Crossnumber | one digit | the name of a clue, and never the digit | 1, or 0, and that square is finished |
+| Relay | the current value | a skip, and no return to an earlier problem | 3 on the first correct attempt, 1 on a later one, then the bonus on the count |
+| Chainlink | the value, then bank or continue | the net a failure would pay | the bank row, or the safety net of a failed chain |
+| Dichotomy | the chosen problem's value | nothing about the integrand that was not passed | 6 on the first correct attempt, 2 on a later one |
+| Tournament | a boxed value | the gamble, only before the fight | the battle's points, or a wasted attempt when the line is not boxed |
+
+A full antiderivative in a digit blank is the crossnumber row. The integral skill for the drill is still the coach card in `pedagogy/concept-map.md`.
+
+## Score a stored drill
+
+These vignettes use stored drill values. They are the practice for the table above. The format points are spoken after the usual mark. The mark still records the drill as correct or incorrect. There is no separate format field.
+
+**Group.** `U20-D01` stores \(3\pi/16\). A correct slip scores 6. A blank scores 0. `U14-D10` stores 2 and scores the same 6. Ten correct slips score 60.
+
+**Crossnumber.** `U14-D10` stores 2, so the square is the digit 2, once. `U14-D01` stores 120, so the squares are the digits 1, 2, and 0. Prefer one square. A whole-clue submission of those three digits cannot be withdrawn once checking starts. A wrong digit scores 0. The grader writes the correct digit, and that square cannot be tried again.
+
+**Relay.** `U20-D08` stores \(2/3\). A correct first attempt scores 3. A correct later attempt scores 1. The next drill stays covered until this one is answered or skipped. `U20-D02` is a legal next drill. Reopening `U20-D08` is not. Nine correct problems, one skip, and six further correct problems are 15 correct problems, and the bonus is 10. Count every correct problem, including one scored 1. A skip stays out of the count. Twenty first-attempt answers score \(20\times 3+10=70\).
+
+**Chainlink.** `U20-D04` stores \(8/15\). After a correct answer, say bank or continue, and say which net a failure would pay. Five solves, banked, score 15. Five solves and then a failure, with the starting nets 1, 3, and 6, score 7. Six solves and then a failure score 20. The second-half illustration in the chainlink section scores 15.
+
+**Dichotomy.** The selectors see `U20-D02`, stored \(\pi/16\), and `U20-D06`, stored \(2/15\). They pass one integrand. The solver does not learn the other. A correct first attempt scores 6. A later one scores 2. Ten correct problems earn 8. Fifteen correct problems replace that 8 with 14. Twenty-one first attempts and the replaced bonus score \(21\times 6+14=140\).
+
+**Tournament.** Box the line for `U14-D02`, stored value 6. An unboxed line spends the attempt and scores 0. In battles 1 and 2 the boxed answer scores 8, or 16 when the gamble was declared before the fight. The maximum path in the tournament section is 104, then 39, then 26, which is 169. Redemption is written, not spoken, and those points stay off the 169.
+
 ## On a miss
 
-Teach this file. Name the format, the object of the answer, and the rule the attempt broke: a second try at a square, a spoken digit, a return to an earlier relay problem, a bonus treated as a streak, a chain continued with no net under it, a selector telling the solver the other integrand, a gamble called after the fight started, an unboxed tournament answer. Then set an ordinary unit drill. Do not invent a contest answer. The integral skill for that drill is the coach card in `pedagogy/concept-map.md`.
+Teach this file. Name the format, the row in the attempt-shape table, and the rule the attempt broke: a second try at a square, a spoken digit, a return to an earlier relay problem, a bonus treated as a streak, a chain continued with no net under it, a selector telling the solver the other integrand, a gamble called after the fight started, an unboxed tournament answer. Then set the drill in the matching vignette. The session order is `pedagogy/round2-coach.md` for group, crossnumber, and relay, and `pedagogy/round3-coach.md` for chainlink, dichotomy, and tournament. Do not invent a contest answer.

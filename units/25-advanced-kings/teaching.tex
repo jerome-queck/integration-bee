@@ -57,8 +57,18 @@ The map $x\mapsto\pi-x$ leaves $\sin x$ fixed and sends $x$ to $\pi-x$, so
 \]
 The half-angle substitution of unit 26, with a split because $t=\tan(x/2)$ runs to infinity as $x$ approaches $\pi$, gives $\int_0^{\pi} dx/(1+\sin x)=2$. Hence $I=\pi$. That is the stored answer. \texttt{U25-D07} is the unit 10 warmup $x/(1+x)$ on $[0,1]$, value $1-\ln 2$, by writing the integrand as $1-1/(1+x)$.
 
+\section{Speed drill --- constant complement}
+Sixty seconds. For each integrand, write the sum of the two reflected copies, then the value.
+\begin{enumerate}
+  \item \texttt{U25-D01} and \texttt{U25-D02}. The copies add to 1 on an interval of length $\pi/2$. Each stored value is $\pi/4$.
+  \item \texttt{U25-D03}. The copies add to 1 on an interval of length 1. The stored value is $1/2$.
+  \item \texttt{U25-D05}. The cubes add to 1 on an interval of length $\pi/2$. The stored value is $\pi/4$.
+  \item \texttt{U25-D04}. The copies do not add to a constant. The stored value is $\pi/8+(\ln 2)/4$. The value $\pi/4$ is the miss.
+\end{enumerate}
+The faded blank is the sum. \texttt{U25-D08} stays the substitution $1/2$, and it stays out of this minute.
+
 \section{Drill pointers}
-See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit25.json}.
+See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit25.json}. The speed drill above checks stored rows. It adds no id.
 
 \section*{On a miss}
 Teach this file together with unit 10. Write the reflected integrand before you add. Do not invent an answer that is not in \texttt{drills.md}.

@@ -44,8 +44,15 @@ $J_1=1$. \texttt{U14-D10} is $J_2=2\cdot 1=2$. \texttt{U14-D02} is $J_3=3\cdot 2
 Let $x=e^{-t}$. Then $\int_0^1(\ln x)^n\,dx=(-1)^n J_n=(-1)^n n!$.
 \texttt{U14-D04} is $n=2$, value $2$. \texttt{U14-D03} is $n=3$, value $-6$. \texttt{U14-D11} is $n=4$, value $24$. The sign is the only extra step. The reduction is the one already used for $J_n$.
 
+\section{Speed drill --- three multiplications}
+Sixty seconds. From $J_0=1$,
+\[
+J_2=2,\quad J_3=6,\quad J_4=24,\quad J_5=120.
+\]
+Those four values are \texttt{U14-D10}, \texttt{U14-D02}, \texttt{U14-D09}, and \texttt{U14-D01}. The same minute carries the sign on $[0,1]$: \texttt{U14-D04} is $+2$, \texttt{U14-D03} is $-6$, and \texttt{U14-D11} is $+24$. \texttt{U14-D05} is the sum $J_2+2J_1+J_0=2+2+1=5$. The faded blank is the four factorials, then the three signs.
+
 \section{Drill pointers}
-See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit14.json}.
+See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit14.json}. The speed drill above checks stored rows. It adds no id.
 
 \section*{On a miss}
 Teach this file. Write $J_n=n J_{n-1}$ and the base $J_0=1$, then unroll. If the exponential is $e^{-x^2}$ or $e^{-\sqrt x}$, substitute before you quote a factorial. Do not invent an answer that is not in \texttt{drills.md}.

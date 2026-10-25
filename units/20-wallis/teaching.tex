@@ -92,8 +92,34 @@ Then $I_2=1/2-I_1=\ln 2-1/2$ and $I_3=1/3-I_2=5/6-\ln 2$. Unit 15 stores $I_3$ a
 \section{Faded step --- the rational base}
 Cover the values above. For $I_2$, write $I_2=1/2-I_1$ and substitute the base $1-\ln 2$. The result is $\ln 2-1/2$. If the integrand had been $\sin^2 x\cos^2 x$, you would be in the faded step for \texttt{U20-D02} instead, and you would not open this family.
 
+\section{Speed drill --- even line}
+Ninety seconds. Write four lines and no integral signs.
+\[
+I_0=\frac{\pi}{2},\qquad
+I_2=\frac{1}{2}I_0=\frac{\pi}{4},\qquad
+I_4=\frac{3}{4}I_2=\frac{3\pi}{16},\qquad
+I_6=\frac{5}{6}I_4=\frac{5\pi}{32}.
+\]
+\texttt{U20-D01} and \texttt{U20-D07} store $I_4$. \texttt{U20-D05} stores $I_6$. The faded blank is the three coefficients $1/2$, $3/4$, and $5/6$.
+
+\section{Speed drill --- odd line}
+Sixty seconds.
+\[
+I_1=1,\qquad
+I_3=\frac{2}{3}I_1=\frac{2}{3},\qquad
+I_5=\frac{4}{5}I_3=\frac{8}{15}.
+\]
+\texttt{U20-D08} stores $I_3$ for cosine, which equals this $I_3$. \texttt{U20-D04} stores $I_5$. \texttt{U20-D06} is off this line. Its stored value is $2/15$, from the substitution above.
+
+\section{Speed drill --- alternating line}
+Ninety seconds. Cover the values in the alternating section. From $I_0=\ln 2$ and $I_n+I_{n-1}=1/n$, write
+\[
+I_2=\ln 2-\frac{1}{2},\qquad I_3=\frac{5}{6}-\ln 2.
+\]
+\texttt{U15-D11} stores $I_3$. This unit does not. The faded blank is those two lines.
+
 \section{Practice}
-See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit20.json}.
+See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit20.json}. The three speed drills above are timed unrolls of stored values. They add no id.
 
 \section*{On a miss}
 Teach this file. Write $I_n$, the relation, and the base. Do not invent an answer that is not in \texttt{drills.md}.
