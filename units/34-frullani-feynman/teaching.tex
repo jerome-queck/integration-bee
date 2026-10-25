@@ -13,7 +13,28 @@ Yang concept unit. Tags: \texttt{yang:6.6}, \texttt{yang:6.7}; techniques: \text
 (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
 \item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
 \end{itemize}
-\section{Learning goals} Frullani template; differentiate under integral.
+\section{Learning goals}
+Differentiate a parameter when the integrand is a derivative in that parameter.
+The smaller algebraic move, adding and subtracting a constant, is guide section 1.9 and lives in \texttt{docs/techniques/introduce-constant.md}.
+The catalog node \texttt{dutis} stays deferred. This unit is the later chapter.
+
+\section{Worked parameter --- \texttt{U34-D05}}
+For $a>-1$,
+\[
+\int_0^1 x^a\,dx=\frac{1}{a+1}.
+\]
+Differentiate in $a$:
+\[
+\int_0^1 x^a\ln x\,dx=-\frac{1}{(a+1)^2}.
+\]
+At $a=2$ the value is $-1/9$, the stored answer of \texttt{U34-D05}.
+The drill file stores $x^2\log x$ on $[0,1]$. It does not store the parameter $a$.
+
+\section{Frullani drills}
+\texttt{U34-D01} is $(e^{-x}-e^{-2x})/x$ on $[0,\infty)$, with stored answer $\ln 2$.
+The same pattern with a different pair is \texttt{U34-D02} and \texttt{U34-D03}.
+The printed sheet may still show letters. The SymPy row is the concrete pair.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit34.json}.
 \end{document}

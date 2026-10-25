@@ -31,6 +31,29 @@ Worked $\to$ faded $\to$ interleaved. See \texttt{pedagogy/README.md}.
 I=\int_0^{\pi/2}\frac{\sin x}{\sin x+\cos x}\,dx.
 \]
 King $x\mapsto\pi/2-x$ swaps $\sin/\cos$, so $2I=\pi/2$ and $I=\pi/4$.
+That substitution is one case of the reflection below.
+
+\section{Worked reflection}
+The identity keeps the same interval. For a continuous $f$,
+\[
+\int_a^b f(x)\,dx=\int_a^b f(a+b-x)\,dx.
+\]
+The substitution $u=a+b-x$ swaps the limits and then the sign of $du$ swaps them back.
+On $[-a,a]$ the endpoints sum to zero, so $a+b-x$ is $-x$.
+An even integrand is unchanged by that swap.
+An odd integrand changes sign, so the integral is 0 when it exists.
+
+On $[0,\pi/2]$ the useful reflection is $x\mapsto\pi/2-x$.
+It swaps sine and cosine. For \texttt{U10-D07},
+\[
+I=\int_0^{\pi/2}\sin^2 x\,dx
+=\int_0^{\pi/2}\cos^2 x\,dx,
+\]
+and $\sin^2 x+\cos^2 x=1$, so $2I=\pi/2$ and $I=\pi/4$.
+
+On $(0,\infty)$ the substitution $x=1/u$ is the same idea at a different point.
+It sends $\ln x/(1+x^2)$ to its negative, so that integral is 0.
+The King example \texttt{U10-D04} is the sine and cosine case, not the whole toolkit.
 
 \section{Practice}
 \texttt{U10-D01}\ldots\texttt{U10-D08} in \texttt{drills.tex}; \texttt{verify/run.sh}.

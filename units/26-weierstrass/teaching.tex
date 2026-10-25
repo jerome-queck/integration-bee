@@ -13,7 +13,41 @@ Yang concept unit. Tags: \texttt{yang:4.5}; techniques: \texttt{weierstrass}.
 (\texttt{sources/user/Integration\_Bee\_Topics\_Guide\_Yang\_2nd\_Ed.pdf}).
 \item Syllabus §1 (\texttt{sources/UK\_University\_Integration\_Bee\_Syllabus.pdf}).
 \end{itemize}
-\section{Learning goals} $t=\tan(x/2)$ for rational trig.
+\section{Learning goals}
+Turn a rational function of sine and cosine into a rational function of $t$.
+Guide section 1.6. The substitution is $t=\tan(x/2)$.
+
+\section{The three replacements}
+From the double-angle formulas,
+\[
+\sin x=\frac{2t}{1+t^2},\qquad
+\cos x=\frac{1-t^2}{1+t^2},\qquad
+dx=\frac{2\,dt}{1+t^2}.
+\]
+Use this when the integrand is rational in $\sin x$ and $\cos x$.
+A plain sine power is a reduction, not this substitution.
+
+\section{Worked --- \texttt{U26-D01}}
+\[
+\int_0^{\pi/2}\frac{1}{1+\sin x}\,dx.
+\]
+The limits $x=0$ and $x=\pi/2$ become $t=0$ and $t=1$.
+\[
+1+\sin x=\frac{(1+t)^2}{1+t^2},
+\]
+so the integrand collapses to $2/(1+t)^2$.
+\[
+\int_0^1\frac{2}{(1+t)^2}\,dt=\Bigl[\frac{-2}{1+t}\Bigr]_0^1=1.
+\]
+That is the stored answer.
+
+\section{Faded step --- \texttt{U26-D02}}
+\[
+\int_0^{\pi}\frac{1}{2+\cos x}\,dx.
+\]
+Put $t=\tan(x/2)$. The stored answer is $\pi/\sqrt{3}$.
+Check the endpoints before you expand the algebra. At $x=\pi$ the half-angle tangent is unbounded, so split at $\pi/2$ or quote the standard definite form after the substitution is in place.
+
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit26.json}.
 \end{document}
