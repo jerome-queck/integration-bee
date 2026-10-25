@@ -4,19 +4,24 @@
 \* (AGENTS.md, docs/decisions/0001-tracker-files.md).
 \*
 \* record_attempt reads, then write_json replaces each file from that read
-\* (scripts/control-integration-bee:207, write_json at 123, attempts at 248,
-\* heatmap at 249, project at 251).
-\* The streak write at line 250 is omitted. No property here reads streaks.
+\* (scripts/control-integration-bee:322, write_json at 129, attempts at 366,
+\* heatmap at 367, project at 369).
+\* The streak write at line 368 is omitted. No property here reads streaks.
 \* project writes progress.local.json from the tick object captured at the read
-\* (record_attempt:251, mock-start project at 551). turn apply calls the same
-\* record_attempt from finish_plan (scripts/control-integration-bee:758).
-\* cmd_tick re-reads attempts at the project call (scripts/control-integration-bee:510).
-\* cmd_mock_finish re-reads ticks and attempts (scripts/control-integration-bee:574).
-\* mock-start returns the open session when its read already shows one (line 533).
-\* write_session (646) re-reads ticks and passes the new session into project.
+\* (record_attempt:369, mock-start project at 708). It also copies pictures
+\* from that attempts snapshot (149). turn apply calls the same
+\* record_attempt from finish_plan (scripts/control-integration-bee:931).
+\* A photo copy at store_mark_photo (264) can land before that write.
+\* This spec does not take the file copy.
+\* cmd_tick re-reads attempts at the project call (scripts/control-integration-bee:667).
+\* cmd_mock_finish re-reads ticks and attempts (scripts/control-integration-bee:737).
+\* mock-start returns the open session when its read already shows one (line 691).
+\* write_session (809) re-reads ticks and passes the new session into project.
 \* This spec does not take that step. confirm writes a skipped tick in
-\* apply_tick (660) and then write_session. A stop between those writes is
+\* apply_tick (823) and then write_session. A stop between those writes is
 \* outside this model. Session phases are SessionFlow.
+\* progress mock-finish also refuses when that phase is awaiting_answer,
+\* aptitude, or proposing (717). This spec does not carry the phase.
 \*
 \* Assumptions:
 \*   Each writer begins at most one command. Finishing a mock that writer opened
@@ -123,6 +128,8 @@ NoLostAttempt == Idle => attemptCommits = attempts
 IdleFilesAgree == Idle => heatAttempts = attempts /\ heatFails = incorrect
 
 \* After every writer is idle, progress.local.json matches the tick file and the misses.
+\* project also copies pictures from that same attempts snapshot
+\* (scripts/control-integration-bee:149). A stale project drops them with the misses.
 ProjectionMatches == Idle => projMistakes = incorrect /\ projTick = tickSolid
 
 \* A mock file is non-empty only after a gated start.
@@ -144,7 +151,7 @@ AttemptSane == incorrect <= attempts
 NoLostMock == Idle => mockCommits <= openCount + scoredCount
 
 BeginRecord(w, miss) ==
-  /\ pc[w] = "idle" \* scripts/control-integration-bee:216
+  /\ pc[w] = "idle" \* scripts/control-integration-bee:332
   /\ ~begun[w]
   /\ attemptCommits < 2
   /\ begun' = [begun EXCEPT ![w] = TRUE]
@@ -164,7 +171,7 @@ BeginRecord(w, miss) ==
      >>
 
 WriteAttempts(w) ==
-  /\ pc[w] = "holdA" \* scripts/control-integration-bee:248
+  /\ pc[w] = "holdA" \* scripts/control-integration-bee:366
   /\ attempts' = snapA[w] + 1
   /\ incorrect' = snapI[w] + IF wantMiss[w] THEN 1 ELSE 0
   /\ attemptCommits' = attemptCommits + 1
@@ -177,7 +184,7 @@ WriteAttempts(w) ==
      >>
 
 WriteHeat(w) ==
-  /\ pc[w] = "wroteA" \* scripts/control-integration-bee:249
+  /\ pc[w] = "wroteA" \* scripts/control-integration-bee:367
   /\ heatAttempts' = snapHA[w] + 1
   /\ heatFails' = snapHF[w] + IF wantMiss[w] THEN 1 ELSE 0
   /\ pc' = [pc EXCEPT ![w] = "wroteH"]
@@ -190,7 +197,7 @@ WriteHeat(w) ==
      >>
 
 ProjectRecord(w) ==
-  /\ pc[w] = "wroteH" \* scripts/control-integration-bee:251
+  /\ pc[w] = "wroteH" \* scripts/control-integration-bee:369
   /\ projMistakes' = snapI[w] + IF wantMiss[w] THEN 1 ELSE 0
   /\ projTick' = snapTick[w]
   /\ pc' = [pc EXCEPT ![w] = "idle"]
@@ -229,7 +236,7 @@ Crash(w) ==
      >>
 
 BeginTick(w) ==
-  /\ pc[w] = "idle" \* scripts/control-integration-bee:501
+  /\ pc[w] = "idle" \* scripts/control-integration-bee:662
   /\ ~begun[w]
   /\ ~tickSolid
   /\ begun' = [begun EXCEPT ![w] = TRUE]
@@ -245,7 +252,7 @@ BeginTick(w) ==
      >>
 
 ProjectTick(w) ==
-  /\ pc[w] = "wroteTick" \* scripts/control-integration-bee:510
+  /\ pc[w] = "wroteTick" \* scripts/control-integration-bee:667
   /\ projTick' = TRUE
   /\ projMistakes' = incorrect
   /\ pc' = [pc EXCEPT ![w] = "idle"]
@@ -284,7 +291,7 @@ BeginMockReady(w) ==
      >>
 
 BeginMockCold(w) ==
-  /\ pc[w] = "idle" \* scripts/control-integration-bee:528
+  /\ pc[w] = "idle" \* scripts/control-integration-bee:679
   /\ ~begun[w]
   /\ ~tickSolid
   /\ mockCommits < 2
@@ -323,7 +330,7 @@ BeginMockUngated(w) ==
      >>
 
 WriteMockKeep(w) ==
-  /\ pc[w] = "holdM" \* scripts/control-integration-bee:533
+  /\ pc[w] = "holdM" \* scripts/control-integration-bee:691
   /\ snapOpen[w] >= 1
   /\ Break # "force_second_open"
   /\ pc' = [pc EXCEPT ![w] = "idle"]
@@ -344,7 +351,7 @@ WriteMockKeep(w) ==
      >>
 
 WriteMockAppend(w) ==
-  /\ pc[w] = "holdM" \* scripts/control-integration-bee:549
+  /\ pc[w] = "holdM" \* scripts/control-integration-bee:706
   /\ snapOpen[w] = 0 \/ Break = "force_second_open"
   /\ openCount' = IF snapOpen[w] >= 1 THEN snapOpen[w] + 1 ELSE 1
   /\ scoredCount' = snapScored[w]
@@ -366,7 +373,7 @@ WriteMockAppend(w) ==
      >>
 
 ProjectMock(w) ==
-  /\ pc[w] = "wroteM" \* scripts/control-integration-bee:551
+  /\ pc[w] = "wroteM" \* scripts/control-integration-bee:708
   /\ projTick' = snapTick[w]
   /\ projMistakes' = incorrect
   /\ pc' = [pc EXCEPT ![w] = "idle"]
@@ -385,8 +392,13 @@ ProjectMock(w) ==
        attemptCommits, mockCommits, begun, holder, didFinish
      >>
 
+\* The score write is scripts/control-integration-bee:729.
+\* Lines 717-720 refuse this write while session phase is awaiting_answer,
+\* aptitude, or proposing. This spec has no session phase, so that refuse
+\* is not a step here. turn mock-finish also refuses a different open id
+\* at scripts/control-integration-bee:1133.
 WriteFinish(w) ==
-  /\ pc[w] = "idle" \* scripts/control-integration-bee:563
+  /\ pc[w] = "idle" \* scripts/control-integration-bee:729
   /\ holder[w]
   /\ openCount >= 1
   /\ ~didFinish[w]
@@ -405,7 +417,7 @@ WriteFinish(w) ==
      >>
 
 ProjectFinish(w) ==
-  /\ pc[w] = "wroteFinish" \* scripts/control-integration-bee:574
+  /\ pc[w] = "wroteFinish" \* scripts/control-integration-bee:737
   /\ projTick' = tickSolid
   /\ projMistakes' = incorrect
   /\ pc' = [pc EXCEPT ![w] = "idle"]
