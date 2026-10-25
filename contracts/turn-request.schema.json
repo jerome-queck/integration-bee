@@ -1,6 +1,6 @@
 {
   "schema": "integration-bee-turn-request/v1",
-  "kinds": ["empty", "teach", "mark", "mock-start", "mock-finish"],
+  "kinds": ["empty", "teach", "mark", "mock-start", "mock-finish", "aptitude", "confirm", "cover"],
   "required": ["kind"],
   "mark": {
     "required": ["kind", "problem_id", "source", "extract"],
@@ -13,5 +13,11 @@
   },
   "mock-finish": {
     "required": ["kind", "id", "score"]
+  },
+  "confirm": {
+    "required": ["kind", "nodes"]
+  },
+  "cover": {
+    "full": "boolean"
   }
 }

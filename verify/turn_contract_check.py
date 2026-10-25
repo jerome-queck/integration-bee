@@ -40,6 +40,161 @@ def load(proc: subprocess.CompletedProcess) -> dict:
     return json.loads(proc.stdout)
 
 
+def tracker_files(data: Path) -> dict:
+    found = {}
+    for path in sorted(data.glob("*.json")):
+        if path.name == "turn.json":
+            continue
+        found[path.name] = path.read_text()
+    return found
+
+
+def drill_answers() -> dict[str, str]:
+    answers = {}
+    for path in sorted((ROOT / "verify").glob("drills_unit*.json")):
+        for row in json.loads(path.read_text()):
+            answers[row["id"]] = row["answer_sympy"]
+    return answers
+
+
+def placement(data: Path, check) -> None:
+    schema = run(data, ["turn", "schema", "--format", "json"])
+    check(
+        schema.returncode == 0
+        and all(word in schema.stdout for word in ("aptitude", "confirm", "cover", "proposing")),
+        "schema names aptitude, confirm, cover, and proposing",
+    )
+    started = apply(data, {"kind": "aptitude"})
+    started_doc = load(started)
+    check(started.returncode == 0, "aptitude exit")
+    check(started_doc["session"]["phase"] == "aptitude", "aptitude phase")
+    check(started_doc["session"]["problem_id"] == "U01-D07", "aptitude opens U01-D07")
+    check(started_doc["session"]["node"] == "basic-integration", "aptitude node is basic-integration")
+    check(started_doc["drill"]["id"] == "U01-D07", "aptitude drill is U01-D07")
+    check(started_doc["tick"] is None, "aptitude writes no tick")
+    check("answer_display" not in started.stdout and "answer_sympy" not in started.stdout, "aptitude hides the drill answer")
+
+    before_confirm = tracker_files(data)
+    early = apply(data, {"kind": "confirm", "nodes": ["basic-integration"]})
+    check(early.returncode == 2, "confirm before the offer exits 2")
+    check(tracker_files(data) == before_confirm, "early confirm writes nothing")
+
+    first_drill = apply(
+        data,
+        {
+            "kind": "mark",
+            "problem_id": "U01-D07",
+            "source": "typed",
+            "extract": {"final_answer": "0"},
+        },
+    )
+    first_doc = load(first_drill)
+    check(first_drill.returncode == 0, "U01-D07 aptitude mark exit")
+    check(first_doc["tick"] is None or first_doc["tick"].get("status") != "skipped", "aptitude drill is not skipped")
+    check(first_doc["session"]["phase"] == "aptitude", "a correct drill opens the contest probe")
+    check(first_doc["session"]["problem_id"] == "R1-2020-Q01", "contest probe is R1-2020-Q01")
+    check(first_doc["session"]["node"] is None, "contest probe has no node")
+    check("answer_plain" not in first_drill.stdout, "contest probe hides answer_plain")
+    policy = json.loads((data / "session.json").read_text())["policy"]["basic-integration"]
+    check(set(policy) == {"approach", "detail", "kind", "volume"}, "basic-integration has a policy row")
+    check(policy["detail"] == "faded" and policy["volume"] == 1, "a correct drill shortens the dosage")
+
+    catalog_mark = apply(
+        data,
+        {
+            "kind": "mark",
+            "problem_id": "R1-2020-Q01",
+            "source": "typed",
+            "verdict": "correct",
+            "extract": {"final_answer": "1"},
+        },
+    )
+    catalog_doc = load(catalog_mark)
+    check(catalog_mark.returncode == 0, "catalog probe mark exit")
+    attempts = json.loads((data / "attempts.json").read_text())
+    check(
+        any(item["problem_id"] == "R1-2020-Q01" and item["correct"] is True for item in attempts["items"]),
+        "catalog probe stores an attempt",
+    )
+    ticks = json.loads((data / "skill-ticks.json").read_text())["ticks"] if (data / "skill-ticks.json").exists() else {}
+    check(ticks.get("basic-integration", {}).get("status") != "skipped", "catalog probe writes no skip")
+    check(catalog_doc["tick"] is None, "catalog probe result tick is null")
+    check(catalog_doc["session"]["phase"] == "proposing", "one evidenced node proposes a skip")
+    check("basic-integration" in catalog_doc["coach"]["offer"], "basic-integration is offered")
+
+    declined = apply(data, {"kind": "confirm", "nodes": []})
+    check(declined.returncode == 0, "empty confirm declines")
+    declined_doc = load(declined)
+    check(declined_doc["session"]["phase"] == "idle", "decline returns to idle")
+    declined_ticks = json.loads((data / "skill-ticks.json").read_text())["ticks"] if (data / "skill-ticks.json").exists() else {}
+    check(declined_ticks.get("basic-integration", {}).get("status") != "skipped", "decline writes no skip")
+
+    again = apply(data, {"kind": "aptitude"})
+    again_doc = load(again)
+    check(again.returncode == 0, "aptitude continues after a decline")
+    check(again_doc["session"]["phase"] == "aptitude", "the next probe is open")
+    check(again_doc["session"]["problem_id"] != "U01-D07", "a declined node is not probed again")
+    check(again_doc["session"]["problem_id"] != "R1-2020-Q01", "the contest probe is not repeated")
+    probe_id = again_doc["session"]["problem_id"]
+    node_id = again_doc["session"]["node"]
+    check(node_id and not str(probe_id).startswith("YANG-"), "the next probe is a unit drill")
+    answers = drill_answers()
+    marked = apply(
+        data,
+        {
+            "kind": "mark",
+            "problem_id": probe_id,
+            "source": "typed",
+            "extract": {"final_answer": answers[probe_id]},
+        },
+    )
+    marked_doc = load(marked)
+    check(marked.returncode == 0, "the next drill grades")
+    check(marked_doc["session"]["phase"] == "proposing", "the next drill proposes its node")
+    check("basic-integration" not in marked_doc["coach"]["offer"], "a declined node stays out of the offer")
+    check(node_id in marked_doc["coach"]["offer"], "the new node is offered")
+
+    before_bad = tracker_files(data)
+    bad = apply(data, {"kind": "confirm", "nodes": [node_id, "symmetry"]})
+    check(bad.returncode == 2, "confirm of an id outside the offer exits 2")
+    check(tracker_files(data) == before_bad, "bad confirm writes nothing")
+
+    confirmed = apply(data, {"kind": "confirm", "nodes": [node_id]})
+    confirmed_doc = load(confirmed)
+    check(confirmed.returncode == 0, "confirm the offered node")
+    stored = json.loads((data / "skill-ticks.json").read_text())["ticks"]
+    check(stored[node_id]["status"] == "skipped", "confirm writes skipped")
+    check(stored.get("basic-integration", {}).get("status") != "skipped", "decline is still not a skip")
+    check(confirmed_doc["coach"]["next_node"] != node_id, "skip leaves the coach queue")
+    check(confirmed_doc["coach"]["ready"] is False, "a skip does not open the mock")
+    blocked = apply(data, {"kind": "mock-start"})
+    check(
+        blocked.returncode == 2 and "round1 nodes not solid" in blocked.stderr,
+        "mock stays blocked after a skip",
+    )
+
+    covered = apply(data, {"kind": "cover", "full": True})
+    covered_doc = load(covered)
+    check(covered.returncode == 0, "cover exit")
+    covered_session = json.loads((data / "session.json").read_text())
+    check(covered_session["aptitude"]["full_coverage"] is True, "cover sets full coverage")
+    check(covered_doc["coach"]["full_coverage"] is True, "coach reports full coverage")
+    missed = apply(
+        data,
+        {
+            "kind": "mark",
+            "problem_id": probe_id,
+            "source": "typed",
+            "extract": {"final_answer": "1"},
+        },
+    )
+    check(missed.returncode == 1, "a miss on the skipped drill exits 1")
+    cleared = json.loads((data / "skill-ticks.json").read_text())["ticks"][node_id]["status"]
+    check(cleared == "learning", "a miss clears the skip")
+    dosed = json.loads((data / "session.json").read_text())["policy"][node_id]
+    check(dosed["detail"] == "worked", "a miss restores the worked dosage")
+
+
 def main() -> int:
     fail = 0
 
@@ -58,6 +213,13 @@ def main() -> int:
         schema_doc = load(schema)
         check("mark" in schema_doc["request"]["kinds"], "schema lists mark")
         check("awaiting_answer" in schema_doc["result"]["phases"], "schema lists awaiting_answer")
+        check(
+            set(schema_doc["request"]["kinds"])
+            == {"empty", "teach", "mark", "mock-start", "mock-finish", "aptitude", "confirm", "cover"},
+            "schema kinds match",
+        )
+        check(set(schema_doc["result"]["phases"]) == model.SESSION_PHASES, "schema phases match")
+        check(schema_doc["request"]["confirm"]["required"] == ["kind", "nodes"], "confirm requires nodes")
 
         shown = run(data, ["turn", "show", "--format", "json"])
         show_doc = load(shown)
@@ -322,6 +484,9 @@ def main() -> int:
         json.loads((ROOT / "verify" / "drills_unit1.json").read_text()),
     )
     check(weak is not None and weak["id"] == "basic-u-substitution", "a weak tag beats catalog order")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        placement(Path(tmp), check)
 
     if fail:
         print("FAIL turn contract")

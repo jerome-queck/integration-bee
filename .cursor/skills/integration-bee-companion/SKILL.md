@@ -19,9 +19,25 @@ scripts/control-integration-bee turn apply --file turn.json --format json
 
 Send `{"kind":"empty"}`. Ask with `say`.
 
+## First session
+
+Send `{"kind":"aptitude"}`. The first integral is a unit drill. Show `drill.latex` and do not show an answer. The learner sends written working. Mark it with the existing mark turn. `source` is `photo` or `typed`. A correct mark opens one contest row in `problems`. `answer_plain` is absent. Compare the written answer with `problems show` only after they answer, then send `verdict`. Do not send that integrand to SymPy.
+
+## Skip offer
+
+When the result phase is `proposing`, read `coach.offer`. Ask which of those nodes to skip. Send `{"kind":"confirm","nodes":[...]}` with only ids from that offer. Ids left out are not skipped. An empty list skips nothing. After confirm, send `{"kind":"teach"}`. Send `{"kind":"aptitude"}` again only when the learner wants another placement probe. Do not place every Round 1 node before teaching.
+
+## Full coverage
+
+Confirmed skips stay out of the queue until the learner asks for the whole set. Send `{"kind":"cover","full":true}`. That is the only turn that sets full coverage. The mock still needs every Round 1 node `solid`.
+
 ## Teach
 
-Send `{"kind":"teach"}`. Teach from `drill.teaching` in chat. Give the worked example, then a faded step, then the integral. When the learner answers, send a mark turn. If the command exits 2, ask for the final answer again. Do not record that turn yourself.
+Send `{"kind":"teach"}`. Obey `say`. Teach from `drill.teaching`. When `coach.detail` is absent or `worked`, give the worked example, then a faded step, then the integral. When it is `faded`, give one faded step, then the integral. When it is `bare`, set the integral and do not show a worked example. `coach.approach`, `coach.kind`, and `coach.volume` are the dosage for `coach.next_node`. The CLI picked the drill. When the learner answers, send a mark turn. If the command exits 2, ask for the final answer again. Do not record that turn yourself.
+
+## Miss
+
+On a miss, teach the gap from `drill.teaching` and from `docs/techniques/beyond-yang.md`. If that unit note does not contain the move, add the move there. Never treat `answer_plain` or a worked solution as checked unless `verify` is sympy or the id is a unit drill graded by the CLI. Do not invent an answer for `unchecked`.
 
 ## Photo
 

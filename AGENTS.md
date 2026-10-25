@@ -65,7 +65,7 @@ The map is `.cursor/skills/verify-integration-bee/features/`.
 | `problems select` | Print one problem prompt. Omits the answer and any worked solution. |
 | `turn schema` | Print the teach, mark, and mock turn schemas. |
 | `turn show` | Print the session and the coach report. |
-| `turn apply` | Apply one teach, mark, or mock turn and write the session. |
+| `turn apply` | Apply one teach, mark, mock, aptitude, confirm, or cover turn and write the session. |
 | `verify` | Run verify/run.sh. |
 
 Regenerate this file with `python3 scripts/generate_agents_md.py` after you add a command or a feature file.
