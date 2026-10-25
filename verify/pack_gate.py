@@ -2323,7 +2323,13 @@ def _half_line_log_linear(integrand, symbol, lo, hi):
 
 
 def _cos_shift_segment(integrand, symbol, lo, hi):
-    """∫_0^a x/(cos x cos(a-x)) dx = a log(sec a)/sin a."""
+    """∫_0^a x/(cos x cos(a-x)) dx = a log(sec a)/sin a.
+
+    Symmetry makes the weight a/2. The product identity and u = 2x-a fold the
+    integral onto 1/(cos a + cos u). The half-angle substitution turns that
+    antiderivative into a rational identity, so the check never simplifies an
+    absolute-value derivative.
+    """
     if not _zero(lo) or not integrand.has(sp.cos):
         return None
     angle = sp.Wild("w")
@@ -2341,27 +2347,46 @@ def _cos_shift_segment(integrand, symbol, lo, hi):
         x = sp.Symbol("_x", real=True)
         u = sp.Symbol("_u", real=True)
         density = 1 / (sp.cos(x) * sp.cos(a - x))
-        _require(_zero(sp.simplify(density - density.subs(x, a - x))), "sym")
+        _require(_zero(density - density.subs(x, a - x)), "sym")
+        weight = sp.Symbol("_f")
+        _require(_zero(x * weight + (a - x) * weight - a * weight), "king")
         _require(
             _zero(sp.expand_trig(sp.cos(x) * sp.cos(a - x) - (sp.cos(a) + sp.cos(2 * x - a)) / 2)),
             "prod",
         )
         _require(_zero(sp.diff(2 * x - a, x) - 2), "jac")
-        anti = (
-            sp.log(sp.Abs(sp.tan(u / 2) + 1 / sp.tan(a / 2)))
-            - sp.log(sp.Abs(sp.tan(u / 2) - 1 / sp.tan(a / 2)))
-        ) / sp.sin(a)
-        _require(_zero(sp.diff(anti, u) - 1 / (sp.cos(a) + sp.cos(u))), "anti")
-        _require(_zero(sp.simplify(anti.subs(u, 0))), "zero")
-        num = sp.tan(a / 2) + 1 / sp.tan(a / 2)
-        den = sp.tan(a / 2) - 1 / sp.tan(a / 2)
-        ratio = num / den
-        _require(_zero(sp.log(sp.Abs(num)) - sp.log(sp.Abs(den)) - sp.log(sp.Abs(ratio))), "split-log")
-        _require(_zero(sp.simplify(ratio + 1 / sp.cos(a))), "end-ratio")
-        closed = sp.log(sp.Abs(sp.sec(a))) / sp.sin(a)
-        _require(_zero(sp.log(sp.Abs(ratio)) / sp.sin(a) - closed), "end")
-        printed = sp.refine(sp.log(sp.Abs(sp.sec(a))), sp.Q.positive(sp.sec(a)) & sp.Q.lt(a, sp.pi / 2))
-        _require(printed == sp.log(sp.sec(a)), "sec")
+        reduced = 2 / (sp.cos(a) + sp.cos(2 * x - a))
+        goal = 1 / (sp.cos(a) + sp.cos(u))
+        folded = reduced.subs(x, (u + a) / 2) * sp.Rational(1, 2)
+        _require(_zero(folded - goal), "sub")
+        _require(_zero(goal - goal.subs(u, -u)), "even")
+        tangent = sp.tan(u / 2)
+        cotangent = 1 / sp.tan(a / 2)
+        anti = (sp.log(cotangent + tangent) - sp.log(cotangent - tangent)) / sp.sin(a)
+        slope = sp.diff(anti, u)
+        height, half = sp.symbols("_T _C", positive=True)
+        replaced = (slope - goal).subs(
+            {
+                sp.tan(u / 2): height,
+                sp.tan(a / 2): 1 / half,
+                sp.sin(a): 2 * half / (half**2 + 1),
+                sp.cos(a): (half**2 - 1) / (half**2 + 1),
+                sp.cos(u): (1 - height**2) / (1 + height**2),
+            }
+        )
+        _require(sp.cancel(replaced) == 0, "anti")
+        _require(_zero(sp.diff(sp.tan(u / 2), u) - (1 + sp.tan(u / 2) ** 2) / 2), "dt")
+        _require(_zero(sp.sin(a) - 2 * cotangent / (1 + cotangent**2)), "sin")
+        _require(_zero(sp.cos(a) - (cotangent**2 - 1) / (cotangent**2 + 1)), "cos-a")
+        _require(_zero(sp.cos(u) - (1 - tangent**2) / (1 + tangent**2)), "cos-u")
+        _require(_zero(anti.subs(u, 0)), "zero")
+        num = sp.tan(a / 2) + cotangent
+        den = cotangent - sp.tan(a / 2)
+        _require(_zero(sp.log(num / den) - sp.log(sp.sec(a))), "end")
+        _require(
+            _zero(a * sp.log(sp.sec(a)) / sp.sin(a) - a * (sp.log(num / den) / sp.sin(a))),
+            "value",
+        )
         return True
 
     if _fact("cos-shift-segment", build) is not True:
