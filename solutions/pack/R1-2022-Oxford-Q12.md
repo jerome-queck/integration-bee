@@ -1,0 +1,30 @@
+# R1-2022-Oxford-Q12
+
+- Problem: `sources/past/r1/2022/Oxford_2022_Round_1_UK_University_Integration_Bee_(1).pdf` (problem 12)
+- Printed answer: `sources/past/r1/2022/Oxford_Mark_Scheme_2022_Round_1_UK_University_Integration_Bee_(5).pdf`
+- Worked source: derived in this note; the mark scheme prints the final value.
+- The catalog row is not changed.
+
+## Problem
+
+\[
+\int_0^{\infty}\frac{\arctan x}{(1+x)\sqrt{x}}\,dx.
+\]
+
+## Solution
+
+Set \(x=u^{2}\) and then \(u=\tan\theta\). The integral becomes
+\[
+2\int_0^{\pi/2}\arctan(\tan^{2}\theta)\,d\theta.
+\]
+For \(z>0\), the derivative of \(\arctan z+\arctan(1/z)\) is \(0\), and the value at \(z=1\) is \(\pi/2\). Also \(\tan^{2}(\pi/2-\theta)=1/\tan^{2}\theta\). The two halves of the interval therefore sum to \(\int_0^{\pi/2}(\pi/2)\,d\theta=\pi^{2}/4\), and the factor \(2\) in front of one half produces \(\pi^{2}/4\). The mark scheme prints \(\pi^{2}/4\).
+
+## Final answer
+
+\[
+\dfrac{\pi^{2}}{4}.
+\]
+
+## SymPy self-check
+
+`solutions/self_check.py` runs `check_r1_2022_oxford_q12`. SymPy checks that \(\arctan z+\arctan(1/z)\) is constant on \(z>0\), that the constant is \(\pi/2\), and that the paired integral is \(\pi^{2}/4\).

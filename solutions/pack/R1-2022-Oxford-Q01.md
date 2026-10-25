@@ -1,0 +1,34 @@
+# R1-2022-Oxford-Q01
+
+- Problem: `sources/past/r1/2022/Oxford_2022_Round_1_UK_University_Integration_Bee_(1).pdf` (problem 1)
+- Printed answer: `sources/past/r1/2022/Oxford_Mark_Scheme_2022_Round_1_UK_University_Integration_Bee_(5).pdf`
+- Worked source: derived in this note; the mark scheme prints the final value.
+- The catalog row is not changed.
+
+## Problem
+
+\[
+\int_{-\pi/2}^{\pi/2}\frac{\cos x}{1+e^{x}}\,dx.
+\]
+
+## Solution
+
+Let \(f(x)=\cos x/(1+e^{x})\). Then
+\[
+f(-x)=\frac{\cos x\cdot e^{x}}{1+e^{x}},
+\]
+so \(f(x)+f(-x)=\cos x\). Adding the original integral to its substitution \(u=-x\) gives
+\[
+2I=\int_{-\pi/2}^{\pi/2}\cos x\,dx=2,
+\]
+and \(I=1\). The same integral is problem 1 of the 2020 paper, whose answers sheet prints \(1\). Each 2022 mark scheme prints \(\sin 1\). That constant does not differentiate back to the integrand, and it does not simplify to \(1\). The value that checks against the integrand is \(1\).
+
+## Final answer
+
+\[
+1.
+\]
+
+## SymPy self-check
+
+`solutions/self_check.py` runs `check_r1_2022_oxford_q01`. SymPy simplifies \(f(x)+f(-x)-\cos x\) to \(0\), evaluates \(\int_{-\pi/2}^{\pi/2}\cos x\,dx=2\), and checks that \(\sin 1\) does not simplify to \(1\).
