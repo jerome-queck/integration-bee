@@ -8,3 +8,5 @@
 - `U26-D06`: $\log{\left(2 \right)}$
 - `U26-D07`: $\frac{2 \sqrt{3} \operatorname{atan}{\left(\frac{1}{3} \right)}}{3}$
 - `U26-D08`: $\frac{\sqrt{3} \pi}{9}$
+
+\(\int_0^{\pi/3}(1+\cos x)^{-1}\,dx=\sqrt{3}/3\), with antiderivative \(\tan(x/2)\), is the early pass in unit 09. It is not `U26-D01` through `U26-D08`.

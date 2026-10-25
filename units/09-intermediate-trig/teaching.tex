@@ -37,8 +37,27 @@ The syllabus puts the substitution $t=\tan(x/2)$ in section 1. The Techniques Gu
 \cos x=\frac{1-t^2}{1+t^2},\qquad
 dx=\frac{2\,dt}{1+t^2}.
 \]
-On \texttt{U26-D01}, $\int_0^{\pi/2} dx/(1+\sin x)$, the limits become $t=0$ and $t=1$, and $1+\sin x=(1+t)^2/(1+t^2)$. The integral collapses to $\int_0^1 2/(1+t)^2\,dt=1$.
-A power of sine alone is still the reduction in unit 20. The full pattern $\int_0^\pi dx/(a+b\cos x)$, the endpoint at $x=\pi$, and the drill set are unit 26. That file is the note a miss of this substitution names.
+The fourth replacement is $\tan x=2t/(1-t^2)$. It is the quotient of the first two. Use it when a tangent is already in the integrand. $t=\tan(x/2)$ is continuous on $(-\pi,\pi)$. If the interval contains an odd multiple of $\pi$ in its interior, split there before you integrate. If the endpoint is $x=\pi$, the integral in $t$ is improper. Unit 26 writes that endpoint.
+
+\section{Worked early pass}
+This integral is not one of \texttt{U09-D01} through \texttt{U09-D08}. On $[0,\pi/3]$,
+\[
+\int_0^{\pi/3}\frac{dx}{1+\cos x}.
+\]
+The limits become $t=0$ and $t=\tan(\pi/6)=\sqrt{3}/3$. Then
+\[
+1+\cos x=\frac{2}{1+t^2},
+\]
+so $1/(1+\cos x)=(1+t^2)/2$. Multiply by $dx=2\,dt/(1+t^2)$ and the integral is $\int_0^{\sqrt{3}/3} dt=\sqrt{3}/3$.
+The antiderivative is $\tan(x/2)$. Check the endpoint: $\tan(\pi/6)=\sqrt{3}/3$.
+
+\section{Faded early pass --- \texttt{U26-D01}}
+\[
+\int_0^{\pi/2}\frac{dx}{1+\sin x}.
+\]
+Write $t=\tan(x/2)$ and fill the limits before you expand. They are $0$ and $1$, not $0$ and $\infty$. The identity $1+\sin x=(1+t)^2/(1+t^2)$ collapses the integral to $\int_0^1 2/(1+t)^2\,dt$. The stored value is $1$. The drill id lives in unit 26. That file is the note a miss of this substitution names.
+
+A power of sine alone is still the reduction in unit 20. A rational function of $\tan x$ that already contains $\sec^2 x$ is the ordinary substitution $u=\tan x$, which is \texttt{U09-D04} and \texttt{U09-D08}, not this half-angle. The full pattern $\int_0^\pi dx/(a+b\cos x)$ is unit 26.
 
 \section{Practice}
 \texttt{U09-D01}\ldots\texttt{U09-D08} in \texttt{drills.tex}; \texttt{verify/run.sh}.

@@ -30,14 +30,14 @@ Yang is one source among others. These notes are original exposition for moves t
 - cite: Techniques Guide section 1.7
 - catalog: floor
 - contains: This node stays deferred, 1.7, split at integers
-- examples: 3
+- examples: 7
 
 ## introduce-constant
 - note: docs/techniques/introduce-constant.md
 - cite: Techniques Guide section 1.9
 - catalog:
 - contains: add and subtract, This move is not dutis, 34-frullani-feynman, smaller parameter
-- examples: 3
+- examples: 6
 
 ## formats
 - note: docs/techniques/formats.md

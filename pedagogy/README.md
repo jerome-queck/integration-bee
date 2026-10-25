@@ -17,6 +17,10 @@ Yang is one source among others. The other sources used in the notes are:
 
 A PDF is a reference for checking a printed value. It is not the lesson. Do not copy a contest answer into a note. Do not invent a value that `drills.md` does not store and that SymPy has not checked.
 
+## Contest gaps Yang does not cover alone
+
+The six headings in `docs/techniques/beyond-yang.md` are the gap list. How to teach each one, including the Round 1 paper and the Round 2 and Round 3 games, is `pedagogy/contest-gaps.md`. The math stays in the note that heading names. Yang is one source. The Techniques Guide, the syllabus, and the participant guides are the others.
+
 ## Teach on a miss
 
 `turn apply` names exactly one file in `say`. Teach that file. A wrong final answer with a gap id opens the technique note. A wrong final answer with no gap id opens `units/<unit>/teaching.tex`. A correct final answer that used the wrong method names the same kind of file and keeps the method note.

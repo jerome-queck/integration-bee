@@ -58,7 +58,9 @@ The identity keeps the same interval. For a continuous $f$,
 \[
 \int_a^b f(x)\,dx=\int_a^b f(a+b-x)\,dx.
 \]
-The substitution $u=a+b-x$ swaps the limits and then the sign of $du$ swaps them back. Contest writeups call this King's rule. They call the special case on $[0,a]$, namely $u=a-x$, Queen's rule. There is one identity.
+The substitution $u=a+b-x$ swaps the limits and then the sign of $du$ swaps them back. Geometrically it reflects the graph in the line $x=(a+b)/2$, so the endpoints stay put. Contest writeups call this King's rule. They call the special case on $[0,a]$, namely $u=a-x$, Queen's rule. There is one identity.
+
+If $f(x)+f(a+b-x)$ equals a constant $c$, the integral equals $c(b-a)/2$. Write both integrands before you add. If they do not add to a constant, keep both copies. The sum may still be shorter than either one.
 
 Add the original integral to the reflected copy when the two integrands sum to something you can integrate. That is the whole toolkit.
 
@@ -80,6 +82,32 @@ I=\int_0^{\pi/2}\frac{\sin x}{\sin x+\cos x}\,dx.
 \]
 The swap $x\mapsto\pi/2-x$ exchanges the two summands, so the reflected integrand is $\cos x/(\sin x+\cos x)$. Adding the copies gives $2I=\int_0^{\pi/2} 1\,dx=\pi/2$, hence $I=\pi/4$.
 \texttt{U10-D05} is the cosine-over-sum partner and has the same value. The King example \texttt{U10-D04} is the sine and cosine case, not the whole toolkit.
+
+\section{Faded reflection --- \texttt{U10-D05}}
+Cover the worked king. The integrand of \texttt{U10-D05} is $\cos x/(\sin x+\cos x)$ on $[0,\pi/2]$. The swap $x\mapsto\pi/2-x$ replaces it by a fraction. Write that fraction, then add. The two fractions add to 1, and the interval has length $\pi/2$. The stored value matches \texttt{U10-D04}.
+
+The same complement, seen from a tangent, is still \texttt{U10-D07}. On $[0,\pi/2]$,
+\[
+\frac{1}{1+\tan^2 x}=\cos^2 x,
+\]
+and $\tan(\pi/2-x)=\cot x$, so the reflected fraction is $\tan^2 x/(1+\tan^2 x)$. The two add to 1, and half of the length $\pi/2$ is $\pi/4$. That is the stored value of \texttt{U10-D07}. You do not need a new drill for the tangent form.
+
+\section{Log sine, not a drill}
+The Techniques Guide evaluates $\int_0^{\pi/2}\ln(\sin x)\,dx$ by this reflection. The value is not a stored drill. Do not mark it as one.
+Let $I$ be that integral. The swap $x\mapsto\pi/2-x$ gives $I=\int_0^{\pi/2}\ln(\cos x)\,dx$, so
+\[
+2I=\int_0^{\pi/2}\ln(\sin x\cos x)\,dx
+=\int_0^{\pi/2}\ln(\sin 2x)\,dx-\frac\pi2\ln 2.
+\]
+The substitution $u=2x$ turns $\int_0^{\pi/2}\ln(\sin 2x)\,dx$ into $\frac12\int_0^\pi\ln(\sin u)\,du$. On $[\pi/2,\pi]$ the map $u\mapsto\pi-u$ copies $\ln(\sin u)$ onto $[0,\pi/2]$, so the integral from $0$ to $\pi$ is $2I$. Therefore
+\[
+2I=\frac12\cdot 2I-\frac\pi2\ln 2=I-\frac\pi2\ln 2,
+\]
+and
+\[
+I=-\frac\pi2\ln 2.
+\]
+A high-precision quadrature agrees with that value. The derivation above is the reason to quote it. SymPy leaves the symbolic integral unevaluated, so this is not a machine drill.
 
 \section{Algebra on a reflected interval}
 \texttt{U10-D06} is $\int_0^1 x/(1+x)\,dx$. Reflection sends it to $\int_0^1 (1-x)/(2-x)\,dx$, which is a different integral. The short path is the constant you add and subtract:
