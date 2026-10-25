@@ -25,7 +25,17 @@ log(x+1/x)/(x+1/x), the Taylor series of log(1-x) with absolutely convergent
 term integrals, integration by parts down to a beta integral, an explicit
 arcsine antiderivative, and the Fourier series of the real part of exp(c e^{ix}).
 A single letter of integration other than x is stored as x when x is not
-already a parameter. Numeric agreement is not a proof.
+already a parameter. The letter i in a layout reading is the imaginary unit.
+Further checked forms are a constant sum of reciprocal square roots of
+logarithms on a finite interval, the beta evaluation of a power of tangent,
+a cosine modulus through the half-angle
+substitution, geometric series for x**n/(exp(x)±1), a shift of log gamma, a
+sine weight on log gamma, a product of sines, cot(x) log(sec x), the
+derivative of a polylog in x**x, log(1+tan x) on [0, π/4], odd-zeta series,
+a damped (t-sin t)/t**2 integral, a sine-square substitution, the Wallis
+product, an artanh series reduced to the Wallis integral, and a Chebyshev
+reduction. A logarithm of an absolute value differentiates as the logarithm
+of its argument. Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -57,25 +67,52 @@ def namespace(variable: str) -> dict:
     ns["coth"] = sp.coth
     ns["zeta"] = sp.zeta
     ns["gamma"] = sp.gamma
+    ns["i"] = sp.I
     ns[variable] = sp.symbols(variable, real=True)
     ns["C"] = sp.Symbol("C")
     return ns
 
 
 def _parse(text: str, variable: str):
+    # A mark scheme can print a chain of equal values. Evaluating that chain
+    # collapses a true link to True and the next link to False.
+    if "Eq(" in text:
+        with sp.evaluate(False):
+            return sp.sympify(text, locals=namespace(variable))
     return sp.sympify(text, locals=namespace(variable))
+
+
+def _unwrap_equality(expr):
+    """Keep the right-hand side of a chain only when every link is an identity."""
+    steps = 0
+    while isinstance(expr, sp.Equality):
+        steps += 1
+        if steps > 4:
+            return None
+        left = _unwrap_equality(expr.lhs) if isinstance(expr.lhs, sp.Equality) else expr.lhs
+        right = _unwrap_equality(expr.rhs) if isinstance(expr.rhs, sp.Equality) else expr.rhs
+        if left is None or right is None or not _zero(left - right):
+            return None
+        expr = right
+    return expr
 
 
 def _answer_expr(text: str, variable: str):
     expr = _parse(text, variable)
     if isinstance(expr, sp.Equality):
-        if sp.simplify(expr.lhs - expr.rhs) != 0:
+        expr = _unwrap_equality(expr)
+        if expr is None:
             return None
-        expr = expr.rhs
-    expr = sp.expand(expr).subs(sp.Symbol("C"), 0)
-    if expr.has(sp.Symbol("C")):
+    constant = sp.Symbol("C")
+    if not expr.has(constant):
+        return sp.expand(expr).subs(constant, 0)
+    expanded = sp.expand(expr)
+    cleaned = expanded.subs(constant, 0)
+    delta = sp.simplify(expanded - cleaned)
+    symbol = namespace(variable)[variable]
+    if delta.has(symbol) or not _closed(delta) or cleaned.has(constant):
         return None
-    return expr
+    return cleaned
 
 
 def _closed(expr) -> bool:
@@ -630,8 +667,20 @@ def _matches(value, answer) -> bool:
     return value is not None and _closed(value) and _same(value, answer)
 
 
+def _drop_log_abs(expr):
+    """log|u| and log(u) share a derivative on each interval where u keeps its sign."""
+    return expr.replace(
+        lambda node: isinstance(node, sp.log) and node.args and isinstance(node.args[0], sp.Abs),
+        lambda node: sp.log(node.args[0].args[0]),
+    )
+
+
 def _antiderivative(answer, integrand, variable: str) -> bool:
-    delta = sp.diff(answer, namespace(variable)[variable]) - integrand
+    symbol = namespace(variable)[variable]
+    plain = _drop_log_abs(answer)
+    if plain != answer and _zero(sp.diff(plain, symbol) - integrand):
+        return True
+    delta = sp.diff(answer, symbol) - integrand
     return _zero(delta)
 
 
@@ -1121,6 +1170,731 @@ def _cos_double_shift(integrand, symbol, lo, hi):
     return sp.simplify(width / 2)
 
 
+def _require(cond, label: str) -> None:
+    if not cond:
+        raise RuntimeError(label)
+
+
+def _bose_moment(power: int):
+    """∫_0^∞ x^n/(e^x-1) dx = n! ζ(n+1), from the geometric series and term integrals."""
+
+    def build():
+        x = sp.Symbol("_x", positive=True)
+        degree = sp.Symbol("_N", integer=True, positive=True)
+        index = sp.Symbol("_k", integer=True, positive=True)
+        ratio = sp.exp(-x)
+        partial = (ratio - ratio ** (degree + 1)) / (1 - ratio)
+        _require(_zero(partial - ratio * (1 - ratio**degree) / (1 - ratio)), "bose-partial")
+        summed = sp.summation(ratio**index, (index, 1, degree))
+        _require(isinstance(summed, sp.Piecewise), "bose-piece")
+        closed = None
+        for expr, cond in summed.args:
+            if cond == True:
+                closed = expr
+        _require(closed is not None and _zero(closed - partial), "bose-branch")
+        _require(sp.solveset(sp.exp(-x) - 1, x, domain=sp.S.Reals) == sp.FiniteSet(0), "bose-root")
+        _require(_zero(sp.limit(partial, degree, sp.oo) - 1 / (sp.exp(x) - 1)), "bose-limit")
+        scale = sp.Symbol("_a", positive=True)
+        moment = _integrate_fast(x**power * sp.exp(-scale * x), x, 0, sp.oo)
+        _require(
+            moment is not None and _zero(moment - sp.factorial(power) / scale ** (power + 1)),
+            "bose-moment",
+        )
+        total = sp.summation(sp.factorial(power) / index ** (power + 1), (index, 1, sp.oo))
+        _require(_closed(total) and _zero(total - sp.factorial(power) * sp.zeta(power + 1)), "bose-zeta")
+        return sp.simplify(total)
+
+    return _fact(f"bose-{power}", build)
+
+
+def _bose_square(integrand, symbol, lo, hi):
+    """∫_0^∞ x²/(e^x-1) dx = 2 ζ(3)."""
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.exp):
+        return None
+    if integrand != symbol**2 / (sp.exp(symbol) - 1):
+        return None
+    return _bose_moment(2)
+
+
+def _fermi_cubic(integrand, symbol, lo, hi):
+    """∫_0^∞ x³/(e^x+1) dx = 7 π⁴/120, from the Bose value and one algebraic split."""
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.exp):
+        return None
+    if integrand != symbol**3 / (sp.exp(symbol) + 1):
+        return None
+    bose = _bose_moment(3)
+    if bose is None:
+        return None
+    fermi = 1 / (sp.exp(symbol) + 1)
+    split = 1 / (sp.exp(symbol) - 1) - 2 / (sp.exp(2 * symbol) - 1)
+    _require(_zero(fermi - split), "fermi-split")
+    line = sp.Symbol("_u", positive=True)
+    pulled = (line / 2) ** 3 / (sp.exp(line) - 1) * sp.Rational(1, 2)
+    _require(_zero(pulled - line**3 / (16 * (sp.exp(line) - 1))), "fermi-sub")
+    value = sp.simplify(bose - bose / 8)
+    goal = 7 * sp.pi**4 / 120
+    _require(_zero(sp.zeta(4) - sp.pi**4 / 90), "zeta4")
+    _require(_zero(value - goal), "fermi-value")
+    return goal
+
+
+def _log_gamma_unit():
+    """∫_0^1 log Γ(x) dx = log(2π)/2, from the reflection formula and log(sin)."""
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        z = sp.Symbol("_z", positive=True)
+        _require(_zero(sp.gamma(z) * sp.gamma(1 - z) - sp.pi / sp.sin(sp.pi * z)), "gamma-reflect")
+        _require(
+            _logs_equivalent(
+                sp.log(sp.gamma(z)) + sp.log(sp.gamma(1 - z)),
+                sp.log(sp.pi / sp.sin(sp.pi * z)),
+            ),
+            "gamma-log",
+        )
+        _require(_zero(sp.diff(1 - x, x) + 1), "gamma-flip")
+        _require(_zero(sp.sin(sp.pi - x) - sp.sin(x)), "sin-reflect")
+        _require(_zero(sp.diff(sp.pi * x, x) - sp.pi), "sin-scale")
+        quarter = _log_sine_quarter(sp.log(sp.sin(x)), x, 0, sp.pi / 2)
+        _require(quarter is not None, "quarter")
+        unit = sp.simplify(2 * quarter / sp.pi)
+        _require(_zero(unit + sp.log(2)), "log-sin-unit")
+        height = sp.log(2 * sp.pi) / 2
+        _require(_zero(2 * height - (sp.log(sp.pi) - unit)), "gamma-unit")
+        _require(_zero(sp.gamma(z + 1) / (sp.gamma(z) * z) - 1), "gamma-step")
+        _require(_zero(sp.gamma(z + 3) / (sp.gamma(z) * z * (z + 1) * (z + 2)) - 1), "gamma-step3")
+        return height
+
+    return _fact("log-gamma-unit", build)
+
+
+def _elementary_log_shift(shift: int):
+    def build():
+        x = sp.Symbol("_x", real=True)
+        value = _integrate_fast(sp.log(x + shift), x, 0, 1)
+        _require(value is not None and _closed(value), f"elog-{shift}")
+        return sp.simplify(value)
+
+    return _fact(f"elog-{shift}", build)
+
+
+def _log_gamma_interval(integrand, symbol, lo, hi):
+    """A shift reduces log Γ on [3, 5] and on [0, 2] to the unit interval."""
+    if not integrand.has(sp.gamma) or not integrand.has(sp.log):
+        return None
+    on_span = integrand == sp.log(sp.gamma(symbol)) and _zero(lo - 3) and _zero(hi - 5)
+    on_relay = integrand == sp.log(sp.gamma(2 - symbol)) and _zero(lo) and _zero(hi - 2)
+    if not on_span and not on_relay:
+        return None
+    unit = _log_gamma_unit()
+    if unit is None:
+        return None
+    _require(_zero(sp.diff(symbol + 3, symbol) - 1), "shift-3")
+    _require(_zero(sp.diff(2 - symbol, symbol) + 1), "shift-relay")
+    logs = [_elementary_log_shift(shift) for shift in range(4)]
+    if on_relay:
+        value = sp.simplify(2 * unit + logs[0])
+        _require(_zero(value - (sp.log(2 * sp.pi) - 1)), "relay")
+        return value
+    total = sp.simplify(2 * unit + 2 * logs[0] + 2 * logs[1] + 2 * logs[2] + logs[3])
+    _require(_zero(total - (sp.log(13824 * sp.pi) - 7)), "span")
+    return total
+
+
+def _sin_log_gamma(integrand, symbol, lo, hi):
+    """∫_0^1 log Γ(x) sin(π x) dx, using the same reflection and an elementary weight."""
+    if not (_zero(lo) and _zero(hi - 1)):
+        return None
+    if not integrand.has(sp.gamma) or not integrand.has(sp.sin):
+        return None
+    if integrand != sp.log(sp.gamma(symbol)) * sp.sin(sp.pi * symbol):
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        _require(_zero(sp.sin(sp.pi * (1 - x)) - sp.sin(sp.pi * x)), "weight")
+        _require(_zero(sp.diff(1 - x, x) + 1), "flip")
+        z = sp.Symbol("_z", positive=True)
+        _require(_zero(sp.gamma(z) * sp.gamma(1 - z) - sp.pi / sp.sin(sp.pi * z)), "reflect")
+        antideriv = -sp.cos(sp.pi * x) / sp.pi
+        _require(_zero(sp.diff(antideriv, x) - sp.sin(sp.pi * x)), "sin-prim")
+        sine = antideriv.subs(x, 1) - antideriv.subs(x, 0)
+        _require(_zero(sine - 2 / sp.pi), "sin-int")
+        w = sp.Symbol("_w", real=True)
+        _require(_zero(sp.diff(sp.cos(x), x) + sp.sin(x)), "cos-diff")
+        _require(_zero(sp.sin(x) ** 2 - (1 - sp.cos(x) ** 2)), "sin-square")
+        _require(_zero(sp.log(sp.sin(x) ** 2) - 2 * sp.log(sp.sin(x))), "sin-log")
+        left = -(1 - w) * sp.log(1 - w) - w
+        right = (1 + w) * sp.log(1 + w) - w
+        _require(_zero(sp.diff(left, w) - sp.log(1 - w)), "log-minus")
+        _require(_zero(sp.diff(right, w) - sp.log(1 + w)), "log-plus")
+        at_one = sp.limit(left, w, 1) - left.subs(w, 0)
+        other = right.subs(w, 1) - right.subs(w, 0)
+        _require(_zero(at_one + 1) and _zero(other - (2 * sp.log(2) - 1)), "log-ends")
+        quarter = sp.simplify(at_one / 2 + other / 2)
+        _require(_zero(quarter - (sp.log(2) - 1)), "sin-log-int")
+        _require(_zero(sp.diff(sp.pi * x, x) - sp.pi), "scale")
+        _require(_zero(sp.sin(sp.pi - x) - sp.sin(x)), "half")
+        weighted = sp.simplify((2 / sp.pi) * quarter)
+        value = sp.simplify((sp.log(sp.pi) * sine - weighted) / 2)
+        goal = (sp.log(sp.pi) - sp.log(2) + 1) / sp.pi
+        _require(_zero(value - goal), "sin-gamma")
+        return goal
+
+    return _fact("sin-log-gamma", build)
+
+
+def _tan_log_square(integrand, symbol, lo, hi):
+    """∫_0^{π/2} log(tan x)² dx = π³/8, by differentiating the beta evaluation of tan^a."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 2)):
+        return None
+    if not integrand.has(sp.log) or not integrand.has(sp.tan):
+        return None
+    if integrand != sp.log(sp.tan(symbol)) ** 2:
+        return None
+
+    def build():
+        a = sp.Symbol("_a", real=True)
+        x = sp.Symbol("_x", real=True)
+        t = sp.Symbol("_t", positive=True)
+        alpha = (a + 1) / 2
+        beta = (1 - a) / 2
+        jacobian = 1 / (2 * sp.sqrt(t) * sp.sqrt(1 - t))
+        transformed = (sp.sqrt(t) / sp.sqrt(1 - t)) ** a * jacobian
+        density = sp.Rational(1, 2) * t ** (alpha - 1) * (1 - t) ** (beta - 1)
+        _require(_zero(sp.simplify(transformed / density - 1)), "tan-jac")
+        _require(_zero(sp.sin(0) ** 2) and _zero(sp.sin(sp.pi / 2) ** 2 - 1), "tan-ends")
+        _require(_zero(alpha + beta - 1), "tan-sum")
+        _require(_zero(sp.gamma(alpha + beta) - 1), "tan-gamma1")
+        z = sp.Symbol("_z", real=True)
+        _require(_zero(sp.gamma(z) * sp.gamma(1 - z) - sp.pi / sp.sin(sp.pi * z)), "tan-reflect")
+        _require(
+            _zero(sp.beta(alpha, beta) - sp.gamma(alpha) * sp.gamma(beta) / sp.gamma(alpha + beta)),
+            "tan-beta",
+        )
+        _require(_zero(sp.gamma(alpha) * sp.gamma(beta) - sp.pi / sp.sin(sp.pi * alpha)), "tan-prod")
+        _require(_zero(sp.sin(sp.pi * alpha) - sp.cos(sp.pi * a / 2)), "tan-sin")
+        closed = (sp.pi / 2) * sp.sec(sp.pi * a / 2)
+        _require(_zero(sp.pi / (2 * sp.sin(sp.pi * alpha)) - closed), "tan-sec")
+        tower = sp.exp(a * sp.log(sp.tan(x)))
+        _require(_zero(sp.diff(tower, a, 2).subs(a, 0) - sp.log(sp.tan(x)) ** 2), "tan-diff")
+        second = sp.diff(closed, a, 2).subs(a, 0)
+        _require(_closed(second), "tan-second")
+        return sp.simplify(second)
+
+    return _fact("tan-log-square", build)
+
+
+def _cosine_modulus(integrand, symbol, lo, hi):
+    """∫_0^π log(π² - 2π cos x + 1) dx = 2π log π. The folded factor is constant."""
+    if not (_zero(lo) and _zero(hi - sp.pi)) or not integrand.has(sp.log):
+        return None
+    if integrand != sp.log(1 - 2 * sp.pi * sp.cos(symbol) + sp.pi**2):
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        radius = sp.Symbol("_A", positive=True)
+        ident = (
+            sp.log(radius**2 - 2 * radius * sp.cos(x) + 1)
+            - 2 * sp.log(radius)
+            - sp.log(1 - 2 * sp.cos(x) / radius + 1 / radius**2)
+        )
+        _require(sp.simplify(sp.expand_log(ident, force=True)) == 0, "mod-split")
+        _require(sp.ask(sp.Q.positive(sp.pi - 1)) is True, "pi-gt")
+        s = sp.Symbol("_s", positive=True)
+        rho = 1 / (1 + s)
+        disc2 = sp.factor(sp.together((1 + rho**2) ** 2 - 4 * rho**2))
+        _require(_zero(disc2 - (1 - rho**2) ** 2), "disc-square")
+        explicit = sp.together(s * (s + 2) / (s + 1) ** 2)
+        _require(_zero(sp.together(1 - rho**2) - explicit), "one-minus")
+        _require(sp.ask(sp.Q.positive(explicit)) is True, "one-pos")
+        _require(_zero(sp.sqrt(disc2) - explicit), "disc-value")
+        t = sp.Symbol("_t", positive=True)
+        width = sp.Symbol("_b", positive=True)
+        gap = sp.Symbol("_g", positive=True)
+        height = width + gap
+        _require(_zero(sp.diff(sp.tan(x / 2), x) - (1 + sp.tan(x / 2) ** 2) / 2), "half-angle")
+        _require(
+            _zero(sp.cos(x) - (1 - sp.tan(x / 2) ** 2) / (1 + sp.tan(x / 2) ** 2)),
+            "cos-weier",
+        )
+        left = (2 / (1 + t**2)) / (height - width * (1 - t**2) / (1 + t**2))
+        right = 2 / ((height - width) + (height + width) * t**2)
+        _require(_zero(left - right), "weier-id")
+        primitive = (
+            2
+            * sp.atan(t * sp.sqrt((height + width) / (height - width)))
+            / sp.sqrt((height - width) * (height + width))
+        )
+        _require(_zero(sp.together(sp.diff(primitive, t) - right)), "weier-diff")
+        _require(_zero(primitive.subs(t, 0)), "weier-zero")
+        _require(sp.limit(sp.atan(gap * t), t, sp.oo) == sp.pi / 2, "atan-inf")
+        _require(sp.ask(sp.Q.positive(sp.sqrt((height + width) / (height - width)))) is True, "ratio-pos")
+        closed = sp.pi / sp.sqrt(height**2 - width**2)
+        _require(
+            _zero(sp.pi / (sp.sqrt(gap) * sp.sqrt(2 * width + gap)) - closed),
+            "weier-value",
+        )
+        curve = sp.Symbol("_r", positive=True)
+        denominator = 1 - 2 * curve * sp.cos(x) + curve**2
+        _require(
+            _zero(
+                2 * (curve - sp.cos(x)) / denominator
+                - (1 / curve - (1 - curve**2) / (curve * denominator))
+            ),
+            "r-deriv",
+        )
+        cancelled = sp.pi / rho - (1 - rho**2) / rho * sp.pi / (1 - rho**2)
+        _require(_zero(cancelled), "folded-deriv")
+        _require(_zero(sp.log(1)), "folded-zero")
+        return sp.simplify(2 * sp.pi * sp.log(sp.pi))
+
+    return _fact("cosine-modulus", build)
+
+
+def _cot_log_sec(integrand, symbol, lo, hi):
+    """∫_0^{π/2} cot(x) log(sec x) dx = π²/24, from the series of log(1-v)."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 2)):
+        return None
+    if not integrand.has(sp.log) or not integrand.has(sp.cot):
+        return None
+    if integrand != sp.log(sp.sec(symbol)) * sp.cot(symbol):
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        u = sp.Symbol("_u", positive=True)
+        _require(_logs_equivalent(sp.log(sp.sec(x)), -sp.log(sp.cos(x))), "sec-log")
+        _require(_zero(sp.log(sp.cos(x) ** 2) - 2 * sp.log(sp.cos(x))), "cos-log")
+        _require(_zero(sp.cos(x) ** 2 - (1 - sp.sin(x) ** 2)), "cos-square")
+        _require(_zero(sp.diff(sp.sin(x), x) - sp.cos(x)), "sin-diff")
+        _require(_zero(sp.sin(0)) and _zero(sp.sin(sp.pi / 2) - 1), "sin-ends")
+        v = u**2
+        _require(_zero(sp.diff(v, u) - 2 * u), "v-diff")
+        _require(_zero(sp.log(1 - u**2) / (2 * u**2) - sp.log(1 - v) / (2 * v)), "v-jac")
+        y = sp.Symbol("_y", positive=True)
+        n = sp.Symbol("_n", integer=True, positive=True)
+        series = sp.summation(y**n / n, (n, 1, sp.oo))
+        if isinstance(series, sp.Piecewise):
+            expr, _cond = series.args[0]
+            _require(expr == -sp.log(1 - y) or _zero(expr + sp.log(1 - y)), "log-series")
+        else:
+            _require(_zero(series + sp.log(1 - y)), "log-series")
+        term = sp.integrate(u ** (n - 1), (u, 0, 1))
+        _require(_closed(term) and _zero(term - 1 / n), "term")
+        total = sp.summation(1 / n**2, (n, 1, sp.oo))
+        _require(_zero(total - sp.pi**2 / 6), "zeta2")
+        # log(1-v)/v integrates to -π²/6. The u-substitution halves it, and
+        # log(sec) contributes another factor -1/2.
+        folded = -sp.pi**2 / 12
+        value = -sp.Rational(1, 2) * folded
+        _require(_zero(value - sp.pi**2 / 24), "cot-value")
+        return value
+
+    return _fact("cot-log-sec", build)
+
+
+def _power_tower(integrand, symbol, lo, hi):
+    """(1+log x) log(1+x^x) is the derivative of -Li_2(-x^x), and the ends agree."""
+    if not integrand.has(sp.log):
+        return None
+    if integrand != (1 + sp.log(symbol)) * sp.log(1 + symbol**symbol):
+        return None
+    if not (_zero(lo - sp.Rational(1, 4)) and _zero(hi - sp.Rational(1, 2))):
+        return None
+    phi = sp.exp(symbol * sp.log(symbol))
+    _require(_zero(phi - symbol**symbol), "phi-pow")
+    _require(_zero(sp.diff(phi, symbol) - phi * (1 + sp.log(symbol))), "phi-diff")
+    _require(_zero(phi.subs(symbol, lo) - 1 / sp.sqrt(2)), "phi-lo")
+    _require(_zero(phi.subs(symbol, hi) - 1 / sp.sqrt(2)), "phi-hi")
+    z = sp.Symbol("_z")
+    _require(_zero(sp.diff(sp.polylog(2, z), z) - sp.polylog(1, z) / z), "li-diff")
+    _require(_zero(sp.expand_func(sp.polylog(1, z)) + sp.log(1 - z)), "li-log")
+    base = sp.Symbol("_p", positive=True)
+    slope = sp.Symbol("_q", real=True)
+    moved = -base
+    chain = sp.polylog(1, moved) / moved * (-slope)
+    replaced = (-sp.log(1 - moved)) / moved * (-slope)
+    _require(_zero(sp.expand_func(chain) - replaced), "li-chain")
+    _require(_zero(replaced + slope * sp.log(1 + base) / base), "li-alg")
+    return 0
+
+
+def _shifted_tan_log(integrand, symbol, lo, hi):
+    """On [0, π/4], log((sec²-2)/(tan-1)) and its reflection add to log 2."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 4)):
+        return None
+    if not integrand.has(sp.log) or not integrand.has(sp.tan):
+        return None
+    if integrand != sp.log((sp.sec(symbol) ** 2 - 2) / (sp.tan(symbol) - 1)):
+        return None
+    _require(_zero((sp.sec(symbol) ** 2 - 2) - (sp.tan(symbol) ** 2 - 1)), "sec-tan")
+    u = sp.Symbol("_u")
+    _require(_zero((u**2 - 1) / (u - 1) - (u + 1)), "div")
+    _require(sp.simplify(sp.exp(integrand - sp.log(1 + sp.tan(symbol)))) == 1, "reduce")
+    _require(_zero(sp.tan(sp.pi / 4 - symbol) - sp.cot(symbol + sp.pi / 4)), "cot-shift")
+    _require(
+        sp.simplify(
+            sp.expand_trig((sp.tan(symbol) + 1) * (sp.cot(symbol + sp.pi / 4) + 1) / 2 - 1)
+        )
+        == 0,
+        "pair",
+    )
+    return sp.pi * sp.log(2) / 8
+
+
+def _odd_zeta_log():
+    """∫_0^1 log(t)/(1-t²) dt = -π²/8."""
+
+    def build():
+        y = sp.Symbol("_y")
+        n = sp.Symbol("_n", integer=True, nonnegative=True)
+        degree = sp.Symbol("_N", integer=True, positive=True)
+        partial = sp.summation(y ** (2 * n), (n, 0, degree - 1))
+        # The closed branch is the geometric sum. On (0, 1) the y**2=1 branch is absent.
+        radius = sp.Symbol("_s", positive=True)
+        sample = radius / (1 + radius)
+        difference = (1 - y**2) * partial - (1 - y ** (2 * degree))
+        _require(_zero(sp.simplify(difference.subs(y, sample))), "even-geo")
+        xx = sp.Symbol("_x", positive=True)
+        power = 2 * n
+        primitive = xx ** (power + 1) * sp.log(xx) / (power + 1) - xx ** (power + 1) / (power + 1) ** 2
+        _require(_zero(sp.diff(primitive, xx) - xx**power * sp.log(xx)), "log-prim")
+        _require(_zero(sp.limit(xx ** (power + 1) * sp.log(xx), xx, 0)), "log-end")
+        _require(_zero(primitive.subs(xx, 1) + 1 / (power + 1) ** 2), "log-one")
+        total = sp.summation(1 / (2 * n + 1) ** 2, (n, 0, sp.oo))
+        _require(_zero(total - sp.pi**2 / 8), "odd-zeta")
+        return -sp.pi**2 / 8
+
+    return _fact("odd-zeta-log", build)
+
+
+def _log_cos_over_sin(integrand, symbol, lo, hi):
+    """∫_0^{π/2} log(cos x)/sin x dx = -π²/8."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 2)):
+        return None
+    if not integrand.has(sp.log) or not integrand.has(sp.sin):
+        return None
+    if integrand != sp.log(sp.cos(symbol)) / sp.sin(symbol):
+        return None
+    _require(_zero(sp.diff(sp.cos(symbol), symbol) + sp.sin(symbol)), "cos-diff")
+    _require(_zero(sp.sin(symbol) ** 2 - (1 - sp.cos(symbol) ** 2)), "sin-square")
+    _require(_zero(sp.cos(0) - 1) and _zero(sp.cos(sp.pi / 2)), "cos-ends")
+    # dt = -sin x dx, so the density in t=cos x is -log(t)/(1-t²), and t runs from 1 down to 0.
+    slope = sp.diff(sp.cos(symbol), symbol)
+    _require(
+        _zero(integrand / slope + sp.log(sp.cos(symbol)) / (1 - sp.cos(symbol) ** 2)),
+        "jac",
+    )
+    return _odd_zeta_log()
+
+
+def _log_over_one_minus_square(integrand, symbol, lo, hi):
+    """∫_0^∞ log(x)/(1-x²) dx = -π²/4. The two halves match by x=1/t."""
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.log):
+        return None
+    if integrand != sp.log(symbol) / (1 - symbol**2):
+        return None
+    t = sp.Symbol("_t", positive=True)
+    _require(_zero(integrand.subs(symbol, 1 / t) / t**2 - integrand.subs(symbol, t)), "pull")
+    unit = _odd_zeta_log()
+    if unit is None:
+        return None
+    value = sp.simplify(2 * unit)
+    _require(_zero(value + sp.pi**2 / 4), "double")
+    return value
+
+
+def _damped_log_sine(integrand, symbol, lo, hi):
+    """∫_0^1 (sin(log x)-log x)/log(x)² dx = log 2/2 + π/4 - 1."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.log):
+        return None
+    target = (sp.sin(sp.log(symbol)) - sp.log(symbol)) / sp.log(symbol) ** 2
+    if integrand != target:
+        return None
+
+    def build():
+        t = sp.Symbol("_t", positive=True)
+        x = sp.exp(-t)
+        pulled = sp.simplify(target.subs(symbol, x) * sp.diff(x, t))
+        damped = sp.exp(-t) * (t - sp.sin(t)) / t**2
+        _require(_zero(pulled + damped), "damped-sub")
+        k = sp.Symbol("_k", real=True)
+        anti = (k - sp.sin(k * t) / t) / t
+        _require(_zero(sp.diff(anti, k) - (1 - sp.cos(k * t)) / t), "damped-dk")
+        _require(_zero((anti.subs(k, 1) - anti.subs(k, 0)) - (t - sp.sin(t)) / t**2), "damped-ends")
+        _require(_zero((1 - sp.cos(t)) - 2 * sp.sin(t / 2) ** 2), "one-cos")
+        scale = sp.Symbol("_a", positive=True)
+        freq = sp.Symbol("_b", positive=True)
+        cosine = sp.exp(-scale * t) * (-scale * sp.cos(freq * t) + freq * sp.sin(freq * t)) / (
+            scale**2 + freq**2
+        )
+        _require(_zero(sp.diff(cosine, t) - sp.exp(-scale * t) * sp.cos(freq * t)), "lap-diff")
+        _require(_zero(sp.limit(cosine, t, sp.oo)), "lap-inf")
+        _require(_zero(-cosine.subs(t, 0) - scale / (scale**2 + freq**2)), "lap-zero")
+        plain = _integrate_fast(sp.exp(-scale * t), t, 0, sp.oo)
+        _require(plain is not None and _zero(plain - 1 / scale), "lap-one")
+        difference = 1 / scale - scale / (scale**2 + freq**2)
+        _require(_zero(difference - freq**2 / (scale * (scale**2 + freq**2))), "lap-gap")
+        closed = sp.Rational(1, 2) * sp.log(1 + freq**2 / scale**2)
+        _require(_zero(sp.diff(closed, scale) + freq**2 / (scale * (scale**2 + freq**2))), "lap-param")
+        _require(_zero(sp.limit(closed, scale, sp.oo)), "lap-far")
+        primitive = k * sp.log(1 + k**2) - 2 * k + 2 * sp.atan(k)
+        _require(_zero(sp.diff(primitive, k) - sp.log(1 + k**2)), "log-prim")
+        value = sp.simplify((primitive.subs(k, 1) - primitive.subs(k, 0)) / 2)
+        goal = -1 + sp.log(2) / 2 + sp.pi / 4
+        _require(_zero(value - goal), "damped-value")
+        return goal
+
+    return _fact("damped-log-sine", build)
+
+
+def _wallis_plain():
+    """∫_0^1 (x-1)/((x+1) log x) dx = log(π/2), by the Wallis product."""
+
+    def build():
+        x = sp.Symbol("_x", positive=True)
+        t = sp.Symbol("_t", real=True)
+        _require(_zero(sp.diff(x**t, t) - x**t * sp.log(x)), "xt-diff")
+        _require(_zero(x**1 - x**0 - (x - 1)), "xt-ends")
+        n = sp.Symbol("_n", integer=True, nonnegative=True)
+        degree = sp.Symbol("_N", integer=True, positive=True)
+        ratio = sp.Symbol("_r")
+        partial = sp.summation(((-1) ** n) * ratio**n, (n, 0, degree - 1))
+        claim = (1 - (-ratio) ** degree) / (1 + ratio)
+        _require(_zero(partial - claim), "alt-sum")
+        _require(_zero((1 + x) * claim.subs(ratio, x) - (1 - (-x) ** degree)), "alt-rem")
+        _require(_zero(sp.integrate(x ** (n + t), (x, 0, 1)) - 1 / (n + t + 1)), "term")
+        _require(
+            _zero(sp.integrate(1 / (n + t + 1), (t, 0, 1)) - sp.log((n + 2) / (n + 1))),
+            "log-term",
+        )
+        major = sp.integrate(1 / (degree + t + 1), (t, 0, 1))
+        _require(_closed(major) and _zero(major - sp.log((degree + 2) / (degree + 1))), "major")
+        _require(sp.limit(major, degree, sp.oo) == 0, "major-lim")
+        step = sp.Symbol("_j", integer=True, nonnegative=True)
+        even = (2 * step + 2) / (2 * step + 1)
+        odd = (2 * step + 2) / (2 * step + 3)
+        wallis = (2 * (step + 1)) ** 2 / ((2 * (step + 1) - 1) * (2 * (step + 1) + 1))
+        _require(_zero(even * odd - wallis), "pair")
+        _require(
+            sp.simplify(sp.expand_log(sp.log(even) - sp.log((2 * step + 3) / (2 * step + 2)) - sp.log(wallis), force=True))
+            == 0,
+            "pair-log",
+        )
+        count = sp.Symbol("_M", integer=True, positive=True)
+        index = sp.Symbol("_m", integer=True, positive=True)
+        product = sp.simplify(
+            sp.product((2 * index) ** 2 / ((2 * index - 1) * (2 * index + 1)), (index, 1, count))
+        )
+        _require(_closed(product), "product")
+        limit = sp.limit(sp.log(product), count, sp.oo)
+        goal = sp.log(sp.pi / 2)
+        _require(_zero(limit - goal), "wallis-lim")
+        _require(sp.ask(sp.Q.positive(sp.pi / 2)) is True, "pi-pos")
+        return goal
+
+    return _fact("wallis-log", build)
+
+
+def _wallis_log(integrand, symbol, lo, hi):
+    """The Wallis integral and its weighted sibling x times that integrand."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.log):
+        return None
+    plain = (symbol - 1) / ((symbol + 1) * sp.log(symbol))
+    weighted = symbol * (symbol - 1) / ((symbol + 1) * sp.log(symbol))
+    if integrand == plain:
+        return _wallis_plain()
+    if integrand != weighted:
+        return None
+    value = _wallis_plain()
+    if value is None:
+        return None
+    x = sp.Symbol("_x", positive=True)
+    t = sp.Symbol("_t", positive=True)
+    _require(_zero(weighted.subs(symbol, x) - ((x - 1) / sp.log(x) - plain.subs(symbol, x))), "split")
+    _require(_zero(sp.integrate(x**t, (x, 0, 1)) - 1 / (t + 1)), "inner")
+    width = sp.integrate(1 / (t + 1), (t, 0, 1))
+    _require(width is not None and _zero(width - sp.log(2)), "log2")
+    total = sp.simplify(width - value)
+    goal = -sp.log(sp.pi) + 2 * sp.log(2)
+    _require(_zero(total - goal), "weighted")
+    return total
+
+
+def _artanh_wallis(integrand, symbol, lo, hi):
+    """∫_0^1 log((2+x)/(2-x))/(x sqrt(1-x²)) dx = π²/6."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.log):
+        return None
+    target = sp.log((symbol + 2) / (2 - symbol)) / (symbol * sp.sqrt(1 - symbol**2))
+    if integrand != target:
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        _require(
+            _zero(sp.diff(sp.log((2 + x) / (2 - x)) - 2 * sp.atanh(x / 2), x)),
+            "atanh-diff",
+        )
+        _require(_zero((sp.log((2 + x) / (2 - x)) - 2 * sp.atanh(x / 2)).subs(x, 0)), "atanh-zero")
+        u = sp.Symbol("_u")
+        n = sp.Symbol("_n", integer=True, nonnegative=True)
+        series = sp.summation(u ** (2 * n + 1) / (2 * n + 1), (n, 0, sp.oo))
+        gap = sp.simplify(series - sp.atanh(u))
+        s = sp.Symbol("_s", positive=True)
+        sample = s / (2 * (1 + s))
+        _require(_zero(sp.simplify(gap.subs(u, sample))), "atanh-series")
+        _require(sp.ask(sp.Q.positive(sample)) is True and sp.ask(sp.Q.positive(1 - sample)) is True, "sample")
+        term = 2 * (x / 2) ** (2 * n + 1) / (2 * n + 1) / x
+        claim = x ** (2 * n) / ((2 * n + 1) * 4**n)
+        _require(_zero(term - claim), "coeff")
+        t = sp.Symbol("_t", positive=True)
+        jacob = claim.subs(x, sp.sqrt(t)) / sp.sqrt(1 - t) * (1 / (2 * sp.sqrt(t)))
+        density = (
+            sp.Rational(1, 2)
+            * t ** (n - sp.Rational(1, 2))
+            * (1 - t) ** (-sp.Rational(1, 2))
+            / ((2 * n + 1) * 4**n)
+        )
+        _require(_zero(jacob - density), "beta-jac")
+        _require(
+            _zero(
+                sp.Rational(1, 2) * sp.beta(n + sp.Rational(1, 2), sp.Rational(1, 2))
+                - (sp.pi / 2) * sp.binomial(2 * n, n) / 4**n
+            ),
+            "beta-wallis",
+        )
+        total = sp.summation(sp.binomial(2 * n, n) / ((2 * n + 1) * 16**n), (n, 0, sp.oo))
+        _require(_zero(total - sp.pi / 3), "central")
+        value = sp.simplify(sp.pi / 2 * total)
+        _require(_zero(value - sp.pi**2 / 6), "artanh-value")
+        return sp.simplify(value)
+
+    return _fact("artanh-wallis", build)
+
+
+def _chebyshev_ratio(integrand, symbol, lo, hi):
+    """The quotient is a polynomial in cos x, and that polynomial integrates to 4π."""
+    if not (_zero(lo) and _zero(hi - 2 * sp.pi)) or not integrand.has(sp.sin):
+        return None
+    if integrand != sp.sin(4 * symbol) ** 2 * sp.sin(5 * symbol) ** 2 / sp.sin(symbol) ** 2:
+        return None
+    cosine = sp.cos(symbol)
+    alternate = (
+        sp.sin(symbol) ** 2
+        * (8 * cosine**3 - 4 * cosine) ** 2
+        * (16 * cosine**4 - 12 * cosine**2 + 1) ** 2
+    )
+    _require(sp.simplify(sp.expand_trig(integrand - alternate)) == 0, "cheb-id")
+    # manual=True spends far longer than the heuristic on this polynomial.
+    fast = sp.integrate(sp.expand(alternate), (symbol, lo, hi))
+    _require(_closed(fast), "cheb-int")
+    return sp.simplify(fast)
+
+
+def _sine_square_log(integrand, symbol, lo, hi):
+    """x = sin² θ turns the log into an elementary integral on [0, π/4]."""
+    if not (_zero(lo) and _zero(hi - sp.Rational(1, 2))) or not integrand.has(sp.log):
+        return None
+    if integrand != sp.log(-sp.sqrt(symbol) + sp.sqrt(1 - symbol)):
+        return None
+
+    def build():
+        import sympy.calculus.util as util
+
+        theta = sp.Symbol("_th", real=True)
+        interval = sp.Interval(0, sp.pi / 4)
+        _require(_zero(util.minimum(sp.cos(theta), theta, interval) - sp.sqrt(2) / 2), "min-cos")
+        _require(_zero(util.minimum(sp.sin(theta), theta, interval)), "min-sin")
+        _require(_zero(util.minimum(sp.cos(theta) - sp.sin(theta), theta, interval)), "min-diff")
+        _require(_zero(sp.sin(sp.pi / 4) ** 2 - sp.Rational(1, 2)), "end")
+        _require(_zero(sp.diff(sp.sin(theta) ** 2, theta) - 2 * sp.sin(theta) * sp.cos(theta)), "jac")
+        x = sp.sin(theta) ** 2
+        _require(
+            _zero((sp.sqrt(1 - x) - sp.sqrt(x)) ** 2 - (1 - 2 * sp.sqrt(x * (1 - x)))),
+            "left-square",
+        )
+        _require(_zero((sp.cos(theta) - sp.sin(theta)) ** 2 - (1 - sp.sin(2 * theta))), "right-square")
+        _require(_zero(sp.sin(2 * theta) - 2 * sp.sin(theta) * sp.cos(theta)), "double")
+        nonnegative = sp.Symbol("_y", nonnegative=True)
+        _require(sp.refine(sp.Abs(nonnegative)) == nonnegative, "abs")
+        substituted = 2 * sp.sin(theta) * sp.cos(theta) * sp.log(sp.cos(theta) - sp.sin(theta))
+        fast = _integrate_fast(substituted, theta, 0, sp.pi / 4)
+        _require(fast is not None and _closed(fast), "sub-int")
+        goal = -sp.pi / 8 - sp.Rational(1, 4)
+        _require(_zero(fast - goal), "sub-value")
+        return sp.simplify(fast)
+
+    return _fact("sine-square-log", build)
+
+
+def _constant_log_span(integrand, symbol, lo, hi):
+    """sqrt(log(A-x)) / (sqrt(log(A-x))+sqrt(log(x-B))) averages to 1/2."""
+    if _has_infinity(lo) or _has_infinity(hi):
+        return None
+    if not integrand.has(sp.log) or not _has_square_root(integrand):
+        return None
+    if sp.count_ops(integrand) > 25:
+        return None
+    left = sp.Wild("A", exclude=[symbol])
+    right = sp.Wild("B", exclude=[symbol])
+    numerator = sp.sqrt(sp.log(left - symbol))
+    matched = integrand.match(numerator / (numerator + sp.sqrt(sp.log(symbol - right))))
+    if not matched:
+        return None
+    _require(_zero(lo + hi - (matched[left] + matched[right])), "span")
+    total = sp.simplify(integrand + integrand.subs(symbol, lo + hi - symbol))
+    _require(_closed(total) and not total.has(symbol) and _zero(total - 1), "sum")
+    return sp.simplify((hi - lo) * sp.Rational(1, 2))
+
+
+def _sin_product(integrand, symbol, lo, hi):
+    """∫_0^∞ sin(a x) sin(b x)/x dx = log((a+b)/(a-b))/2 for a>b>0."""
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.sin):
+        return None
+    left = sp.Wild("A", exclude=[symbol])
+    right = sp.Wild("B", exclude=[symbol])
+    matched = integrand.match(sp.sin(left * symbol) * sp.sin(right * symbol) / symbol)
+    if not matched:
+        return None
+    coeff_a = matched[left]
+    coeff_b = matched[right]
+
+    def build():
+        a = sp.Symbol("_A", real=True)
+        b = sp.Symbol("_B", real=True)
+        _require(
+            _zero(
+                sp.expand_trig(
+                    sp.sin(a) * sp.sin(b) - (sp.cos(a - b) - sp.cos(a + b)) / 2
+                )
+            ),
+            "product",
+        )
+        p = sp.Symbol("_p", positive=True)
+        q = sp.Symbol("_q", positive=True)
+        x = sp.Symbol("_x", positive=True)
+        s = sp.Symbol("_s", positive=True)
+        c = sp.Symbol("_c", positive=True)
+        anti = sp.exp(-s * x) * (-s * sp.cos(c * x) + c * sp.sin(c * x)) / (s**2 + c**2)
+        _require(_zero(sp.diff(anti, x) - sp.exp(-s * x) * sp.cos(c * x)), "cos-anti")
+        _require(_zero(sp.limit(anti, x, sp.oo)), "cos-inf")
+        _require(_zero(-anti.subs(x, 0) - s / (s**2 + c**2)), "cos-lap")
+        line = sp.Symbol("_u", positive=True)
+        primitive = sp.Rational(1, 2) * sp.log((line**2 + p**2) / (line**2 + q**2))
+        integrand_s = line / (line**2 + p**2) - line / (line**2 + q**2)
+        _require(_zero(sp.diff(primitive, line) - integrand_s), "frullani")
+        _require(_zero(sp.limit(primitive, line, sp.oo)), "frullani-inf")
+        # ∫_s^∞ of that derivative is -primitive(s), and the s→0 value is log(q/p).
+        at_zero = sp.limit(-primitive, line, 0)
+        _require(_zero(at_zero - sp.log(q / p)), "frullani-zero")
+        return True
+
+    if _fact("sin-product", build) is not True:
+        return None
+    return sp.simplify(sp.log((coeff_a + coeff_b) / (coeff_a - coeff_b)) / 2)
+
 def _extra_values(integrand, symbol, lo, hi):
     found = []
     for builder in (
@@ -1139,6 +1913,24 @@ def _extra_values(integrand, symbol, lo, hi):
         _exponential_arcsin_ray,
         _exponential_fourier,
         _cos_double_shift,
+        _bose_square,
+        _fermi_cubic,
+        _log_gamma_interval,
+        _sin_log_gamma,
+        _tan_log_square,
+        _cosine_modulus,
+        _cot_log_sec,
+        _power_tower,
+        _shifted_tan_log,
+        _log_cos_over_sin,
+        _log_over_one_minus_square,
+        _damped_log_sine,
+        _wallis_log,
+        _artanh_wallis,
+        _chebyshev_ratio,
+        _sine_square_log,
+        _constant_log_span,
+        _sin_product,
     ):
         try:
             value = builder(integrand, symbol, lo, hi)

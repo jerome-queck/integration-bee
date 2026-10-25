@@ -14,8 +14,8 @@ import pymupdf
 
 INTEGRAL_TEXT = {"ˆ", "∫", "Z"}
 RADICAL_TEXT = set("pqrstuvw")
-OPENERS = {"(", "[", "{", "⌊"}
-CLOSERS = {")", "]", "}", "⌋"}
+OPENERS = {"(", "[", "{", "⌊", "⌈"}
+CLOSERS = {")", "]", "}", "⌋", "⌉"}
 STOP_WORDS = {"where", "for", "if"}
 FUNCS = {
     "sin": "sin",
@@ -332,6 +332,19 @@ def _merge_vertical_bars(nodes: list[Node]) -> list[Node]:
     return sorted(others + merged, key=lambda node: (node.x0, node.y0))
 
 
+def _footer_digit(node: Node, width: float, height: float, nodes: list[Node]) -> bool:
+    """A lone digit centered in the bottom margin is a page number."""
+    text = node.text.strip()
+    if node.kind != "text" or len(text) != 1 or not text.isdigit():
+        return False
+    if node.y0 < height - 110 or abs(node.cx - width / 2) > 24:
+        return False
+    return not any(
+        other is not node and abs(other.cy - node.cy) < 14 and abs(other.cx - node.cx) < 36
+        for other in nodes
+    )
+
+
 def page_primitives(page) -> tuple[list[Node], list[Bar]]:
     nodes: list[Node] = []
     for block in page.get_text("rawdict")["blocks"]:
@@ -340,6 +353,9 @@ def page_primitives(page) -> tuple[list[Node], list[Bar]]:
         for line in block["lines"]:
             for span in line["spans"]:
                 nodes.extend(_nodes_from_span(span))
+    width = float(page.rect.width)
+    height = float(page.rect.height)
+    nodes = [node for node in nodes if not _footer_digit(node, width, height, nodes)]
     bars: list[Bar] = []
     for drawing in page.get_drawings():
         rect = drawing["rect"]
@@ -737,7 +753,12 @@ def group_fences(nodes: list[Node]) -> list[Node]:
             return nodes
         inner = group_fences(nodes[index + 1 : cursor - 1])
         opener = node.text.strip()
-        kind = "floor" if opener == "⌊" else "paren"
+        if opener == "⌊":
+            kind = "floor"
+        elif opener == "⌈":
+            kind = "ceil"
+        else:
+            kind = "paren"
         closer = nodes[cursor - 1]
         grouped = Node(
             kind,
@@ -872,12 +893,14 @@ def emit(node: Node | None) -> str | None:
         if body is None:
             return None
         return _powered(f"Abs({body})", node)
-    if node.kind in {"paren", "floor"}:
+    if node.kind in {"paren", "floor", "ceil"}:
         body = emit(node.kids[0])
         if body is None:
             return None
         if node.kind == "floor":
             rendered = f"floor({body})"
+        elif node.kind == "ceil":
+            rendered = f"ceiling({body})"
         else:
             rendered = f"({body})"
         return _powered(rendered, node)
@@ -1034,7 +1057,7 @@ def _parse_factor(nodes: list[Node], index: int) -> tuple[str | None, int]:
     if called and _argument_follows(nodes, index + 1):
         name, power = called
         nxt = nodes[index + 1]
-        if nxt.kind in {"paren", "floor"}:
+        if nxt.kind in {"paren", "floor", "ceil"}:
             # ln(x)^2 puts the 2 on the closing fence, outside the argument.
             # That is a power of the call. A power of x sits on x, inside the fence.
             lifted = nxt.sup if power is None else None
@@ -1066,7 +1089,7 @@ def _parse_factor(nodes: list[Node], index: int) -> tuple[str | None, int]:
                 arg = "(" + "*".join(f"({part})" for part in parts) + ")"
         if arg is None:
             return None, index
-        if nxt.kind in {"paren", "floor"} and power is None and nxt.sup is not None:
+        if nxt.kind in {"paren", "floor", "ceil"} and power is None and nxt.sup is not None:
             call = arg_call
         else:
             call = f"{name}({arg})"
@@ -1214,6 +1237,10 @@ def readings_from_pdf(path: str) -> dict[int, list[Node]]:
             else:
                 bottom = 790
             chosen, region_bars = _region_nodes(nodes, bars, top, bottom, node)
+            # A glyph entirely above the problem number belongs to the previous row.
+            # A superscript on this row still crosses the number's top.
+            above = node.y0 - 8
+            chosen = [glyph for glyph in chosen if glyph.y1 >= above]
             extra = []
             for bar in region_bars:
                 band = [glyph for glyph in chosen if _overlaps_bar(glyph, bar) and _below(glyph, bar)]
@@ -1226,6 +1253,8 @@ def readings_from_pdf(path: str) -> dict[int, list[Node]]:
                     if not (_overlaps_bar(glyph, bar) and _below(glyph, bar)):
                         continue
                     if bar.w < 12 and glyph.y0 > anchor + 8.0:
+                        continue
+                    if glyph.y1 < above:
                         continue
                     extra.append(glyph)
             chosen = chosen + extra
