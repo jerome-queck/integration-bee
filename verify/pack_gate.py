@@ -34,7 +34,9 @@ sine weight on log gamma, a product of sines, cot(x) log(sec x), the
 derivative of a polylog in x**x, log(1+tan x) on [0, π/4], odd-zeta series,
 a damped (t-sin t)/t**2 integral, a sine-square substitution, the Wallis
 product, an artanh series reduced to the Wallis integral, and a Chebyshev
-reduction. A logarithm of an absolute value differentiates as the logarithm
+reduction. A reciprocal power that clears to a rational function is integrated
+directly. (cos(a x)-cos(b x))/x**2 on [0, ∞) reduces by parts to the Dirichlet
+integral, for positive a and b. A logarithm of an absolute value differentiates as the logarithm
 of its argument. Numeric agreement is not a proof.
 """
 
@@ -634,6 +636,41 @@ def _log_half_line(integrand, symbol, lo, hi):
 
 class _ProofAlarm(BaseException):
     pass
+
+
+def _heuristic_integral(expr, symbol, lo, hi, seconds: int = 2):
+    """Heuristic definite integral with a short alarm. Skips manual=True."""
+    if not _closed(expr):
+        return None
+    import signal
+
+    def handler(signum, frame):
+        raise _ProofAlarm()
+
+    previous = signal.signal(signal.SIGALRM, handler)
+    signal.alarm(seconds)
+    try:
+        value = sp.integrate(expr, (symbol, lo, hi))
+    except (_ProofAlarm, Exception):
+        return None
+    finally:
+        signal.alarm(0)
+        signal.signal(signal.SIGALRM, previous)
+    return value if _closed(value) else None
+
+
+def _cleared_rational(integrand, symbol, lo, hi):
+    """∫ of a reciprocal power after together() clears it to a rational function."""
+    try:
+        cleared = sp.together(integrand)
+    except Exception:
+        return None
+    if cleared == integrand:
+        return None
+    rational = getattr(cleared, "is_rational_function", None)
+    if rational is None or not rational(symbol):
+        return None
+    return _heuristic_integral(cleared, symbol, lo, hi)
 
 
 def _integrate_fast(expr, symbol, lo, hi):
@@ -1849,6 +1886,81 @@ def _constant_log_span(integrand, symbol, lo, hi):
     return sp.simplify((hi - lo) * sp.Rational(1, 2))
 
 
+def _cosine_over_square(integrand, symbol, lo, hi):
+    """∫_0^∞ (cos(a x)-cos(b x))/x**2 dx = π(b-a)/2 for a>0 and b>0.
+
+    Parts moves the integral to ∫ (b sin(b x)-a sin(a x))/x dx. Each term is
+    the Dirichlet integral after x → c x. The Laplace transform of sin identifies
+    ∫_0^∞ sin(t)/t dt with π/2: its s-derivative is -1/(s²+1), and the value
+    vanishes as s→∞ because |sin t|≤t.
+    """
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.cos):
+        return None
+    coeff_a = sp.Wild("A", exclude=[symbol])
+    coeff_b = sp.Wild("B", exclude=[symbol])
+    matched = integrand.match((sp.cos(coeff_a * symbol) - sp.cos(coeff_b * symbol)) / symbol**2)
+    if not matched:
+        return None
+    first = matched[coeff_a]
+    second = matched[coeff_b]
+    if first.has(symbol) or second.has(symbol):
+        return None
+
+    def build():
+        a = sp.Symbol("_a", positive=True)
+        b = sp.Symbol("_b", positive=True)
+        x = sp.Symbol("_x", positive=True)
+        height = sp.cos(a * x) - sp.cos(b * x)
+        slope = -a * sp.sin(a * x) + b * sp.sin(b * x)
+        _require(_zero(sp.diff(height, x) - slope), "parts-diff")
+        _require(_zero(sp.diff(-1 / x, x) - x ** (-2)), "parts-measure")
+        _require(_zero(sp.limit(height / x, x, 0)), "parts-zero")
+        _require(_zero(sp.limit(height / x, x, sp.oo)), "parts-inf")
+        _require(_dirichlet_half() is True, "dirichlet")
+        old = sp.Symbol("_u", positive=True)
+        scale = sp.Symbol("_c", positive=True)
+        _require(
+            _zero(sp.sin(scale * (old / scale)) / (old / scale) * (1 / scale) - sp.sin(old) / old),
+            "scale",
+        )
+        return True
+
+    if _fact("cosine-over-square", build) is not True:
+        return None
+    return sp.simplify(sp.pi * (second - first) / 2)
+
+
+def _dirichlet_half():
+    """∫_0^∞ sin(t)/t dt = π/2, from the Laplace transform of sin."""
+
+    def build():
+        decay = sp.Symbol("_s", positive=True)
+        line = sp.Symbol("_t", positive=True)
+        anti = sp.exp(-decay * line) * (-decay * sp.sin(line) - sp.cos(line)) / (decay**2 + 1)
+        _require(_zero(sp.diff(anti, line) - sp.exp(-decay * line) * sp.sin(line)), "laplace-anti")
+        _require(_zero(sp.limit(anti, line, sp.oo)), "laplace-inf")
+        _require(_zero(-anti.subs(line, 0) - 1 / (decay**2 + 1)), "laplace-zero")
+        angle = sp.Symbol("_theta", real=True)
+        _require(_zero((1 - sp.cos(angle)) - 2 * sp.sin(angle / 2) ** 2), "one-minus-cos")
+        _require(_zero((1 + sp.cos(angle)) - 2 * sp.cos(angle / 2) ** 2), "one-plus-cos")
+        above = angle - sp.sin(angle)
+        below = angle + sp.sin(angle)
+        _require(_zero(sp.diff(above, angle) - 2 * sp.sin(angle / 2) ** 2), "sin-upper")
+        _require(_zero(sp.diff(below, angle) - 2 * sp.cos(angle / 2) ** 2), "sin-lower")
+        _require(_zero(above.subs(angle, 0)) and _zero(below.subs(angle, 0)), "sin-origin")
+        real = sp.Symbol("_z", real=True)
+        _require(sp.ask(sp.Q.nonnegative(real**2)) is True, "square")
+        _require(_zero(sp.integrate(sp.exp(-decay * line), (line, 0, sp.oo)) - 1 / decay), "exp-tail")
+        _require(_zero(sp.limit(1 / decay, decay, sp.oo)), "tail-inf")
+        closed = sp.pi / 2 - sp.atan(decay)
+        _require(_zero(sp.diff(closed, decay) + 1 / (decay**2 + 1)), "dirichlet-diff")
+        _require(_zero(sp.limit(closed, decay, sp.oo)), "dirichlet-inf")
+        _require(_zero(closed.subs(decay, 0) - sp.pi / 2), "dirichlet-zero")
+        return True
+
+    return _fact("dirichlet-half", build)
+
+
 def _sin_product(integrand, symbol, lo, hi):
     """∫_0^∞ sin(a x) sin(b x)/x dx = log((a+b)/(a-b))/2 for a>b>0."""
     if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.sin):
@@ -1931,6 +2043,7 @@ def _extra_values(integrand, symbol, lo, hi):
         _sine_square_log,
         _constant_log_span,
         _sin_product,
+        _cosine_over_square,
     ):
         try:
             value = builder(integrand, symbol, lo, hi)
@@ -1976,6 +2089,10 @@ def _worker(payload, queue) -> None:
         symbol = namespace(variable)[variable]
         quick = _tan_power_half(integrand, symbol, lo, hi)
         if _matches(quick, answer):
+            queue.put(("ok", True))
+            return
+        cleared = _cleared_rational(integrand, symbol, lo, hi)
+        if _matches(cleared, answer):
             queue.put(("ok", True))
             return
         for value in _reduced_integrals(integrand, symbol, lo, hi):
