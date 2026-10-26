@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Dichotomy_Segment_2_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (problem 5a)
 - Printed answer: `sources/past/r3/2024/Dichotomy_answers_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Segment 2, problem 5a)
 - Worked source: `sources/past/r3/2024/Dichotomy_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Set 1/Segment 2, problem 5a)
-- The catalog row is not changed.
+- Verification: the SymPy gate checks the source transcription and its reduction.
 
 ## Problem
 
@@ -19,4 +19,4 @@ The solutions PDF simplifies the expression under the logarithm to \(\tfrac12(x+
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r3_2024_dichotomy_s2_q05a`. SymPy checks that the squared radicand is \(((x^{4}+1)/(2x^{2}))^{2}\) and evaluates the logarithm integral.
+The gate checks the positive square-root branch. SymPy checks that the squared radicand is \(((x^{4}+1)/(2x^{2}))^{2}\) and evaluates the logarithm integral.

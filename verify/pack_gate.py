@@ -93,17 +93,24 @@ power gap, a nested exponential series, a nested absolute value, cancelling
 radicals, a reflected double exponential, a unit-cube maximum, two Frullani
 endpoint integrals, an implicit cubic, a fractional-part beta integral, a
 cosine-sum magnitude, a reflected logarithmic radical, and a substituted
-Gaussian. Only the sphere, tangent, and Legendre certificates, the two infinite
-forms, and those open wave-5k forms may retain an inner Integral, Sum,
-Product, or Limit. Wave 5l checks a telescoping floor quartic, a tangent
-boundary on [0, π/4], an arctangent logarithm, a Frullani arctangent pair, a
-reflected exponential pair, a secant square root, a split Dirichlet weight, a
-shifted Fresnel cosine, a fourth-root King tangent, a hyperbolic secant, an
-exponential quartic, a factorial beta series, a pair of nested roots, a floor
-tangent telescope, a floor tower, a logarithmic semicircle, an alternating
-eta square, two arctangent rational forms, a nested gamma tail, a shifted
-odd phase, a logistic King reflection, a cubed logarithm, and a Lambert
-antiderivative. Answers must be closed, except the truncated exponential
+Gaussian. A literal secant-square telescoping Sum is also checked by finite
+partial sums and their vanishing remainder. Further checked reductions are
+the stable Fourier integral through positive Laplace and Gamma kernels, the L2
+Fourier moments and products of log|sin|, the log(x)log(1+x**2) series,
+a reciprocal Gaussian, complementary cosecant endpoints, two nested
+logarithm/exponential substitutions, a golden-ratio shuttle, the reciprocal
+Wallis product for alternating floors, and cosine sign intervals for
+floor(cos(pi/x)). Only the sphere, tangent, and Legendre certificates, the two
+infinite forms, the secant-square telescoping Sum, and the open wave-5k forms
+may retain an inner Integral, Sum, Product, or Limit. Wave 5l checks a
+telescoping floor quartic, a tangent boundary on [0, π/4], an arctangent
+logarithm, a Frullani arctangent pair, a reflected exponential pair, a secant
+square root, a split Dirichlet weight, a shifted Fresnel cosine, a fourth-root
+King tangent, a hyperbolic secant, an exponential quartic, a factorial beta
+series, a pair of nested roots, a floor tangent telescope, a floor tower, a
+logarithmic semicircle, an alternating eta square, two arctangent rational
+forms, a nested gamma tail, a shifted odd phase, a logistic King reflection,
+a cubed logarithm, and a Lambert antiderivative. Answers must be closed, except the truncated exponential
 antiderivative, which keeps its finite sum. Numeric agreement is not a proof.
 """
 
@@ -4741,6 +4748,231 @@ def _max_min_trig_span(integrand, symbol, lo, hi):
     return value
 
 
+def _hard_classical_cosecant_span(integrand, symbol, lo, hi):
+    """Reflect x/sin(4x) on two complementary arctangent endpoints."""
+    left, right = sp.atan(sp.Rational(1, 3)), sp.atan(sp.Rational(1, 2))
+    if integrand != symbol / sp.sin(4 * symbol) or lo != left or hi != right:
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        # Both arctangents lie in (0, pi/4), so their sum lies in (0, pi/2).
+        # Tangent is injective there; its value 1 fixes the sum as pi/4.
+        _require(sp.simplify(sp.expand_trig(sp.tan(left + right))) == 1, "csc-endpoints")
+        _require(sp.Rational(1, 3) < 1 and sp.Rational(1, 2) < 1, "csc-branches")
+        reflected = (sp.pi / 4 - x) / sp.sin(4 * (sp.pi / 4 - x))
+        pair = x / sp.sin(4 * x) + reflected
+        _require(sp.trigsimp(pair - sp.pi / (4 * sp.sin(4 * x))) == 0, "csc-reflection")
+        primitive = sp.log(sp.tan(2 * x)) / 4
+        _require(sp.trigsimp(sp.diff(primitive, x) - 1 / sp.sin(4 * x)) == 0, "csc-primitive")
+        # tan(2x)>0 throughout these endpoints, fixing the real log branch.
+        upper = sp.simplify(sp.expand_trig(sp.tan(2 * right)))
+        lower = sp.simplify(sp.expand_trig(sp.tan(2 * left)))
+        _require(upper == sp.Rational(4, 3) and lower == sp.Rational(3, 4), "csc-values")
+        return sp.pi * (sp.log(upper) - sp.log(lower)) / 32
+
+    return _fact("hard-cosecant-span", build)
+
+
+def _hard_classical_gaussian_ray(integrand, symbol, lo, hi):
+    """A reciprocal reflection and u=a*x-b/x reduce the positive ray to a Gaussian."""
+    if lo != 0 or hi != sp.oo or integrand.func != sp.exp:
+        return None
+    exponent = sp.expand(integrand.args[0])
+    a2, b2 = -exponent.coeff(symbol, 2), -exponent.coeff(symbol, -2)
+    if a2.has(symbol) or b2.has(symbol):
+        return None
+    if a2.is_positive is not True or b2.is_positive is not True:
+        return None
+    if exponent != -a2 * symbol**2 - b2 / symbol**2:
+        return None
+    a, b = sp.sqrt(a2), sp.sqrt(b2)
+
+    def build():
+        A, B, x = sp.symbols("_a _b _x", positive=True)
+        u = sp.Symbol("_u", real=True)
+        f = sp.exp(-A**2 * x**2 - B**2 / x**2)
+        reciprocal = B / (A * x)
+        _require(sp.simplify(f.subs(x, reciprocal) - f) == 0, "gauss-reciprocal")
+        _require(sp.simplify(-sp.diff(reciprocal, x) - B / (A * x**2)) == 0, "gauss-reciprocal-jac")
+        _require(sp.limit(reciprocal, x, 0, dir="+") == sp.oo, "gauss-reciprocal-zero")
+        _require(sp.limit(reciprocal, x, sp.oo) == 0, "gauss-reciprocal-infinity")
+        change = A * x - B / x
+        jacobian = sp.diff(change, x)
+        _require(jacobian.is_positive is True, "gauss-monotone")
+        _require(sp.limit(change, x, 0, dir="+") == -sp.oo, "gauss-left")
+        _require(sp.limit(change, x, sp.oo) == sp.oo, "gauss-right")
+        _require(sp.expand(A**2 * x**2 + B**2 / x**2 - change**2 - 2 * A * B) == 0, "gauss-square")
+        # The reciprocal copy of I has weight B/(A*x**2). Their average
+        # has weight (A+B/x**2)/(2*A), precisely the Jacobian divided by 2*A.
+        _require(sp.simplify((1 + B / (A * x**2)) / 2 - jacobian / (2 * A)) == 0, "gauss-average")
+        gaussian = sp.integrate(sp.exp(-u**2), (u, -sp.oo, sp.oo))
+        _require(_closed(gaussian) and gaussian == sp.sqrt(sp.pi), "gauss-integral")
+        return gaussian
+
+    gaussian = _fact("hard-reciprocal-gaussian", build)
+    return None if gaussian is None else gaussian * sp.exp(-2 * a * b) / (2 * a)
+
+
+def _hard_classical_log_sine_tangent(integrand, symbol, lo, hi):
+    """Reflect to the already checked cot(x)*log(sec(x)) series certificate."""
+    if lo != 0 or hi != sp.pi / 2 or integrand != sp.log(sp.sin(symbol)) * sp.tan(symbol):
+        return None
+    x = sp.Symbol("_x", real=True)
+    reflected = integrand.subs(symbol, sp.pi / 2 - x)
+    target = sp.log(sp.sec(x)) * sp.cot(x)
+    # sin(x), cos(x), and sec(x) are positive in the open quarter-period.
+    _require(reflected == sp.log(sp.cos(x)) * sp.cot(x), "log-sine-reflect")
+    _require(sp.simplify(sp.cos(x) * sp.sec(x) - 1) == 0, "log-sine-log-inverse")
+    _require(sp.diff(sp.pi / 2 - x, x) == -1, "log-sine-reflect-jac")
+    value = _cot_log_sec(target, x, sp.S.Zero, sp.pi / 2)
+    return None if value is None else -value
+
+
+def _hard_classical_nested_log(integrand, symbol, lo, hi):
+    """Fix the positive radical branch, then integrate two elementary logarithms."""
+    target = sp.log(1 + sp.sqrt(1 + ((symbol**4 - 1) / (2 * symbol**2)) ** 2))
+    if lo != 0 or hi != 1 or integrand != target:
+        return None
+
+    def build():
+        x = sp.Symbol("_x", positive=True)
+        radical = (x**4 + 1) / (2 * x**2)
+        _require(radical.is_positive is True, "nested-log-positive")
+        _require(sp.factor(radical**2 - (1 + ((x**4 - 1) / (2 * x**2)) ** 2)) == 0, "nested-log-square")
+        reduced = 2 * sp.log(1 + x**2) - 2 * sp.log(x) - sp.log(2)
+        _require(sp.simplify(sp.exp(reduced) - (1 + radical)) == 0, "nested-log-argument")
+        # All logarithm arguments above are positive, hence exp's injectivity
+        # on the real line justifies the logarithmic rewrite.
+        primitive = 2 * x * sp.log(1 + x**2) - 2 * x * sp.log(x) - (2 + sp.log(2)) * x + 4 * sp.atan(x)
+        _require(sp.simplify(sp.diff(primitive, x) - reduced) == 0, "nested-log-primitive")
+        lower = sp.limit(primitive, x, 0, dir="+")
+        _require(lower == 0, "nested-log-lower")
+        return sp.simplify(primitive.subs(x, 1) - lower)
+
+    return _fact("hard-nested-log", build)
+
+
+def _hard_classical_nested_exponential(integrand, symbol, lo, hi):
+    """The increasing square-root exponential turns the integral into 4/(u**2-1)."""
+    target = 1 / sp.sqrt(1 + sp.exp(symbol / 2))
+    if lo != 0 or hi != sp.oo or integrand != target:
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        u = sp.Symbol("_u", positive=True)
+        change = sp.sqrt(1 + sp.exp(x / 2))
+        _require(sp.simplify(sp.diff(change, x) - (change**2 - 1) / (4 * change)) == 0, "nested-exp-jac")
+        _require(sp.diff(change, x).is_positive is True, "nested-exp-monotone")
+        _require(change.subs(x, 0) == sp.sqrt(2), "nested-exp-lower")
+        _require(sp.limit(change, x, sp.oo) == sp.oo, "nested-exp-upper")
+        primitive = 2 * sp.log(u - 1) - 2 * sp.log(u + 1)
+        _require(sp.simplify(sp.diff(primitive, u) - 4 / (u**2 - 1)) == 0, "nested-exp-primitive")
+        upper = sp.limit(primitive, u, sp.oo)
+        _require(upper == 0, "nested-exp-limit")
+        # u>=sqrt(2)>1 fixes both logs on their real branches.
+        return upper - primitive.subs(u, sp.sqrt(2))
+
+    return _fact("hard-nested-exponential", build)
+
+
+def _hard_classical_golden_shuttle(integrand, symbol, lo, hi):
+    """D3 supplies phi; reflection and four tangent quarters evaluate shuttle D4."""
+    phi = (1 + sp.sqrt(5)) / 2
+    target = symbol / (phi - sp.cos(symbol) ** 2)
+    if lo != 0 or hi != 2 * sp.pi or integrand != target:
+        return None
+
+    def build():
+        x = sp.Symbol("_x", real=True)
+        t = sp.Symbol("_t", positive=True)
+        weight = 1 / (phi - sp.cos(x) ** 2)
+        _require(sp.simplify(phi * (phi - 1)) == 1 and phi > 1, "shuttle-phi")
+        _require(sp.trigsimp(weight.subs(x, 2 * sp.pi - x) - weight) == 0, "shuttle-reflect")
+        _require(sp.trigsimp(weight.subs(x, x + sp.pi) - weight) == 0, "shuttle-period")
+        _require(sp.trigsimp(weight.subs(x, sp.pi - x) - weight) == 0, "shuttle-quarter")
+        changed = sp.simplify(weight.subs(x, sp.atan(t)) / (1 + t**2))
+        primitive = sp.atan(phi * t)
+        _require(sp.simplify(sp.diff(primitive, t) - changed) == 0, "shuttle-tangent")
+        _require(primitive.subs(t, 0) == 0, "shuttle-zero")
+        quarter = sp.limit(primitive, t, sp.oo)
+        _require(quarter == sp.pi / 2, "shuttle-quarter-value")
+        pair = x * weight + (2 * sp.pi - x) * weight
+        _require(sp.simplify(pair - 2 * sp.pi * weight) == 0, "shuttle-average")
+        return sp.pi * 4 * quarter
+
+    return _fact("hard-golden-shuttle", build)
+
+
+def _hard_classical_telescope_shape(integrand, symbol):
+    if not isinstance(integrand, sp.Sum) or len(integrand.limits) != 1:
+        return False
+    if len(integrand.limits[0]) != 3:
+        return False
+    index, start, stop = integrand.limits[0]
+    return (
+        isinstance(index, sp.Symbol)
+        and index != symbol
+        and start == 2
+        and stop == sp.oo
+        and integrand.function == 1 / sp.sqrt(index - sp.sec(symbol) ** 2) - 1 / sp.sqrt(index - sp.tan(symbol) ** 2)
+    )
+
+
+def _hard_classical_secant_telescope(integrand, symbol, lo, hi):
+    """Prove the literal Sum pointwise, then use tan, sin, and tan substitutions."""
+    if lo != 0 or hi != sp.pi / 4 or not _hard_classical_telescope_shape(integrand, symbol):
+        return None
+
+    def build():
+        x, theta = sp.symbols("_x _theta", real=True)
+        t, v = sp.symbols("_t _v", positive=True)
+        n = sp.Symbol("_n", integer=True, positive=True)
+        _require(sp.trigsimp(sp.sec(x) ** 2 - sp.tan(x) ** 2 - 1) == 0, "telescope-sec")
+        partial = 1 / sp.sqrt(1 - t**2) - 1 / sp.sqrt(n - t**2)
+        _require(partial.subs(n, 1) == 0, "telescope-base")
+        next_term = 1 / sp.sqrt(n - t**2) - 1 / sp.sqrt(n + 1 - t**2)
+        _require(sp.simplify(partial.subs(n, n + 1) - partial - next_term) == 0, "telescope-step")
+        _require(sp.limit(1 / sp.sqrt(n - t**2), n, sp.oo) == 0, "telescope-remainder")
+        # Thus the literal sum is 1/sqrt(1-tan(x)**2) for 0<=x<pi/4.
+        # No integral/sum exchange is needed. The endpoint is improper.
+        _require(sp.tan(0) == 0 and sp.tan(sp.pi / 4) == 1, "telescope-tangent-ends")
+        _require(sp.diff(sp.atan(t), t) == 1 / (1 + t**2), "telescope-tangent-jac")
+        _require(sp.trigsimp(1 - sp.sin(theta) ** 2 - sp.cos(theta) ** 2) == 0, "telescope-sine-square")
+        _require(sp.sin(0) == 0 and sp.sin(sp.pi / 2) == 1, "telescope-sine-ends")
+        # cos(theta)>0 in the open quarter-period, so the square root
+        # cancels the sine substitution's positive Jacobian.
+        radical = sp.refine(sp.sqrt(sp.cos(theta) ** 2), sp.Q.positive(sp.cos(theta)))
+        _require(radical == sp.cos(theta), "telescope-sine-branch")
+        reduced = 1 / (1 + sp.sin(theta) ** 2)
+        _require(sp.diff(sp.sin(theta), theta) / ((1 + sp.sin(theta) ** 2) * radical) == reduced, "telescope-sine-jac")
+        rational = sp.simplify(reduced.subs(theta, sp.atan(v)) / (1 + v**2))
+        _require(rational == 1 / (1 + 2 * v**2), "telescope-rational")
+        value = sp.integrate(rational, (v, 0, sp.oo))
+        _require(_closed(value), "telescope-value")
+        return value
+
+    return _fact("hard-secant-telescope", build)
+
+
+def _hard_classical_values(integrand, symbol, lo, hi):
+    """Checked source readings; exact shape misses do no integration."""
+    for builder in (
+        _hard_classical_cosecant_span,
+        _hard_classical_gaussian_ray,
+        _hard_classical_log_sine_tangent,
+        _hard_classical_nested_log,
+        _hard_classical_nested_exponential,
+        _hard_classical_golden_shuttle,
+        _hard_classical_secant_telescope,
+    ):
+        value = builder(integrand, symbol, lo, hi)
+        if value is not None:
+            return value
+    return None
+
+
 def _wave5j_values(integrand, symbol, lo, hi):
     """Exact evaluations added for printed pack rows. Non-matches return immediately."""
     for builder in (
@@ -4786,6 +5018,268 @@ def _certificate_same(value, answer) -> bool:
     return False
 
 
+def _stable_fourier_line(integrand, symbol, lo, hi):
+    """Relay 2024 Q10: Laplace/Gamma certificate on 0<alpha<2, alpha!=1.
+
+    The source specifies real theta.  Positive alpha and real theta are kept
+    explicitly in the transcript; the beta integral below checks the upper
+    restriction on both components of the printed alpha domain.
+    """
+    alpha = sp.Symbol("alpha", positive=True)
+    theta = sp.Symbol("theta", real=True)
+    if symbol.name in {"alpha", "theta"}:
+        return None
+    target = (sp.exp(sp.I * theta * symbol) - 1 - sp.I * theta * sp.sin(symbol)) / sp.Abs(symbol) ** (1 + alpha)
+    if lo != -sp.oo or hi != sp.oo or integrand != target:
+        return None
+
+    def build():
+        ray, laplace, scale, parameter = sp.symbols("_r _s _h _p", positive=True)
+        numerator = sp.exp(sp.I * theta * ray) - 1 - sp.I * theta * sp.sin(ray)
+        real = sp.cos(theta * ray) - 1
+        imaginary = sp.sin(theta * ray) - theta * sp.sin(ray)
+        _require(sp.simplify(sp.expand_complex(numerator) - real - sp.I * imaginary) == 0, "stable-parts")
+        _require(sp.simplify(imaginary.subs(ray, -ray) + imaginary) == 0, "stable-odd")
+        _require(sp.limit(numerator / ray**2, ray, 0, dir="+") == -theta**2 / 2, "stable-origin")
+        # Taylor's theorem bounds the real part by theta**2*r**2/2 and
+        # the imaginary part by (|theta|**3+|theta|)*r**3/6 near zero.
+        # The numerator is bounded by 2+|theta| at infinity.  Hence the
+        # absolute integral converges for 0<alpha<2, and its odd part is 0.
+        _require(sp.simplify(sp.diff(imaginary, ray).subs(ray, 0)) == 0, "stable-linear-cancellation")
+        _require(sp.simplify(sp.diff(imaginary, ray, 2).subs(ray, 0)) == 0, "stable-quadratic-cancellation")
+
+        # Treat theta=0 separately; theta=+/-h, h>0 covers its complement.
+        _require(numerator.subs(theta, 0) == 0, "stable-zero")
+        for sign in (-1, 1):
+            scaled = real.subs({theta: sign * scale, ray: laplace / scale}) / (laplace / scale) ** (1 + alpha) / scale
+            _require(sp.simplify(scaled - scale**alpha * (sp.cos(laplace) - 1) / laplace ** (1 + alpha)) == 0, "stable-scaling")
+
+        # The kernels below are nonnegative: 1-cos(r)=2*sin(r/2)**2.
+        # Tonelli therefore justifies exchanging these two improper integrals.
+        _require(sp.trigsimp(1 - sp.cos(ray) - 2 * sp.sin(ray / 2)**2) == 0, "stable-nonnegative")
+        gamma_kernel = sp.integrate(laplace**alpha * sp.exp(-ray * laplace), (laplace, 0, sp.oo))
+        _require(sp.simplify(gamma_kernel - sp.gamma(alpha + 1) / ray**(alpha + 1)) == 0, "stable-gamma-kernel")
+        laplace_kernel = sp.integrate((1 - sp.cos(ray)) * sp.exp(-laplace * ray), (ray, 0, sp.oo))
+        _require(sp.factor(laplace_kernel - 1 / (laplace * (1 + laplace**2))) == 0, "stable-laplace-kernel")
+        beta = sp.integrate(laplace**(alpha - 1) / (1 + laplace**2), (laplace, 0, sp.oo))
+        _require(isinstance(beta, sp.Piecewise), "stable-beta-conditional")
+        beta_value, condition = beta.args[0]
+        _require(beta_value == sp.pi / (2 * sp.sin(sp.pi * alpha / 2)), "stable-beta-value")
+        # alpha=p/(1+p) and alpha=(1+2p)/(1+p), p>0, parameterize
+        # (0,1) and (1,2).  No continuation through the Gamma pole is used.
+        for branch in (parameter / (1 + parameter), (1 + 2 * parameter) / (1 + parameter)):
+            _require(sp.simplify(branch).is_positive is True, "stable-alpha-positive")
+            _require(sp.simplify(2 - branch).is_positive is True, "stable-alpha-upper")
+            _require(sp.simplify(branch - 1).is_zero is False, "stable-alpha-noninteger")
+            _require(sp.simplify(condition.subs(alpha, branch)) is sp.S.true, "stable-beta-domain")
+
+        value = -2 * beta_value / sp.gamma(1 + alpha)
+        _require(sp.simplify(sp.gamma(-alpha) * sp.gamma(1 + alpha) * sp.sin(sp.pi * alpha) + sp.pi) == 0, "stable-reflection")
+        reflected = value.subs(sp.gamma(1 + alpha), -sp.pi / (sp.gamma(-alpha) * sp.sin(sp.pi * alpha)))
+        printed = 2 * sp.gamma(-alpha) * sp.cos(sp.pi * alpha / 2)
+        _require(sp.trigsimp(reflected - printed) == 0, "stable-printed")
+        return printed * sp.Abs(theta)**alpha
+
+    return _fact("stable-fourier-line", build)
+
+
+def _hard_log_series():
+    """The Taylor series of -log(1-z), on the open unit disk."""
+
+    def build():
+        z = sp.Symbol("_z")
+        n = sp.Symbol("_n", integer=True, positive=True)
+        summed = sp.summation(z**n / n, (n, 1, sp.oo))
+        _require(isinstance(summed, sp.Piecewise), "log-series-branches")
+        # SymPy's first condition is |z| <= 1 and z != 1; it contains
+        # the entire open disk used by the Abel regularisations below.
+        branch, condition = summed.args[0]
+        _require(condition == sp.And(sp.Ne(z, 1), sp.Abs(z) <= 1), "log-series-domain")
+        _require(sp.simplify(branch + sp.log(1 - z)) == 0, "log-series-value")
+        return True
+
+    return _fact("hard-log-series", build)
+
+
+def _hard_log_sine_fourier():
+    """L2 Fourier coefficients of log|sin t|, with exact cosine moments.
+
+    Apply the log Taylor series to r*exp(2*i*t), 0<r<1, and take real
+    parts. The modulus identity gives the pointwise limit off the zeros.
+    Square summability and cosine orthogonality give L2 convergence, so
+    pairing with x or another such series is legitimate (Cauchy-Schwarz).
+    The logarithmic singularities have finite square integral.
+    """
+
+    def build():
+        _require(_hard_log_series() is True, "log-taylor")
+        t = sp.Symbol("_t", real=True)
+        u = sp.Symbol("_u", positive=True)
+        n = sp.Symbol("_n", integer=True, positive=True)
+        h = sp.Symbol("_h", integer=True, nonzero=True)
+        modulus = (1 - sp.exp(2 * sp.I * t)) * (1 - sp.exp(-2 * sp.I * t))
+        _require(sp.simplify(sp.expand_complex(modulus) - 4 * sp.sin(t)**2) == 0, "log-modulus")
+        _require(sp.expand_log(sp.log(4 * u**2) / 2) == sp.log(2) + sp.log(u), "log-modulus-scale")
+        _require(sp.integrate(sp.log(u)**2, (u, 0, 1)) == 2, "log-square-integrable")
+        squares = sp.summation(n**-2, (n, 1, sp.oo))
+        _require(squares == sp.pi**2 / 6, "fourier-square-sum")
+        _require(sp.integrate(sp.cos(2 * h * t), (t, 0, sp.pi / 2)) == 0, "cosine-mean")
+        norm = sp.integrate(sp.cos(2 * n * t)**2, (t, 0, sp.pi / 2))
+        _require(norm == sp.pi / 4, "cosine-norm")
+        a, b = sp.symbols("_a _b", real=True)
+        product = sp.cos(a) * sp.cos(b) - (sp.cos(a - b) + sp.cos(a + b)) / 2
+        _require(sp.expand_trig(product).expand() == 0, "cosine-product")
+        # For unequal positive integer frequencies, both product-to-sum
+        # frequencies are nonzero integers, so cosine-mean proves orthogonality.
+        return squares, norm
+
+    return _fact("hard-log-sine-fourier", build)
+
+
+def _hard_weighted_log_sine(integrand, symbol, lo, hi):
+    """The x moment of log(sin x), using its L2 Fourier expansion."""
+    if not _span(lo, hi, 0, sp.pi / 2) or integrand != symbol * sp.log(sp.sin(symbol)):
+        return None
+    _hard_log_sine_fourier()
+    n = sp.Symbol("_n", integer=True, positive=True)
+    k = sp.Symbol("_k", integer=True, nonnegative=True)
+    moment = sp.integrate(symbol * sp.cos(2 * n * symbol), (symbol, 0, sp.pi / 2))
+    _require(sp.simplify(moment - ((-1)**n - 1) / (4 * n**2)) == 0, "weighted-cosine")
+    contribution = -moment / n
+    _require(sp.simplify(contribution.subs(n, 2 * k + 2)) == 0, "even-moment")
+    _require(sp.simplify(contribution.subs(n, 2 * k + 1) - 1 / (2 * (2 * k + 1)**3)) == 0, "odd-moment")
+    # The absolutely convergent sum over odd integers is the full sum
+    # minus its even subsequence. These sums are evaluated independently.
+    all_terms = sp.summation(n**-3, (n, 1, sp.oo))
+    even_terms = sp.summation((2 * n)**-3, (n, 1, sp.oo))
+    constant = -sp.log(2) * sp.integrate(symbol, (symbol, 0, sp.pi / 2))
+    return sp.simplify(constant + (all_terms - even_terms) / 2)
+
+
+def _hard_log_quadratic_product(integrand, symbol, lo, hi):
+    """Integrate the log(1+x^2) Taylor terms against log(x)."""
+    if not _span(lo, hi, 0, 1) or integrand != sp.log(symbol) * sp.log(1 + symbol**2):
+        return None
+    _require(_hard_log_series() is True, "quadratic-log-taylor")
+    x = sp.Symbol("_x", positive=True)
+    n = sp.Symbol("_n", integer=True, positive=True)
+    coefficient = (-1)**(n - 1) / n
+    _require(sp.simplify(-(-x**2)**n / n - coefficient * x**(2 * n)) == 0, "quadratic-log-term")
+    moment = sp.integrate(x**(2 * n) * sp.log(x), (x, 0, 1))
+    _require(sp.simplify(moment + 1 / (2 * n + 1)**2) == 0, "quadratic-log-moment")
+    # The absolute term integrals are <= 1/(4*n^3), so summation and
+    # integration commute, including the x=1 endpoint.
+    _require(sp.expand((2 * n + 1)**2 - 4 * n**2).is_positive is True, "quadratic-log-domination")
+    split = 1 / n - 2 / (2 * n + 1) - 2 / (2 * n + 1)**2
+    _require(sp.cancel(split - 1 / (n * (2 * n + 1)**2)) == 0, "quadratic-log-partials")
+    first = sp.summation((-1)**(n - 1) / n, (n, 1, sp.oo))
+    second = sp.summation((-1)**(n - 1) / (2 * n + 1), (n, 1, sp.oo))
+    third = sp.summation((-1)**(n - 1) / (2 * n + 1)**2, (n, 1, sp.oo))
+    _require(all(_closed(value) for value in (first, second, third)), "quadratic-log-sums")
+    return sp.simplify(-first + 2 * second + 2 * third)
+
+
+def _hard_log_sine_product(integrand, symbol, lo, hi):
+    """Parseval for two positive integer frequencies of log|sin|."""
+    if not _span(lo, hi, 0, sp.pi / 2) or integrand.func != sp.Mul or len(integrand.args) != 2:
+        return None
+    frequencies = []
+    for factor in integrand.args:
+        if factor.func != sp.log or factor.args[0].func != sp.Abs:
+            return None
+        sine = factor.args[0].args[0]
+        if sine.func != sp.sin:
+            return None
+        frequency = sine.args[0].coeff(symbol)
+        if frequency.is_Integer is not True or frequency <= 0 or sine.args[0] != frequency * symbol:
+            return None
+        frequencies.append(frequency)
+    first, second = frequencies
+    divisor = sp.igcd(first, second)
+    p, q = first / divisor, second / divisor
+    _require(sp.igcd(p, q) == 1, "frequency-coprime")
+    n = sp.Symbol("_n", integer=True, positive=True)
+    # first*k = second*m iff k=q*n and m=p*n, since gcd(p,q)=1.
+    _require(first * q * n == second * p * n, "frequency-diagonal")
+    squares, norm = _hard_log_sine_fourier()
+    diagonal = sp.summation(1 / ((q * n) * (p * n)), (n, 1, sp.oo))
+    _require(sp.simplify(diagonal - squares / (p * q)) == 0, "frequency-diagonal-sum")
+    constant = sp.integrate(sp.log(2)**2, (symbol, lo, hi))
+    return sp.simplify(constant + norm * diagonal)
+
+
+def _wave_hard_fourier_values(integrand, symbol, lo, hi):
+    for builder in (_hard_weighted_log_sine, _hard_log_quadratic_product, _hard_log_sine_product):
+        value = builder(integrand, symbol, lo, hi)
+        if value is not None:
+            return value
+    return None
+
+
+def _alternating_floor_ray(integrand, symbol, lo, hi):
+    """Pair consecutive floor intervals, then take the reciprocal Wallis limit."""
+    if lo != 1 or hi != sp.oo or integrand != (-1) ** sp.floor(symbol) / symbol:
+        return None
+    k, count = sp.symbols("_k _N", integer=True, positive=True)
+    x = sp.Symbol("_x", positive=True)
+    # The integral through 2N+1 pairs [2k-1,2k) with [2k,2k+1).
+    pair = -sp.integrate(1 / x, (x, 2 * k - 1, 2 * k)) + sp.integrate(
+        1 / x, (x, 2 * k, 2 * k + 1)
+    )
+    factor = 1 - 1 / (4 * k**2)
+    _require(pair.is_real is True, "floor-log-pair-real")
+    _require(sp.simplify(sp.exp(pair) - factor) == 0, "floor-log-pair")
+    _require(sp.factor(factor).is_positive is True, "floor-pair-positive")
+    product = sp.product(factor, (k, 1, count))
+    _require(_closed(product), "floor-finite-product")
+    limit = sp.limit(product, count, sp.oo)
+    _require(limit.is_positive is True, "floor-product-limit-positive")
+    # Every unfinished pair has absolute integral at most this logarithm.
+    tail_bound = sp.log((2 * count + 3) / (2 * count + 1))
+    _require(sp.limit(tail_bound, count, sp.oo) == 0, "floor-pair-tail")
+    return sp.log(limit)
+
+
+def _cosine_floor_reciprocal_unit(integrand, symbol, lo, hi):
+    """The floor is -1 off the nonnegative cosine arcs, apart from isolated points."""
+    if lo != 0 or hi != 1 or integrand != sp.floor(sp.cos(sp.pi / symbol)):
+        return None
+    t = sp.Symbol("_t", real=True)
+    k = sp.Symbol("_k", integer=True, positive=True)
+    nonnegative = sp.solve_univariate_inequality(
+        sp.cos(t) >= 0, t, relational=False, domain=sp.Interval(0, 2 * sp.pi)
+    )
+    # SymPy uses a half-open period representative; check and include its endpoint.
+    _require(sp.cos(2 * sp.pi) == 1, "cosine-period-endpoint")
+    _require(
+        nonnegative.union(sp.FiniteSet(2 * sp.pi))
+        == sp.Union(sp.Interval(0, sp.pi / 2), sp.Interval(3 * sp.pi / 2, 2 * sp.pi)),
+        "cosine-nonnegative-arcs",
+    )
+    _require(sp.expand_trig(sp.cos(2 * sp.pi * k + t)) == sp.cos(t), "cosine-period")
+    # y=pi/x maps the positive arc about 2k*pi to this x interval.
+    left = sp.simplify(sp.pi / (2 * sp.pi * k + sp.pi / 2))
+    right = sp.simplify(sp.pi / (2 * sp.pi * k - sp.pi / 2))
+    _require(left.is_positive is True and sp.factor(right - left).is_positive is True, "cosine-arc-order")
+    _require(sp.simplify(sp.pi / right - (2 * sp.pi * k - sp.pi / 2)) == 0, "cosine-arc-left")
+    _require(sp.simplify(sp.pi / left - (2 * sp.pi * k + sp.pi / 2)) == 0, "cosine-arc-right")
+    # All these intervals lie in (0,1), are disjoint, and accumulate only at 0.
+    # The countable points with cos(pi/x)=1 have zero measure.
+    _require(sp.simplify(right.subs(k, 1)) < 1, "cosine-first-arc")
+    _require(sp.simplify(left - right.subs(k, k + 1)).is_positive is True, "cosine-disjoint-arcs")
+    _require(sp.limit(right, k, sp.oo) == 0, "cosine-arcs-to-zero")
+    # Consecutive pairs of the convergent Leibniz series give these lengths.
+    n = sp.Symbol("_n", integer=True, nonnegative=True)
+    term = (-1) ** n / (2 * n + 1)
+    pair = term.subs(n, 2 * k - 1) + term.subs(n, 2 * k)
+    _require(sp.simplify(right - left + 2 * pair) == 0, "cosine-leibniz-pair")
+    _require(term.subs(n, 0) == 1, "cosine-leibniz-base")
+    series = sp.summation(term, (n, 0, sp.oo))
+    _require(_closed(series), "cosine-leibniz-sum")
+    measure = 2 * (1 - series)
+    return sp.simplify(measure - 1)
+
+
 def _worker(payload, queue) -> None:
     try:
         kind, integrand_s, limits, answer_s, variable = payload
@@ -4809,9 +5303,12 @@ def _worker(payload, queue) -> None:
             hi = _parse(limits[1], variable)
             symbol = namespace(variable)[variable]
             for builder in (
+                _stable_fourier_line,
+                _wave_hard_fourier_values,
                 pack_certificates.sphere_integral_value,
                 pack_certificates.legendre_grid_value,
                 pack_certificates.tangent_ray_value,
+                _hard_classical_values,
             ):
                 value = builder(integrand, symbol, lo, hi)
                 if value is not None:
@@ -4858,6 +5355,11 @@ def _worker(payload, queue) -> None:
         lo = _parse(limits[0], variable)
         hi = _parse(limits[1], variable)
         symbol = namespace(variable)[variable]
+        for builder in (_alternating_floor_ray, _cosine_floor_reciprocal_unit):
+            value = builder(integrand, symbol, lo, hi)
+            if value is not None:
+                queue.put(("ok", _certificate_same(value, answer)))
+                return
         added = _wave5j_values(integrand, symbol, lo, hi)
         if _matches(added, answer):
             queue.put(("ok", True))
@@ -4966,6 +5468,8 @@ def canon_expr(text: str, variable: str, *, allow_constant: bool = True) -> str 
 def canon_integrand(text: str, variable: str) -> str | None:
     try:
         expr = _parse(text, variable)
+        if _huge_integer(expr):
+            expr = _printable(text, variable)
     except Exception:
         return None
     symbol = namespace(variable)[variable]
@@ -4974,6 +5478,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
         or pack_certificates.matches_legendre_grid(expr, symbol)
         or _infinite_integrand_form(expr, symbol) is not None
         or pack_wave5k.open_integrand(expr, symbol)
+        or _hard_classical_telescope_shape(expr, symbol)
     ):
         return None
     return _canonical_text(expr, variable)

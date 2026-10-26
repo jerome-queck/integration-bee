@@ -68,6 +68,56 @@ _RELAY_TRANSCRIPT = (
 # An optional fourth item preserves a printed integration variable when x is
 # already a parameter.
 TRANSCRIPTS = {
+    "R2-2024-Relay-Q10": (
+        "(exp(I*Symbol('theta', real=True)*x)-1-I*Symbol('theta', real=True)*sin(x))/Abs(x)**(1+Symbol('alpha', positive=True))",
+        ("-oo", "oo"),
+        "2*gamma(-Symbol('alpha', positive=True))*cos(pi*Symbol('alpha', positive=True)/2)*Abs(Symbol('theta', real=True))**Symbol('alpha', positive=True)",
+    ),
+    "R2-2022-Relay-Q03": (
+        "x*log(sin(x))",
+        ("0", "pi/2"),
+        "7*zeta(3)/16-pi**2*log(2)/8",
+    ),
+    "R2-2022-Group-Q07": (
+        "log(x)*log(1+x**2)",
+        ("0", "1"),
+        "-log(2)+4-2*G-pi/2",
+    ),
+    "R2-2025-SG-Relay-Q07": (
+        "log(Abs(sin(factorial(2025)*x)))*log(Abs(sin(factorial(2026)*x)))",
+        ("0", "pi/2"),
+        "pi*log(2)**2/2+pi**3/48624",
+    ),
+    "R3-2024-Chainlink-G1-Q07": (
+        "x/sin(4*x)",
+        ("atan(Rational(1,3))", "atan(Rational(1,2))"),
+        "pi*log(Rational(4,3))/16",
+    ),
+    "R3-2024-Chainlink-G2-Q06": (
+        "exp(-Symbol('a', positive=True)**2*x**2-Symbol('b', positive=True)**2/x**2)",
+        ("0", "oo"),
+        "sqrt(pi)*exp(-2*Symbol('a', positive=True)*Symbol('b', positive=True))/(2*Symbol('a', positive=True))",
+    ),
+    "R3-2024-Chainlink-G3-Q05": (
+        "log(sin(x))*tan(x)", ("0", "pi/2"), "-pi**2/24",
+    ),
+    "R3-2024-Dichotomy-S2-Q05a": (
+        "log(1+sqrt(1+((x**4-1)/(2*x**2))**2))", ("0", "1"), "log(2)+pi-2",
+    ),
+    "R3-2024-Dichotomy-S3-Q02a": (
+        "1/sqrt(1+sqrt(exp(x)))", ("0", "oo"),
+        "2*(log(sqrt(2)+1)-log(sqrt(2)-1))",
+    ),
+    # Shuttle D3 passes d=phi; see the source and mark scheme cited in its note.
+    "R2-2021-Relay-D04": (
+        "x/((1+sqrt(5))/2-cos(x)**2)", ("0", "2*pi"), "2*pi**2",
+    ),
+    "R2-2024-Relay-Q08": (
+        "Sum(1/sqrt(n-sec(x)**2)-1/sqrt(n-tan(x)**2),(n,2,oo))",
+        ("0", "pi/4"), "pi/(2*sqrt(2))",
+    ),
+    "R2-2022-Group-Q05": ("(-1)**floor(x)/x", ("1", "oo"), "log(2/pi)"),
+    "R2-2023-Relay-Q17": ("floor(cos(pi/x))", ("0", "1"), "1-pi/2"),
     "R1-2020-Q25": (
         "log(a+b*cos(x))",
         ("0", "pi"),
