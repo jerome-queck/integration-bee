@@ -1,9 +1,9 @@
 # R2-2025-SG-Relay-Q14
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 14)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf`, PDF page 4, relay 14.
 - Printed answer: no Singapore mark scheme is in this tree. The value below is derived from the problem sheet.
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- The original problem page has been visually checked. The catalog's `answer_source_pdf: derived_verified` is retained; this proof does not claim agreement with an unavailable Singapore mark scheme.
 
 ## Problem
 
@@ -13,10 +13,10 @@
 
 ## Solution
 
-Write \(x=n+t\) with an integer \(n\geq 1\) and \(t\in(0,1]\). The fractional part is \(t\), and the inner power is \(M^{-n}\) where \(M=\lfloor(k+1)/t\rfloor\geq k+1\geq 2\). Every term is positive, so the sums and the integral may be rearranged. The geometric series is
+Write \(x=n+t\) with an integer \(n\geq 1\) and \(t\in(0,1)\). Integer endpoints do not affect the integral. The fractional part is \(t\), and the inner power is \(J^{-n}\) where \(J=\lfloor(k+1)/t\rfloor\geq k+1\geq 2\). Every term is positive, so Tonelli's theorem permits both rearrangements of sums and integrals. The geometric series is
 
 \[
-\sum_{n\geq 1}M^{-n}=\frac{1}{M-1}.
+\sum_{n\geq 1}J^{-n}=\frac{1}{J-1}.
 \]
 
 Set \(M=k+1\). The factor \(1/(k+1)\) is \(1/M\), and the integral over \(t\) is
@@ -45,4 +45,4 @@ Summing over \(M\geq 2\) counts the pair \((j,M)\) once for each \(M\) from \(2\
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r2_2025_sg_relay_q14`. SymPy checks the finite geometric sum, the slice length, the cancellation \((j-1)/(j(j-1)(j+1))\), and \(\sum_{j\geq 2}1/(j(j+1))=1/2\).
+`verify/pack_hard_floor.py` preserves the literal infinite `Sum` in the transcript. Its certificate first matches that sum, the summation range, the bound index, and both integration limits. SymPy then checks the integer translation of the floor, the substituted body, the convergent geometric sum for every integer \(J\geq2\), the exact floor-interval lengths, their multiplicities, and the final telescoping sum. Unsupported sums are not accepted by this certificate.

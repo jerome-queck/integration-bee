@@ -1,9 +1,9 @@
 # R3-2024-Chainlink-G4-Q03
 
-- Problem: `sources/past/r3/2024/Chainlink_Game_4_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (problem 3)
-- Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 4, problem 3)
-- Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 4, problem 3)
-- The catalog row is not changed.
+- Problem: `sources/past/r3/2024/Chainlink_Game_4_2024_Round_3_UK_University_Integration_Bee_(3).pdf`, PDF page 1, problem 3.
+- Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf`, PDF page 5, Game 4, problem 3.
+- Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf`, PDF page 14, Game 4, problem 3.
+- The original, mark, and worked pages have been visually checked; all agree with this reading and value.
 
 ## Problem
 
@@ -21,6 +21,12 @@ On \((n,n+1)\) the floor is \(n\) and the ceiling is \(n+1\). Rationalising \(\s
 
 Pairing \(n=2k-1\) with \(n=2k\) leaves the telescoping difference \(1/\sqrt{2k-1}-1/\sqrt{2k+1}\). The partial sum through \(k=m\) is \(1-1/\sqrt{2m+1}\), and the series sums to \(1\).
 
+More generally, the sum through every integer \(N\) is
+\[
+1+\frac{(-1)^{N+1}}{\sqrt{N+1}}.
+\]
+Its error is at most \(1/\sqrt{N+1}\). A noninteger upper endpoint adds only a fraction of one constant interval, bounded in magnitude by \(1/\sqrt{N+1}+1/\sqrt{N+2}\), which also tends to zero. This proves the improper integral, including arbitrary upper endpoints. The undefined values at the integer endpoints may be assigned arbitrarily without changing the interval integrals.
+
 ## Final answer
 
 \[
@@ -29,4 +35,4 @@ Pairing \(n=2k-1\) with \(n=2k\) leaves the telescoping difference \(1/\sqrt{2k-
 
 ## SymPy self-check
 
-SymPy simplifies the paired summand to \(1/\sqrt{2k-1}-1/\sqrt{2k+1}\) and sums the first \(m\) pairs to \(1-1/\sqrt{2m+1}\).
+`verify/pack_hard_floor.py` checks the exact original integrand and bounds, the floor/ceiling interval values, rationalisation, the partial-sum recurrence and its initial value, and both vanishing error bounds. It does not use absolute convergence or numerical agreement.

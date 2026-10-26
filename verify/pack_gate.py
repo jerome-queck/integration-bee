@@ -124,9 +124,13 @@ and a reflected exponential logarithm. Handoff B adds checked Chainlink and
 Dichotomy substitutions, series, branches, and limiting forms. Its five outer
 limits retain the complete Limit of an Integral, with matching bound metadata.
 Only its recognized limit, digit-product, nested-product, and finite-polynomial
-forms extend the open-expression whitelist. Answers must be closed, except the
-truncated exponential and finite-polynomial antiderivatives, which keep their
-finite sums. Numeric agreement is not a proof.
+forms extend the open-expression whitelist. Further hard forms cover four
+Catalan reductions, a Laplace/binomial Fourier coefficient, a sine Bose kernel,
+an alternating logarithmic series, and four floor integrals. Their exact
+continued-fraction, indexed-maximum, and Sum shapes are checked before the
+ordinary closed-integrand guard. Answers must be closed, except the truncated
+exponential and finite-polynomial antiderivatives, which keep their finite sums.
+Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -139,6 +143,9 @@ import check_math
 import pack_certificates
 import pack_handoff_b
 import pack_handoff_c
+import pack_hard_catalan
+import pack_hard_floor
+import pack_hard_series
 import pack_wave5k
 import pack_wave5l
 import pack_wave5n
@@ -167,6 +174,8 @@ def namespace(variable: str) -> dict:
     ns["binomial"] = sp.binomial
     ns["G"] = sp.Catalan
     ns["EulerGamma"] = sp.EulerGamma
+    ns["ContinuedFraction"] = pack_hard_catalan.ContinuedFraction
+    ns["IndexedMaximum"] = pack_hard_floor.IndexedMaximum
     ns["i"] = sp.I
     ns[variable] = sp.symbols(variable, real=True)
     ns["C"] = sp.Symbol("C")
@@ -230,7 +239,8 @@ def _closed(expr) -> bool:
     has = getattr(expr, "has", None)
     if has is None:
         return False
-    if has(sp.Integral, sp.Sum, sp.Product, sp.Limit):
+    if has(sp.Integral, sp.Sum, sp.Product, sp.Limit,
+           pack_hard_catalan.ContinuedFraction, pack_hard_floor.IndexedMaximum):
         return False
     return True
 
@@ -5024,6 +5034,76 @@ def _wave5j_values(integrand, symbol, lo, hi):
     return None
 
 
+def _laplace_log_cosine(integrand, symbol, lo, hi):
+    if lo != 0 or hi != sp.pi / 2 or not integrand.has(sp.log):
+        return None
+    damping = 1 - sp.log(sp.cos(symbol))
+    expected = damping * sp.cos(2 * symbol) / (symbol**2 + damping**2)
+    if integrand != expected:
+        return None
+
+    def build():
+        t, a, frequency = sp.symbols("_t _a _b", positive=True)
+        line = sp.Symbol("_x", real=True)
+        # For 0<x<pi/2, a=1-log(cos(x)) >= 1. The absolute value
+        # of the double-integral kernel is bounded by exp(-t), so Fubini
+        # applies, including the improper endpoint at pi/2.
+        kernel = sp.integrate(sp.exp(-a * t) * sp.cos(frequency * t), (t, 0, sp.oo))
+        _require(sp.simplify(kernel - a / (a**2 + frequency**2)) == 0, "log-cos-laplace")
+        _require(sp.simplify(kernel.subs({a: damping, frequency: symbol}) * sp.cos(2 * symbol) - integrand) == 0,
+                 "log-cos-kernel-match")
+        positive_cosine = sp.Symbol("_c", positive=True)
+        _require(sp.simplify(sp.exp(-(1 - sp.log(positive_cosine)) * t)
+                            - sp.exp(-t) * positive_cosine**t) == 0, "log-cos-damping")
+        _require(sp.integrate(sp.exp(-t), (t, 0, sp.oo)) == 1, "log-cos-fubini")
+
+        real_part = sp.cos(line)**t * sp.cos(t * line) * sp.cos(2 * line)
+        _require(real_part.subs(line, -line) == real_part, "log-cos-even")
+        euler_gap = 2 * sp.cos(line) * sp.exp(sp.I * line) - 1 - sp.exp(2 * sp.I * line)
+        _require(sp.simplify(sp.expand_complex(euler_gap)) == 0, "log-cos-euler")
+        # On (-pi/2,pi/2), cos(x)>0 and arg(1+exp(2ix))=x. Hence the
+        # principal powers agree with (2*cos(x))**t * exp(i*t*x).
+        # Even extension, division by 2**t, and y=2*x give 2**(-t-2).
+        scale = sp.Rational(1, 2) * 2**(-t) * sp.Rational(1, 2)
+        _require(sp.simplify(scale - 2**(-t - 2)) == 0, "log-cos-scale")
+
+        # (1+z)**t is analytic for |z|<1. Its ODE and initial value fix
+        # the binomial Taylor coefficients; check the recurrence for every n.
+        z = sp.Symbol("_z")
+        n = sp.Symbol("_n", integer=True, nonnegative=True)
+        analytic = (1 + z)**t
+        _require(sp.simplify((1 + z) * sp.diff(analytic, z) - t * analytic) == 0,
+                 "log-cos-binomial-ode")
+        _require(analytic.subs(z, 0) == 1, "log-cos-binomial-base")
+        coefficient = sp.binomial(t, n)
+        recurrence = (n + 1) * coefficient.subs(n, n + 1) - (t - n) * coefficient
+        _require(sp.simplify(sp.expand_func(recurrence)) == 0, "log-cos-binomial-step")
+        first = sp.diff(analytic, z).subs(z, 0)
+        _require(first == t, "log-cos-first-coefficient")
+
+        # Uniform convergence for r<1 permits termwise integration.
+        # The modes n=0, n=1, and n=m+1 (m>=1) exhaust the series.
+        m = sp.Symbol("_m", integer=True, positive=True)
+        zero_mode = sp.integrate(sp.cos(line), (line, -sp.pi, sp.pi))
+        first_mode = sp.integrate(sp.exp(sp.I * line) * sp.cos(line), (line, -sp.pi, sp.pi))
+        higher_mode = sp.integrate(sp.exp(sp.I * (m + 1) * line) * sp.cos(line),
+                                   (line, -sp.pi, sp.pi))
+        _require(zero_mode == 0 and first_mode == sp.pi and sp.simplify(higher_mode) == 0,
+                 "log-cos-orthogonality")
+        r = sp.Symbol("_r", positive=True)
+        # |1+r*exp(iy)|**t <= 2**t for 0<=r<=1, t>0. Dominated
+        # convergence therefore takes the Abel boundary limit in y.
+        inner = sp.limit(scale * first * r * first_mode, r, 1, dir="-")
+        _require(sp.simplify(inner - sp.pi * t / 2**(t + 2)) == 0, "log-cos-inner")
+        rate = 1 + sp.log(2)
+        _require(rate.is_positive is True, "log-cos-positive-rate")
+        final_kernel = sp.pi * t * sp.exp(-rate * t) / 4
+        _require(sp.simplify(sp.exp(-t) * inner - final_kernel) == 0, "log-cos-final-kernel")
+        return sp.integrate(final_kernel, (t, 0, sp.oo))
+
+    return _fact("laplace-log-cosine", build)
+
+
 def _certificate_same(value, answer) -> bool:
     """Compare definite values without dropping signs or logarithm branches."""
     if not _closed(value) or not _closed(answer):
@@ -5818,6 +5898,10 @@ def _worker(payload, queue) -> None:
                 queue.put(("ok", matched))
                 return
             for builder in (
+                _laplace_log_cosine,
+                pack_hard_catalan.definite_value,
+                pack_hard_floor.definite_value,
+                pack_hard_series.definite_value,
                 _handoff_a_discrete_values,
                 _handoff_a_fourier_values,
                 _handoff_a_classical_values,
@@ -6004,6 +6088,9 @@ def canon_integrand(text: str, variable: str) -> str | None:
         or pack_handoff_b.open_integrand(expr, symbol)
         or pack_handoff_c.open_integrand(expr, symbol)
         or _hard_classical_telescope_shape(expr, symbol)
+        or pack_hard_catalan.open_integrand(expr, symbol)
+        or pack_hard_floor.open_integrand(expr, symbol)
+        or pack_hard_series.open_integrand(expr, symbol)
     ):
         return None
     return _canonical_text(expr, variable)

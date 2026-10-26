@@ -1420,6 +1420,69 @@ TRANSCRIPTS.update(
 )
 
 
+# Source-checked hard rows. The continued fraction and indexed maximum keep
+# their literal operators; the logarithmic Sum has a checked L1 interchange.
+TRANSCRIPTS.update(
+    {
+        "R2-2021-Group-Q01": (
+            "atan(x)**2", ("0", "1"), "pi**2/16+pi*log(2)/4-Catalan",
+        ),
+        "R2-2024-Relay-Q04": (
+            "ContinuedFraction(x**2,Lambda(n,2*n*(2*n+1)-x**2),"
+            "Lambda(n,2*n*(2*n+1)*x**2),1)",
+            ("0", "pi/2"),
+            "2*Catalan-pi/2",
+        ),
+        "R2-2023-Group-Q02": (
+            "log((1+sin(x))/(1-sin(x)))", ("0", "pi/2"), "4*Catalan",
+        ),
+        "R2-2024-Group-Q09": (
+            "sin(x)/(exp(x)-1)", ("0", "oo"), "pi*coth(pi)/2-1/2",
+        ),
+        "R3-2024-Chainlink-G3-Q08": (
+            "(1-log(cos(x)))*cos(2*x)/(x**2+(1-log(cos(x)))**2)",
+            ("0", "pi/2"),
+            "pi/(4*(1+log(2))**2)",
+        ),
+        "R3-2024-Chainlink-G5-Q04": (
+            "1/x-floor(1/x)-1/(x**2*floor(1/x)**2)",
+            ("0", "1"),
+            "1-EulerGamma-pi**2/6",
+        ),
+        "R3-2024-Dichotomy-S3-Q04a": (
+            "atan(1/x**2)/x", ("1", "oo"), "Catalan/2",
+        ),
+        "R2-2025-SG-Group-Q12": (
+            "Sum((-1)**n*log((1-x**(1/n))/(1-x**(1/(n+1)))),(n,1,oo))",
+            ("0", "1"),
+            "log(2)-1",
+        ),
+        "R2-2025-UK-Group-Q09": (
+            "Sum((-1)**n*log((1-x**(1/n))/(1-x**(1/(n+1)))),(n,1,oo))",
+            ("0", "1"),
+            "log(2)-1",
+        ),
+        "R2-2023-Group-Q07": (
+            "IndexedMaximum(Lambda(n,floor(2**(n+1)*x)/2**n-"
+            "floor(2**n*x)/2**(n-1)),Naturals0)",
+            ("0", "1"),
+            "Rational(2,3)",
+        ),
+        "R2-2025-SG-Relay-Q14": (
+            "Sum(floor((k+1)/(x-floor(x)))**(-floor(x))/(k+1),(k,1,oo))",
+            ("1", "oo"),
+            "Rational(1,2)",
+        ),
+        "R3-2024-Chainlink-G4-Q03": (
+            "(-1)**ceiling(x)/(sqrt(floor(x)*ceiling(x))*"
+            "(sqrt(ceiling(x))-sqrt(floor(x))))",
+            ("1", "oo"),
+            "1",
+        ),
+    }
+)
+
+
 def transcribed(row: dict) -> dict | None:
     ident = row.get("id")
     item = TRANSCRIPTS.get(ident)

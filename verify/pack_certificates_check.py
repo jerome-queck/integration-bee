@@ -204,6 +204,90 @@ def check_source_discrepancy(rows):
             "odd subsequence Gaussian bound")
 
 
+def check_hard_open_forms(rows):
+    ids = (
+        "R2-2024-Relay-Q04",
+        "R2-2023-Group-Q07",
+        "R2-2025-SG-Group-Q12",
+        "R2-2025-UK-Group-Q09",
+        "R2-2025-SG-Relay-Q14",
+    )
+    parsed = {}
+    x = sp.Symbol("x", real=True)
+
+    def reject_shape(expr, limits, answer, label):
+        require(pack_gate.canon_integrand(sp.srepr(expr), "x") is None,
+                label + " canonical integrand")
+        probe(expr, limits, answer, False, label + " proof")
+
+    for ident in ids:
+        row = rows[ident]
+        require(row["verify"] == "sympy", ident + " stored status")
+        expr = pack_gate._parse(row["sympy_expr"], row["variable"])
+        answer = pack_gate._parse(row["answer_sympy"], row["variable"])
+        limits = tuple(pack_gate._parse(bound, row["variable"]) for bound in row["limits"])
+        parsed[ident] = expr, limits, answer
+        require(expr.free_symbols == {x}, ident + " bound index stays bound")
+        fields = pack_gate.fields_from_parts(
+            row["sympy_expr"], row["limits"], row["answer_sympy"], row["variable"]
+        )
+        require(fields is not None, ident + " fields round-trip")
+        require(pack_gate._parse(fields["sympy_expr"], fields["variable"]) == expr,
+                ident + " literal expression round-trip")
+        require(pack_gate._parse(fields["answer_sympy"], fields["variable"]) == answer,
+                ident + " answer round-trip")
+        require(fields["kind"] == row["kind"] and fields["limits"] == row["limits"],
+                ident + " integration bounds round-trip")
+        probe(expr, limits, answer, True, ident + " stored proof")
+        probe(expr, limits, answer + 1, False, ident + " wrong answer")
+        probe(expr, (limits[0] + sp.Rational(1, 3), limits[1]), answer, False,
+              ident + " changed lower bound")
+        changed_upper = sp.Integer(2) if limits[1] == sp.oo else limits[1] + 1
+        probe(expr, (limits[0], changed_upper), answer, False, ident + " changed upper bound")
+        reject_shape(expr + 1, limits, answer, ident + " added term")
+        reject_shape(2 * expr, limits, answer, ident + " outer scale")
+
+    fraction, limits, answer = parsed["R2-2024-Relay-Q04"]
+    first, denominators, numerators, start = fraction.args
+    for label, changed in (
+        ("continued-fraction denominator", fraction.func(
+            first, sp.Lambda(denominators.variables, denominators.expr + 1), numerators, start
+        )),
+        ("continued-fraction numerator", fraction.func(
+            first, denominators, sp.Lambda(numerators.variables, 2 * numerators.expr), start
+        )),
+        ("continued-fraction starting index", fraction.func(first, denominators, numerators, start + 1)),
+    ):
+        reject_shape(changed, limits, answer, label)
+
+    maximum, limits, answer = parsed["R2-2023-Group-Q07"]
+    function, domain = maximum.args
+    reject_shape(maximum.func(sp.Lambda(function.variables, function.expr + 1), domain),
+                 limits, answer, "indexed-maximum body")
+    reject_shape(maximum.func(function, sp.S.Naturals),
+                 limits, answer, "indexed-maximum positive-index domain")
+
+    for ident in ("R2-2025-SG-Group-Q12", "R2-2025-SG-Relay-Q14"):
+        series, limits, answer = parsed[ident]
+        index, start, stop = series.limits[0]
+        reject_shape(sp.Sum(series.function, (index, start + 1, stop)),
+                     limits, answer, ident + " changed summation range")
+        reject_shape(sp.Sum(series.function + 1, (index, start, stop)),
+                     limits, answer, ident + " changed summand")
+
+    for expr, label in ((fraction, "continued fraction"), (maximum, "indexed maximum")):
+        require(not pack_gate._closed(expr), label + " remains unevaluated")
+        require(pack_gate.fields_from_parts("x", ("0", "1"), sp.srepr(expr), "x") is None,
+                label + " rejected as stored answer")
+        probe(x, (0, 1), expr, False, label + " rejected as answer")
+
+    row = rows["R3-2024-Chainlink-G3-Q08"]
+    expr = pack_gate._parse(row["sympy_expr"], row["variable"])
+    answer = pack_gate._parse(row["answer_sympy"], row["variable"])
+    limits = tuple(pack_gate._parse(bound, row["variable"]) for bound in row["limits"])
+    probe(expr, limits, answer + 1, False, "log-cosine Laplace wrong answer")
+
+
 def main():
     rows = {row["id"]: row for row in problem_catalog.load_records()}
     selected = [rows[ident] for ident in IDS]
@@ -217,7 +301,8 @@ def main():
     check_closed_answers()
     check_answer_preprocessing(rows)
     check_source_discrepancy(rows)
-    print("PASS pack certificates (5 rows, symbolic families, mutations, source discrepancy)")
+    check_hard_open_forms(rows)
+    print("PASS pack certificates (symbolic families, literal operators, mutations, source discrepancy)")
     return 0
 
 
