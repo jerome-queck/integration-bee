@@ -180,6 +180,15 @@ def check_answer_preprocessing(rows):
 
 
 def check_source_discrepancy(rows):
+    # The three 2022 Q01 PDFs print +/-pi/2, whereas their marks print
+    # sin(1). These diagnostics establish the discrepancy, not the mark.
+    x = sp.Symbol("x", real=True)
+    logistic = sp.cos(x) / (1 + sp.exp(x))
+    require(sp.simplify(logistic + logistic.subs(x, -x) - sp.cos(x)) == 0,
+            "2022 Q01 reflection identity")
+    require(sp.integrate(sp.cos(x), (x, -sp.pi / 2, sp.pi / 2)) / 2 == 1,
+            "2022 Q01 printed limits give one")
+    require(sp.sin(1) < 1, "2022 Q01 printed mark differs")
     row = rows["R2-2023-Relay-Q19"]
     require(row["verify"] == "manual", "Relay-Q19 must remain manual")
     require("source discrepancy" in row["notes"], "Relay-Q19 source note")
@@ -448,6 +457,41 @@ def check_handoff_d(rows):
             "2024 Q14 retains the independently checked triangle compilation")
 
 
+def check_handoff_h_ceiling(rows):
+    row = rows["R2-2025-UK-Group-Q10"]
+    require(row["verify"] == "sympy" and row["answer_plain"] == "1",
+            "UK Group Q10 uses its own mark, not the Relay Q10 OCR")
+    expr = pack_gate._parse(row["sympy_expr"], "x")
+    x = pack_gate.namespace("x")["x"]
+    f = 1 / sp.atan(x) - (1 + x**2) / (1 + sp.atan(x) + x**2 * sp.atan(x))
+    require(isinstance(expr, sp.Subs) and expr.expr == sp.ceiling(expr.variables[0]),
+            "UK Group Q10 retains the outer ceiling")
+    require(expr.point == (sp.Integral(f, (x, 1, sp.oo)),),
+            "UK Group Q10 retains the printed integrand and bounds")
+    require(row["limits"] == ["1", "oo"], "UK Group Q10 bound metadata")
+    fields = pack_gate.fields_from_parts(row["sympy_expr"], row["limits"], "1", "x")
+    require(fields is not None and all(row[key] == value for key, value in fields.items()),
+            "UK Group Q10 fields round-trip")
+    require(pack_gate.reprove_rows([row]) is None, "UK Group Q10 stored proof")
+    require(turn_contract.answer_matches(row, "1"), "UK Group Q10 learner answer")
+    for answer in ("0", "2", "2/pi", "2025**x*gamma(x+Rational(2026,2025))"):
+        require(not pack_gate.proven("definite", row["sympy_expr"], row["limits"], answer, "x"),
+                "UK Group Q10 wrong answer: " + answer)
+        require(not turn_contract.answer_matches(row, answer),
+                "UK Group Q10 learner wrong answer: " + answer)
+    module = pack_gate.pack_handoff_d_2024_2025
+    placeholder = expr.variables[0]
+    for changed, limits in (
+        (expr, (0, sp.oo)),
+        (sp.Subs(sp.floor(placeholder), placeholder, expr.point[0]), (1, sp.oo)),
+        (sp.Subs(sp.ceiling(placeholder), placeholder, sp.Integral(f, (x, 2, sp.oo))), (2, sp.oo)),
+        (sp.Subs(sp.ceiling(placeholder), placeholder, sp.Integral(2*f, (x, 1, sp.oo))), (1, sp.oo)),
+        (expr.point[0], (1, sp.oo)),
+    ):
+        require(module.definite_value(changed, x, *limits) is None,
+                "UK Group Q10 rejects changed source shape or bounds")
+
+
 def main():
     rows = {row["id"]: row for row in problem_catalog.load_records()}
     selected = [rows[ident] for ident in IDS]
@@ -465,9 +509,11 @@ def main():
     check_handoff_d(rows)
     pack_handoff_f_check.check(rows)
     pack_grid_check.check_all(list(rows.values()))
+    check_handoff_h_ceiling(rows)
     print(
         "PASS pack certificates (symbolic families, literal operators, "
-        "24 Handoff D rows, 10 Handoff F contracts, Handoff G grids, mutations, source discrepancies)"
+        "24 Handoff D rows, 10 Handoff F contracts, Handoff G grids, "
+        "Handoff H ceiling, mutations, source discrepancies)"
     )
     return 0
 

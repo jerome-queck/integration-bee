@@ -152,7 +152,10 @@ logarithm integral by two contour residues. Handoff F gives non-integral pack
 questions explicit answer kinds, preserving the full original operators and
 checking the relevant function, pair, or verdict. Signed infinite values
 compare by sign, and a complete real-domain answer keeps both the convergent
-and divergent branches of its parameter integral. Answers must be closed,
+and divergent branches of its parameter integral. The explicit
+discrete_multiplicative kind separately proves the forward quotient in the two
+2025 product-inverse problems; its nonzero constant is multiplicative, while
+ordinary indefinite integrals keep additive constants. Answers must be closed,
 except the truncated exponential and finite-polynomial antiderivatives, which
 keep their finite sums, and the literal sophomore's-dream sum, checked by its
 nonnegative exponential series and exact gamma moments. Numeric agreement is
@@ -183,6 +186,7 @@ import pack_handoff_f_integrals
 import pack_hard_catalan
 import pack_hard_floor
 import pack_hard_series
+import pack_multiplicative
 import pack_wave5k
 import pack_wave5l
 import pack_wave5n
@@ -5963,6 +5967,15 @@ def _worker(payload, queue) -> None:
             queue.put(("ok", pack_answer_contracts.answer_matches(
                 kind, integrand, symbol, bounds, answer)))
             return
+        if kind == "discrete_multiplicative":
+            # Product inverses identify multiplicative constants. Do not run
+            # their answers through the additive-C antiderivative cleaner.
+            answer = _parse(answer_s, variable)
+            accepted = limits in (None, [], ()) and pack_multiplicative.answer_ok(
+                integrand, answer, symbol
+            )
+            queue.put(("ok", accepted))
+            return
         if kind not in {"definite", "indefinite"}:
             queue.put(("ok", False))
             return
@@ -6268,8 +6281,10 @@ def rename_dummy(integrand: str, limits, answer: str, variable: str):
         return None
 
 
-def fields_from_parts(integrand_text: str, limits_text, answer_text: str, variable: str) -> dict | None:
-    """Prove SymPy text, or a grid manifest and map when variable is grid."""
+def fields_from_parts(
+    integrand_text: str, limits_text, answer_text: str, variable: str, *, kind: str | None = None
+) -> dict | None:
+    """Prove SymPy text, grid maps, or discrete product inverses."""
     if variable == "grid":
         problem = canon_integrand(integrand_text, variable)
         answer = canon_expr(answer_text, variable)
@@ -6282,7 +6297,16 @@ def fields_from_parts(integrand_text: str, limits_text, answer_text: str, variab
             "integrand_plain": pack_grid.prompt_text(pack_grid.read_problem(problem)),
             "integrand_latex": prompt_latex, "answer_latex": answer_latex,
         }
-    answer_text = canon_expr(answer_text, variable, allow_constant=limits_text is None)
+    multiplicative = kind == "discrete_multiplicative"
+    if kind not in (None, "discrete_multiplicative") or (multiplicative and limits_text is not None):
+        return None
+    if multiplicative:
+        try:
+            answer_text = _canonical_text(_parse(answer_text, variable), variable)
+        except Exception:
+            return None
+    else:
+        answer_text = canon_expr(answer_text, variable, allow_constant=limits_text is None)
     if answer_text is None:
         return None
     renamed = rename_dummy(integrand_text, limits_text, answer_text, variable)
@@ -6290,11 +6314,13 @@ def fields_from_parts(integrand_text: str, limits_text, answer_text: str, variab
         return None
     integrand_text, limits_text, answer_text, variable = renamed
     integrand = canon_integrand(integrand_text, variable)
-    answer_s = canon_expr(answer_text, variable, allow_constant=limits_text is None)
+    answer_s = answer_text if multiplicative else canon_expr(
+        answer_text, variable, allow_constant=limits_text is None
+    )
     if integrand is None or answer_s is None:
         return None
     if limits_text is None:
-        kind = "indefinite"
+        kind = "discrete_multiplicative" if multiplicative else "indefinite"
         limits: list[str] = []
         limit_pair = None
     else:
@@ -6400,7 +6426,11 @@ def reprove_rows(rows: list[dict]) -> str | None:
         if sp.latex(answer_expr) != row.get("answer_latex"):
             return f"{row.get('id')} answer latex drift"
         limits = row.get("limits")
-        if row.get("kind") == "indefinite" or (
+        if row.get("kind") in {"indefinite", "discrete_multiplicative"}:
+            if limits != []:
+                return f"{row.get('id')} non-definite limits"
+            limit_pair = None
+        elif (
             row.get("kind") in pack_answer_contracts.KINDS
             and row.get("kind") not in pack_answer_contracts.BOUNDED_KINDS
             and limits == []

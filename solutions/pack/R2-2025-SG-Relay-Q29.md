@@ -1,9 +1,9 @@
 # R2-2025-SG-Relay-Q29
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 29). The same product is relay 10 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK relay 10)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (p.8, relay 29). The same product is relay 10 on p.3 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (p.3, UK relay 10)
 - Worked source: derived in this note.
-- The catalog row remains `manual` pending discrete multiplicative grading support.
+- The catalog row is `verify: sympy`, with kind `discrete_multiplicative`.
 
 ## Problem
 
@@ -30,7 +30,18 @@ C\cdot 2025^{x}\Bigl(x+\frac{1}{2025}\Bigr)\Gamma\Bigl(x+\frac{1}{2025}\Bigr).
 
 The mark scheme, page 3, places \(x\) outside the fraction: the Gamma argument is \(x+2026/2025\). The earlier transcription \((x+2026)/2025\) was incorrect.
 
-The recurrence above is proved. The current automatic grader only supports ordinary integral constants: it would accept an additive shift and reject a valid constant multiple here. A separate kind-aware grading change is needed before this row can safely become `sympy`.
+Here \(C\ne0\); zero cannot be an antiderivative because its forward quotient
+is undefined. The identities hold on the common domain of \(F(x)\) and
+\(F(x+1)\), excluding zeros of the denominator. Both displayed Gamma
+expressions are finite and nonzero for real \(x\ge0\). On real domains,
+nonzero functions of period one also multiply solutions, so this is not a
+uniqueness claim up to constants.
+
+This row shares the exact forward-quotient certificate and grading contract
+with UK relay 10. The distinct answer kind interprets \(C\) as nonzero,
+accepts both printed forms and their nonzero constant multiples, and rejects
+additive shifts. Ordinary indefinite grading is unchanged. The catalog
+stores \(C=1\) and repairs the OCR Gamma argument to \(x+2026/2025\).
 
 ## Final answer
 
@@ -40,6 +51,13 @@ C\cdot 2025^{x}\Gamma\Bigl(x+\dfrac{2026}{2025}\Bigr)
 C\cdot 2025^{x}\Bigl(x+\dfrac{1}{2025}\Bigr)\Gamma\Bigl(x+\dfrac{1}{2025}\Bigr).
 \]
 
+The multiplicative constant satisfies \(C\ne0\).
+
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r2_2025_sg_relay_q29`. SymPy checks the same gamma recurrence as the UK relay 10 note.
+`verify/pack_multiplicative.py` checks the source's forward quotient by the
+Gamma recurrence. `verify/pack_multiplicative_check.py` exercises this id and
+UK relay 10 through the same certificate and turn grading, including both
+printed forms, constant multiples, wrong Gamma arguments, additive shifts,
+zero and undefined answers, and the ordinary additive-constant regression.
+`solutions/self_check.py` retains its earlier Gamma-recurrence diagnostic.

@@ -6,6 +6,7 @@ import model
 import pack_answer_contracts
 import pack_gate
 import pack_grid
+import pack_multiplicative
 import problem_catalog
 import sympy as sp
 import yaml
@@ -483,7 +484,7 @@ def expressions_match(answer: str, submitted: str, indefinite: bool, variable: s
 
 
 def _indefinite(row: dict) -> bool:
-    if row.get("kind") in pack_answer_contracts.KINDS:
+    if row.get("kind") in pack_answer_contracts.KINDS or row.get("kind") == pack_multiplicative.KIND:
         return False
     if row.get("kind") == "indefinite":
         return True
@@ -501,6 +502,13 @@ def answer_matches(row: dict, submitted: str) -> bool:
                                 submitted, row.get("variable", "x"))
     if row.get("kind") == "grid":
         return pack_grid.answers_match(row["answer_sympy"], submitted)
+    if row.get("kind") == pack_multiplicative.KIND:
+        variable = row.get("variable", "x")
+        ns = _mark_namespace()
+        ns[variable] = sp.Symbol(variable, real=True)
+        factor = sp.sympify(row["sympy_expr"], locals=ns)
+        candidate = sp.sympify(submitted, locals=ns)
+        return pack_multiplicative.answer_ok(factor, candidate, ns[variable])
     return expressions_match(row["answer_sympy"], submitted, _indefinite(row), row.get("variable", "x"))
 
 
@@ -543,6 +551,8 @@ def grade_problem(
                 "row": {
                     "id": problem_id,
                     "answer_sympy": answer,
+                    **({"sympy_expr": catalog_row["sympy_expr"]}
+                       if catalog_row.get("kind") == pack_multiplicative.KIND else {}),
                     "kind": catalog_row.get("kind"),
                     "limits": catalog_row.get("limits"),
                     "variable": variable,
