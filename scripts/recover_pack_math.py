@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Recover pack integrand and answer readings from the committed PDFs.
 
-The script rewrites problems/records.jsonl only for rows whose layout reading
-is proved by SymPy. Every other row stays manual or unchecked. Run it again
-after a parser change. It is deterministic.
+The script writes proved layout readings and three source-checked manual input
+transcriptions. A manual transcription never supplies a symbolic answer or
+promotes the row. Run it again after a parser change. It is deterministic.
 
 PyMuPDF is required for layout recovery. Transcript-only reproofs do not
 import the PDF reader, so the ordinary check dependencies stay unchanged.
@@ -14,6 +14,8 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+
+import sympy as sp
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "verify"))
@@ -49,12 +51,36 @@ def load_pair(cache: dict, pdf: str, kind: str):
 
 
 GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
-# R2-2023-Relay-Q19 prints upper bound n. That limit is not the mark-scheme
-# value sqrt(pi/2), so recovery must not replace the manual row.
-# S2-Q07a is proved under Handoff F's signed-infinity answer contract.
-# Q02-v9 already has a checked damped-cosine reduction below the proof timeout.
-# R2-2023-Relay-Q19 prints upper bound n vs mark-scheme sqrt(pi/2) — keep manual.
-HELD_MANUAL = frozenset({"R2-2023-Relay-Q19"})
+# The three source-conflict transcriptions must never fall through to PDF
+# matching by question number, especially on repeated Tournament Q04 slides.
+HELD_MANUAL = frozenset(problem_catalog.MANUAL_INPUT_KINDS)
+
+_MANUAL_M, _MANUAL_N, _MANUAL_K = (
+    f"Symbol('{name}',integer=True)" for name in ("m", "n", "k")
+)
+# Tournament problem slide 169, answer slide 171, worked p.15: m,n are
+# integers with m>n, not necessarily positive. The printed final conflicts.
+_MANUAL_TOURNAMENT = (
+    f"sin((2**{_MANUAL_M}+2025*2**{_MANUAL_N})*x)/sin(2**{_MANUAL_M}*x)"
+    f"*Product(cos(2**({_MANUAL_M}-{_MANUAL_K})*x),"
+    f"({_MANUAL_K},1,{_MANUAL_M}-{_MANUAL_N}))",
+    ("0", f"pi/2**{_MANUAL_N}"),
+    "For integers m and n with m > n: integral from 0 to pi/2^n of "
+    "sin((2^m + 2025*2^n)*x)/sin(2^m*x) * product(k=1..m-n, cos(2^(m-k)*x)) dx.",
+)
+_MANUAL_INDEX = "Symbol('n',integer=True,positive=True)"
+MANUAL_TRANSCRIPTS = {
+    # Relay problem p.2, mark p.4: retain the outer limit and upper bound n.
+    "R2-2023-Relay-Q19": (
+        f"Limit(Integral(cos(x/sqrt({_MANUAL_INDEX}))**{_MANUAL_INDEX},"
+        f"(x,0,{_MANUAL_INDEX})),{_MANUAL_INDEX},oo)",
+        (),
+        "For positive integers n, find lim(n -> infinity) I_n, where I_n = "
+        "integral from 0 to n of cos(x/sqrt(n))^n dx.",
+    ),
+    "R3-2024-Tournament-Q04-v11": _MANUAL_TOURNAMENT,
+    "R3-2024-Tournament-Q04-v12": _MANUAL_TOURNAMENT,
+}
 
 _RELAY_M = "Symbol('m', integer=True, positive=True)"
 _RELAY_N = "Symbol('n', integer=True, positive=True)"
@@ -1681,6 +1707,10 @@ TRANSCRIPT_KINDS = {
     "R2-2025-SG-Relay-Q29": "discrete_multiplicative",
 }
 
+# Group problem/mark p.2: v2 is matrix-layout extraction debris assigned Q01,
+# not another integral. Reprove the same source reading for either catalog id.
+TRANSCRIPTS["R2-2023-Group-Q01-v2"] = TRANSCRIPTS["R2-2023-Group-Q01"]
+
 
 def transcribed(row: dict) -> dict | None:
     ident = row.get("id")
@@ -1699,6 +1729,23 @@ def transcribed(row: dict) -> dict | None:
         integrand, limits, answer, variable[0] if variable else "x",
         kind=TRANSCRIPT_KINDS.get(ident),
     )
+
+
+def manual_input_fields(row: dict) -> dict | None:
+    """Recover only the printed question; its conflicting answer stays manual."""
+    if row.get("source") != "resource_pack" or row.get("round") not in GATED_ROUNDS:
+        return None
+    item = MANUAL_TRANSCRIPTS.get(row.get("id"))
+    if item is None:
+        return None
+    integrand, limits, prompt = item
+    expr = pack_gate._parse(integrand, "x")
+    return {
+        "verify": "manual", "kind": problem_catalog.MANUAL_INPUT_KINDS[row["id"]],
+        "variable": "x", "sympy_expr": pack_gate._canonical_text(expr, "x"),
+        "limits": [pack_gate._canonical_text(pack_gate._parse(part, "x"), "x") for part in limits],
+        "integrand_plain": prompt, "integrand_latex": sp.latex(expr), "answer_latex": None,
+    }
 
 
 def gate_row(row: dict, cache: dict) -> dict | None:
@@ -1745,6 +1792,11 @@ def recover(rows: list[dict]) -> tuple[list[dict], list[str]]:
     gated: list[str] = []
     for row in rows:
         if row.get("round") not in GATED_ROUNDS:
+            continue
+        manual_fields = manual_input_fields(row)
+        if manual_fields is not None:
+            row.update(manual_fields)
+            row.pop("answer_sympy", None)
             continue
         fields = gate_row(row, cache)
         if fields is not None:
