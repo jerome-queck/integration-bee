@@ -1,9 +1,9 @@
 # R2-2025-SG-Group-Q05
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Group_Round_SG.pdf` (group 5). The same integral is group 4 of `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK group 4)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Group_Round_SG.pdf` (page 2, group 5). The same integral is group 4 of `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (page 2, UK group 4)
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- The gate checks both interval partitions and the convergent series for the original integrand.
 
 ## Problem
 

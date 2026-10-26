@@ -5280,6 +5280,491 @@ def _cosine_floor_reciprocal_unit(integrand, symbol, lo, hi):
     return sp.simplify(measure - 1)
 
 
+def _handoff_a_classical_atan_sine(integrand, symbol, lo, hi):
+    """Integration by parts leaves a logarithm and a tangent-substituted rational integral."""
+    target = (sp.sin(symbol) + sp.cos(symbol)) * sp.atan(sp.sin(symbol))
+    if lo != 0 or hi != sp.pi / 2 or integrand != target:
+        return None
+    x = sp.Dummy("angle", real=True)
+    t = sp.Dummy("ray", positive=True)
+    product = (sp.sin(x) - sp.cos(x)) * sp.atan(sp.sin(x))
+    remainder = (sp.sin(x) - sp.cos(x)) * sp.cos(x) / (1 + sp.sin(x) ** 2)
+    _require(sp.trigsimp(sp.diff(product, x) - target.subs(symbol, x) - remainder) == 0, "handoff-a-atan-parts")
+    boundary = product.subs(x, sp.pi / 2) - product.subs(x, 0)
+    first = sp.log(1 + t**2) / 2
+    _require(sp.diff(first, t) == t / (1 + t**2), "handoff-a-atan-log-primitive")
+    _require(sp.diff(sp.sin(x), x) == sp.cos(x), "handoff-a-atan-sine-jac")
+    _require(sp.sin(0) == 0 and sp.sin(sp.pi / 2) == 1, "handoff-a-atan-sine-bounds")
+    square = sp.cos(x) ** 2 / (1 + sp.sin(x) ** 2)
+    _require(sp.trigsimp(square - 2 / (1 + sp.sin(x) ** 2) + 1) == 0, "handoff-a-atan-square")
+    pulled = (1 / (1 + sp.sin(x) ** 2)).subs(x, sp.atan(t)) / (1 + t**2)
+    rational = 1 / (1 + 2 * t**2)
+    _require(sp.simplify(pulled - rational) == 0, "handoff-a-atan-tangent")
+    _require(sp.atan(0) == 0 and sp.limit(sp.atan(t), t, sp.oo) == sp.pi / 2, "handoff-a-atan-tangent-bounds")
+    primitive = sp.atan(sp.sqrt(2) * t) / sp.sqrt(2)
+    _require(sp.simplify(sp.diff(primitive, t) - rational) == 0, "handoff-a-atan-rational-primitive")
+    ray = sp.limit(primitive, t, sp.oo) - primitive.subs(t, 0)
+    return sp.simplify(boundary - (first.subs(t, 1) - first.subs(t, 0)) + 2 * ray - sp.pi / 2)
+
+
+def _handoff_a_classical_log_power_ray(integrand, symbol, lo, hi):
+    """The logarithmic substitution separates an absolutely integrable odd term."""
+    target = symbol ** (sp.E / 2 - 1) * (1 + sp.log(symbol)) / (symbol**sp.E + 1)
+    if lo != 0 or hi != sp.oo or integrand != target:
+        return None
+    t, u = sp.Dummy("logarithm", real=True), sp.Dummy("scaled", real=True)
+    raw = target.subs(symbol, sp.exp(t)) * sp.exp(t)
+    pulled = (1 + t) / (2 * sp.cosh(sp.E * t / 2))
+    _require(sp.simplify((raw - pulled).rewrite(sp.exp)) == 0, "handoff-a-log-power-substitution")
+    _require(sp.limit(sp.exp(t), t, -sp.oo) == 0 and sp.limit(sp.exp(t), t, sp.oo) == sp.oo, "handoff-a-log-power-bounds")
+    even_sum = sp.sech(sp.E * t / 2)
+    _require(sp.simplify(pulled + pulled.subs(t, -t) - even_sum) == 0, "handoff-a-log-power-reflection")
+    # Both terms are dominated by a constant times (1+|t|) exp(-e|t|/2).
+    scaled = even_sum.subs(t, 2 * u / sp.E) * (2 / sp.E)
+    _require(sp.simplify(scaled - 2 * sp.sech(u) / sp.E) == 0, "handoff-a-log-power-scale")
+    primitive = sp.atan(sp.sinh(u))
+    _require(sp.simplify(sp.diff(primitive, u) - sp.sech(u)) == 0, "handoff-a-log-power-primitive")
+    ends = sp.limit(primitive, u, sp.oo) - sp.limit(primitive, u, -sp.oo)
+    return sp.simplify(ends / sp.E)
+
+
+def _handoff_a_classical_shuttle_sine(integrand, symbol, lo, hi):
+    """A3 passes pi; reflection reduces A4 to the checked log-sine quarter integral."""
+    if lo != 0 or hi != sp.pi or integrand != symbol * sp.log(sp.sin(symbol)):
+        return None
+    x = sp.Dummy("angle", real=True)
+    f = integrand.subs(symbol, x)
+    kernel = sp.log(sp.sin(x))
+    _require(sp.simplify(f + f.subs(x, sp.pi - x) - sp.pi * kernel) == 0, "handoff-a-shuttle-sine-reflection")
+    _require(kernel.subs(x, sp.pi - x) == kernel, "handoff-a-shuttle-sine-halves")
+    quarter = _log_sine_quarter(kernel, x, sp.S.Zero, sp.pi / 2)
+    _require(quarter is not None, "handoff-a-shuttle-sine-quarter")
+    return sp.pi * quarter
+
+
+def _handoff_a_classical_shuttle_log(integrand, symbol, lo, hi):
+    """B3 passes -infinity; the sheet uses its reciprocal as the endpoint zero."""
+    if lo != 0 or hi != sp.oo or integrand != sp.log(symbol) / (symbol**2 + sp.pi**2):
+        return None
+    u = sp.Dummy("ray", positive=True)
+    pulled = integrand.subs(symbol, sp.pi * u) * sp.pi
+    odd = sp.log(u) / (1 + u**2)
+    reduced = (sp.log(sp.pi) / (1 + u**2) + odd) / sp.pi
+    _require(sp.simplify(sp.expand_log(pulled) - reduced) == 0, "handoff-a-shuttle-log-scale")
+    _require(sp.limit(sp.pi * u, u, 0) == 0 and sp.limit(sp.pi * u, u, sp.oo) == sp.oo, "handoff-a-shuttle-log-bounds")
+    _require(sp.simplify(odd + odd.subs(u, 1 / u) / u**2) == 0, "handoff-a-shuttle-log-reciprocal")
+    # The logarithmic term is absolutely integrable at both endpoints.
+    primitive = sp.atan(u)
+    _require(sp.diff(primitive, u) == 1 / (1 + u**2), "handoff-a-shuttle-log-primitive")
+    ray = sp.limit(primitive, u, sp.oo) - primitive.subs(u, 0)
+    return sp.simplify(sp.log(sp.pi) * ray / sp.pi)
+
+
+def _handoff_a_classical_atan_cosine(integrand, symbol, lo, hi):
+    """Continue the checked log-cosine identity inside Re(a+b), Re(a-b)>0."""
+    if lo != 0 or hi != sp.pi or integrand != sp.atan(1 + sp.cos(symbol)):
+        return None
+
+    def build():
+        x = sp.Dummy("angle", real=True)
+        a, b = sp.symbols("a b")
+        formula = _positive_log_cosine(sp.log(a + b * sp.cos(x)), x, 0, sp.pi)
+        _require(formula is not None, "handoff-a-atan-cosine-log-formula")
+        # This convex complex domain keeps every a+b*cos(x) in the right
+        # half-plane. The principal logarithm and square root continue
+        # holomorphically from the real identity without crossing a cut.
+        aa, bb = 1 + sp.I, sp.I
+        _require(sp.re(aa + bb) > 0 and sp.re(aa - bb) > 0, "handoff-a-atan-cosine-domain")
+        _require(sp.re(aa + bb * sp.cos(x)) == 1, "handoff-a-atan-cosine-log-branch")
+        _require(sp.im(aa + bb * sp.cos(x)) == 1 + sp.cos(x), "handoff-a-atan-cosine-log-argument")
+        phi = (1 + sp.sqrt(5)) / 2
+        root = sp.sqrt(phi)
+        discriminant = root + sp.I / root
+        _require(sp.simplify(discriminant**2 - (aa**2 - bb**2)) == 0, "handoff-a-atan-cosine-discriminant")
+        _require(sp.re(discriminant).is_positive is True, "handoff-a-atan-cosine-square-root-branch")
+        continued = sp.simplify(formula.subs({a: aa, b: bb}))
+        continued = continued.xreplace({sp.sqrt(1 + 2 * sp.I): discriminant})
+        z = (aa + discriminant) / 2
+        _require(sp.simplify(continued - sp.pi * sp.log(z)) == 0, "handoff-a-atan-cosine-continuation")
+        _require(sp.re(z).is_positive is True and sp.im(z).is_positive is True, "handoff-a-atan-cosine-quadrant")
+        _require(sp.simplify(sp.im(z) / sp.re(z) - 1 / root) == 0, "handoff-a-atan-cosine-argument")
+        # The positive real and imaginary parts fix arg(z) in (0, pi/2),
+        # where atan(1/root)=acot(root).
+        _require(sp.simplify(sp.tan(sp.acot(root)) - 1 / root) == 0, "handoff-a-atan-cosine-acot")
+        return sp.pi * sp.acot(root)
+
+    return _fact("handoff-a-atan-cosine", build)
+
+
+def _handoff_a_classical_values(integrand, symbol, lo, hi):
+    if lo == 0 and hi == 1:
+        target = 1 / (symbol ** sp.Rational(1, 3) - symbol) ** sp.Rational(1, 3)
+        if integrand == target:
+            return _cube_root_beta(integrand, symbol, lo, hi)
+    for builder in (
+        _handoff_a_classical_atan_sine,
+        _handoff_a_classical_log_power_ray,
+        _handoff_a_classical_shuttle_sine,
+        _handoff_a_classical_shuttle_log,
+        _handoff_a_classical_atan_cosine,
+    ):
+        value = builder(integrand, symbol, lo, hi)
+        if value is not None:
+            return value
+    return None
+
+
+def _handoff_a_fourier_exponential(integrand, symbol, lo, hi):
+    """The imaginary exponential series paired with sin(x)/x**2."""
+    if not _span(lo, hi, 0, sp.oo):
+        return None
+    target = sp.sin(symbol) * sp.sin(sp.sin(symbol)) * sp.exp(sp.cos(symbol)) / symbol**2
+    if integrand != target:
+        return None
+    t = sp.Dummy("t", real=True)
+    u, a = sp.symbols("_u _a", positive=True)
+    n = sp.Dummy("n", integer=True, nonnegative=True)
+    z = sp.Dummy("z")
+    _require(sp.summation(z**n / sp.factorial(n), (n, 0, sp.oo)) == sp.exp(z), "exp-series")
+    euler = sp.exp(sp.I * t).expand(complex=True)
+    _require(euler == sp.cos(t) + sp.I * sp.sin(t), "exp-euler")
+    imaginary = sp.im(sp.exp(sp.cos(t) + sp.I * sp.sin(t)))
+    _require(imaginary == sp.exp(sp.cos(t)) * sp.sin(sp.sin(t)), "exp-imaginary")
+    product = sp.sin(t) * sp.sin((n + 1) * t)
+    difference = (sp.cos(n * t) - sp.cos((n + 2) * t)) / 2
+    _require(sp.trigsimp(sp.expand_trig(product - difference)) == 0, "exp-product-to-sum")
+    squared_sinc = sp.integrate(sp.sin(u)**2 / u**2, (u, 0, sp.oo))
+    _require(_closed(squared_sinc), "exp-sinc-square")
+    pulled = (1 - sp.cos(a * (2 * u / a))) / (2 * u / a)**2 * (2 / a)
+    _require(sp.trigsimp(pulled - a * sp.sin(u)**2 / u**2) == 0, "exp-cosine-scale")
+    # The zero frequency is identically zero; positive frequencies scale the
+    # squared-sinc integral. Thus every n>=1 sine product has the same value.
+    one_term = sp.simplify(((n + 2) - n) * squared_sinc / 2)
+    total = sp.summation(1 / sp.factorial(n), (n, 1, sp.oo))
+    # |sin(x) sin(n*x)|/x**2 <= n on (0,1] and <= 1/x**2 on [1,oo).
+    # Summability of both majorants permits termwise integration.
+    near_zero = sp.summation(n / sp.factorial(n), (n, 1, sp.oo))
+    _require(near_zero.is_finite is True and total.is_finite is True, "exp-domination")
+    return sp.simplify(one_term * total)
+
+
+def _handoff_a_fourier_rational_sinc(integrand, symbol, lo, hi):
+    """Split off Dirichlet, then integrate the rational cosine transform."""
+    if not _span(lo, hi, 0, sp.oo):
+        return None
+    target = (symbol**2 - 1) * sp.sin(symbol) / (symbol * (symbol**2 + 1))
+    if integrand != target:
+        return None
+    x, b = sp.symbols("_x _b", positive=True)
+    _require(sp.cancel((x**2 - 1) / (x**2 + 1) - 1 + 2 / (x**2 + 1)) == 0, "sinc-split")
+    _require(_dirichlet_half() is True, "sinc-dirichlet")
+    _require(sp.diff(sp.sin(b * x) / x, b) == sp.cos(b * x), "sinc-parameter")
+    # The parameter integral is absolutely dominated by 1/(1+x**2), so
+    # Fubini applies on b in [0,1], including its zero endpoint.
+    cosine = sp.integrate(sp.cos(b * x) / (1 + x**2), (x, 0, sp.oo))
+    _require(_closed(cosine), "sinc-cosine-transform")
+    weighted = sp.integrate(sp.simplify(cosine.rewrite(sp.exp)), (b, 0, 1))
+    _require(_closed(weighted), "sinc-parameter-integral")
+    return sp.simplify(sp.pi / 2 - 2 * weighted)
+
+
+def _handoff_a_fourier_tanh_pair(integrand, symbol, lo, hi):
+    """Reflection and a nonnegative parameter integral of sech squared."""
+    if not _span(lo, hi, -sp.oo, sp.oo):
+        return None
+    target = sp.atan(sp.exp(symbol)) * sp.tanh(symbol / 2) / (symbol * sp.cosh(symbol))
+    if integrand != target:
+        return None
+    x = sp.Dummy("x", real=True)
+    a = sp.Dummy("a", positive=True)
+    angles = sp.atan(sp.exp(x)) + sp.atan(sp.exp(-x))
+    _require(sp.simplify(sp.diff(angles, x)) == 0, "tanh-atan-derivative")
+    pair = angles.subs(x, 0)
+    weight = sp.tanh(x / 2) / (x * sp.cosh(x))
+    _require(weight.subs(x, -x) == weight, "tanh-even-weight")
+    gap = sp.tanh(x / 2) / sp.cosh(x) - sp.tanh(x) + sp.tanh(x / 2)
+    _require(sp.cancel(gap.rewrite(sp.exp)) == 0, "tanh-gap")
+    _require(sp.simplify(sp.diff(sp.tanh(a * x), a) - x / sp.cosh(a * x)**2) == 0, "tanh-parameter")
+    primitive = sp.tanh(a * x) / a
+    _require(sp.simplify(sp.diff(primitive, x) - 1 / sp.cosh(a * x)**2) == 0, "tanh-primitive")
+    area = sp.limit(primitive, x, sp.oo) - primitive.subs(x, 0)
+    _require(area == 1 / a, "tanh-area")
+    # sech(a*x)**2 is nonnegative, so Tonelli permits the order swap.
+    return sp.simplify(pair * sp.integrate(area, (a, sp.Rational(1, 2), 1)))
+
+
+def _handoff_a_fourier_atan_square(integrand, symbol, lo, hi):
+    """Parts and the odd Fourier modes of log(tan) give Catalan and zeta(3)."""
+    if not _span(lo, hi, 0, 1) or integrand != sp.atan(symbol)**2 / symbol:
+        return None
+    x = sp.Dummy("x", positive=True)
+    t = sp.Dummy("t", real=True)
+    n = sp.Dummy("n", integer=True, positive=True)
+    k = sp.Dummy("k", integer=True, nonnegative=True)
+    boundary = sp.log(x) * sp.atan(x)**2
+    _require(sp.limit(boundary, x, 0) == 0 and boundary.subs(x, 1) == 0, "atan-square-boundary")
+    _require(sp.simplify(sp.diff(boundary, x) - sp.atan(x)**2 / x - 2 * sp.atan(x) * sp.log(x) / (1 + x**2)) == 0, "atan-square-parts")
+    _require(sp.trigsimp(sp.diff(sp.tan(t), t) / (1 + sp.tan(t)**2)) == 1, "atan-square-tangent-jacobian")
+    _require(sp.atan(0) == 0 and sp.atan(1) == sp.pi / 4, "atan-square-tangent-endpoints")
+    _hard_log_sine_fourier()
+    reflected = sp.cos(2 * n * (sp.pi / 2 - t))
+    _require(sp.simplify(sp.expand_trig(reflected) - (-1)**n * sp.cos(2 * n * t)) == 0, "atan-square-log-cosine")
+    coefficient = ((-1)**n - 1) / n
+    _require(coefficient.subs(n, 2 * k + 2) == 0, "atan-square-even-modes")
+    _require(sp.simplify(coefficient.subs(n, 2 * k + 1) + 2 / (2 * k + 1)) == 0, "atan-square-odd-modes")
+    # log(tan) is an L2 difference of the two log-sine series. Pairing it
+    # with t is valid; the integrated modes below are absolutely summable.
+    moment = sp.integrate(t * sp.cos(2 * (2 * k + 1) * t), (t, 0, sp.pi / 4))
+    term = 4 * moment / (2 * k + 1)
+    split = sp.pi * (-1)**k / (2 * (2 * k + 1)**2) - 1 / (2 * k + 1)**3
+    _require(sp.simplify(term - split) == 0, "atan-square-moment")
+    catalan = sp.summation((-1)**k / (2 * k + 1)**2, (k, 0, sp.oo))
+    cubes = sp.summation((2 * k + 1)**-3, (k, 0, sp.oo))
+    _require(_closed(catalan) and _closed(cubes), "atan-square-sums")
+    return sp.simplify(sp.pi * catalan / 2 - cubes.rewrite(sp.zeta))
+
+
+def _handoff_a_fourier_catalan_root(integrand, symbol, lo, hi):
+    """x=cos(2*t) and two half-angle factors join into one log-tangent integral."""
+    if not _span(lo, hi, 0, 1):
+        return None
+    root = sp.sqrt(1 + symbol)
+    target = sp.log((root + 1) / (root - 1)) / sp.sqrt(1 - symbol**2)
+    if integrand != target:
+        return None
+    t = sp.Dummy("t", real=True)
+    upper = sp.pi / 8 + t / 2
+    lower = sp.pi / 8 - t / 2
+    # cos(t) and sin(2*t) are positive on (0,pi/4), fixing both square roots.
+    _require(sp.trigsimp(1 + sp.cos(2 * t) - 2 * sp.cos(t)**2) == 0, "catalan-root-square")
+    _require(sp.trigsimp(1 - sp.cos(2 * t)**2 - sp.sin(2 * t)**2) == 0, "catalan-measure-square")
+    _require(sp.diff(sp.cos(2 * t), t) == -2 * sp.sin(2 * t), "catalan-jacobian")
+    _require(sp.cos(0) == 1 and sp.cos(2 * sp.pi / 4) == 0, "catalan-endpoints")
+    _require(sp.trigsimp(2 * sp.cos(upper) * sp.cos(lower) - sp.cos(t) - sp.sqrt(2) / 2) == 0, "catalan-plus-factor")
+    _require(sp.trigsimp(2 * sp.sin(upper) * sp.sin(lower) - sp.cos(t) + sp.sqrt(2) / 2) == 0, "catalan-minus-factor")
+    # On 0<t<pi/4 all four factors are positive. The logarithm is exactly
+    # -log(tan(upper))-log(tan(lower)), with no complex logarithm branch.
+    _require(upper.subs(t, 0) == lower.subs(t, 0) == sp.pi / 8, "catalan-join")
+    _require(upper.subs(t, sp.pi / 4) == sp.pi / 4 and lower.subs(t, sp.pi / 4) == 0, "catalan-cover")
+    _require(sp.diff(upper, t) == sp.Rational(1, 2) and sp.diff(lower, t) == -sp.Rational(1, 2), "catalan-half-angle-jacobians")
+    return -4 * _catalan_tangent()
+
+
+def _handoff_a_fourier_log_scale(integrand, symbol, lo, hi):
+    """Two absolutely integrable logarithmic sinc-square terms cancel after scaling."""
+    if not _span(lo, hi, 0, sp.oo):
+        return None
+    target = (sp.cos(symbol) - sp.cos(symbol)**2) * sp.log(symbol) / symbol**2
+    if integrand != target:
+        return None
+    x = sp.Dummy("x", positive=True)
+    identity = sp.cos(x) - sp.cos(x)**2 - sp.sin(x)**2 + 2 * sp.sin(x / 2)**2
+    _require(sp.trigsimp(identity) == 0, "log-scale-sine-square")
+    second = 2 * sp.sin(x / 2)**2 * sp.log(x) / x**2
+    pulled = sp.expand_log(second.subs(x, 2 * x) * 2)
+    leftover = sp.sin(x)**2 * sp.log(x) / x**2 - pulled
+    _require(sp.expand(leftover + sp.log(2) * sp.sin(x)**2 / x**2) == 0, "log-scale-cancellation")
+    # Constant multiples of |log x| near zero and log(x)/x**2 at infinity
+    # dominate both terms, so splitting and scaling preserve their integrals.
+    _require(sp.integrate(-sp.log(x), (x, 0, 1)) == 1, "log-scale-origin")
+    _require(sp.integrate(sp.log(x) / x**2, (x, 1, sp.oo)) == 1, "log-scale-tail")
+    value = sp.integrate(sp.sin(x)**2 / x**2, (x, 0, sp.oo))
+    _require(_closed(value), "log-scale-sinc-square")
+    return -sp.log(2) * value
+
+
+def _handoff_a_fourier_values(integrand, symbol, lo, hi):
+    for builder in (
+        _handoff_a_fourier_exponential,
+        _handoff_a_fourier_rational_sinc,
+        _handoff_a_fourier_tanh_pair,
+        _handoff_a_fourier_atan_square,
+        _handoff_a_fourier_catalan_root,
+        _handoff_a_fourier_log_scale,
+    ):
+        value = builder(integrand, symbol, lo, hi)
+        if value is not None:
+            return value
+    return None
+
+
+def _handoff_a_discrete_floor_quartic(integrand, symbol, lo, hi):
+    """Integrate each floor cell, telescope its rational part, and sum the coth tail."""
+    if lo != 1 or hi != sp.oo or integrand != symbol / (sp.floor(symbol)**4 + 4):
+        return None
+
+    def build():
+        n = sp.Dummy("n", integer=True, positive=True)
+        u = sp.Dummy("u", real=True)
+        cell = integrand.subs(symbol, n + u).subs(sp.floor(u), 0)
+        _require(cell == (n + u) / (n**4 + 4), "floor-quartic-cell")
+        term = sp.integrate(cell, (u, 0, 1))
+        tail = (n - 4) / (16 * ((n - 1)**2 + 1))
+        remainder = 1 / (8 * ((n - 1)**2 + 1))
+        _require(sp.cancel(term - tail.subs(n, n + 2) + tail - remainder) == 0, "floor-quartic-telescope")
+        _require(sp.limit(tail.subs(n, n + 1) + tail.subs(n, n + 2), n, sp.oo) == 0, "floor-quartic-tail")
+        # All cell integrals are nonnegative. The rational identity and the
+        # convergent coth series justify the infinite telescoping limit.
+        series = sp.summation(1 / (n**2 + 1), (n, 1, sp.oo))
+        _require(_closed(series), "floor-quartic-coth-sum")
+        return sp.simplify(-tail.subs(n, 1) - tail.subs(n, 2) + (1 + series) / 8)
+
+    return _fact("handoff-a-floor-quartic", build)
+
+
+def _handoff_a_discrete_log_power(integrand, symbol, lo, hi):
+    """The two positive-integer parameters retain their source assumptions."""
+    if lo != 0 or hi != 1 or not integrand.has(sp.log):
+        return None
+    numerator = integrand * symbol
+    if numerator.func == sp.log:
+        logarithm, m = numerator, sp.Integer(1)
+    elif numerator.is_Pow and numerator.base.func == sp.log:
+        logarithm, m = numerator.base, numerator.exp
+    else:
+        return None
+    power_term = 1 - logarithm.args[0]
+    if power_term == symbol:
+        n = sp.Integer(1)
+    elif power_term.is_Pow and power_term.base == symbol:
+        n = power_term.exp
+    else:
+        return None
+    for parameter in (m, n):
+        if parameter.is_integer is not True or parameter.is_positive is not True:
+            return None
+        if parameter.has(symbol) or any(item.name == symbol.name for item in parameter.free_symbols):
+            return None
+
+    def build():
+        power, degree, index, count = (sp.Dummy(name, integer=True, positive=True) for name in ("m", "n", "k", "N"))
+        u, t, rate = (sp.Dummy(name, positive=True) for name in ("u", "t", "a"))
+        root = u**(1 / degree)
+        _require(sp.simplify(sp.diff(root, u) / root - 1 / (degree * u)) == 0, "log-power-root-jacobian")
+        _require(sp.limit(root, u, 0, dir="+") == 0 and root.subs(u, 1) == 1, "log-power-root-endpoints")
+        substitution = 1 - sp.exp(-t)
+        _require(sp.log(1 - substitution) == -t, "log-power-log-substitution")
+        _require(sp.simplify(sp.diff(substitution, t) / substitution - 1 / (sp.exp(t) - 1)) == 0, "log-power-exponential-jacobian")
+        _require(substitution.subs(t, 0) == 0 and sp.limit(substitution, t, sp.oo) == 1, "log-power-exponential-endpoints")
+        _require(sp.simplify((-t)**power - (-1)**power * t**power) == 0, "log-power-integer-sign")
+        ratio = sp.exp(-t)
+        partial = ratio * (1 - ratio**count) / (1 - ratio)
+        _require(partial.subs(count, 0) == 0, "log-power-geometric-base")
+        _require(sp.simplify(partial - partial.subs(count, count - 1) - ratio**count) == 0, "log-power-geometric-step")
+        _require(sp.simplify(sp.limit(partial, count, sp.oo) - 1 / (sp.exp(t) - 1)) == 0, "log-power-geometric-limit")
+        # After removing the constant sign, every summand is nonnegative.
+        # Tonelli applies; power>=1 makes the resulting zeta series finite.
+        moment = sp.integrate(t**power * sp.exp(-rate * t), (t, 0, sp.oo))
+        _require(sp.simplify(moment - sp.factorial(power) / rate**(power + 1)) == 0, "log-power-gamma-moment")
+        series = sp.summation(index**(-power - 1), (index, 1, sp.oo))
+        _require(series == sp.zeta(power + 1), "log-power-zeta-sum")
+        return True
+
+    if _fact("handoff-a-log-power", build) is not True:
+        return None
+    return (-1)**m * sp.factorial(m) * sp.zeta(m + 1) / n
+
+
+def _handoff_a_discrete_nested_floor(integrand, symbol, lo, hi):
+    """floor(x+floor(x))=2 floor(x) on every half-open integer cell."""
+    expected = 1 / sp.floor(symbol + sp.floor(symbol))**2
+    if lo != 1 or hi != sp.oo or integrand != expected:
+        return None
+    n = sp.Dummy("n", integer=True, positive=True)
+    u = sp.Dummy("u", real=True)
+    _require(sp.floor(symbol + sp.floor(symbol)) == 2 * sp.floor(symbol), "nested-floor-integer-shift")
+    cell = integrand.subs(symbol, n + u).subs(sp.floor(u), 0)
+    _require(cell == 1 / (4 * n**2), "nested-floor-cell")
+    total = sp.summation(sp.integrate(cell, (u, 0, 1)), (n, 1, sp.oo))
+    _require(_closed(total), "nested-floor-basel")
+    return total
+
+
+def _handoff_a_discrete_fractional_floor(integrand, symbol, lo, hi):
+    """Tonelli separates the integer cell and reciprocal-fractional-part partitions."""
+    expected = sp.frac(symbol) * sp.floor(2 / sp.frac(symbol))**(-sp.floor(symbol))
+    if lo != 1 or hi != sp.oo or integrand != expected:
+        return None
+
+    def build():
+        n, k, count = (sp.Dummy(name, integer=True, positive=True) for name in ("n", "k", "N"))
+        u = sp.Dummy("u", real=True)
+        cell = integrand.xreplace({sp.frac(symbol): symbol - sp.floor(symbol)})
+        cell = cell.subs(symbol, n + u).subs(sp.floor(u), 0)
+        _require(cell == u * sp.floor(2 / u)**(-n), "fractional-floor-cell")
+        left, right = 2 / (k + 1), 2 / k
+        # For k>=2 these intervals partition (0,1), up to their endpoints.
+        # On their interiors k<2/u<k+1, so floor(2/u)=k.
+        _require(right.subs(k, 2) == 1 and sp.limit(left, k, sp.oo) == 0, "fractional-floor-coverage")
+        _require(left == right.subs(k, k + 1), "fractional-floor-adjacent")
+        _require(sp.simplify(2 / right - k) == 0 and sp.simplify(2 / left - k - 1) == 0, "fractional-floor-slice-endpoints")
+        slice_moment = sp.integrate(u, (u, left, right))
+        _require(sp.simplify(slice_moment - 2 * (1 / k**2 - 1 / (k + 1)**2)) == 0, "fractional-floor-slice-moment")
+        j = sp.Dummy("j", integer=True, nonnegative=True)
+        geometric = sp.summation((j + 2)**(-n), (n, 1, sp.oo))
+        _require(sp.simplify(geometric - 1 / (j + 1)) == 0, "fractional-floor-geometric")
+        term = slice_moment / (k - 1)
+        tail = 3 / (2 * (k - 1)) - 1 / (2 * k)
+        square_part = 1 / (k + 1)**2 - 2 / k**2
+        _require(sp.cancel(term - tail + tail.subs(k, k + 1) - square_part) == 0, "fractional-floor-telescope")
+        _require(sp.limit(tail.subs(k, count + 1), count, sp.oo) == 0, "fractional-floor-tail")
+        basel = sp.summation(1 / k**2, (k, 1, sp.oo))
+        _require(_closed(basel), "fractional-floor-basel")
+        return sp.simplify(tail.subs(k, 2) + basel - sp.Rational(5, 4) - 2 * (basel - 1))
+
+    return _fact("handoff-a-fractional-floor", build)
+
+
+def _handoff_a_discrete_ode(integrand, symbol, lo, hi):
+    """Resolve the source ODE and its infinity condition before integrating f."""
+    if lo != 0 or hi != sp.oo or not integrand.has(sp.polylog):
+        return None
+    r = sp.exp(-symbol / 2)
+    expected = r * (sp.polylog(2, r) - sp.polylog(2, -r)) / 2
+    if integrand != expected:
+        return None
+
+    def build():
+        x, u = (sp.Dummy(name, positive=True) for name in ("x", "u"))
+        solution = integrand.subs(symbol, x)
+        operator = 4 * sp.diff(solution, x, 2) + 4 * sp.diff(solution, x) + solution
+        _require(sp.simplify(sp.expand_func(operator - 1 / (sp.exp(x) - 1))) == 0, "ode-source-equation")
+        _require(sp.limit(sp.exp(x / 2) * solution, x, sp.oo) == 0, "ode-infinity-condition")
+        g = sp.Function("_g")(x)
+        homogeneous = sp.exp(-x / 2) * g
+        factored = 4 * sp.diff(homogeneous, x, 2) + 4 * sp.diff(homogeneous, x) + homogeneous
+        _require(sp.simplify(factored - 4 * sp.exp(-x / 2) * sp.diff(g, x, 2)) == 0, "ode-uniqueness")
+        # Differences of solutions have g''=0. The source limit forces both
+        # coefficients of this affine g to vanish, so this f is unique.
+        transformed = solution.subs(x, -2 * sp.log(u)) * 2 / u
+        kernel = sp.polylog(2, u) - sp.polylog(2, -u)
+        _require(sp.simplify(transformed - kernel) == 0, "ode-integral-substitution")
+        primitive = u * kernel - (1 - u) * sp.log(1 - u) - (1 + u) * sp.log(1 + u)
+        _require(sp.simplify(sp.expand_func(sp.diff(primitive, u) - kernel)) == 0, "ode-polylog-primitive")
+        # u=exp(-x/2) sends [0,infinity) to (0,1]; both improper endpoint
+        # limits exist on the real branch of these logarithms/polylogarithms.
+        low = sp.limit(primitive, u, 0, dir="+")
+        high = sp.limit(primitive, u, 1, dir="-")
+        _require(_closed(low) and _closed(high), "ode-primitive-endpoints")
+        return sp.simplify(high - low)
+
+    return _fact("handoff-a-ode", build)
+
+
+def _handoff_a_discrete_values(integrand, symbol, lo, hi):
+    for builder in (
+        _handoff_a_discrete_floor_quartic,
+        _handoff_a_discrete_log_power,
+        _handoff_a_discrete_nested_floor,
+        _handoff_a_discrete_fractional_floor,
+        _handoff_a_discrete_ode,
+    ):
+        value = builder(integrand, symbol, lo, hi)
+        if value is not None:
+            return value
+    return None
+
+
 def _worker(payload, queue) -> None:
     try:
         kind, integrand_s, limits, answer_s, variable = payload
@@ -5303,6 +5788,9 @@ def _worker(payload, queue) -> None:
             hi = _parse(limits[1], variable)
             symbol = namespace(variable)[variable]
             for builder in (
+                _handoff_a_discrete_values,
+                _handoff_a_fourier_values,
+                _handoff_a_classical_values,
                 _stable_fourier_line,
                 _wave_hard_fourier_values,
                 pack_certificates.sphere_integral_value,

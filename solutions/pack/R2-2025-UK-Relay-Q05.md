@@ -1,9 +1,9 @@
 # R2-2025-UK-Relay-Q05
 
-- Problem: `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (relay 5)
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (relay 5)
+- Problem: `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (page 2, relay 5)
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (page 3, relay 5)
 - Worked source: derived in this note; the mark scheme prints the final value.
-- The catalog row is not changed.
+- The transcript retains the source assumptions that both parameters are positive integers.
 
 ## Problem
 
@@ -24,9 +24,9 @@ Then \(u=e^{-t}\) gives
 \]
 Set \(s=-\ln(1-e^{-t})\), so \(t=-\ln(1-e^{-s})\) and
 \[
-dt=\frac{e^{-s}}{1-e^{-s}}\,ds=\sum_{k\ge 1}e^{-ks}\,ds.
+dt=-\frac{e^{-s}}{1-e^{-s}}\,ds=-\sum_{k\ge 1}e^{-ks}\,ds.
 \]
-The integral becomes
+Reversing the limits from \(s=\infty\) to \(s=0\), the integral becomes
 \[
 \frac{(-1)^{m}}{n}\sum_{k\ge 1}\int_{0}^{\infty}s^{m}e^{-ks}\,ds=\frac{(-1)^{m}}{n}\sum_{k\ge 1}\frac{m!}{k^{m+1}}=\frac{(-1)^{m}m!}{n}\,\zeta(m+1).
 \]
@@ -40,3 +40,5 @@ The integral becomes
 ## SymPy self-check
 
 For a positive integer \(m\) and \(k\ge 1\), SymPy evaluates \(\int_{0}^{\infty}s^{m}e^{-ks}\,ds=m!/k^{m+1}\), and sums that series as \(m!\,\zeta(m+1)\).
+
+The gate checks both substitutions, the finite geometric sum and its limit, the Gamma moment, and the zeta sum. After removing the constant sign \((-1)^m\), Tonelli applies to nonnegative terms; \(m\ge1\) gives convergence.

@@ -1,9 +1,9 @@
 # R2-2025-UK-Group-Q02
 
-- Problem: `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf` (group 2)
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (group 2)
+- Problem: `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf` (p. 2, group 2)
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (p. 2, group 2)
 - Worked source: derived in this note; the mark scheme prints the final value.
-- The catalog row is not changed.
+- Catalog proof: the source integral and final are checked by `verify/pack_gate.py`.
 
 ## Problem
 

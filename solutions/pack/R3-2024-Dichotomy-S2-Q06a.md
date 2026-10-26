@@ -1,9 +1,9 @@
 # R3-2024-Dichotomy-S2-Q06a
 
-- Problem: `sources/past/r3/2024/Dichotomy_Segment_2_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (problem 6a)
-- Printed answer: `sources/past/r3/2024/Dichotomy_answers_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Segment 2, problem 6a)
-- Worked source: `sources/past/r3/2024/Dichotomy_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Set 1/Segment 2, problem 6a)
-- The catalog row is not changed.
+- Problem: `sources/past/r3/2024/Dichotomy_Segment_2_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (PDF p. 3, problem 6a)
+- Printed answer: `sources/past/r3/2024/Dichotomy_answers_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (PDF p. 5, Segment 2, problem 6a)
+- Worked source: `sources/past/r3/2024/Dichotomy_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (PDF p. 11, Segment 2, problem 6a)
+- The catalog gate checks the trigonometric split and logarithmic scaling. The answer PDF includes the factor \(1/2\) omitted by the old catalog extraction.
 
 ## Problem
 
