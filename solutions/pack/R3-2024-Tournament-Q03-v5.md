@@ -1,60 +1,49 @@
 # R3-2024-Tournament-Q03-v5
 
-- Problem: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (Battle 2, Fight 1, problem 3, answer slide 67)
+- Problem: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (Battle 2, Fight 1, problem 3, slide 65)
 - Printed answer: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (slide 67)
-- Worked source: `sources/past/r3/2024/Tournament_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (section 2.1, problem 3)
-- The catalog row is not changed.
+- Worked source: `sources/past/r3/2024/Tournament_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (page 7, section 2.1, problem 3)
+- The catalog now uses the visually checked source reading and a SymPy certificate.
 
 ## Problem
 
-The catalog text of this row is the word Answer. Slide 67 prints the final value of Battle 2, Fight 1, problem 3:
-
 \[
-\int_{1}^{\infty}\frac{1}{x\sqrt{e^{\sqrt{x}}-1}}\,dx.
+\int_1^\infty\frac{1}{x\sqrt{\sqrt[e]{x}-1}}\,dx.
 \]
 
-The integral itself is the previous slide, catalogued as `R3-2024-Tournament-Q03-v4`.
-
-Slide 67 prints \(e\pi\), and the solutions PDF reaches that same line. The derivative used there is false: the ratio of the true derivative to the claimed derivative is \(e\sqrt{x}/2\). The printed line is not the value of the integral.
+The small \(e\) is the index of the inner radical, so \(\sqrt[e]{x}=x^{1/e}\).
+The earlier transcription as \(e^{\sqrt{x}}\) was incorrect; the original
+problem and its worked solution agree. The answer-slide rows refer to this same integral.
 
 ## Solution
 
-The solutions PDF sets \(u=\sqrt{e^{\sqrt{x}}-1}\) and claims
+Set \(u=\sqrt{x^{1/e}-1}\), so \(x=(1+u^2)^e\) and
 
 \[
-u'=\frac{u^{2}+1}{2e\,x\,u},
+\frac{dx}{du}=2eu(1+u^2)^{e-1},
+\qquad
+\frac{1}{x\sqrt{x^{1/e}-1}}\frac{dx}{du}
+=\frac{2e}{1+u^2}.
 \]
 
-then concludes that the integral equals
+This increasing substitution sends \(x=1\) to \(u=0\) and \(x\to\infty\)
+to \(u\to\infty\). Hence
 
 \[
-2e\int_{0}^{\infty}\frac{1}{1+u^{2}}\,du=e\pi.
+2e\int_0^\infty\frac{du}{1+u^2}
+=2e[\arctan u]_0^\infty=e\pi.
 \]
-
-The answer slide prints the same value \(e\pi\). Differentiating the chosen \(u\) gives a different derivative. The ratio of the true derivative to the claimed derivative is \(e\sqrt{x}/2\), which is not \(1\). The arithmetic \(2e\cdot(\pi/2)=e\pi\) is the value of that false substitution, not the value of the printed integrand.
-
-The same substitution done with the true derivative is elementary in a different variable. From \(u^{2}+1=e^{\sqrt{x}}\) one has \(\sqrt{x}=\ln(1+u^{2})\) and \(x=\bigl(\ln(1+u^{2})\bigr)^{2}\), and
-
-\[
-\frac{1}{x u}\frac{dx}{du}=\frac{4}{(1+u^{2})\ln(1+u^{2})}.
-\]
-
-Then \(u=\tan t\) uses \(1+\tan^{2}t=\sec^{2}t\). On \((0,\pi/2)\), where \(\sec t>1\),
-
-\[
-\frac{4}{\ln(\sec^{2}t)}=\frac{2}{\ln(\sec t)}.
-\]
-
-The limits \(x=1\) and \(x\to\infty\) become \(t=\arctan\sqrt{e-1}\) and \(t=\pi/2\).
 
 ## Final answer
 
 \[
-\int_{\arctan\sqrt{e-1}}^{\pi/2}\frac{2}{\ln(\sec t)}\,dt.
+e\pi.
 \]
 
-The solutions PDF and the answer slide both print \(e\pi\). That printed line is the result of the false derivative above. It is not the value of the integral.
+This is the value printed on slide 67 and in the worked solutions on page 7.
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r3_2024_tournament_q03_v5`. That check runs `check_r3_2024_tournament_q03_v4` for `R3-2024-Tournament-Q03-v4`. SymPy checks that the claimed derivative is off by the factor \(e\sqrt{x}/2\), that the false substitution would produce \(e\pi\), that high-precision quadrature of the printed integrand differs from \(e\pi\) by more than \(1\), and that the corrected substitution equals \(4\,du/\bigl((1+u^{2})\ln(1+u^{2})\bigr)\), which is \(2\,dt/\ln(\sec t)\) on \((0,\pi/2)\).
+`verify/pack_handoff_e_tournament.py` checks the exact positive real e-th root,
+the substitution derivative, its endpoints and orientation, and the arctangent
+primitive. `pack_gate.proven` accepts \(e\pi\) and rejects an altered answer.

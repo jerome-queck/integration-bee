@@ -1,9 +1,9 @@
 # R1-2025-Online-Q13
 
-- Problem: `sources/past/r1/2025/2025_Online_Round_1.pdf` (problem 13)
-- Printed answer: `sources/past/r1/2025/2025_Online_Round_1_Mark_Scheme.pdf`
-- Worked source: `sources/past/r1/2025/2025_Round_1_Solutions.pdf` (problem 13)
-- The catalog row is not changed.
+- Problem: `sources/past/r1/2025/2025_Online_Round_1.pdf` (p.2, problem 13)
+- Printed answer: `sources/past/r1/2025/2025_Online_Round_1_Mark_Scheme.pdf` (p.2)
+- Worked source: `sources/past/r1/2025/2025_Round_1_Solutions.pdf` (p.14, problem 13)
+- The catalog row is `verify: sympy`.
 
 ## Problem
 
@@ -27,4 +27,10 @@ so the ceiling is \(1\). The region is the regular octahedron with vertices at u
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r1_2025_online_q13`. SymPy checks \((a+b+c)^{2}-a^{2}-b^{2}-c^{2}=2(ab+bc+ca)\) for nonnegative \(a,b,c\) and evaluates eight times the tetrahedron volume as \(4/3\).
+The transcript retains the ceiling and the original octahedral domain through
+\(-1\le x\le1\), \(|y|\le1-|x|\), and \(|z|\le1-|x|-|y|\).
+The gate accepts only those nested bounds. It checks
+\((a+b+c)^{2}-a^{2}-b^{2}-c^{2}=2(ab+bc+ca)\ge0\) for nonnegative
+\(a,b,c\), then evaluates eight times the tetrahedron integral as \(4/3\).
+The origin and the coordinate planes have measure zero, so the ceiling
+reduction and decomposition into eight octants do not change the integral.

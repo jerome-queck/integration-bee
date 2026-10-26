@@ -46,14 +46,10 @@ def load_pair(cache: dict, pdf: str, kind: str):
 GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
 # R2-2023-Relay-Q19 prints upper bound n. That limit is not the mark-scheme
 # value sqrt(pi/2), so recovery must not replace the manual row.
-# R3-2024-Tournament-Q02-v9 is x**3*sin(log(x))**2*cos(log(x))**2 on [0, 1].
-# The generic proof of 1/64 exceeds PROOF_TIMEOUT on CI, so recovery must
-# leave that row manual. Q02-v10 and Q02-v11 are the same integral.
 # S2-Q07a has an exact +infinity certificate, but the current marking path
 # rejects oo against oo. Keep its transcript for a later grading fix.
-HELD_MANUAL = frozenset(
-    {"R2-2023-Relay-Q19", "R3-2024-Tournament-Q02-v9", "R3-2024-Dichotomy-S2-Q07a"}
-)
+# Q02-v9 now has a checked damped-cosine reduction below the proof timeout.
+HELD_MANUAL = frozenset({"R2-2023-Relay-Q19", "R3-2024-Dichotomy-S2-Q07a"})
 
 _RELAY_M = "Symbol('m', integer=True, positive=True)"
 _RELAY_N = "Symbol('n', integer=True, positive=True)"
@@ -75,6 +71,43 @@ _RELAY_TRANSCRIPT = (
 # An optional fourth item preserves a printed integration variable when x is
 # already a parameter.
 TRANSCRIPTS = {
+    # R1 2023 problem/mark p.2, worked p.6. The unresolved rationality
+    # predicates each give a binary endpoint; no rationality claim is needed.
+    "R1-2023-Q05": (
+        "cos(pi*x)",
+        (
+            "Piecewise((1,Contains(E+pi,S.Rationals)),(0,True))",
+            "Piecewise((1,Contains(E*pi,S.Rationals)),(0,True))",
+        ),
+        "0",
+    ),
+    # R1 2024 problem/mark p.2 and worked p.5 use the five letters s,i,n,c,o.
+    # Rename s to x; explicit Symbol('i') preserves the printed constant.
+    "R1-2024-Q04": (
+        "x*Symbol('i')*n**2+c*o*x**2", None,
+        "x**2*Symbol('i')*n**2/2+c*o*x**3/3",
+    ),
+    # R1 2025 Online problem/mark p.2, worked p.14. Nested bounds retain
+    # the original octahedron and ceiling rather than assuming its volume.
+    "R1-2025-Online-Q13": (
+        "Integral(ceiling(x**2+Symbol('y',real=True)**2+Symbol('z',real=True)**2),"
+        "(Symbol('z',real=True),-1+Abs(x)+Abs(Symbol('y',real=True)),"
+        "1-Abs(x)-Abs(Symbol('y',real=True))),"
+        "(Symbol('y',real=True),-1+Abs(x),1-Abs(x)))",
+        ("-1", "1"), "4/3",
+    ),
+    # 2020 problem/answer p.2 and worked p.21; 2021 problem p.2, mark p.1,
+    # worked p.18. The 2021 mark agrees with the worked product line, before
+    # its last-line omission of log(2)/2.
+    "R1-2020-Q19": (
+        "x**(-x)", ("0", "1"),
+        "Sum(Symbol('k', integer=True, positive=True)**(-Symbol('k', integer=True, positive=True)),"
+        "(Symbol('k', integer=True, positive=True),1,oo))",
+    ),
+    "R1-2021-Q16": (
+        "frac(tan(x))/tan(x)", ("0", "pi/2"),
+        "(pi-log(sinh(pi)/pi))/2",
+    ),
     "R2-2024-Relay-Q17": (
         "x/(floor(x)**4+4)", ("1", "oo"), "(5+pi*coth(pi))/16",
     ),
@@ -1216,12 +1249,34 @@ TRANSCRIPTS.update(
 )
 
 
-# Answer slides. Each pack note names the integral and states that the
-# printed mark equals the derived value. The Q03-v4 and Q04-v10 mismatch
-# families are absent, as are Q03-v10 and Q06-v4. Q02-v9, Q02-v10, and
-# Q02-v11 share x**3*sin(log(x))**2*cos(log(x))**2 on [0, 1]. That proof
-# exceeded 20s on CI, so none of the three is aliased.
+# Handoff E: slides 65/67 use the e-th root of x (not exp(sqrt(x))).
+# Slides 158/160 give the damped logarithmic trigonometric integral.
+# Slides 163/165 give n*integral(tan(t)**n): u=tan(t)**(n+1) changes
+# every finite-n integral to the displayed bounded family on [0,1].
+TRANSCRIPTS.update(
+    {
+        "R3-2024-Tournament-Q02-v9": (
+            "x**3*sin(log(x))**2*cos(log(x))**2", ("0", "1"), "1/64",
+        ),
+        "R3-2024-Tournament-Q03-v4": (
+            "1/(x*sqrt(x**(1/E)-1))", ("1", "oo"), "E*pi",
+        ),
+        "R3-2024-Tournament-Q03-v10": (
+            "Limit(Symbol('n',integer=True,positive=True)/((Symbol('n',integer=True,positive=True)+1)*(1+x**(2/(Symbol('n',integer=True,positive=True)+1)))),Symbol('n',integer=True,positive=True),oo)",
+            ("0", "1"), "1/2",
+        ),
+    }
+)
+
+# Answer slides. Each pack note names the source integral and mark.
+# The Q04-v10 family remains excluded for a genuine printed discrepancy.
 ANSWER_SLIDES = {
+    "R3-2024-Tournament-Q02-v10": "R3-2024-Tournament-Q02-v9",
+    "R3-2024-Tournament-Q02-v11": "R3-2024-Tournament-Q02-v9",
+    "R3-2024-Tournament-Q03-v5": "R3-2024-Tournament-Q03-v4",
+    "R3-2024-Tournament-Q03-v6": "R3-2024-Tournament-Q03-v4",
+    "R3-2024-Tournament-Q03-v11": "R3-2024-Tournament-Q03-v10",
+    "R3-2024-Tournament-Q03-v12": "R3-2024-Tournament-Q03-v10",
     "R3-2024-Tournament-Q01-v11": "R3-2024-Tournament-Q01-v10",
     "R3-2024-Tournament-Q01-v12": "R3-2024-Tournament-Q01-v10",
     "R3-2024-Tournament-Q01-v2": "R3-2024-Tournament-Q01",
@@ -1285,20 +1340,11 @@ ANSWER_SLIDES = {
 
 _ANSWER_SLIDE_EXCLUDED = frozenset(
     {
-        "R3-2024-Tournament-Q03-v4",
-        "R3-2024-Tournament-Q03-v5",
-        "R3-2024-Tournament-Q03-v6",
-        "R3-2024-Tournament-Q03-v10",
-        "R3-2024-Tournament-Q03-v11",
-        "R3-2024-Tournament-Q03-v12",
         "R3-2024-Tournament-Q04-v10",
         "R3-2024-Tournament-Q04-v11",
         "R3-2024-Tournament-Q04-v12",
         "R3-2024-Tournament-Q06-v4",
         "R3-2024-Tournament-Q06-v5",
-        "R3-2024-Tournament-Q02-v9",
-        "R3-2024-Tournament-Q02-v10",
-        "R3-2024-Tournament-Q02-v11",
     }
 )
 
@@ -1599,6 +1645,14 @@ TRANSCRIPTS.update(
             ("2", "2025"), "1999",
         ),
     }
+)
+
+
+# Handoff E: problem/mark p.3 and worked p.31, on the positive-a domain.
+TRANSCRIPTS["R1-2022-Q30"] = (
+    "atan(x)*log(1+x**2)/(x*(Symbol('a',positive=True)**2+x**2))",
+    ("0", "oo"),
+    "pi*log(1+Symbol('a',positive=True))**2/(2*Symbol('a',positive=True)**2)",
 )
 
 

@@ -113,7 +113,10 @@ forms, a nested gamma tail, a shifted odd phase, a logistic King reflection,
 a cubed logarithm, and a Lambert antiderivative. Handoff C adds four literal
 limit families with checked limit exchanges, a nested iterated Fresnel integral,
 and exact floor, reciprocal, dilogarithm, Gaussian, and hyperbolic certificates.
-These five open shapes extend the closed-integrand whitelist.
+These five open shapes are additional closed-integrand exceptions. Handoff E
+adds a tangent-power limit after a checked finite-n substitution to a bounded
+family, a ceiling on an octahedron reduced to eight simplex volumes, damped
+logarithmic trigonometry, and a positive real e-th root.
 Wave 5n checks the remaining pack reductions whose ordinary integrator does
 not finish inside the proof timeout: a reflected logarithm, a paired logarithm,
 a secant line, an arcsine endpoint, a semicircle maximum, a double-integral
@@ -139,8 +142,12 @@ cell recurrence checks the 2025-fold absolute value before its triangular
 reduction is integrated. These integral problems keep scalar final answers;
 comparison, root-count, unordered-pair, scalar-only-limit, and indefinite
 product-integral questions are not reclassified as ordinary integrals.
-Answers must be closed, except the truncated exponential and finite-polynomial
-antiderivatives, which keep their finite sums. Numeric agreement is not a proof.
+Handoff E adds the fractional-tangent
+integral by finite floor pieces and a gamma product, and a positive-parameter
+logarithm integral by two contour residues. Answers must be closed, except the
+truncated exponential and finite-polynomial antiderivatives, which keep their
+finite sums, and the literal sophomore's-dream sum, checked by its nonnegative
+exponential series and exact gamma moments. Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -157,6 +164,9 @@ import pack_handoff_d_2021
 import pack_handoff_d_2022
 import pack_handoff_d_2023
 import pack_handoff_d_2024_2025
+import pack_handoff_e_parameter
+import pack_handoff_e_series
+import pack_handoff_e_tournament
 import pack_hard_catalan
 import pack_hard_floor
 import pack_hard_series
@@ -5877,6 +5887,51 @@ def _handoff_a_discrete_values(integrand, symbol, lo, hi):
     return None
 
 
+def _handoff_e_octahedron_shape(integrand, symbol) -> bool:
+    if not isinstance(integrand, sp.Integral) or len(integrand.limits) != 2:
+        return False
+    if any(len(limit) != 3 for limit in integrand.limits):
+        return False
+    z, y = (limit[0] for limit in integrand.limits)
+    if any(not isinstance(var, sp.Symbol) for var in (y, z)):
+        return False
+    if len({symbol.name, y.name, z.name}) != 3:
+        return False
+    if any(var != sp.Symbol(var.name, real=True) for var in (y, z)):
+        return False
+    radius = 1 - sp.Abs(symbol)
+    expected = sp.Integral(
+        sp.ceiling(symbol**2 + y**2 + z**2),
+        (z, -radius + sp.Abs(y), radius - sp.Abs(y)),
+        (y, -radius, radius),
+    )
+    return integrand == expected
+
+
+def _handoff_e_octahedron(integrand, symbol, lo, hi):
+    """The ceiling equals one off the origin in the unit l1 ball."""
+    if lo != -1 or hi != 1 or not _handoff_e_octahedron_shape(integrand, symbol):
+        return None
+    a, b, c = sp.symbols("_he_a _he_b _he_c", nonnegative=True)
+    squares = a**2 + b**2 + c**2
+    cross_terms = 2 * (a * b + a * c + b * c)
+    if sp.expand((a + b + c) ** 2 - squares - cross_terms) != 0:
+        return None
+    if cross_terms.is_nonnegative is not True:
+        return None
+    if any(term.is_nonnegative is not True for term in (a**2, b**2, c**2)):
+        return None
+    # On a+b+c<=1 this gives 0<=squares<=1. A sum of nonnegative
+    # squares vanishes only at the origin, a null set. Thus ceil(squares)=1
+    # almost everywhere. Sign reflection preserves the domain and measure;
+    # the coordinate planes are null, leaving eight congruent simplices.
+    if sp.ceiling(sp.Integer(1)) != 1 or sp.ceiling(sp.Integer(0)) != 0:
+        return None
+    u, v, w = sp.symbols("_he_u _he_v _he_w", real=True)
+    simplex = sp.integrate(1, (w, 0, 1 - u - v), (v, 0, 1 - u), (u, 0, 1))
+    return 2**3 * simplex
+
+
 def _worker(payload, queue) -> None:
     try:
         kind, integrand_s, limits, answer_s, variable = payload
@@ -5887,6 +5942,17 @@ def _worker(payload, queue) -> None:
             handoff = pack_handoff_b.indefinite_ok(answer, integrand, symbol)
             if handoff is not None:
                 queue.put(("ok", handoff))
+                return
+        if kind == "definite" and answer is not None:
+            # The 2020 answer sheet prints a literal convergent Sum. Its
+            # exact integrand, bounds, summand, and index are checked before
+            # admitting this single exception to the closed-answer guard.
+            open_answer = pack_handoff_e_series.open_answer_ok(
+                integrand, answer, symbol,
+                _parse(limits[0], variable), _parse(limits[1], variable),
+            )
+            if open_answer is not None:
+                queue.put(("ok", open_answer))
                 return
         # The truncated exponential antiderivative keeps its finite sum.
         if kind == "indefinite" and answer is not None and pack_wave5k.indefinite_ok(answer, integrand, symbol):
@@ -5916,6 +5982,9 @@ def _worker(payload, queue) -> None:
                 pack_hard_catalan.definite_value,
                 pack_hard_floor.definite_value,
                 pack_hard_series.definite_value,
+                _handoff_e_octahedron,
+                pack_handoff_e_parameter.definite_value,
+                pack_handoff_e_series.definite_value,
                 _handoff_a_discrete_values,
                 _handoff_a_fourier_values,
                 _handoff_a_classical_values,
@@ -5924,6 +5993,7 @@ def _worker(payload, queue) -> None:
                 pack_handoff_d_2022.definite_value,
                 pack_handoff_d_2023.definite_value,
                 pack_handoff_d_2024_2025.definite_value,
+                pack_handoff_e_tournament.definite_value,
                 _stable_fourier_line,
                 _wave_hard_fourier_values,
                 pack_certificates.sphere_integral_value,
@@ -6109,6 +6179,8 @@ def canon_integrand(text: str, variable: str) -> str | None:
         or pack_handoff_d_2022.open_integrand(expr, symbol)
         or pack_handoff_d_2023.open_integrand(expr, symbol)
         or pack_handoff_d_2024_2025.open_integrand(expr, symbol)
+        or _handoff_e_octahedron_shape(expr, symbol)
+        or pack_handoff_e_tournament.open_integrand(expr, symbol)
         or _hard_classical_telescope_shape(expr, symbol)
         or pack_hard_catalan.open_integrand(expr, symbol)
         or pack_hard_floor.open_integrand(expr, symbol)
