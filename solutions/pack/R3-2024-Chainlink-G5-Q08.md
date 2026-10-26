@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_5_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (problem 8)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 5, problem 8)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 5, problem 8)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -41,4 +41,4 @@ The integral is therefore \(\int dy/\sqrt{1-y^{2}}=\arcsin y+C\).
 
 ## SymPy self-check
 
-SymPy checks the displayed formula for \(y'\). It also checks \((x\sin x+1)^{2}(1-y^{2})=(1-\sin^{2}x)(1-x^{2})\), which is the squared form of the remaining factor.
+The gate checks the derivative of the arcsine argument and its radicand identity. On the real domain \(-1<x<1\), both \(\cos x\) and \(1+x\sin x\) are positive, which fixes the square-root sign. Finite additive constants are accepted; variable-dependent errors and unevaluated offsets are rejected.

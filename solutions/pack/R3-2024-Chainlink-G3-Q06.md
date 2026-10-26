@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_3_2024_Round_3_UK_University_Integration_Bee_(4).pdf` (problem 6)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 3, problem 6)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 3, problem 6)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -35,4 +35,4 @@ The answers sheet also prints \(\pi^{2}/\bigl(2(1+\sqrt{5})^{2}\bigr)\) and \(\p
 
 ## SymPy self-check
 
-SymPy checks \(\varphi^{2}=\varphi+1\) and the equality of the three printed closed forms. For \(v>0\), \(\tan(\arctan v)\tan(\arctan(1/v))=1\), which is the complement used to average the two arctangents.
+The gate checks the golden-ratio exponent identity, the invariant reciprocal weight, and the inverse-tangent complement. A differentiated primitive evaluates the remaining weight integral.

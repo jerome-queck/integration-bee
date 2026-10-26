@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_1_2024_Round_3_UK_University_Integration_Bee_(6).pdf` (problem 6)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 1, problem 6)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 1, problem 6)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -29,4 +29,4 @@ so \(A\) has Lebesgue measure \(0\). Therefore \(\int_{0}^{1}f(x)\,dx=0\).
 
 ## SymPy self-check
 
-SymPy sums \(\frac1{10}\sum_{n\ge 0}(9/10)^{n}\) to \(1\), which is the removed measure in the solutions PDF.
+The exact transcript is the infinite product \(\prod_{k\ge1}(1-\delta_{9,d_k(x)})\), where \(d_k(x)=\lfloor10^kx\rfloor\bmod10\) is the kth decimal digit. The gate counts nine permitted children of every decimal prefix. After n digits the surviving cells number \(9^n\), each with length \(10^{-n}\). Their total measure tends to zero, which squeezes the nonnegative indicator integral to zero. The choices at decimal expansion endpoints form a countable set and do not affect the integral.

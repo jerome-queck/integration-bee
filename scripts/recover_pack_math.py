@@ -49,7 +49,11 @@ GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
 # R3-2024-Tournament-Q02-v9 is x**3*sin(log(x))**2*cos(log(x))**2 on [0, 1].
 # The generic proof of 1/64 exceeds PROOF_TIMEOUT on CI, so recovery must
 # leave that row manual. Q02-v10 and Q02-v11 are the same integral.
-HELD_MANUAL = frozenset({"R2-2023-Relay-Q19", "R3-2024-Tournament-Q02-v9"})
+# S2-Q07a has an exact +infinity certificate, but the current marking path
+# rejects oo against oo. Keep its transcript for a later grading fix.
+HELD_MANUAL = frozenset(
+    {"R2-2023-Relay-Q19", "R3-2024-Tournament-Q02-v9", "R3-2024-Dichotomy-S2-Q07a"}
+)
 
 _RELAY_M = "Symbol('m', integer=True, positive=True)"
 _RELAY_N = "Symbol('n', integer=True, positive=True)"
@@ -1072,6 +1076,141 @@ TRANSCRIPTS.update(
             "Piecewise((0, Abs(x)<2), (sqrt(x**2-4), Abs(x)<=3/sqrt(2)), ((Abs(x)-sqrt(x**2-4))/2, True))",
             ("-90", "90"),
             "90*(45-sqrt(2024))-2*log(45-sqrt(2024))-3*log(2)",
+        ),
+    }
+)
+
+
+# Handoff B. Complete outer limits retain their Integral and multiplier.
+# The source notes justify the exact digit, iterate, and radical encodings.
+_HANDOFF_B_N = "Symbol('n', integer=True, positive=True)"
+_HANDOFF_B_K = "Symbol('k', integer=True, positive=True)"
+TRANSCRIPTS.update(
+    {
+        "R3-2024-Chainlink-G5-Q07": (
+            "Min(sqrt(frac(x)-frac(x)**2),Abs(sqrt(3)*asin(cos(pi*x))/pi))",
+            ("0", "2025"),
+            "2025*pi/12",
+        ),
+        "R3-2024-Chainlink-G4-Q05": (
+            "cos(2*x)/(-log(tan(x))*cos(x)**4)",
+            ("0", "pi/4"),
+            "log(3)",
+        ),
+        "R3-2024-Chainlink-G3-Q06": (
+            "x**((1+sqrt(5))/2)*atan(x)/(1+x**(2*((1+sqrt(5))/2)**2))",
+            ("0", "oo"),
+            "pi**2/(8*((1+sqrt(5))/2)**2)",
+        ),
+        "R3-2024-Chainlink-G2-Q07": (
+            "cos(x)**3*sin(x)/log(sin(x))",
+            ("0", "pi/2"),
+            "-log(2)",
+        ),
+        "R3-2024-Chainlink-G2-Q03": (
+            "sec(x)*csc(x)*sin(tan(x))",
+            ("0", "pi/2"),
+            "pi/2",
+        ),
+        "R3-2024-Chainlink-G2-Q04": (
+            "log(1+exp(-x))*cos(x)",
+            ("0", "oo"),
+            "1/2-pi*csch(pi)/2",
+        ),
+        "R3-2024-Chainlink-G4-Q08": (
+            "x*cosh(x)/sinh(pi*x)",
+            ("0", "oo"),
+            "sec(1/2)**2/4",
+        ),
+        "R3-2024-Chainlink-G1-Q08": (
+            f"Limit(({_HANDOFF_B_N}+1)*Integral(x**(x**x+{_HANDOFF_B_N})*log(1+x+x**x+x**(x**x)+x**(x**(x**x))),(x,0,1)),{_HANDOFF_B_N},oo)",
+            ("0", "1"),
+            "log(5)",
+        ),
+        "R3-2024-Chainlink-G1-Q06": (
+            f"Product(1-KroneckerDelta(Mod(floor(10**{_HANDOFF_B_K}*x),10),9),({_HANDOFF_B_K},1,oo))",
+            ("0", "1"),
+            "0",
+        ),
+        "R3-2024-Chainlink-G5-Q08": (
+            "(cos(x)+1-x**2)/((x*sin(x)+1)*sqrt(1-x**2))",
+            None,
+            "asin((x+sin(x))/(x*sin(x)+1))",
+        ),
+        "R3-2024-Chainlink-G5-Q05": (
+            "sqrt(1+real_root(x-1,3))",
+            ("0", "1"),
+            "16/35",
+        ),
+        "R3-2024-Chainlink-G3-Q03": (
+            "Sum(k*x**k,(k,1,2025))*Sum(x**k,(k,0,2024))",
+            None,
+            "Sum(x**k,(k,1,2025))**2/2",
+        ),
+        "R3-2024-Chainlink-G3-Q01": (
+            "exp(-x**Rational(1,2025))",
+            ("0", "oo"),
+            "factorial(2025)",
+        ),
+        "R3-2024-Chainlink-G2-Q08": (
+            f"Limit(Integral(2025*sin(frac({_HANDOFF_B_N}*x**2025))*cos(frac({_HANDOFF_B_N}*x**2025)),(x,0,1)),{_HANDOFF_B_N},oo)",
+            ("0", "1"),
+            "2025*sin(1)**2/2",
+        ),
+        "R3-2024-Chainlink-G4-Q07": (
+            f"Limit(Integral((1-(1-2*x)**(2**{_HANDOFF_B_N}))/2,(x,0,Rational(1,2))),{_HANDOFF_B_N},oo)",
+            ("0", "1/2"),
+            "1/4",
+        ),
+        "R3-2024-Dichotomy-S1-Q04a": (
+            f"Product(x**(2**(1-{_HANDOFF_B_K}))*2**(-{_HANDOFF_B_K}*x/4**{_HANDOFF_B_K}),({_HANDOFF_B_K},1,oo))",
+            ("0", "oo"),
+            "729/(32*log(2)**3)",
+        ),
+        "R3-2024-Dichotomy-S1-Q04b": (
+            "x**2/2 + x**2/(9*(-x**3/27 + x**2/2 + sqrt(-x**5/27 + x**4/4))**(1/3)) - x/3 + sqrt(x**4 + 4*x**3)/2 + (-x**3/27 + x**2/2 + sqrt(-x**5/27 + x**4/4))**(1/3)",
+            ("0", "1/2"),
+            "1/4",
+        ),
+        "R3-2024-Dichotomy-S3-Q05a": (
+            "(((1+3/x)**x)**Rational(1,3)-sqrt((1+2/x)**x))/x",
+            ("0", "oo"),
+            "(E-1)*log(Rational(2,3))",
+        ),
+        "R3-2024-Dichotomy-S3-Q05b": (
+            "sin(x**2+x*sqrt(3*pi)+pi)",
+            ("-oo", "oo"),
+            "sqrt(pi)",
+        ),
+        "R3-2024-Dichotomy-S3-Q07a": (
+            "sqrt(x/(1-x))*log(x/(1-x))",
+            ("0", "1"),
+            "pi",
+        ),
+        "R3-2024-Dichotomy-S3-Q07b": (
+            "log(sqrt(x)+sqrt(1-x))/sqrt(x)",
+            ("0", "1"),
+            "2*sqrt(2)*log(sqrt(2)+1)-2",
+        ),
+        "R3-2024-Dichotomy-S2-Q05b": (
+            "exp(-1-sqrt(1+((x**4-1)/(2*x**2))**2))",
+            ("0", "oo"),
+            "sqrt(2*pi)/(2*E**2)",
+        ),
+        "R3-2024-Dichotomy-S2-Q04b": (
+            "1/((x+sqrt(x**2+1))*(1+x))",
+            ("0", "oo"),
+            "-1-log(2)-(sqrt(2)+1)*log(sqrt(2)-1)+(sqrt(2)-1)*log(sqrt(2)+1)",
+        ),
+        "R3-2024-Dichotomy-S2-Q07a": (
+            f"Limit(Integral(log(1+E/{_HANDOFF_B_N}+({_HANDOFF_B_N}*x)**(-1/E)),(x,1,{_HANDOFF_B_N})),{_HANDOFF_B_N},oo)",
+            ("1", f"{_HANDOFF_B_N}"),
+            "oo",
+        ),
+        "R3-2024-Dichotomy-S2-Q07b": (
+            f"Limit(Integral(log(1+2/{_HANDOFF_B_N}+1/sqrt({_HANDOFF_B_N}*x)),(x,1,{_HANDOFF_B_N})),{_HANDOFF_B_N},oo)",
+            ("1", f"{_HANDOFF_B_N}"),
+            "4",
         ),
     }
 )

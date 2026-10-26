@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_2_2024_Round_3_UK_University_Integration_Bee_(5).pdf` (problem 3)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 2, problem 3)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 2, problem 3)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -27,4 +27,4 @@ The substitution \(u=\tan x\) runs from \(0\) to \(\infty\), with \(dx=du/(1+u^{
 
 ## SymPy self-check
 
-For \(u>0\), SymPy simplifies \(\sqrt{1+u^{2}}\cdot\sqrt{1+u^{2}}/u\cdot 1/(1+u^{2})\) to \(1/u\). It evaluates \(\int_{0}^{\infty}(\sin u)/u\,du=\pi/2\).
+The gate checks the tangent substitution and both improper endpoints. SymPy evaluates the resulting Dirichlet integral exactly.

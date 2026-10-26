@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Dichotomy_Segment_3_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (problem 7b)
 - Printed answer: `sources/past/r3/2024/Dichotomy_answers_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Segment 3, problem 7b)
 - Worked source: `sources/past/r3/2024/Dichotomy_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Set 3/Segment 3, problem 7b)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -21,4 +21,4 @@ The solutions PDF integrates by parts and substitutes \(y=\sin u\). The value is
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r3_2024_dichotomy_s3_q07b`. SymPy checks the parts derivative, evaluates \(\int_{0}^{1/\sqrt{2}} y^{2}/(1-y^{2})\,dy\), and simplifies the result to the printed value.
+The gate checks reflection and the increasing substitution \(u=\sqrt{x}-\sqrt{1-x}\). This reduces the integral to \(\int_0^1\log(2-u^2)\,du\). It differentiates a real logarithmic primitive and evaluates the endpoints exactly.

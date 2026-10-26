@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_5_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (problem 5)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 5, problem 5)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 5, problem 5)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -27,4 +27,4 @@ The solutions PDF inverts \(y=\sqrt{1+(x-1)^{1/3}}\). Then \(x=(y^{2}-1)^{3}+1\)
 
 ## SymPy self-check
 
-SymPy checks that \(y^{2}=1+(x-1)^{1/3}\) inverts to \(x=(y^{2}-1)^{3}+1\), expands the integrand to \(y^{6}-3y^{4}+3y^{2}\), and evaluates \(1-\int_{0}^{1}(y^{6}-3y^{4}+3y^{2})\,dy=16/35\).
+The transcript uses `real_root(x-1,3)`, preserving the printed real cube root. The gate checks the substitution \(x=1-u^3\), its orientation, and the real branch. SymPy evaluates the remaining beta-type integral.

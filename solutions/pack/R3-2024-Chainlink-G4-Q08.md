@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_4_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (problem 8)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 4, problem 8)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 4, problem 8)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -39,4 +39,4 @@ I'(1)=\frac14\sec^{2}\frac12.
 
 ## SymPy self-check
 
-SymPy differentiates \(\frac12\tan(a/2)\) to \(\frac14\sec^{2}(a/2)\) and checks \(\cot(\pi/2-\theta)=\tan\theta\). A quadrature of \(x\cosh x/\sinh(\pi x)\) from \(0\) to \(\infty\) matches \(\frac14\sec^{2}(1/2)\) within \(10^{-18}\).
+The gate checks the positive geometric expansion and its Laplace integrals. It verifies the gamma reflection identity and differentiates its logarithm twice to evaluate the paired trigamma series. Positivity of both shifts fixes the domain. Numerical quadrature is not used.
