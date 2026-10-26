@@ -5,6 +5,7 @@ import gap_index
 import model
 import pack_answer_contracts
 import pack_gate
+import pack_grid
 import problem_catalog
 import sympy as sp
 import yaml
@@ -498,6 +499,8 @@ def answer_matches(row: dict, submitted: str) -> bool:
             row["kind"], submitted, pack_gate.namespace(row.get("variable", "x")))
         return pack_gate.proven(row["kind"], row["sympy_expr"], row["limits"],
                                 submitted, row.get("variable", "x"))
+    if row.get("kind") == "grid":
+        return pack_grid.answers_match(row["answer_sympy"], submitted)
     return expressions_match(row["answer_sympy"], submitted, _indefinite(row), row.get("variable", "x"))
 
 
@@ -524,7 +527,8 @@ def grade_problem(
         if catalog_row.get("verify") == "sympy":
             answer = catalog_row.get("answer_sympy")
             variable = catalog_row.get("variable")
-            if not isinstance(answer, str) or not answer or variable not in problem_catalog.SYMPY_VARIABLES:
+            valid_variable = variable == "grid" if catalog_row.get("kind") == "grid" else variable in problem_catalog.SYMPY_VARIABLES
+            if not isinstance(answer, str) or not answer or not valid_variable:
                 return None, "catalog problem is not sympy-checked"
             try:
                 correct = answer_matches(catalog_row, submitted)

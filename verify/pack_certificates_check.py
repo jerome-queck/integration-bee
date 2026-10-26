@@ -9,6 +9,7 @@ import sympy as sp
 
 import pack_gate
 import pack_handoff_f_check
+import pack_grid_check
 import problem_catalog
 import turn_contract
 
@@ -463,9 +464,10 @@ def main():
     check_hard_open_forms(rows)
     check_handoff_d(rows)
     pack_handoff_f_check.check(rows)
+    pack_grid_check.check_all(list(rows.values()))
     print(
         "PASS pack certificates (symbolic families, literal operators, "
-        "24 Handoff D rows, 10 Handoff F contracts, mutations, source discrepancies)"
+        "24 Handoff D rows, 10 Handoff F contracts, Handoff G grids, mutations, source discrepancies)"
     )
     return 0
 
