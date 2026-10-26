@@ -17,11 +17,11 @@ SAMPLE_SOLUTIONS_PDF = "sources/UK_University_integration_bee_sample_problems_so
 VERIFIES = frozenset({"manual", "unchecked", "sympy"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
-EXPECTED_COUNT = 949
-EXPECTED_MANUAL = 415
-EXPECTED_SYMPY = 261
+EXPECTED_COUNT = 946
+EXPECTED_MANUAL = 372
+EXPECTED_SYMPY = 304
 EXPECTED_PDF_COPY = 195
-EXPECTED_ROUNDS = {"r1": 280, "r2": 207, "r3": 190, "yang": 272}
+EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
     "id": "R1-2024-Q01",
     "answer_has": "sin(1)",

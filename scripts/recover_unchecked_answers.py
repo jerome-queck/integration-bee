@@ -323,7 +323,7 @@ def main() -> int:
     pack = [row for row in rows if row.get("source") == "resource_pack"]
     answered = sum(1 for row in pack if row.get("verify") in {"manual", "sympy"})
     unchecked = sum(1 for row in pack if row.get("verify") == "unchecked")
-    print(f"resource answered {answered}/677 unchecked {unchecked}")
+    print(f"resource answered {answered}/{len(pack)} unchecked {unchecked}")
     manual = sum(
         1
         for row in rows

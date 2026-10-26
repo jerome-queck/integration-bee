@@ -62,7 +62,12 @@ atan(log(x)/(1+x)) on [1, e], a logistic composition on [1/4, 3/4],
 x**({x}-1)*(log(x**x)+{x}) on [0, 100], floor(1/x) on (0, 1], an alternating
 power of a fractional part, a cube-root floor on (0, 1], the two integrals
 equal to 1-γ, and x**2*cos(x)/(1+e**x) on [-π/2, π/2]. A positive integer
-power of sec+tan differentiates from the symbolic exponent. Numeric agreement
+power of sec+tan differentiates from the symbolic exponent. Further checked
+forms are log(1+x+x**2)/x on [0, 1], (log x/x)**n on [1, ∞), x{1/x}floor(1/x)
+on [0, 1], a double Lambert W, reciprocal cube roots on [0, 7], an arcsine
+product on [0, 1], cos(log x)/(1+x)**2, an inverse pair on [1, e], sin(π floor x),
+the central binomial series on [0, 1/4], and a factorial-exponent power. When x
+is already a parameter, the printed letter of integration stays. Numeric agreement
 is not a proof.
 """
 
@@ -596,6 +601,27 @@ def _has_square_root(expr) -> bool:
     return any(node.as_base_exp()[1] in halves for node in getattr(expr, "atoms", lambda *_: ())(sp.Pow))
 
 
+def _huge_integer(expr) -> bool:
+    """A printed factorial or power can exceed the decimal conversion limit."""
+    atoms = getattr(expr, "atoms", lambda *_: ())
+    for node in atoms(sp.Integer):
+        if abs(int(node)).bit_length() > 14000:
+            return True
+    for node in atoms(sp.Rational):
+        if node.p.bit_length() > 14000 or node.q.bit_length() > 14000:
+            return True
+    return False
+
+
+def _printable(text: str, variable: str):
+    """Parse for latex. Keep a huge integer as factorial or a power."""
+    expr = _parse(text, variable)
+    if not _huge_integer(expr):
+        return expr
+    with sp.evaluate(False):
+        return sp.sympify(text, locals=namespace(variable))
+
+
 def _equivalent_rewrites(expr, symbol):
     found = []
     if expr.has(sp.sin) or expr.has(sp.cos):
@@ -810,8 +836,42 @@ def _sec_tan_power(answer, integrand, symbol) -> bool:
     return _zero(sp.simplify(slope - claim))
 
 
+def _factorial_exponent(answer, integrand, symbol) -> bool | None:
+    """sqrt(x * cbrt(x * ...)) = x**(e-2), whose antiderivative is x**(e-1)/(e-1)."""
+    if integrand != symbol ** (sp.E - 2):
+        return None
+    wanted = symbol ** (sp.E - 1) / (sp.E - 1)
+    if answer != wanted and not _zero(answer - wanted):
+        return None
+    step = sp.Symbol("_n", integer=True)
+    if not _zero(sp.summation(1 / sp.factorial(step), (step, 2, sp.oo)) - (sp.E - 2)):
+        return False
+    return _zero(sp.diff(wanted, symbol) - integrand)
+
+
+def _alternating_radical(answer, integrand, symbol) -> bool | None:
+    """The alternating nest solves y**2 = x-(1+y), and that y is the printed antiderivative's slope."""
+    if not _has_square_root(integrand):
+        return None
+    closed = -sp.Rational(1, 2) + sp.sqrt(4 * symbol - 3) / 2
+    if integrand != closed:
+        return None
+    wanted = (4 * symbol - 3) ** sp.Rational(3, 2) / 12 - symbol / 2
+    if answer != wanted:
+        return None
+    if not _zero(sp.expand(closed**2 - (symbol - (1 + closed)))):
+        return False
+    return _zero(sp.diff(wanted, symbol) - closed)
+
+
 def _antiderivative(answer, integrand, variable: str) -> bool:
     symbol = namespace(variable)[variable]
+    factorial = _factorial_exponent(answer, integrand, symbol)
+    if factorial is not None:
+        return factorial
+    radical = _alternating_radical(answer, integrand, symbol)
+    if radical is not None:
+        return radical
     if _sec_tan_power(answer, integrand, symbol):
         return True
     plain = _drop_log_abs(answer)
@@ -3351,9 +3411,360 @@ def _even_cosine_weight(integrand, symbol, lo, hi):
     return sp.simplify(value)
 
 
+def _log_quadratic_unit(integrand, symbol, lo, hi):
+    """∫_0^1 log(1+x+x**2)/x dx = π**2/9, from the mercator series of log(1-x**3)-log(1-x)."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.log):
+        return None
+    if integrand != sp.log(1 + symbol + symbol**2) / symbol:
+        return None
+
+    def build():
+        x = sp.Symbol("_x", positive=True)
+        step = sp.Symbol("_n", integer=True, positive=True)
+        _require(sp.expand((1 - x) * (1 + x + x**2) - (1 - x**3)) == 0, "poly")
+        quad = sp.expand((x + sp.Rational(1, 2)) ** 2 + sp.Rational(3, 4) - (x**2 + x + 1))
+        _require(quad == 0, "quad")
+        _require(sp.factor(x**3 - 1) == (x - 1) * (x**2 + x + 1), "factor")
+        series = sp.summation((x**step - x ** (3 * step)) / step, (step, 1, sp.oo))
+        closed = -sp.log(1 - x) + sp.log(1 - x**3)
+        delta = sp.simplify(series - closed)
+        _require(isinstance(delta, sp.Piecewise) and delta.args[0][0] == 0, "branch")
+        on_unit = sp.And(sp.StrictLessThan(x, 1), sp.StrictLessThan(x**3, 1))
+        _require(delta.args[0][1] == on_unit, "region")
+        piece = sp.integrate((x ** (step - 1) - x ** (3 * step - 1)) / step, (x, 0, 1))
+        _require(_zero(sp.simplify(piece - 2 / (3 * step**2))), "term")
+        total = sp.summation(2 / (3 * step**2), (step, 1, sp.oo))
+        _require(_zero(total - sp.pi**2 / 9), "zeta")
+        return sp.pi**2 / 9
+
+    return _fact("log-quadratic-unit", build)
+
+
+def _log_power_ray(integrand, symbol, lo, hi):
+    """∫_1^∞ (log x/x)**n dx = n!/(n-1)**(n+1) for an integer n>1."""
+    if not (_zero(lo - 1) and hi == sp.oo) or not integrand.has(sp.log):
+        return None
+    degree = sp.Wild("n", exclude=[symbol])
+    matched = integrand.match(sp.log(symbol) ** degree / symbol ** degree)
+    if not matched or degree not in matched:
+        matched = integrand.match((sp.log(symbol) / symbol) ** degree)
+    if not matched or degree not in matched:
+        return None
+    power = matched[degree]
+    if power.has(symbol) or not getattr(power, "is_Integer", False) or power <= 1:
+        return None
+
+    def build():
+        moment = sp.Symbol("_m", integer=True, positive=True)
+        rate = sp.Symbol("_s", positive=True)
+        line = sp.Symbol("_t", positive=True)
+        value = sp.integrate(line**moment * sp.exp(-rate * line), (line, 0, sp.oo))
+        _require(_zero(sp.simplify(value - sp.gamma(moment + 1) / rate ** (moment + 1))), "moment")
+        slot = sp.Symbol("_u", positive=True)
+        jac = (sp.log(sp.exp(slot)) / sp.exp(slot)) ** moment * sp.exp(slot)
+        goal = slot**moment * sp.exp(-(moment - 1) * slot)
+        _require(_zero(sp.simplify(jac - goal)), "sub")
+        _require(_zero(sp.simplify(sp.factorial(moment) - sp.gamma(moment + 1))), "shift")
+        return True
+
+    if _fact("log-power-ray", build) is not True:
+        return None
+    return sp.factorial(power) / (power - 1) ** (power + 1)
+
+
+def _floor_reciprocal_weight(integrand, symbol, lo, hi):
+    """∫_0^1 x {1/x} floor(1/x) dx = π**2/12 - 1/2."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.floor):
+        return None
+    target = symbol * (1 / symbol - sp.floor(1 / symbol)) * sp.floor(1 / symbol)
+    if integrand != target:
+        return None
+
+    def build():
+        step = sp.Symbol("_n", integer=True, positive=True)
+        line = sp.Symbol("_x", positive=True)
+        sample = 1 / (step + sp.Rational(1, 2))
+        _require(sp.floor(1 / sample) == step, "floor")
+        local = line * (1 / line - step) * step
+        _require(_zero(sp.expand(local - step * (1 - step * line))), "local")
+        piece = sp.integrate(step * (1 - step * line), (line, 1 / (step + 1), 1 / step))
+        _require(_zero(sp.simplify(piece - 1 / (2 * (step + 1) ** 2))), "piece")
+        total = sp.summation(1 / (2 * (step + 1) ** 2), (step, 1, sp.oo))
+        goal = sp.pi**2 / 12 - sp.Rational(1, 2)
+        _require(_zero(total - goal), "sum")
+        return goal
+
+    return _fact("floor-reciprocal-weight", build)
+
+
+def _double_lambert(integrand, symbol, lo, hi):
+    """∫_0^{e^{1+e}} W(W(x))/x dx = e+1/2."""
+    if not integrand.has(sp.LambertW) or not (_zero(lo) and _zero(hi - sp.exp(1 + sp.E))):
+        return None
+    if integrand != sp.LambertW(sp.LambertW(symbol)) / symbol:
+        return None
+
+    def build():
+        _require(sp.LambertW(0) == 0, "zero")
+        _require(sp.LambertW(sp.E) == 1, "one")
+        _require(_zero(sp.LambertW(sp.exp(1 + sp.E)) - sp.E), "top")
+        slot = sp.Symbol("_v", positive=True)
+        logged = sp.log(slot) + slot + slot * sp.exp(slot)
+        claim = 1 + slot + slot * sp.exp(slot) + slot**2 * sp.exp(slot)
+        _require(_zero(sp.simplify(slot * sp.diff(logged, slot) - claim)), "jac")
+        _require(_zero(sp.simplify(slot * sp.exp(logged) - sp.exp(1 + sp.E)).subs(slot, 1)), "end")
+        value = sp.integrate(claim, (slot, 0, 1))
+        _require(_zero(sp.simplify(value - (sp.E + sp.Rational(1, 2)))), "value")
+        return sp.E + sp.Rational(1, 2)
+
+    return _fact("double-lambert", build)
+
+
+def _reciprocal_cube_span(integrand, symbol, lo, hi):
+    """∫_0^7 of the reciprocal cube-root difference is 9."""
+    if not (_zero(lo) and _zero(hi - 7)) or not _has_square_root(integrand):
+        return None
+    root = sp.sqrt(symbol**2 + 1)
+    target = (root + symbol) ** sp.Rational(1, 3) - (root - symbol) ** sp.Rational(1, 3)
+    if integrand != target:
+        return None
+
+    def build():
+        line = sp.Symbol("_x", positive=True)
+        rad = sp.sqrt(line**2 + 1)
+        _require(_zero(sp.simplify((rad + line) * (rad - line) - 1)), "product")
+        _require(_zero(sp.simplify((rad + line) - (rad - line) - 2 * line)), "gap")
+        left = sp.Symbol("_a", positive=True)
+        right = sp.Symbol("_b", positive=True)
+        cube = sp.expand((left - right) ** 3 - (left**3 - right**3 - 3 * left * right * (left - right)))
+        _require(cube == 0, "cube")
+        cancelled = sp.expand((left - right) ** 3 - (left**3 - right**3) + 3 * (left - right))
+        goal = 3 * (1 - left * right) * (left - right)
+        _require(sp.expand(cancelled - goal) == 0, "recip")
+        height = sp.Symbol("_y", real=True)
+        _require(_zero(sp.diff((height**3 + 3 * height) / 2, height) - sp.Rational(3, 2) * (height**2 + 1)), "slope")
+        _require(sp.Integer(2) ** 3 + 6 == 14, "end")
+        value = sp.Rational(3, 2) * sp.integrate(height * (height**2 + 1), (height, 0, 2))
+        _require(_zero(value - 9), "value")
+        return 9
+
+    return _fact("reciprocal-cube-span", build)
+
+
+def _arcsin_product_unit(integrand, symbol, lo, hi):
+    """∫_0^1 (arcsin(x**2)+arcsin(sqrt(x)))/sqrt(1-x**2) dx = π**2/4."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.asin):
+        return None
+    target = (sp.asin(symbol**2) + sp.asin(sp.sqrt(symbol))) / sp.sqrt(1 - symbol**2)
+    if integrand != target:
+        return None
+
+    def build():
+        slot = sp.Symbol("_u", positive=True)
+        second = sp.asin(slot) / sp.sqrt(1 - slot**4) * sp.diff(slot**2, slot)
+        wanted = 2 * slot * sp.asin(slot) / sp.sqrt(1 - slot**4)
+        _require(_zero(sp.simplify(second - wanted)), "sub")
+        first = sp.asin(slot**2) / sp.sqrt(1 - slot**2)
+        product = sp.asin(slot) * sp.asin(slot**2)
+        _require(_zero(sp.simplify(sp.diff(product, slot) - (first + wanted))), "parts")
+        _require(_zero(product.subs(slot, 1) - sp.pi**2 / 4), "hi")
+        _require(_zero(product.subs(slot, 0)), "lo")
+        return sp.pi**2 / 4
+
+    return _fact("arcsin-product-unit", build)
+
+
+def _cos_log_ray(integrand, symbol, lo, hi):
+    """∫_0^∞ cos(log x)/(1+x)**2 dx = π/sinh(π), the real part of x**i/(1+x)**2."""
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.log):
+        return None
+    if integrand != sp.cos(sp.log(symbol)) / (1 + symbol) ** 2:
+        return None
+
+    def build():
+        line = sp.Symbol("_x", positive=True)
+        _require(_zero(sp.re(sp.exp(sp.I * sp.log(line))) - sp.cos(sp.log(line))), "real")
+        _require(_zero(sp.im(sp.exp(sp.I * sp.log(line))) - sp.sin(sp.log(line))), "imag")
+        value = sp.integrate(line**sp.I / (1 + line) ** 2, (line, 0, sp.oo))
+        goal = sp.pi / sp.sinh(sp.pi)
+        _require(_zero(value - goal), "value")
+        _require(_zero(sp.im(value)), "pure")
+        return goal
+
+    return _fact("cos-log-ray", build)
+
+
+def _inverse_log_sqrt(integrand, symbol, lo, hi):
+    """∫_1^e (sqrt(log x) + exp(((x-1)/(e-1))**2)/(e-1)) dx = e.
+
+    sqrt(log x) and exp(y**2) are inverses, and the second summand is that
+    inverse integral after y=(x-1)/(e-1).
+    """
+    if not (_zero(lo - 1) and _zero(hi - sp.E)) or not integrand.has(sp.log):
+        return None
+    target = sp.sqrt(sp.log(symbol)) + sp.exp(((symbol - 1) / (sp.E - 1)) ** 2) / (sp.E - 1)
+    if integrand != target:
+        return None
+
+    def build():
+        line = sp.Symbol("_x", positive=True)
+        height = sp.sqrt(sp.log(line))
+        _require(_zero(sp.simplify(sp.exp(height**2) - line)), "inv")
+        _require(_zero(height.subs(line, 1)), "lo")
+        _require(_zero(height.subs(line, sp.E) - 1), "top")
+        slot = sp.Symbol("_y", positive=True)
+        inverse = sp.exp(slot**2)
+        _require(_zero(sp.simplify(sp.sqrt(sp.log(inverse)) - slot)), "left")
+        _require(_zero(sp.diff(slot * inverse, slot) - (inverse + slot * sp.diff(inverse, slot))), "parts")
+        _require(_zero(slot.subs(slot, 1) * inverse.subs(slot, 1) - sp.E), "ends")
+        offset = (line - 1) / (sp.E - 1)
+        _require(_zero(sp.diff(offset, line) * (sp.E - 1) - 1), "jac")
+        _require(_zero(offset.subs(line, 1)), "ylo")
+        _require(_zero(offset.subs(line, sp.E) - 1), "yhi")
+        pulled = sp.exp(offset**2) * sp.diff(offset, line)
+        _require(_zero(sp.simplify(pulled - sp.exp(offset**2) / (sp.E - 1))), "piece")
+        return sp.E
+
+    return _fact("inverse-log-sqrt", build)
+
+
+def _central_binomial_span(integrand, symbol, lo, hi):
+    """∫_0^{1/4} 1/sqrt(1-4x) dx = 1/2, and that integrand is the central binomial series."""
+    if not (_zero(lo) and _zero(hi - sp.Rational(1, 4))):
+        return None
+    target = (1 - 4 * symbol) ** (-sp.Rational(1, 2))
+    if integrand != target:
+        return None
+
+    def build():
+        line = sp.Symbol("_x", positive=True)
+        step = sp.Symbol("_n", integer=True, nonnegative=True)
+        series = sp.summation(sp.binomial(2 * step, step) * line**step, (step, 0, sp.oo))
+        closed = (1 - 4 * line) ** (-sp.Rational(1, 2))
+        delta = sp.simplify(series - closed)
+        _require(isinstance(delta, sp.Piecewise) and delta.args[0][0] == 0, "branch")
+        _require(delta.args[0][1] == sp.StrictLessThan(line, sp.Rational(1, 4)), "region")
+        anti = -sp.sqrt(1 - 4 * line) / 2
+        _require(_zero(sp.diff(anti, line) - closed), "slope")
+        end = sp.limit(anti, line, sp.Rational(1, 4)) - anti.subs(line, 0)
+        _require(_zero(end - sp.Rational(1, 2)), "value")
+        return sp.Rational(1, 2)
+
+    return _fact("central-binomial-span", build)
+
+
+def _nested_geometric_power(integrand, symbol, lo, hi):
+    """The tower of 2^{nx} is 4**x because sum n/2**n = 2, and ∫_0^1 4**x dx = 3/(2 log 2)."""
+    if not (_zero(lo) and _zero(hi - 1)) or integrand != 4**symbol:
+        return None
+
+    def build():
+        step = sp.Symbol("_n", integer=True, positive=True)
+        _require(_zero(sp.summation(step / 2**step, (step, 1, sp.oo)) - 2), "series")
+        line = sp.Symbol("_x", real=True)
+        value = sp.integrate(4**line, (line, 0, 1))
+        goal = 3 / (2 * sp.log(2))
+        _require(_zero(sp.simplify(value - goal)), "value")
+        return goal
+
+    return _fact("nested-geometric-power", build)
+
+
+def _continued_radical_unit(integrand, symbol, lo, hi):
+    """sqrt(x+sqrt(x+...)) = 1/2+sqrt(x+1/4), and ∫_0^1 of that is 5(1+sqrt(5))/12."""
+    if not (_zero(lo) and _zero(hi - 1)) or not _has_square_root(integrand):
+        return None
+    closed = sp.Rational(1, 2) + sp.sqrt(symbol + sp.Rational(1, 4))
+    if integrand != closed:
+        return None
+
+    def build():
+        _require(_zero(sp.expand(closed**2 - (symbol + closed))), "fixed")
+        value = sp.integrate(closed, (symbol, 0, 1))
+        goal = sp.Rational(5, 12) * (1 + sp.sqrt(5))
+        _require(_zero(sp.simplify(value - goal)), "value")
+        return goal
+
+    return _fact("continued-radical-unit", build)
+
+
+def _continued_radical_span(integrand, symbol, lo, hi):
+    """sqrt(1+x*sqrt(1+(x+1)*...)) = x+1 on [0, 25], so the integral is 675/2."""
+    if not (_zero(lo) and _zero(hi - 25)):
+        return None
+    if integrand != symbol + 1:
+        return None
+
+    def build():
+        line = sp.Symbol("_x", real=True)
+        shift = sp.Symbol("_n", real=True)
+        fixed = sp.expand((line + shift + 1) ** 2 - (1 + (line + shift) * (line + shift + 2)))
+        _require(fixed == 0, "fixed")
+        value = sp.integrate(line + 1, (line, 0, 25))
+        _require(value == sp.Rational(675, 2), "value")
+        return sp.Rational(675, 2)
+
+    return _fact("continued-radical-span", build)
+
+
+def _tan_nest_unit(integrand, symbol, lo, hi):
+    """y=tan(x-y) runs from 0 to 1 as x runs from 0 to 1+π/4, and the integral is (1+log 2)/2."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.atan):
+        return None
+    target = symbol * (1 + 1 / (1 + symbol**2))
+    if integrand != target:
+        return None
+
+    def build():
+        height = sp.Symbol("_y", real=True)
+        base = height + sp.atan(height)
+        _require(_zero(sp.diff(base, height) - (1 + 1 / (1 + height**2))), "slope")
+        _require(_zero(base.subs(height, 0)), "lo")
+        _require(_zero(base.subs(height, 1) - (1 + sp.pi / 4)), "hi")
+        _require(_zero(sp.simplify(sp.tan(base - height) - height)), "fixed")
+        value = sp.integrate(height * sp.diff(base, height), (height, 0, 1))
+        goal = (1 + sp.log(2)) / 2
+        _require(_zero(sp.simplify(value - goal)), "value")
+        return goal
+
+    return _fact("tan-nest-unit", build)
+
+
+def _floor_sine_zero(integrand, answer, variable: str, limits) -> bool:
+    """sin(π floor x) is 0 on every interval [n, n+1), so the ray integral is 0."""
+    if limits is None:
+        return False
+    symbol = namespace(variable)[variable]
+    if integrand != sp.sin(sp.pi * sp.floor(symbol)):
+        return False
+    lo = _parse(limits[0], variable)
+    hi = _parse(limits[1], variable)
+    if not (_zero(lo) and hi == sp.oo) or not _zero(answer):
+        return False
+    step = sp.Symbol("_n", integer=True)
+    if not _zero(sp.sin(sp.pi * step)):
+        return False
+    if sp.floor(step) != step:
+        return False
+    return True
+
+
 def _structural_values(integrand, symbol, lo, hi):
     """Exact integrand patterns. A miss returns before any search."""
     for builder in (
+        _log_quadratic_unit,
+        _log_power_ray,
+        _floor_reciprocal_weight,
+        _double_lambert,
+        _reciprocal_cube_span,
+        _arcsin_product_unit,
+        _cos_log_ray,
+        _inverse_log_sqrt,
+        _central_binomial_span,
+        _nested_geometric_power,
+        _continued_radical_unit,
+        _continued_radical_span,
+        _tan_nest_unit,
         _paired_log_span,
         _fifth_sqrt_quarter,
         _root_exp_reflection,
@@ -3466,6 +3877,9 @@ def _worker(payload, queue) -> None:
         kind, integrand_s, limits, answer_s, variable = payload
         integrand = _parse(integrand_s, variable)
         answer = _answer_expr(answer_s, variable)
+        if answer is not None and kind == "definite" and _floor_sine_zero(integrand, answer, variable, limits):
+            queue.put(("ok", True))
+            return
         if not _closed(integrand) or not _closed(answer) or _simplified_zero(integrand):
             queue.put(("ok", False))
             return
@@ -3563,6 +3977,8 @@ def proven(kind: str, integrand: str, limits, answer: str, variable: str) -> boo
 def canon_expr(text: str, variable: str) -> str | None:
     try:
         expr = _answer_expr(text, variable)
+        if expr is not None and _huge_integer(expr):
+            expr = _printable(text, variable)
     except Exception:
         return None
     return None if expr is None else sp.sstr(expr)
@@ -3578,7 +3994,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
     return sp.sstr(expr)
 
 
-_DUMMY_VARIABLES = frozenset({"t", "u", "y", "z", "theta"})
+_DUMMY_VARIABLES = frozenset({"t", "u", "y", "z", "theta", "X"})
 
 
 def rename_dummy(integrand: str, limits, answer: str, variable: str):
@@ -3599,6 +4015,10 @@ def rename_dummy(integrand: str, limits, answer: str, variable: str):
     try:
         new_limits = None if limits is None else [convert(item) for item in limits]
         return convert(integrand), new_limits, convert(answer), "x"
+    except ValueError as exc:
+        if str(exc) == "x is a parameter":
+            return integrand, limits, answer, variable
+        return None
     except Exception:
         return None
 
@@ -3627,9 +4047,8 @@ def fields_from_parts(integrand_text: str, limits_text, answer_text: str, variab
         limit_pair = (lo, hi)
     if not proven(kind, integrand, limit_pair, answer_s, variable):
         return None
-    ns = namespace(variable)
-    integrand_expr = _parse(integrand, variable)
-    answer_expr = _parse(answer_s, variable)
+    integrand_expr = _printable(integrand, variable)
+    answer_expr = _printable(answer_s, variable)
     return {
         "verify": "sympy",
         "kind": kind,
@@ -3668,8 +4087,8 @@ def reprove_rows(rows: list[dict]) -> str | None:
         if not isinstance(variable, str) or not isinstance(integrand, str) or not isinstance(answer, str):
             return f"{row.get('id')} sympy fields missing"
         try:
-            integrand_expr = _parse(integrand, variable)
-            answer_expr = _parse(answer, variable)
+            integrand_expr = _printable(integrand, variable)
+            answer_expr = _printable(answer, variable)
         except Exception:
             return f"{row.get('id')} sympy text does not parse"
         if sp.latex(integrand_expr) != row.get("integrand_latex"):
