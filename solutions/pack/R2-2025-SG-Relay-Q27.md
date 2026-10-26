@@ -1,9 +1,8 @@
 # R2-2025-SG-Relay-Q27
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 27)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (p. 7, relay 27)
 - Printed answer: none in the pack. The value below is derived in this note.
 - Worked source: derived in this note.
-- The catalog row is not changed.
 
 ## Problem
 
@@ -26,4 +25,7 @@ Set \(u=\operatorname{erf}^{-1}x\), where \(\operatorname{erf}u=(2/\sqrt{\pi})\i
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r2_2025_sg_relay_q27`. SymPy checks the completed square and the translated Gaussian integral.
+The pack-gate certificate checks the monotonicity and endpoint values of
+`erf`, the real inverse composition, the completed square, and the exact
+translated Gaussian integral. The source has no Singapore mark scheme in
+this tree; the existing derived-value provenance is retained.

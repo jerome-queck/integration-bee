@@ -1,9 +1,9 @@
 # R2-2025-SG-Relay-Q15
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 15)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (PDF page 4, relay 15)
 - Printed answer: no Singapore mark scheme is in this tree. The value below is derived from the problem sheet.
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- The SymPy transcript retains the finite integrands under a limit; the exchange with integration is checked below.
 
 ## Problem
 
@@ -31,3 +31,9 @@ which converges to
 ## SymPy self-check
 
 SymPy evaluates \(\int_{0}^{1}\sin(\pi x/2)\,dx=2/\pi\).
+
+The certificate also checks \(\lfloor y+1\rfloor-y=1-\{y\}\), so
+\[
+0<\frac{\lfloor nx+1\rfloor}{n}-x\le\frac1n.
+\]
+Since the derivative of sine has absolute value at most \(1\), the finite integrand differs from \(\sin(\pi x/2)\) uniformly by at most \(\pi/(2n)\). This bound tends to zero and justifies storing the literal limit under the integral over \([0,1]\). The original outer-limit question and the stored integral have the same value.

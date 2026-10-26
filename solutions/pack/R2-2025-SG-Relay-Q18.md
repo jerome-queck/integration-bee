@@ -1,9 +1,8 @@
 # R2-2025-SG-Relay-Q18
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 18). The same integral is relay 9 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK relay 9)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (p. 5, relay 18). The same integral is relay 9 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (p. 3, UK relay 9)
 - Worked source: derived in this note; the UK mark scheme prints the final value.
-- The catalog row is not changed.
 
 ## Problem
 
@@ -37,4 +36,9 @@ As \(r\to 1^{-}\), the damped integrand tends pointwise to the printed integrand
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r2_2025_sg_relay_q18`. SymPy checks the imaginary-part identity, the Dirichlet integral \(\int_{0}^{\infty}e^{-ax}\sin(ax)/x\,dx=\pi/4\), the finite geometric sum, and the limit \((\pi/2)\,r/(1+r)\to\pi/4\).
+The pack-gate certificate checks the imaginary-part identity, the finite
+geometric-sum recurrence and its vanishing remainder, the exact Laplace
+integral \(\int_0^\infty e^{-ax}\sin(ax)/x\,dx=\pi/4\), and the
+limit of the integrated Abel kernel. It also verifies the algebra of the
+uniform denominator bound and finiteness of the tail majorant used for
+dominated convergence.

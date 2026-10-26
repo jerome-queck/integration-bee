@@ -1036,6 +1036,108 @@ def answer_slide_problem() -> str | None:
     return None
 
 
+# Handoff C: source-checked readings; outer floors and scalar-only limits stay manual.
+TRANSCRIPTS.update(
+    {
+        "R2-2025-SG-Relay-Q15": (
+            "Limit(sin(pi*floor(Symbol('n',integer=True,positive=True)*x+1)/(2*Symbol('n',integer=True,positive=True))),Symbol('n',integer=True,positive=True),oo)",
+            ("0", "1"),
+            "2/pi",
+        ),
+        "R2-2025-SG-Relay-Q11": (
+            "((3*x**2+2*x)/(x**3+x**2-1)+(6*x**2+2*x)/(2*x**3+x**2-2))*sqrt((x**3+x**2-1)*(2*x**3+x**2-2))",
+            ("-1", "0"),
+            "2*(sqrt(2)-sqrt(3))",
+        ),
+        "R2-2025-UK-Relay-Q04": (
+            "Integral(sin(Symbol('y', real=True)**2+x**2),(Symbol('y', real=True),0,oo))",
+            ("0", "oo"),
+            "pi/4",
+        ),
+        "R2-2025-SG-Relay-Q04": (
+            "Integral(sin(Symbol('y', real=True)**2+x**2),(Symbol('y', real=True),0,oo))",
+            ("0", "oo"),
+            "pi/4",
+        ),
+        "R2-2025-SG-Relay-Q18": (
+            "sin(x)/(x*(cosh(x)+cos(x)))",
+            ("0", "oo"),
+            "pi/4",
+        ),
+        "R2-2025-UK-Relay-Q09": (
+            "sin(x)/(x*(cosh(x)+cos(x)))",
+            ("0", "oo"),
+            "pi/4",
+        ),
+        "R2-2022-Relay-Q14": (
+            "floor(1/x)*ceiling(1/x)*log(1-1/floor(1/x)**2)",
+            ("0", "1/2"),
+            "-log(2)",
+        ),
+        "R2-2022-Relay-Q07": (
+            "(sinh(x)-x)/(x**2*sinh(x))",
+            ("0", "oo"),
+            "log(2)",
+        ),
+        "R2-2023-Relay-Q07": (
+            "Limit(2*sqrt(1-floor(Symbol('n',integer=True,positive=True)*x)**2/Symbol('n',integer=True,positive=True)**2),Symbol('n',integer=True,positive=True),oo)",
+            ("0", "1"),
+            "pi/2",
+        ),
+        "R2-2024-Relay-Q09": (
+            "Limit((1-x)*Product(x**(2**Symbol('k',integer=True,nonnegative=True))+frac(sinh(x**(2**Symbol('k',integer=True,nonnegative=True)))**2)/frac(cosh(x**(2**Symbol('k',integer=True,nonnegative=True)))**2),(Symbol('k',integer=True,nonnegative=True),0,Symbol('n',integer=True,positive=True))),Symbol('n',integer=True,positive=True),oo)",
+            ("0", "1"),
+            "1",
+        ),
+        "R2-2025-SG-Relay-Q27": (
+            "exp(erfinv(x))",
+            ("-1", "1"),
+            "2*exp(Rational(1,4))",
+        ),
+        "R2-2025-SG-Relay-Q22": (
+            "1/(x*(E+(x**2+1)**(1/log(x))))",
+            ("sqrt(2)-1", "sqrt(2)+1"),
+            "log(1+sqrt(2))/E",
+        ),
+        "R2-2025-UK-Relay-Q16": (
+            "1/(x*(E+(x**2+1)**(1/log(x))))",
+            ("sqrt(2)-1", "sqrt(2)+1"),
+            "log(1+sqrt(2))/E",
+        ),
+        "R2-2025-SG-Relay-Q19": (
+            "Limit(Symbol('n',integer=True,positive=True)*(1+x**3)/(Symbol('n',integer=True,positive=True)+x+x**3+x**5),Symbol('n',integer=True,positive=True),oo)",
+            ("0", "1"),
+            "Rational(5,4)",
+        ),
+        "R2-2025-UK-Relay-Q19": (
+            "Limit(Symbol('n',integer=True,positive=True)*(1+x**3)/(Symbol('n',integer=True,positive=True)+x+x**3+x**5),Symbol('n',integer=True,positive=True),oo)",
+            ("0", "1"),
+            "Rational(5,4)",
+        ),
+        "R2-2021-Group-Q02": (
+            "log((floor(x)**2-1)/floor(x)**2)",
+            ("2", "oo"),
+            "-log(2)",
+        ),
+        "R2-2022-Group-Q09": (
+            "log(1-x+x**2)/((1+x**2)*log(x))",
+            ("0", "oo"),
+            "pi/2",
+        ),
+        "R2-2025-SG-Relay-Q20": (
+            "(1+polylog(2,x))/(4+polylog(2,x**2))",
+            ("-1", "1"),
+            "1/2",
+        ),
+        "R2-2025-SG-Relay-Q12": (
+            "(10-frac(x))/(floor(x)+floor(10-x)+10)",
+            ("3", "7"),
+            "2",
+        ),
+    }
+)
+
+
 def transcribed(row: dict) -> dict | None:
     ident = row.get("id")
     item = TRANSCRIPTS.get(ident)

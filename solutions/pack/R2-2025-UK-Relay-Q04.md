@@ -1,9 +1,8 @@
 # R2-2025-UK-Relay-Q04
 
-- Problem: `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (relay 4)
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (relay 4)
+- Problem: `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (p. 1, relay 4)
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (p. 3, relay 4)
 - Worked source: derived in this note; the mark scheme prints the final value.
-- The catalog row is not changed.
 
 ## Problem
 
@@ -13,15 +12,26 @@
 
 ## Solution
 
-In polar coordinates \(x=r\cos\theta\), \(y=r\sin\theta\), the first quadrant is \(\theta\in[0,\pi/2]\) and \(r\in[0,\infty)\), with area element \(r\,dr\,d\theta\). The integral is improper. Insert the damping \(e^{-\varepsilon r^{2}}\) for \(\varepsilon>0\) and let \(\varepsilon\downarrow 0\):
+For each fixed \(y\), the angle-addition identity gives
 \[
-\int_{0}^{\pi/2}\int_{0}^{\infty}e^{-\varepsilon r^{2}}\sin(r^{2})\,r\,dr\,d\theta=\frac{\pi}{2}\cdot\frac12\int_{0}^{\infty}e^{-\varepsilon u}\sin u\,du,
+\sin(x^{2}+y^{2})=\sin(x^{2})\cos(y^{2})+\cos(x^{2})\sin(y^{2}).
 \]
-where \(u=r^{2}\). The inner Laplace transform equals \(1/(1+\varepsilon^{2})\). The damped integral is
+The two ordinary Fresnel improper integrals converge and have the common value
 \[
-\frac{\pi}{4}\cdot\frac{1}{1+\varepsilon^{2}},
+S=\int_{0}^{\infty}\sin(x^{2})\,dx
+=C=\int_{0}^{\infty}\cos(x^{2})\,dx
+=\frac{\sqrt{2\pi}}{4}.
 \]
-and the limit \(\varepsilon\downarrow 0\) is \(\pi/4\).
+Consequently the inner integral is
+\(S\cos(y^{2})+C\sin(y^{2})\). Both terms have convergent outer
+improper integrals, so the printed iterated integral is
+\[
+SC+CS=2\left(\frac{\sqrt{2\pi}}{4}\right)^{2}=\frac{\pi}{4}.
+\]
+This argument respects the printed order \(dx\,dy\). A polar-coordinate
+integral with an added Gaussian damping also tends to \(\pi/4\), but that
+Abel limit alone would not establish the value of the ordinary iterated
+integral. The UK mark scheme prints \(\pi/4\).
 
 ## Final answer
 
@@ -31,4 +41,7 @@ and the limit \(\varepsilon\downarrow 0\) is \(\pi/4\).
 
 ## SymPy self-check
 
-For \(\varepsilon>0\), SymPy evaluates \(\int_{0}^{\infty}e^{-\varepsilon u}\sin u\,du=1/(\varepsilon^{2}+1)\). The limit of \((\pi/4)/(1+\varepsilon^{2})\) as \(\varepsilon\to 0\) is \(\pi/4\).
+The pack-gate certificate retains the literal inner `Integral`, checks the
+angle-addition identity, and evaluates both convergent one-dimensional
+Fresnel integrals. It returns their two cross-products; it does not replace
+the source with a damped double integral.

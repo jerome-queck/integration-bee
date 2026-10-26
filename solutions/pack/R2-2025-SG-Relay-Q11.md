@@ -1,9 +1,8 @@
 # R2-2025-SG-Relay-Q11
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 11)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (PDF page 3, relay 11)
 - Printed answer: none in the pack. The value below is derived in this note.
 - Worked source: derived in this note.
-- The catalog row is not changed.
 
 ## Problem
 
@@ -28,3 +27,5 @@ On \([-1,0]\) both cubics stay negative: the critical value \(a(-2/3)=-23/27\) i
 ## SymPy self-check
 
 `solutions/self_check.py` runs `check_r2_2025_sg_relay_q11`. SymPy checks the derivative identity and the endpoint products.
+
+The pack gate checks the complete critical-point lists of both cubics, their strict negativity on the interval, the square-root derivative, and its endpoints. The maximum of the second cubic is \(b(-1/3)=-53/27<0\).
