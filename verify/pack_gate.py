@@ -95,7 +95,15 @@ endpoint integrals, an implicit cubic, a fractional-part beta integral, a
 cosine-sum magnitude, a reflected logarithmic radical, and a substituted
 Gaussian. Only the sphere, tangent, and Legendre certificates, the two infinite
 forms, and those open wave-5k forms may retain an inner Integral, Sum,
-Product, or Limit. Answers must be closed, except the truncated exponential
+Product, or Limit. Wave 5l checks a telescoping floor quartic, a tangent
+boundary on [0, π/4], an arctangent logarithm, a Frullani arctangent pair, a
+reflected exponential pair, a secant square root, a split Dirichlet weight, a
+shifted Fresnel cosine, a fourth-root King tangent, a hyperbolic secant, an
+exponential quartic, a factorial beta series, a pair of nested roots, a floor
+tangent telescope, a floor tower, a logarithmic semicircle, an alternating
+eta square, two arctangent rational forms, a nested gamma tail, a shifted
+odd phase, a logistic King reflection, a cubed logarithm, and a Lambert
+antiderivative. Answers must be closed, except the truncated exponential
 antiderivative, which keeps its finite sum. Numeric agreement is not a proof.
 """
 
@@ -108,6 +116,7 @@ import sympy as sp
 import check_math
 import pack_certificates
 import pack_wave5k
+import pack_wave5l
 
 PROOF_TIMEOUT = 20.0
 
@@ -4787,6 +4796,9 @@ def _worker(payload, queue) -> None:
         if kind == "indefinite" and answer is not None and pack_wave5k.indefinite_ok(answer, integrand, symbol):
             queue.put(("ok", True))
             return
+        if kind == "indefinite" and answer is not None and pack_wave5l.indefinite_ok(answer, integrand, symbol):
+            queue.put(("ok", True))
+            return
         if not _closed(answer):
             queue.put(("ok", False))
             return
@@ -4831,6 +4843,10 @@ def _worker(payload, queue) -> None:
             wave_hi = _parse(limits[1], variable)
             wave = pack_wave5k.definite_value(integrand, symbol, wave_lo, wave_hi)
             if _matches(wave, answer):
+                queue.put(("ok", True))
+                return
+            added = pack_wave5l.definite_value(integrand, symbol, wave_lo, wave_hi)
+            if _matches(added, answer):
                 queue.put(("ok", True))
                 return
         if not _closed(integrand) or not _closed(answer) or _simplified_zero(integrand):

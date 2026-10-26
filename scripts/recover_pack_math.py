@@ -620,6 +620,174 @@ TRANSCRIPTS.update(
     }
 )
 
+# Wave 5l. Each string is the integral in the pack note, and the note's final
+# value agrees with the printed mark. A later recover keeps these rows.
+TRANSCRIPTS.update(
+    {
+        "R3-2024-Tournament-Q01": (
+            "floor(x)/(1+floor(x)**2+floor(x)**4)",
+            ("0", "oo"),
+            "Rational(1,2)",
+        ),
+        "R3-2024-Tournament-Q02": (
+            "(4*cos(x)**2-1)*sqrt(tan(x))",
+            ("0", "pi/4"),
+            "1",
+        ),
+        "R3-2024-Tournament-Q02-v3": (
+            "atan(x)/(x*(log(x)**2+1))",
+            ("0", "oo"),
+            "pi**2/4",
+        ),
+        "R3-2024-Tournament-Q02-v6": (
+            "(atan(x/(1+2*x**2))-atan(x/(1+12*x**2)))/x",
+            ("0", "oo"),
+            "pi/2*(log(3)-log(2))",
+        ),
+        "R3-2024-Tournament-Q06": (
+            "1/((1+2**sin(x))*(1+2**cos(x)))",
+            ("0", "2*pi"),
+            "pi/2",
+        ),
+        "R3-2024-Tournament-Q06-v6": (
+            "sqrt(x**2+2*sqrt(x**2-1))/x",
+            ("1", "sqrt(2)"),
+            "log(2)/2+1-pi/4",
+        ),
+        "R3-2024-Tournament-Q06-v9": (
+            "sin(x)**2/(45*x**2+x**2*atan(x)+x**2*sqrt(2025+atan(x)**2))",
+            ("-oo", "oo"),
+            "pi/90",
+        ),
+        "R3-2024-Tournament-Q07-v7": (
+            "cos(x**2+1/x**2)",
+            ("0", "oo"),
+            "sqrt(2*pi)/4*(cos(2)-sin(2))",
+        ),
+        "R3-2024-Tournament-Q07-v10": (
+            "1/(2**(Rational(1,4))+sqrt(1+tan(x)))",
+            ("0", "pi/4"),
+            "pi/(8*2**(Rational(1,4)))",
+        ),
+        "R3-2024-Tournament-Q08": (
+            "1/(sinh(sqrt(x))+csch(sqrt(x)))",
+            ("0", "oo"),
+            "pi",
+        ),
+        "R3-2024-Tournament-Q08-v3": (
+            "(1+2*x*log(2))/(x*sqrt(x*4**x-1))",
+            ("1", "oo"),
+            "pi/3",
+        ),
+        "R3-2024-Tournament-Q08-v9": (
+            "factorial(floor(x))*factorial2(2*floor(x))/factorial(2*ceiling(x)-1)",
+            ("0", "oo"),
+            "pi/2",
+        ),
+        "R3-2024-Tournament-Q09": (
+            "sqrt(x+x**3)+sqrt(x+x**(Rational(1,3)))",
+            ("0", "1"),
+            "4*sqrt(2)/3",
+        ),
+        "R3-2024-Tournament-Q01-v10": (
+            "3**(-floor(x))*tan(3**(-floor(x)))/(3-tan(3**(-floor(x)))**2)",
+            ("0", "oo"),
+            "(1-3*cot(3))/8",
+        ),
+        "R3-2024-Tournament-Q04-v4": (
+            "(x**2-1)/(x**3+x)*log(x**3+x**(-3)+3*(x+1/x))",
+            None,
+            "3*log(x+1/x)**2/2",
+        ),
+        "R3-2024-Tournament-Q04-v7": (
+            "2**(floor(2**x)+x)/(3**(2**floor(2**x))+1)",
+            ("-oo", "oo"),
+            "1/(2*log(2))",
+        ),
+        "R3-2024-Tournament-Q05-v4": (
+            "log(x)*(2*x-1)/sqrt(x-x**2)",
+            ("0", "1"),
+            "pi",
+        ),
+        "R3-2024-Tournament-Q05-v9": (
+            "exp(LambertW(x))/x**2",
+            None,
+            "log(Abs(LambertW(x)))-1/LambertW(x)",
+        ),
+        "R3-2024-Tournament-Q01-v7": (
+            "(log(x)+2)/((x*E)**(-x)+2)",
+            None,
+            "log(1+2*(x*E)**x)/2",
+        ),
+        "R3-2024-Dichotomy-S1-Q03a": (
+            "1/(1+exp(sqrt(x)))",
+            ("0", "oo"),
+            "pi**2/6",
+        ),
+        "R3-2024-Dichotomy-S1-Q03b": (
+            "1/(1+x**(E/2))",
+            ("0", "oo"),
+            "2*pi*exp(-1)*csc(2*pi*exp(-1))",
+        ),
+        "R3-2024-Dichotomy-S1-Q05a": (
+            "log(x**(log(log(x))**2)/log(x))/(log(x)*log(log(x))**3)",
+            ("exp(2)", "exp(E)"),
+            "exp(E)-exp(2)/log(2)",
+        ),
+        "R3-2024-Dichotomy-S1-Q07a": (
+            "1/((1+x**2)*(1+pi/2+atan(x)*acot(x)))",
+            ("0", "1"),
+            "log(1+pi/2)/(2+pi/2)",
+        ),
+        "R3-2024-Dichotomy-S1-Q07b": (
+            "1/((1+x**2)*(1+atan(x)*acot(x)))",
+            ("0", "1"),
+            "4*atanh(pi/sqrt(16+pi**2))/sqrt(16+pi**2)",
+        ),
+        "R3-2024-Dichotomy-S2-Q06b": (
+            "(cos(x)-cos(x)**2)/x**2",
+            ("0", "oo"),
+            "0",
+        ),
+        "R3-2024-Dichotomy-S3-Q02b": (
+            "exp(-sqrt(sqrt(x)-1))",
+            ("1", "oo"),
+            "28",
+        ),
+        "R3-2024-Dichotomy-S3-Q03a": (
+            "x**(Rational(1,3))/(x**3+1)",
+            ("0", "oo"),
+            "pi*csc(4*pi/9)/3",
+        ),
+        "R3-2024-Dichotomy-S3-Q03b": (
+            "x**(Rational(1,3))/(x**4+1)",
+            ("0", "oo"),
+            "pi/(2*sqrt(3))",
+        ),
+        "R3-2024-Chainlink-G3-Q07": (
+            "(3*x**2-5*x+3)*cos(x**3-3*x**2+4*x-2)",
+            ("0", "2"),
+            "2*sin(2)",
+        ),
+        "R3-2024-TB1-Q01": ("sin(4*x)/sin(x)", ("0", "pi/2"), "Rational(4,3)"),
+        "R3-2024-TB2-Q01": (
+            "(exp(exp(x))+1)/(exp(exp(x)-x)+1)",
+            None,
+            "log(exp(exp(x))+exp(x))",
+        ),
+        "R3-2024-TB3-Q01": (
+            "1/((x+2)*sqrt((x+1)*(x+3)))",
+            None,
+            "asec(x+2)",
+        ),
+        "R3-2024-TB4-Q01": (
+            "1/(3**x+sqrt(3))",
+            ("-2024", "2025"),
+            "4049/(2*sqrt(3))",
+        ),
+    }
+)
+
 
 def transcribed(row: dict) -> dict | None:
     item = TRANSCRIPTS.get(row.get("id"))
