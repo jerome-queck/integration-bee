@@ -100,7 +100,7 @@ Fourier moments and products of log|sin|, the log(x)log(1+x**2) series,
 a reciprocal Gaussian, complementary cosecant endpoints, two nested
 logarithm/exponential substitutions, a golden-ratio shuttle, the reciprocal
 Wallis product for alternating floors, and cosine sign intervals for
-floor(cos(pi/x)). Only the sphere, tangent, and Legendre certificates, the two
+floor(cos(pi/x)). The sphere, tangent, and Legendre certificates, the two
 infinite forms, the secant-square telescoping Sum, and the open wave-5k forms
 may retain an inner Integral, Sum, Product, or Limit. Wave 5l checks a
 telescoping floor quartic, a tangent boundary on [0, π/4], an arctangent
@@ -113,15 +113,20 @@ forms, a nested gamma tail, a shifted odd phase, a logistic King reflection,
 a cubed logarithm, and a Lambert antiderivative. Handoff C adds four literal
 limit families with checked limit exchanges, a nested iterated Fresnel integral,
 and exact floor, reciprocal, dilogarithm, Gaussian, and hyperbolic certificates.
-These five open shapes are the only additional closed-integrand exceptions.
+These five open shapes extend the closed-integrand whitelist.
 Wave 5n checks the remaining pack reductions whose ordinary integrator does
 not finish inside the proof timeout: a reflected logarithm, a paired logarithm,
 a secant line, an arcsine endpoint, a semicircle maximum, a double-integral
 series, a tangent square root, an arcsine logarithm, a reflected quartic, four
 Dirichlet sine powers, a beta substitution, a Lambert segment, a dilogarithm
 reflection, a factorial Fourier series, a binomial line, a cubic root-distance,
-and a reflected exponential logarithm. Answers must be closed, except the truncated exponential
-antiderivative, which keeps its finite sum. Numeric agreement is not a proof.
+and a reflected exponential logarithm. Handoff B adds checked Chainlink and
+Dichotomy substitutions, series, branches, and limiting forms. Its five outer
+limits retain the complete Limit of an Integral, with matching bound metadata.
+Only its recognized limit, digit-product, nested-product, and finite-polynomial
+forms extend the open-expression whitelist. Answers must be closed, except the
+truncated exponential and finite-polynomial antiderivatives, which keep their
+finite sums. Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -132,6 +137,7 @@ import sympy as sp
 
 import check_math
 import pack_certificates
+import pack_handoff_b
 import pack_handoff_c
 import pack_wave5k
 import pack_wave5l
@@ -5783,6 +5789,11 @@ def _worker(payload, queue) -> None:
         integrand = _parse(integrand_s, variable)
         answer = _answer_expr(answer_s, variable, allow_constant=kind == "indefinite")
         symbol = namespace(variable)[variable]
+        if kind == "indefinite" and answer is not None:
+            handoff = pack_handoff_b.indefinite_ok(answer, integrand, symbol)
+            if handoff is not None:
+                queue.put(("ok", handoff))
+                return
         # The truncated exponential antiderivative keeps its finite sum.
         if kind == "indefinite" and answer is not None and pack_wave5k.indefinite_ok(answer, integrand, symbol):
             queue.put(("ok", True))
@@ -5799,6 +5810,13 @@ def _worker(payload, queue) -> None:
             lo = _parse(limits[0], variable)
             hi = _parse(limits[1], variable)
             symbol = namespace(variable)[variable]
+            # An outer Limit contains its complete integral. The certificate
+            # checks that its inner bounds agree with the stored metadata.
+            handoff = pack_handoff_b.definite_value(integrand, symbol, lo, hi)
+            if handoff is not None:
+                matched = answer == sp.oo if handoff == sp.oo else _certificate_same(handoff, answer)
+                queue.put(("ok", matched))
+                return
             for builder in (
                 _handoff_a_discrete_values,
                 _handoff_a_fourier_values,
@@ -5983,6 +6001,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
         or pack_certificates.matches_legendre_grid(expr, symbol)
         or _infinite_integrand_form(expr, symbol) is not None
         or pack_wave5k.open_integrand(expr, symbol)
+        or pack_handoff_b.open_integrand(expr, symbol)
         or pack_handoff_c.open_integrand(expr, symbol)
         or _hard_classical_telescope_shape(expr, symbol)
     ):

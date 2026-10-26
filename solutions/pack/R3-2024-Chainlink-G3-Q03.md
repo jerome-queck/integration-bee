@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_3_2024_Round_3_UK_University_Integration_Bee_(4).pdf` (problem 3)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 3, problem 3)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 3, problem 3)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -29,4 +29,4 @@ The antiderivative is \(s^{2}/2+C\). The finite geometric sum \(s=(x-x^{2026})/(
 
 ## SymPy self-check
 
-For \(x\neq 1\) and a positive integer \(n\), SymPy sums \(\sum_{j=0}^{n-1}x^{j}\) to \((1-x^{n})/(1-x)\) and \(\sum_{k=1}^{n}kx^{k}\) to \(x s'\), where \(s=x(1-x^{n})/(1-x)\). The product of those sums is \(s s'\), and the derivative of \(s^{2}/2\) is the same product. At \(n=2025\), \(s=(x-x^{2026})/(1-x)\).
+The gate retains the printed finite sums. It differentiates each summand, checks the exact reindexing bounds, and applies the product and chain rules without expanding a polynomial of degree 4050. Finite additive constants are accepted.

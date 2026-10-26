@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_4_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (problem 7)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 4, problem 7)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 4, problem 7)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -25,7 +25,7 @@ The endpoints \(0\) and \(1/2\) are fixed. Integration by parts with \(x=g_{n}(y
 \int_{0}^{1/2}f_{n}(x)\,dx=\frac14-\int_{0}^{1/2}g_{n}(y)\,dy.
 \]
 
-The iterates \(g_{n}(y)\) decrease to the fixed point \(0\). Dominated convergence passes the limit inside, and the integral tends to \(1/4\).
+For \(0\le y<1/2\), the iterates \(g_{n}(y)\) decrease to the fixed point \(0\). At \(y=1/2\) they remain \(1/2\). This single endpoint does not affect the integral, so dominated convergence gives the limit \(1/4\).
 
 ## Final answer
 
@@ -35,4 +35,4 @@ The iterates \(g_{n}(y)\) decrease to the fixed point \(0\). Dominated convergen
 
 ## SymPy self-check
 
-SymPy checks \(f_{1}(g(x))=x\), together with \(g(0)=0\) and \(g(1/2)=1/2\). The boundary term in the integration by parts is \(\frac12\cdot\frac12=1/4\).
+The transcript uses the exact nth iterate \(f_n(x)=(1-(1-2x)^{2^n})/2\), inside the original limit of an integral. The gate checks the first iterate and the conjugacy \(1-2f_1(x)=(1-2x)^2\), proving the formula by induction. Substitution \(z=1-2x\) gives the exact finite-n integral \(1/4-1/[4(2^n+1)]\), whose checked limit is \(1/4\).

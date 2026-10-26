@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Dichotomy_Segment_2_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (problem 4b)
 - Printed answer: `sources/past/r3/2024/Dichotomy_answers_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Segment 2, problem 4b)
 - Worked source: `sources/past/r3/2024/Dichotomy_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Set 1/Segment 2, problem 4b)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -21,4 +21,4 @@ The answers sheet also prints \(-1-\ln 2+2\sqrt{2}\ln(1+\sqrt{2})\), \(-1-\ln 2+
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r3_2024_dichotomy_s2_q04b`. SymPy checks that the four printed expressions agree. A quadrature of the rationalized integrand matches that value within \(10^{-12}\).
+The gate checks the inverse substitution \(x=(1-t^2)/(2t)\), its orientation, and the positive square root. It differentiates a real logarithmic primitive of the resulting rational function and evaluates both endpoints. The value equals the printed multilog form.

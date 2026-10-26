@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_2_2024_Round_3_UK_University_Integration_Bee_(5).pdf` (problem 7)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 2, problem 7)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 2, problem 7)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -29,4 +29,4 @@ The solutions PDF differentiates in a parameter: \(I(a)=\int_{0}^{1}(1-y^{a})/\l
 
 ## SymPy self-check
 
-SymPy differentiates \((1-y^{a})/\ln y\) in \(a\) to \(-y^{a}\) and integrates \(y^{a}\) from \(0\) to \(1\) as \(1/(a+1)\) for \(a>0\). Then \(-\ln(a+1)\) at \(a=1\) is \(-\ln 2\).
+The gate checks the sine substitution and the power-parameter identity, including its negative sign. The positive inner kernel justifies the order of integration and gives the printed value.

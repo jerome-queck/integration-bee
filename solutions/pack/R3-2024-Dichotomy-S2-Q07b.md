@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Dichotomy_Segment_2_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (problem 7b)
 - Printed answer: `sources/past/r3/2024/Dichotomy_answers_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Segment 2, problem 7b)
 - Worked source: `sources/past/r3/2024/Dichotomy_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Set 1/Segment 2, problem 7b)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -19,4 +19,4 @@ The same antiderivative, now with square root and \(a_{n,2}=1+2/n\), has boundar
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r3_2024_dichotomy_s2_q07b`. SymPy evaluates \(\lim n\ln(1+3/n)=3\) and \(\lim 1/(1+2/n)=1\).
+The gate retains the complete `Limit(Integral(...),n,oo)`. Set \(u_n(x)=2/n+1/\sqrt{nx}\). Derivative checks prove \(u-u^2/2\le\log(1+u)\le u\) for nonnegative u. It then integrates both bounds exactly: \(\int_1^n u_n\to4\), while \(\int_1^n u_n^2/2\to0\). The squeeze theorem gives the printed value 4 without relying on cancellation in an improper antiderivative.

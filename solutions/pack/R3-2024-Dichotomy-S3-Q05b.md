@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Dichotomy_Segment_3_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (problem 5b)
 - Printed answer: `sources/past/r3/2024/Dichotomy_answers_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Segment 3, problem 5b)
 - Worked source: `sources/past/r3/2024/Dichotomy_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Set 3/Segment 3, problem 5b)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -21,4 +21,4 @@ The two Fresnel integrals agree, and the value is \(\sqrt{\pi}\).
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r3_2024_dichotomy_s3_q05b`. SymPy checks the completed square and evaluates \(\sqrt{2}\cdot 2\int_{0}^{\infty}\sin(x^{2})\,dx=\sqrt{\pi}\).
+The gate completes the square, checks the shifted even integrand, and evaluates both one-sided Fresnel integrals with SymPy. Both improper tails converge, so the finite shift preserves the ordinary whole-line integral.

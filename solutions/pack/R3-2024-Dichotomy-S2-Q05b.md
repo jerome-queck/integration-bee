@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Dichotomy_Segment_2_2024_Round_3_UK_University_Integration_Bee_(3).pdf` (problem 5b)
 - Printed answer: `sources/past/r3/2024/Dichotomy_answers_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Segment 2, problem 5b)
 - Worked source: `sources/past/r3/2024/Dichotomy_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Set 1/Segment 2, problem 5b)
-- The catalog row is not changed.
+- Catalog verification: `sympy`. The exact certificate is in `verify/pack_handoff_b.py`.
 
 ## Problem
 
@@ -19,4 +19,4 @@ The same simplification makes the exponent \(-\tfrac12(x+1/x)^{2}\). That square
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r3_2024_dichotomy_s2_q05b`. SymPy checks the reduction of the exponent and the Gaussian factor \(e^{-2}\sqrt{2\pi}/2\). A quadrature of \(\exp\bigl(-\tfrac12(x+1/x)^{2}\bigr)\) matches the printed value within \(10^{-12}\).
+The gate identifies the positive radical, checks its inversion symmetry, and uses \(y=x-1/x\). Averaging supplies half the Jacobian. SymPy evaluates the resulting Gaussian integral exactly, without numerical quadrature.
