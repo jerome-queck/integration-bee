@@ -3,7 +3,7 @@
 - Problem: `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (page 6, relay 20)
 - Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (page 4, relay 20)
 - Worked source: derived in this note; the mark scheme prints the final value.
-- Verification: **manual**. The value is proved below, but the current catalog's definite-integral kind cannot preserve the outer floor.
+- Verification: `sympy`. The transcript retains the complete floor of the integral as `Subs(floor(v), v, Integral(...))`, together with its original bounds.
 
 ## Problem
 
@@ -50,4 +50,4 @@ Integer arithmetic checks
 \(a_k/10^6\le2025^{1/k}<(a_k+1)/10^6\).
 Substituting these bounds in the exact sum gives the displayed rational enclosure. This proves the floor without a floating-point comparison.
 
-No ordinary-integral transcript with answer \(1999\) is added: it would omit the outer floor and certify the wrong operation. Promotion requires a catalog/consumer representation for a floor of a definite integral.
+The gate checks the original complete expression, partitions the integral into its ten constant blocks, and verifies each rational root bracket by integer powers. The outer floor remains unevaluated through serialization; the certificate returns 1999 only after proving the displayed enclosure.

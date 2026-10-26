@@ -1483,6 +1483,125 @@ TRANSCRIPTS.update(
 )
 
 
+# Handoff D. Preserve whole integral limits and outer pass-on/rounding
+# operations. Subs prevents SymPy from numerically evaluating floor(Integral)
+# while parsing. Source pages and any parameter conventions are in the notes.
+_HANDOFF_D_N = "Symbol('n', integer=True, positive=True)"
+_HANDOFF_D_K = "Symbol('k', integer=True, positive=True)"
+_HANDOFF_D_T = "Symbol('t', real=True)"
+_HANDOFF_D_H = "Symbol('h', real=True)"
+_HANDOFF_D_DIGIT = f"Mod(floor(10**{_HANDOFF_D_N}*x),10)"
+_HANDOFF_D_DECIMAL = "+".join(
+    f"{value}*KroneckerDelta({_HANDOFF_D_DIGIT},{digit})"
+    for digit, value in enumerate((8, 4, 6, 1, 3, 9, 5, 0, 7, 2)) if value
+)
+TRANSCRIPTS.update(
+    {
+        "R2-2021-Relay-A01": (
+            "Subs(shuttle_value**2,shuttle_value,Integral(log(x)**2,(x,0,1)))",
+            ("0", "1"), "4",
+        ),
+        "R2-2021-Relay-A02": (
+            "Subs(pi/shuttle_value,shuttle_value,Integral(sin(x)/sin(x+pi/4),(x,0,pi/2)))",
+            ("0", "pi/2"), "2*sqrt(2)",
+        ),
+        "R2-2021-Relay-A03": (
+            "Subs(4*shuttle_value,shuttle_value,Integral(1/(1+tan(x)**(2*sqrt(2))),(x,0,pi/2)))",
+            ("0", "pi/2"), "pi",
+        ),
+        "R2-2021-Relay-B02": (
+            "Subs(Mod(floor(shuttle_value),10),shuttle_value,Integral(log(1+169/x**2),(x,0,oo)))",
+            ("0", "oo"), "0",
+        ),
+        "R2-2021-Relay-C01": (
+            # The mark 0 selects signed acot; continuous acot would pass 6.
+            "Subs(shuttle_value**2-2,shuttle_value,Integral((sin(acot(x))+cos(atan(x)))/(1+x**2),(x,-1,1)))",
+            ("-1", "1"), "0",
+        ),
+        "R2-2021-Relay-C02": (
+            "Subs(2-shuttle_value,shuttle_value,Integral(x**3*exp(-x),(x,0,0)))",
+            ("0", "0"), "2",
+        ),
+        "R2-2021-Relay-C03": (
+            "Subs(floor(Abs(shuttle_value))+1,shuttle_value,Integral(log(sqrt(x))/(sqrt(x)*(1+x)**2),(x,0,oo)))",
+            ("0", "oo"), "2",
+        ),
+        "R2-2021-Relay-D02": (
+            "Subs(floor(shuttle_value)+1,shuttle_value,Integral((x**3-x**2)/log(x),(x,0,1)))",
+            ("0", "1"), "1",
+        ),
+        "R2-2022-Relay-Q10": (
+            # Paper's Ei is defined as E1; use that definition and a>0.
+            "exp(-Symbol('a',positive=True)*x)*Integral(exp(-t)/t,(t,x,oo))",
+            ("0", "oo"), "log(1+a)/a",
+        ),
+        "R2-2022-Relay-Q11": (
+            f"Limit(Integral(sin(t)**({_HANDOFF_D_N}-1)/t**{_HANDOFF_D_N},(t,x,2*x)),x,0,dir='+')",
+            ("x", "2*x"), "log(2)", "t",
+        ),
+        "R2-2022-Relay-Q20": (
+            "Limit(Integral(Symbol('A',positive=True)**(1/x),(x,1,Symbol('A',positive=True)))/Symbol('A',positive=True),Symbol('A',positive=True),oo)",
+            ("1", "Symbol('A',positive=True)"), "1",
+        ),
+        "R2-2023-Relay-Q02": (
+            # PDF p.2 has 2**n, not OCR's 2*n. The finite log-sum-exp
+            # error is at most log(n)/n, giving the exact supremum.
+            f"Limit(log(Sum(exp({_HANDOFF_D_N}*sin(2**{_HANDOFF_D_K}*x)),({_HANDOFF_D_K},1,{_HANDOFF_D_N})))/{_HANDOFF_D_N},{_HANDOFF_D_N},oo)",
+            ("0", "pi"), "pi",
+        ),
+        "R2-2023-Relay-Q05": (
+            f"Limit(Integral((1+x**4)**{_HANDOFF_D_N},(x,0,2))**(1/{_HANDOFF_D_N}),{_HANDOFF_D_N},oo)",
+            ("0", "2"), "17",
+        ),
+        "R2-2023-Relay-Q13": (
+            f"Limit(Integral(tan(x)**({_HANDOFF_D_N}-1)/sin(x)**{_HANDOFF_D_N},(x,{_HANDOFF_D_H},2*{_HANDOFF_D_H})),{_HANDOFF_D_H},0,dir='+-')",
+            (_HANDOFF_D_H, f"2*{_HANDOFF_D_H}"), "log(2)",
+        ),
+        "R2-2024-Relay-Q02": (
+            f"Limit(Integral(Sum(({_HANDOFF_D_K}/{_HANDOFF_D_N})**x,({_HANDOFF_D_K},1,{_HANDOFF_D_N})),(x,0,1))/{_HANDOFF_D_N},{_HANDOFF_D_N},oo)",
+            ("0", "1"), "log(2)",
+        ),
+        "R2-2024-Relay-Q03": (
+            f"Sum(({_HANDOFF_D_DECIMAL})/10**{_HANDOFF_D_N},({_HANDOFF_D_N},1,oo))",
+            ("0", "1"), "1/2",
+        ),
+        "R2-2024-Relay-Q06": (
+            f"Limit({_HANDOFF_D_N}*Integral((1-Abs(x)+Abs(x)**3)**{_HANDOFF_D_N},(x,-1/20,1/24)),{_HANDOFF_D_N},oo)",
+            ("-1/20", "1/24"), "2",
+        ),
+        "R2-2024-Relay-Q07": (
+            "exp(Integral(log((x-1)**(1/x**2)),(x,1,2)))",
+            ("1", "2"), "1/2",
+        ),
+        "R2-2024-Relay-Q14": (
+            # The certificate proves the original 2025-stage affine-cell
+            # recurrence equals this triangle on the ENTIRE interval.
+            "Abs(2*frac(x/2)-1)", ("0", "2025"), "2025/2",
+        ),
+        "R2-2025-SG-Group-Q11": (
+            "Subs(floor(rounded_value),rounded_value,Integral(pi*(exp(pi*x)-1)+(1+x)*Sum((-x)**k,(k,0,998)),(x,0,1)))",
+            ("0", "1"), "20",
+        ),
+        "R2-2025-SG-Group-Q13": (
+            "Subs(ceiling(rounded_value),rounded_value,Integral(1/atan(x)-(1+x**2)/(1+atan(x)+x**2*atan(x)),(x,1,oo)))",
+            ("1", "oo"), "1",
+        ),
+        "R2-2025-SG-Group-Q15": (
+            f"Sum(x**{_HANDOFF_D_N}*Limit(Derivative({_HANDOFF_D_T}**{_HANDOFF_D_N}/(factorial({_HANDOFF_D_N})*sin({_HANDOFF_D_T})**{_HANDOFF_D_N}),({_HANDOFF_D_T},{_HANDOFF_D_N}-1)),{_HANDOFF_D_T},0),({_HANDOFF_D_N},1,oo))",
+            ("0", "1"), "pi/2-1",
+        ),
+        "R2-2025-SG-Relay-Q16": (
+            "Subs(floor(rounded_value),rounded_value,Integral(1/floor(2*log(5)/log(x)+4*log(3)/log(x)),(x,2,2025)))",
+            ("2", "2025"), "1999",
+        ),
+        "R2-2025-UK-Relay-Q20": (
+            "Subs(floor(rounded_value),rounded_value,Integral(1/floor(2*log(5)/log(x)+4*log(3)/log(x)),(x,2,2025)))",
+            ("2", "2025"), "1999",
+        ),
+    }
+)
+
+
 def transcribed(row: dict) -> dict | None:
     ident = row.get("id")
     item = TRANSCRIPTS.get(ident)

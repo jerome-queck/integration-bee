@@ -3,7 +3,7 @@
 - Problem: `sources/past/r2/2025/sg/2025_R2_Group_Round_SG.pdf` (group 15)
 - Printed answer: no Singapore mark scheme is in this tree. The value below is derived from the problem sheet.
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- Verification: `sympy`. The transcript retains the original infinite sum, limit, and symbolic derivative order. The certificate uses the all-degree residue identity below, with nonnegative coefficients for termwise integration.
 
 ## Problem
 
