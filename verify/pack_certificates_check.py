@@ -8,6 +8,7 @@ import sys
 import sympy as sp
 
 import pack_gate
+import pack_handoff_f_check
 import problem_catalog
 import turn_contract
 
@@ -319,11 +320,10 @@ def check_handoff_d(rows):
         "R2-2025-SG-Relay-Q16": "1999",
         "R2-2025-UK-Relay-Q20": "1999",
     }
+    # F now proves the nine answer-schema deferrals. Source ambiguities and
+    # the duplicate still stay manual; F checks its new contracts below.
     deferred = (
-        "R2-2021-Relay-B03", "R2-2021-Relay-D01", "R2-2021-Relay-D03",
-        "R2-2022-Relay-Q01", "R2-2022-Relay-Q09", "R2-2022-Relay-Q12",
-        "R2-2022-Relay-Q13", "R2-2022-Relay-Q15", "R2-2023-Group-Q01-v2",
-        "R2-2023-Relay-Q11", "R2-2023-Relay-Q20", "R2-2025-SG-Relay-Q17",
+        "R2-2021-Relay-D03", "R2-2023-Group-Q01-v2", "R2-2023-Relay-Q20",
     )
     required_shapes = {
         "R2-2022-Relay-Q10": (sp.Integral,),
@@ -354,7 +354,7 @@ def check_handoff_d(rows):
     require(len(selected) == 24 and all(row["verify"] == "sympy" for row in selected),
             "Handoff D 24 scalar rows")
     require(all(rows[ident]["verify"] == "manual" for ident in deferred),
-            "Handoff D source/schema deferrals and duplicate remain manual")
+            "Handoff D source deferrals and duplicate remain manual")
     require(pack_gate.reprove_rows(selected) is None, "Handoff D stored-row reproof")
     parsed = {}
     for row in selected:
@@ -462,9 +462,10 @@ def main():
     check_source_discrepancy(rows)
     check_hard_open_forms(rows)
     check_handoff_d(rows)
+    pack_handoff_f_check.check(rows)
     print(
         "PASS pack certificates (symbolic families, literal operators, "
-        "24 Handoff D rows, mutations, source discrepancies)"
+        "24 Handoff D rows, 10 Handoff F contracts, mutations, source discrepancies)"
     )
     return 0
 

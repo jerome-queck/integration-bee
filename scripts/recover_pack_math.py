@@ -18,9 +18,12 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "verify"))
 
 import pack_gate  # noqa: E402
+import pack_answer_contracts  # noqa: E402
 import pack_wave5k  # noqa: E402
 import pdf_math  # noqa: E402
 import problem_catalog  # noqa: E402
+
+CONTRACT_TRANSCRIPTS = pack_answer_contracts.transcripts()
 
 
 def problem_number(row: dict) -> int | None:
@@ -46,10 +49,10 @@ def load_pair(cache: dict, pdf: str, kind: str):
 GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
 # R2-2023-Relay-Q19 prints upper bound n. That limit is not the mark-scheme
 # value sqrt(pi/2), so recovery must not replace the manual row.
-# S2-Q07a has an exact +infinity certificate, but the current marking path
-# rejects oo against oo. Keep its transcript for a later grading fix.
-# Q02-v9 now has a checked damped-cosine reduction below the proof timeout.
-HELD_MANUAL = frozenset({"R2-2023-Relay-Q19", "R3-2024-Dichotomy-S2-Q07a"})
+# S2-Q07a is proved under Handoff F's signed-infinity answer contract.
+# Q02-v9 already has a checked damped-cosine reduction below the proof timeout.
+# R2-2023-Relay-Q19 prints upper bound n vs mark-scheme sqrt(pi/2) — keep manual.
+HELD_MANUAL = frozenset({"R2-2023-Relay-Q19"})
 
 _RELAY_M = "Symbol('m', integer=True, positive=True)"
 _RELAY_N = "Symbol('n', integer=True, positive=True)"
@@ -1658,6 +1661,9 @@ TRANSCRIPTS["R1-2022-Q30"] = (
 
 def transcribed(row: dict) -> dict | None:
     ident = row.get("id")
+    typed = CONTRACT_TRANSCRIPTS.get(ident)
+    if typed is not None:
+        return pack_gate.fields_from_contract(*typed)
     item = TRANSCRIPTS.get(ident)
     if item is None:
         parent = ANSWER_SLIDES.get(ident)

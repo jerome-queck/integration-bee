@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pack_answer_contracts
+
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
 
@@ -19,8 +21,8 @@ SYMPY_VARIABLES = frozenset({"x", "t", "X", "e"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
 EXPECTED_COUNT = 946
-EXPECTED_MANUAL = 37
-EXPECTED_SYMPY = 639
+EXPECTED_MANUAL = 27
+EXPECTED_SYMPY = 649
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
@@ -143,15 +145,15 @@ def _sympy_shape(row: dict) -> str | None:
         return f"{ident} sympy outside the resource pack"
     if row.get("variable") not in SYMPY_VARIABLES:
         return f"{ident} unsupported sympy variable"
-    if row.get("kind") not in {"definite", "indefinite"}:
+    if row.get("kind") not in {"definite", "indefinite"} | pack_answer_contracts.KINDS:
         return f"{ident} sympy kind"
     for key in ("sympy_expr", "answer_sympy", "integrand_latex", "answer_latex"):
         if _blank(row.get(key)) or not isinstance(row.get(key), str):
             return f"{ident} missing {key}"
     limits = row.get("limits")
-    if row.get("kind") == "indefinite":
+    if row.get("kind") not in pack_answer_contracts.BOUNDED_KINDS:
         if limits not in ([],):
-            return f"{ident} indefinite limits"
+            return f"{ident} non-bounded kind has limits"
     elif not isinstance(limits, list) or len(limits) != 2 or any(_blank(item) or not isinstance(item, str) for item in limits):
         return f"{ident} definite limits"
     if row.get("worked_solution_latex") is not None:

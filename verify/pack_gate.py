@@ -144,10 +144,15 @@ comparison, root-count, unordered-pair, scalar-only-limit, and indefinite
 product-integral questions are not reclassified as ordinary integrals.
 Handoff E adds the fractional-tangent
 integral by finite floor pieces and a gamma product, and a positive-parameter
-logarithm integral by two contour residues. Answers must be closed, except the
-truncated exponential and finite-polynomial antiderivatives, which keep their
-finite sums, and the literal sophomore's-dream sum, checked by its nonnegative
-exponential series and exact gamma moments. Numeric agreement is not a proof.
+logarithm integral by two contour residues. Handoff F gives non-integral pack
+questions explicit answer kinds, preserving the full original operators and
+checking the relevant function, pair, or verdict. Signed infinite values
+compare by sign, and a complete real-domain answer keeps both the convergent
+and divergent branches of its parameter integral. Answers must be closed,
+except the truncated exponential and finite-polynomial antiderivatives, which
+keep their finite sums, and the literal sophomore's-dream sum, checked by its
+nonnegative exponential series and exact gamma moments. Numeric agreement is
+not a proof.
 """
 
 from __future__ import annotations
@@ -157,6 +162,7 @@ import multiprocessing as mp
 import sympy as sp
 
 import check_math
+import pack_answer_contracts
 import pack_certificates
 import pack_handoff_b
 import pack_handoff_c
@@ -167,6 +173,8 @@ import pack_handoff_d_2024_2025
 import pack_handoff_e_parameter
 import pack_handoff_e_series
 import pack_handoff_e_tournament
+import pack_handoff_f_expressions
+import pack_handoff_f_integrals
 import pack_hard_catalan
 import pack_hard_floor
 import pack_hard_series
@@ -200,6 +208,7 @@ def namespace(variable: str) -> dict:
     ns["EulerGamma"] = sp.EulerGamma
     ns["ContinuedFraction"] = pack_hard_catalan.ContinuedFraction
     ns["IndexedMaximum"] = pack_hard_floor.IndexedMaximum
+    ns["RootCount"] = pack_handoff_f_expressions.RootCount
     ns["i"] = sp.I
     ns[variable] = sp.symbols(variable, real=True)
     ns["C"] = sp.Symbol("C")
@@ -264,7 +273,8 @@ def _closed(expr) -> bool:
     if has is None:
         return False
     if has(sp.Integral, sp.Sum, sp.Product, sp.Limit,
-           pack_hard_catalan.ContinuedFraction, pack_hard_floor.IndexedMaximum):
+           pack_hard_catalan.ContinuedFraction, pack_hard_floor.IndexedMaximum,
+           pack_handoff_f_expressions.RootCount):
         return False
     return True
 
@@ -5132,6 +5142,8 @@ def _certificate_same(value, answer) -> bool:
     """Compare definite values without dropping signs or logarithm branches."""
     if not _closed(value) or not _closed(answer):
         return False
+    if value in (sp.oo, -sp.oo) or answer in (sp.oo, -sp.oo):
+        return value == answer
     delta = sp.simplify(value - answer)
     if delta == 0:
         return True
@@ -5936,8 +5948,18 @@ def _worker(payload, queue) -> None:
     try:
         kind, integrand_s, limits, answer_s, variable = payload
         integrand = _parse(integrand_s, variable)
-        answer = _answer_expr(answer_s, variable, allow_constant=kind == "indefinite")
         symbol = namespace(variable)[variable]
+        if kind in pack_answer_contracts.KINDS:
+            answer = pack_answer_contracts.parse_answer(kind, answer_s, namespace(variable))
+            bounds = tuple(_parse(item, variable) for item in limits) if limits else None
+            queue.put(("ok", pack_answer_contracts.answer_matches(
+                kind, integrand, symbol, bounds, answer)))
+            return
+        if kind not in {"definite", "indefinite"}:
+            queue.put(("ok", False))
+            return
+        answer = _answer_expr(pack_answer_contracts.infinity_text(answer_s), variable,
+                              allow_constant=kind == "indefinite")
         if kind == "indefinite" and answer is not None:
             handoff = pack_handoff_b.indefinite_ok(answer, integrand, symbol)
             if handoff is not None:
@@ -5994,6 +6016,7 @@ def _worker(payload, queue) -> None:
                 pack_handoff_d_2023.definite_value,
                 pack_handoff_d_2024_2025.definite_value,
                 pack_handoff_e_tournament.definite_value,
+                pack_handoff_f_integrals.definite_value,
                 _stable_fourier_line,
                 _wave_hard_fourier_values,
                 pack_certificates.sphere_integral_value,
@@ -6147,7 +6170,13 @@ def proven(kind: str, integrand: str, limits, answer: str, variable: str) -> boo
 def _canonical_text(expr, variable: str) -> str:
     """Keep explicit symbol assumptions when plain names would discard them."""
     plain = sp.sstr(expr)
-    return plain if _parse(plain, variable) == expr else sp.srepr(expr)
+    try:
+        parsed = _parse(plain, variable)
+        if type(parsed) is type(expr) and parsed == expr:
+            return plain
+    except (TypeError, ValueError, SyntaxError):
+        pass
+    return sp.srepr(expr)
 
 
 def canon_expr(text: str, variable: str, *, allow_constant: bool = True) -> str | None:
@@ -6181,6 +6210,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
         or pack_handoff_d_2024_2025.open_integrand(expr, symbol)
         or _handoff_e_octahedron_shape(expr, symbol)
         or pack_handoff_e_tournament.open_integrand(expr, symbol)
+        or pack_answer_contracts.open_expression(expr, symbol)
         or _hard_classical_telescope_shape(expr, symbol)
         or pack_hard_catalan.open_integrand(expr, symbol)
         or pack_hard_floor.open_integrand(expr, symbol)
@@ -6274,6 +6304,38 @@ def fields_for(number: int, integral, answer) -> dict | None:
     return fields
 
 
+def fields_from_contract(kind: str, expression: str, limits, answer: str,
+                         variable: str = "x") -> dict | None:
+    """Preserve a typed original question and prove its actual answer kind."""
+    if kind in {"definite", "indefinite"}:
+        return fields_from_parts(expression, limits if kind == "definite" else None,
+                                 answer, variable)
+    if kind not in pack_answer_contracts.KINDS:
+        return None
+    try:
+        expr = _parse(expression, variable)
+        final = pack_answer_contracts.parse_answer(kind, answer, namespace(variable))
+        if final is None:
+            return None
+        bounds = [_canonical_text(_parse(item, variable), variable) for item in (limits or ())]
+        if kind in pack_answer_contracts.BOUNDED_KINDS:
+            if len(bounds) != 2:
+                return None
+        elif bounds:
+            return None
+        expr_text = _canonical_text(expr, variable)
+        final_text = _canonical_text(final, variable)
+    except (TypeError, ValueError, SyntaxError):
+        return None
+    if not proven(kind, expr_text, bounds, final_text, variable):
+        return None
+    return {
+        "verify": "sympy", "kind": kind, "variable": variable,
+        "limits": bounds, "sympy_expr": expr_text, "answer_sympy": final_text,
+        "integrand_latex": sp.latex(expr), "answer_latex": sp.latex(final),
+    }
+
+
 def reprove_rows(rows: list[dict]) -> str | None:
     """Re-prove stored SymPy rows. Does not read PDFs."""
     jobs = []
@@ -6295,7 +6357,11 @@ def reprove_rows(rows: list[dict]) -> str | None:
         if sp.latex(answer_expr) != row.get("answer_latex"):
             return f"{row.get('id')} answer latex drift"
         limits = row.get("limits")
-        if row.get("kind") == "indefinite":
+        if row.get("kind") == "indefinite" or (
+            row.get("kind") in pack_answer_contracts.KINDS
+            and row.get("kind") not in pack_answer_contracts.BOUNDED_KINDS
+            and limits == []
+        ):
             limit_pair = None
         elif isinstance(limits, list) and len(limits) == 2:
             limit_pair = (limits[0], limits[1])

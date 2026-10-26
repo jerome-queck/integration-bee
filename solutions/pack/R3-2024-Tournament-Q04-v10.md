@@ -2,8 +2,8 @@
 
 - Problem: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (Battle 4, Fight 2, problem 4, slide 169)
 - Printed answer: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (slide 171)
-- Worked source: `sources/past/r3/2024/Tournament_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (section 4.2, problem 1)
-- The catalog row is not changed.
+- Worked source: `sources/past/r3/2024/Tournament_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (page 15, section 4.2, problem 1)
+- Verification: **manual**. The original integral and the printed answer disagree.
 
 ## Problem
 
