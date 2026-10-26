@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Chainlink_Game_2_2024_Round_3_UK_University_Integration_Bee_(5).pdf` (problem 5)
 - Printed answer: `sources/past/r3/2024/Chainlink_Answers_2024_Round_3_UK_University_Integration_Bee_(7).pdf` (Game 2, problem 5)
 - Worked source: `sources/past/r3/2024/Chainlink_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Game 2, problem 5)
-- The catalog row is not changed.
+- The catalog row is `verify: sympy`.
 
 ## Problem
 
@@ -31,4 +31,8 @@ The answers sheet also prints the logarithmic form \(\frac{1}{\sqrt{5}}\ln\frac{
 
 ## SymPy self-check
 
-SymPy integrates \(u/(1+u-u^{2})\) and evaluates the antiderivative from \(0\) to \(1\) as \(\frac{1}{\sqrt{5}}\ln\frac{\sqrt{5}+1}{\sqrt{5}-1}\). Rewriting \(\frac{2}{\sqrt{5}}\operatorname{artanh}(1/\sqrt{5})\) as a logarithm matches that value.
+`verify/pack_gate.py` checks the substitution and differentiates
+\[
+-\frac12\ln(1+u-u^2)+\frac1{\sqrt5}\operatorname{artanh}\frac{2u-1}{\sqrt5}.
+\]
+Its endpoints give the printed artanh value, whose logarithmic form agrees with the answers sheet. The gate checks that the denominator has minimum \(1\) on \([0,1]\), and that the artanh argument stays inside \((-1,1)\). An intermediate square-completion line in the worked PDF omits a factor \(1/2\); the checked antiderivative above preserves its correct final answer.

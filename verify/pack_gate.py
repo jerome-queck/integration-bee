@@ -78,8 +78,12 @@ rationalised difference of square roots equal to two quarter disks, a
 rationalised sum of square roots on [0, 1], a cube-root denominator reduced to
 a beta value, {x}**floor(x) on [1, 4], the derivative of sin(x)**tan(x) on
 [π/4, π/2], and max(min(x, sin x), min(x, cos x)) on [π, 3π]. When x is
-already a parameter, the printed letter of integration stays. Numeric
-agreement is not a proof.
+already a parameter, the printed letter of integration stays. Further checked
+forms are a complex average, a Gaussian cosine transform, a sine substitution
+into a quadratic, a sech transform on a rectangular contour, and a positive
+log-cosine parameter integral. Two literal infinite forms are checked before
+the closed-expression gate: a telescoping cosine product and a geometric series
+with a reflected 2024th power. Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -3741,6 +3745,299 @@ def _tan_nest_unit(integrand, symbol, lo, hi):
     return _fact("tan-nest-unit", build)
 
 
+def _complex_average_span(integrand, symbol, lo, hi):
+    """The printed bar on [-1, 1] contributes the factor 1/2."""
+    if integrand != sp.exp(sp.I * symbol) / 2 or lo != -1 or hi != 1:
+        return None
+
+    def build():
+        anti = sp.exp(sp.I * symbol) / (2 * sp.I)
+        _require(_zero(sp.diff(anti, symbol) - integrand), "average-slope")
+        value = anti.subs(symbol, hi) - anti.subs(symbol, lo)
+        _require(_zero(sp.expand_complex(value) - sp.sin(1)), "average-value")
+        return sp.sin(1)
+
+    return _fact("complex-average-span", build)
+
+
+def _gaussian_cosine_ray(integrand, symbol, lo, hi):
+    """Differentiate in the real parameter and integrate by parts: I'=-2*x*I."""
+    parameter = sp.Symbol("x", real=True)
+    if symbol == parameter or lo != 0 or hi != sp.oo:
+        return None
+    if integrand != sp.exp(-symbol**2) * sp.cos(2 * parameter * symbol):
+        return None
+
+    def build():
+        line, shift = sp.symbols("_t _x", real=True)
+        base = sp.exp(-line**2) * sp.cos(2 * shift * line)
+        boundary = sp.exp(-line**2) * sp.sin(2 * shift * line)
+        _require(_zero(sp.diff(base, shift) + 2 * shift * base - sp.diff(boundary, line)), "gaussian-parts")
+        _require(boundary.subs(line, 0) == 0, "gaussian-lo")
+        _require(sp.limit(boundary, line, sp.oo) == 0, "gaussian-hi")
+        # dominant**2 - (df/dx)**2 is a square, so |df/dx| <= 2 t exp(-t**2).
+        derivative = sp.diff(base, shift)
+        dominant = 2 * line * sp.exp(-line**2)
+        _require(_zero(dominant**2 - derivative**2 - (dominant * sp.cos(2 * shift * line)) ** 2), "gaussian-bound")
+        _require(sp.integrate(dominant, (line, 0, sp.oo)) == 1, "gaussian-dominated")
+        initial = sp.integrate(base.subs(shift, 0), (line, 0, sp.oo))
+        _require(initial == sp.sqrt(sp.pi) / 2, "gaussian-initial")
+        value = sp.sqrt(sp.pi) * sp.exp(-shift**2) / 2
+        _require(_zero(sp.diff(value, shift) + 2 * shift * value), "gaussian-ode")
+        _require(_zero(value.subs(shift, 0) - initial), "gaussian-constant")
+        return value.subs(shift, parameter)
+
+    return _fact("gaussian-cosine-ray", build)
+
+
+def _sine_rational_quarter(integrand, symbol, lo, hi):
+    """u=sin(x) turns sin(x)/(cos(x)+tan(x)) on [0, pi/2] into u/(1+u-u**2)."""
+    target = sp.sin(symbol) / (sp.cos(symbol) + sp.tan(symbol))
+    if integrand != target or not (_zero(lo) and _zero(hi - sp.pi / 2)):
+        return None
+
+    def build():
+        slot = sp.Symbol("_u", real=True)
+        denominator = 1 + slot - slot**2
+        rational = slot / denominator
+        substitution = sp.sin(symbol)
+        pulled = rational.subs(slot, substitution) * sp.diff(substitution, symbol)
+        _require(_zero(sp.trigsimp(integrand - pulled)), "sub")
+        _require(substitution.subs(symbol, lo) == 0, "lo")
+        _require(substitution.subs(symbol, hi) == 1, "hi")
+        import sympy.calculus.util as util
+
+        interval = sp.Interval(0, 1)
+        _require(_zero(util.minimum(denominator, slot, interval) - 1), "positive")
+        argument = (2 * slot - 1) / sp.sqrt(5)
+        _require(_zero(util.minimum(argument, slot, interval) + 1 / sp.sqrt(5)), "branch-lo")
+        _require(_zero(util.maximum(argument, slot, interval) - 1 / sp.sqrt(5)), "branch-hi")
+        _require(1 / sp.sqrt(5) < 1, "branch")
+        anti = -sp.log(denominator) / 2 + sp.atanh(argument) / sp.sqrt(5)
+        _require(_zero(sp.diff(anti, slot) - rational), "slope")
+        value = anti.subs(slot, 1) - anti.subs(slot, 0)
+        goal = 2 * sp.atanh(1 / sp.sqrt(5)) / sp.sqrt(5)
+        _require(_zero(value - goal), "value")
+        return goal
+
+    return _fact("sine-rational-quarter", build)
+
+
+def _sech_cosine_line(integrand, symbol, lo, hi):
+    """Use the worked PDF's rectangle for exp(i*z)/cosh(z), 0 <= Im(z) <= pi."""
+    if lo != -sp.oo or hi != sp.oo:
+        return None
+    if integrand != sp.cos(symbol) / sp.cosh(symbol):
+        return None
+
+    def build():
+        z = sp.Symbol("_z")
+        line, height = sp.symbols("_t _y", real=True)
+        radius = sp.Symbol("_R", positive=True)
+        kernel = sp.exp(sp.I * z) / sp.cosh(z)
+        real_line = kernel.subs(z, line)
+        _require(_zero(sp.re(real_line) - sp.cos(line) / sp.cosh(line)), "sech-real")
+        _require(_zero(sp.im(real_line) - sp.sin(line) / sp.cosh(line)), "sech-imag")
+        _require(_zero(sp.sin(-line) / sp.cosh(-line) + sp.sin(line) / sp.cosh(line)), "sech-odd")
+        _require(_zero(kernel.subs(z, line + sp.I * sp.pi) + sp.exp(-sp.pi) * real_line), "sech-top")
+
+        # cosh(t+iy)=cosh(t)cos(y)+i sinh(t)sin(y). Since cosh(t)>0,
+        # its only zero in the open strip is z=i*pi/2.
+        split = sp.cosh(line) * sp.cos(height) + sp.I * sp.sinh(line) * sp.sin(height)
+        _require(_zero(sp.expand_complex(sp.cosh(line + sp.I * height)) - split), "sech-strip")
+        _require(sp.cosh(line).is_positive is True, "sech-positive")
+        _require(sp.solveset(sp.cos(height), height, domain=sp.Interval.open(0, sp.pi)) == sp.FiniteSet(sp.pi / 2), "sech-height")
+        _require(sp.solveset(sp.sinh(line), line, domain=sp.S.Reals) == sp.FiniteSet(0), "sech-line")
+        pole = sp.I * sp.pi / 2
+        _require(_zero(sp.cosh(pole)) and _zero(sp.sinh(pole) - sp.I), "sech-pole")
+        residue = sp.residue(kernel, z, pole)
+        _require(_zero(residue + sp.I * sp.exp(-sp.pi / 2)), "sech-residue")
+
+        # |f|^2 = exp(-2y)/(sinh(R)^2+cos(y)^2). The gap below is a square
+        # over that denominator, so |f| <= 1/sinh(R). Each side has length pi.
+        norm = sp.cosh(radius)**2 * sp.cos(height)**2 + sp.sinh(radius)**2 * sp.sin(height)**2
+        side_den = sp.sinh(radius)**2 + sp.cos(height)**2
+        _require(_zero(norm - side_den), "sech-side-denominator")
+        _require(sp.sinh(radius).is_positive is True, "sech-sinh")
+        _require(_zero(sp.Abs(sp.exp(sp.I * (radius + sp.I * height))) - sp.exp(-height)), "sech-side-numerator")
+        side_num = sp.exp(-2 * height) * sp.sinh(radius) ** 2
+        gap = sp.exp(-2 * height) - side_num / side_den
+        piece = sp.exp(-2 * height) * sp.cos(height) ** 2 / side_den
+        _require(_zero(sp.together(gap - piece)), "sech-side-gap")
+        _require(sp.exp(0) == 1, "sech-side-one")
+        _require(sp.diff(sp.exp(-height), height).is_negative is True, "sech-decay")
+        _require(sp.limit(2 * sp.pi / sp.sinh(radius), radius, sp.oo) == 0, "sech-side-limit")
+        value = 2 * sp.pi * sp.I * residue / (1 + sp.exp(-sp.pi))
+        goal = sp.pi * sp.sech(sp.pi / 2)
+        _require(_zero(value - goal.rewrite(sp.exp)), "sech-value")
+        return goal
+
+    return _fact("sech-cosine-line", build)
+
+
+def _positive_log_cosine(integrand, symbol, lo, hi):
+    """The PDF's parameter derivative for log(a+b*cos(x)), with a>b>0."""
+    if lo != 0 or hi != sp.pi or not integrand.has(sp.log):
+        return None
+    a, b = sp.symbols("a b")
+    if symbol in (a, b) or integrand != sp.log(a + b * sp.cos(symbol)):
+        return None
+
+    def build():
+        # Parameterize the source's real domain by a=b+h, h>0 and b>0.
+        gap, scale, ray = sp.symbols("_h _b _u", positive=True)
+        angle = sp.Symbol("_theta", real=True)
+        base = sp.log(gap + scale + scale * sp.cos(angle))
+        slope = sp.diff(base, gap)
+        _require(_zero(slope - 1 / (gap + scale + scale * sp.cos(angle))), "log-cos-parameter")
+        # major - h = b*(1+cos) is a positive constant times a square, so
+        # 0 < d/dh of the integrand <= 1/h on [0, pi].
+        _require(
+            _zero(sp.trigsimp(gap + scale + scale * sp.cos(angle) - gap - 2 * scale * sp.cos(angle / 2) ** 2)),
+            "log-cos-major",
+        )
+        _require(_zero((2 * sp.atan(ray)).subs(ray, 0)), "log-cos-start")
+        _require(_zero(sp.limit(2 * sp.atan(ray), ray, sp.oo) - sp.pi), "log-cos-cover")
+        subbed = slope.subs(angle, 2 * sp.atan(ray)) * sp.diff(2 * sp.atan(ray), ray)
+        rational = 2 / (gap + 2 * scale + gap * ray**2)
+        _require(_zero(subbed - rational), "log-cos-half-angle")
+        root = sp.sqrt(gap * (gap + 2 * scale))
+        primitive = 2 * sp.atan(ray * sp.sqrt(gap / (gap + 2 * scale))) / root
+        _require(_zero(sp.diff(primitive, ray) - rational), "log-cos-primitive")
+        derived = sp.limit(primitive, ray, sp.oo) - primitive.subs(ray, 0)
+        _require(_zero(derived - sp.pi / root), "log-cos-ray")
+
+        # At h=0, x=2*theta gives pi*log(2*b)+4 int_0^(pi/2) log(cos theta).
+        at_zero = base.subs(gap, 0)
+        half_angle = sp.log(2 * scale) + 2 * sp.log(sp.cos(angle / 2))
+        _require(_zero(sp.trigsimp(sp.exp(at_zero - half_angle)) - 1), "log-cos-boundary")
+        _require(_zero(at_zero.subs(angle, sp.pi / 2) - half_angle.subs(angle, sp.pi / 2)), "log-cos-boundary-branch")
+        quarter = _log_sine_quarter(sp.log(sp.cos(angle)), angle, 0, sp.pi / 2)
+        _require(quarter is not None, "log-cos-quarter")
+        boundary = sp.pi * sp.log(2 * scale) + 4 * quarter
+        _require(_zero(boundary - sp.pi * sp.log(scale / 2)), "log-cos-baseline")
+
+        # The improper logarithm at h=0 is integrable; continuity and the
+        # checked parameter derivative determine the constant in h.
+        value = sp.pi * sp.log((scale + gap + root) / 2)
+        _require(_zero(sp.diff(value, gap) - derived), "log-cos-accumulation")
+        _require(_zero(sp.limit(value, gap, 0, dir="+") - boundary), "log-cos-limit")
+        printed = sp.pi * sp.log((a + sp.sqrt(a**2 - b**2)) / 2)
+        _require(_zero(printed.subs({a: scale + gap, b: scale}) - value), "log-cos-printed")
+        return printed
+
+    return _fact("positive-log-cosine", build)
+
+
+def _infinite_integrand_form(integrand, symbol):
+    """Only these two printed infinite forms have checked reductions."""
+    products = integrand.atoms(sp.Product)
+    if len(products) == 1:
+        product = next(iter(products))
+        if len(product.limits) == 1 and len(product.limits[0]) == 3:
+            index, start, stop = product.limits[0]
+            if (
+                index != symbol
+                and start == 1
+                and stop == sp.oo
+                and product.function == sp.cos(symbol / 2**index)
+                and integrand == symbol * product
+            ):
+                return "cosine-product"
+    sums = integrand.atoms(sp.Sum)
+    if len(sums) == 1:
+        series = next(iter(sums))
+        if len(series.limits) == 1 and len(series.limits[0]) == 3:
+            index, start, stop = series.limits[0]
+            if (
+                index != symbol
+                and start == 1
+                and stop == sp.oo
+                and series.function == symbol**index
+                and integrand == 1 / (1 + series**2024)
+            ):
+                return "geometric-denominator"
+    return None
+
+
+def _cosine_product_quarter(integrand, symbol, lo, hi):
+    """The finite cosine product telescopes, so its x-weighted limit is sin(x)."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 2)):
+        return None
+    if _infinite_integrand_form(integrand, symbol) != "cosine-product":
+        return None
+
+    def build():
+        line = sp.Symbol("_x", positive=True)
+        mesh = sp.Symbol("_h", positive=True)
+        step = sp.Symbol("_n", integer=True, nonnegative=True)
+        # P_n = h sin(x)/sin(h x), h=2**(-n). The empty product is 1;
+        # adjoining cos(x/2**(n+1)) gives the next product. This verifies
+        # the induction for every n, rather than checking finitely many n.
+        partial = mesh * sp.sin(line) / sp.sin(mesh * line)
+        _require(_zero(partial.subs(mesh, 1) - 1), "product-base")
+        recurrence = partial.subs(mesh, mesh / 2) - partial * sp.cos(mesh * line / 2)
+        _require(_zero(sp.trigsimp(recurrence)), "product-step")
+        _require(_zero(2 ** (-step - 1) - 2 ** (-step) / 2), "product-mesh-step")
+        _require(_zero(sp.limit(2 ** (-step), step, sp.oo)), "product-mesh-limit")
+        # On 0<x<=pi/2 these denominators are nonzero. The original
+        # integrand equals sin(x) pointwise; no integral-limit exchange is used.
+        weighted = sp.limit(line * partial, mesh, 0, dir="+")
+        _require(_zero(weighted - sp.sin(line)), "product-limit")
+        _require(_zero(sp.sin(0)), "product-origin")
+        value = sp.integrate(weighted, (line, 0, sp.pi / 2))
+        _require(_zero(value - 1), "product-value")
+        return value
+
+    return _fact("cosine-product-quarter", build)
+
+
+def _geometric_power_unit(integrand, symbol, lo, hi):
+    """A geometric series and King's reflection give 1/2 without expanding 2024 powers."""
+    if not (_zero(lo) and _zero(hi - 1)):
+        return None
+    if _infinite_integrand_form(integrand, symbol) != "geometric-denominator":
+        return None
+
+    def build():
+        line = sp.Symbol("_x", positive=True)
+        step = sp.Symbol("_N", integer=True, nonnegative=True)
+        decay = sp.Symbol("_u", positive=True)
+        partial = line * (1 - line**step) / (1 - line)
+        # The empty sum and its next-term recurrence prove the finite sum
+        # for every N. x=exp(-u), u>0, covers the full convergence interval.
+        _require(_zero(partial.subs(step, 0)), "geometric-base")
+        _require(_zero(partial.subs(step, step + 1) - partial - line ** (step + 1)), "geometric-step")
+        ratio = sp.exp(-decay)
+        total = sp.limit(partial.subs(line, ratio), step, sp.oo)
+        _require(_zero(total - ratio / (1 - ratio)), "geometric-limit")
+        _require(sp.diff(ratio, decay).is_negative is True, "geometric-monotone")
+        _require(_zero(sp.limit(ratio, decay, 0, dir="+") - 1), "geometric-upper")
+        _require(_zero(sp.limit(ratio, decay, sp.oo)), "geometric-lower")
+        # Keep the exponent symbolic so neither simplification nor printing
+        # expands the 2024th power. Both bases are positive on (0,1).
+        degree = sp.Symbol("_m", integer=True, positive=True)
+        left, right = sp.symbols("_a _b", positive=True)
+        form = left**degree / (left**degree + right**degree)
+        _require(_zero(1 / (1 + (right / left) ** degree) - form), "geometric-sum-form")
+        closed = form.subs({left: 1 - ratio, right: ratio})
+        _require(_zero(1 / (1 + total**degree) - closed), "geometric-closed")
+        reduced = form.subs({left: 1 - line, right: line})
+        _require(_zero(reduced + reduced.subs(line, 1 - line) - 1), "geometric-reflect")
+        _require(_zero(sp.diff(1 - line, line) + 1), "geometric-jacobian")
+        # The original series diverges at x=1. The integrand has limit 0
+        # there; its value at this single endpoint does not change I.
+        odds = sp.Symbol("_r", positive=True)
+        _require(_zero((odds / (1 + odds)) / (1 - odds / (1 + odds)) - odds), "geometric-odds")
+        _require(_zero(sp.limit(1 / (1 + odds**degree), odds, sp.oo)), "geometric-end")
+        _require(_zero(sp.limit(1 / (1 + odds**degree), odds, 0, dir="+") - 1), "geometric-origin")
+        value = sp.integrate(sp.S.One, (line, 0, 1)) / 2
+        _require(_zero(value - sp.Rational(1, 2)), "geometric-value")
+        return value
+
+    return _fact("geometric-power-unit", build)
+
+
 def _floor_sine_zero(integrand, answer, variable: str, limits) -> bool:
     """sin(π floor x) is 0 on every interval [n, n+1), so the ray integral is 0."""
     if limits is None:
@@ -3763,6 +4060,11 @@ def _floor_sine_zero(integrand, answer, variable: str, limits) -> bool:
 def _structural_values(integrand, symbol, lo, hi):
     """Exact integrand patterns. A miss returns before any search."""
     for builder in (
+        _complex_average_span,
+        _gaussian_cosine_ray,
+        _sine_rational_quarter,
+        _sech_cosine_line,
+        _positive_log_cosine,
         _log_quadratic_unit,
         _log_power_ray,
         _floor_reciprocal_weight,
@@ -4453,6 +4755,24 @@ def _worker(payload, queue) -> None:
         if answer is not None and kind == "definite" and _floor_sine_zero(integrand, answer, variable, limits):
             queue.put(("ok", True))
             return
+        symbol = namespace(variable)[variable]
+        infinite = _infinite_integrand_form(integrand, symbol)
+        if infinite is not None:
+            if kind != "definite" or not _closed(answer):
+                queue.put(("ok", False))
+                return
+            lo = _parse(limits[0], variable)
+            hi = _parse(limits[1], variable)
+            builders = {
+                "cosine-product": _cosine_product_quarter,
+                "geometric-denominator": _geometric_power_unit,
+            }
+            builder = builders.get(infinite)
+            if builder is None:
+                queue.put(("ok", False))
+                return
+            queue.put(("ok", _matches(builder(integrand, symbol, lo, hi), answer)))
+            return
         if not _closed(integrand) or not _closed(answer) or _simplified_zero(integrand):
             queue.put(("ok", False))
             return
@@ -4566,7 +4886,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
         expr = _parse(text, variable)
     except Exception:
         return None
-    if not _closed(expr):
+    if not _closed(expr) and _infinite_integrand_form(expr, namespace(variable)[variable]) is None:
         return None
     return sp.sstr(expr)
 

@@ -78,7 +78,7 @@ def drive() -> int:
         shown = run_cli(data, ["problems", "show", "--id", "R1-2024-Q01", "--format", "json"])
         check(shown.returncode == 0, "show exit")
         show_doc = json.loads(shown.stdout)
-        check(show_doc["verify"] == "manual" and "sin(1)" in show_doc["answer_plain"], "show keeps the mark-scheme cite")
+        check(show_doc["verify"] == "sympy" and "sin(1)" in show_doc["answer_plain"], "show keeps the mark-scheme cite")
         check(show_doc["answer_source_pdf"].endswith("Mark_Scheme_2024_Round_1_UK_University_Integration_Bee.pdf"), "show names the mark scheme")
         selected = run_cli(data, ["problems", "select", "--id", "YANG-1.1-P01", "--format", "json"])
         check(selected.returncode == 0, "select exit")
