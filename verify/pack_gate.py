@@ -114,7 +114,13 @@ a cubed logarithm, and a Lambert antiderivative. Handoff C adds four literal
 limit families with checked limit exchanges, a nested iterated Fresnel integral,
 and exact floor, reciprocal, dilogarithm, Gaussian, and hyperbolic certificates.
 These five open shapes are the only additional closed-integrand exceptions.
-Answers must be closed, except the truncated exponential
+Wave 5n checks the remaining pack reductions whose ordinary integrator does
+not finish inside the proof timeout: a reflected logarithm, a paired logarithm,
+a secant line, an arcsine endpoint, a semicircle maximum, a double-integral
+series, a tangent square root, an arcsine logarithm, a reflected quartic, four
+Dirichlet sine powers, a beta substitution, a Lambert segment, a dilogarithm
+reflection, a factorial Fourier series, a binomial line, a cubic root-distance,
+and a reflected exponential logarithm. Answers must be closed, except the truncated exponential
 antiderivative, which keeps its finite sum. Numeric agreement is not a proof.
 """
 
@@ -129,6 +135,7 @@ import pack_certificates
 import pack_handoff_c
 import pack_wave5k
 import pack_wave5l
+import pack_wave5n
 
 PROOF_TIMEOUT = 20.0
 
@@ -5840,6 +5847,10 @@ def _worker(payload, queue) -> None:
             if _matches(added, answer):
                 queue.put(("ok", True))
                 return
+            added = pack_wave5n.definite_value(integrand, symbol, wave_lo, wave_hi)
+            if _matches(added, answer):
+                queue.put(("ok", True))
+                return
         if not _closed(integrand) or not _closed(answer) or _simplified_zero(integrand):
             queue.put(("ok", False))
             return
@@ -5979,7 +5990,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
     return _canonical_text(expr, variable)
 
 
-_DUMMY_VARIABLES = frozenset({"t", "u", "y", "z", "theta", "X"})
+_DUMMY_VARIABLES = frozenset({"t", "u", "y", "z", "theta", "X", "e"})
 
 
 def rename_dummy(integrand: str, limits, answer: str, variable: str):

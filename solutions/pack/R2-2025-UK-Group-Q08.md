@@ -22,7 +22,7 @@ the second by differentiating the first in \(k\). A further differentiation give
 \[
 \int_{0}^{\infty}\frac{bx-\sin(bx)}{x^{3}}\,dx=\frac{\pi b^{2}}{4}.
 \]
-The four pieces evaluate to \(3\pi/16\), \(3\pi/16\), \(\pi/4\), and \(3\pi/8\). Their sum is \(\pi\). The mark scheme prints \(\pi\). The stored catalog answer \(0\) is the misaligned relay line, not group 8.
+The four pieces evaluate to \(3\pi/16\), \(3\pi/16\), \(\pi/4\), and \(3\pi/8\). Their sum is \(\pi\). The mark scheme prints \(\pi\). The earlier catalog plain \(0\) was the misaligned relay line, not group 8.
 
 ## Final answer
 

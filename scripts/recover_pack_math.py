@@ -933,6 +933,149 @@ TRANSCRIPTS.update({
     ),
 })
 
+# Wave 5n. Each string is the reduced integral in the pack note, and that
+# note's final value agrees with the printed mark. A later recover keeps
+# these rows. The integration letter e stays e because x is the parameter.
+TRANSCRIPTS.update(
+    {
+        "R2-2024-Relay-Q12": (
+            "((8+(4+(2+1/sqrt(x))/sqrt(x+sqrt(x)))/sqrt(x+sqrt(x+sqrt(x))))/sqrt(x+sqrt(x+sqrt(x+sqrt(x)))))",
+            None,
+            "16*sqrt(x+sqrt(x+sqrt(x+sqrt(x))))",
+        ),
+        "R2-2024-Group-Q08": (
+            "1/(2*sqrt(1+x**2))-1/(2*sqrt(1-x**2))",
+            ("0", "1"),
+            "log(1+sqrt(2))/2-pi/4",
+        ),
+        "R2-2024-Group-Q06": (
+            "x*log(x)+x",
+            ("1", "E"),
+            "3*E**2/4-Rational(1,4)",
+        ),
+        "R1-2024-Q26": (
+            "asin(sqrt(x))+acos(sqrt(x))",
+            ("0", "Rational(1,2)"),
+            "pi/4",
+        ),
+        "R2-2021-Relay-C04": (
+            "cos(x)/(2-sin(2*x))",
+            ("0", "pi/2"),
+            "pi/4",
+        ),
+        "R3-2024-Tournament-Q06-v4": ("sign(x)", ("-2024", "2025"), "1"),
+        "R3-2024-Tournament-Q06-v5": ("sign(x)", ("-2024", "2025"), "1"),
+        "R2-2023-Group-Q03": ("1-x**2", ("0", "1"), "Rational(2,3)"),
+        "R2-2025-SG-Relay-Q10": (
+            "sin(x)**67/(2026-cos(x))",
+            ("0", "2*pi"),
+            "0",
+        ),
+        "R2-2023-Group-Q06": (
+            "exp(-Symbol('c', positive=True)*(y+1/y))/sqrt(y)",
+            ("0", "oo"),
+            "sqrt(pi/Symbol('c', positive=True))*exp(-2*Symbol('c', positive=True))",
+            "y",
+        ),
+        "R2-2024-Group-Q05": (
+            "log(sqrt(1+sqrt(x))+sqrt(1-sqrt(x)))",
+            ("0", "1"),
+            "log(2)/2+Rational(1,4)",
+        ),
+        "R2-2024-Group-Q10": (
+            "log((1+3*x)/(2-x))/(1+x)",
+            ("0", "1"),
+            "log(2)**2/2",
+        ),
+        "R2-2024-Group-Q03": (
+            "(cos(x)+x*sin(x))/(x**2+cos(x)**2)",
+            ("-oo", "oo"),
+            "pi",
+        ),
+        "R2-2023-Group-Q04": (
+            "(x*tan(x)-1)/sqrt(sec(x)**2-x**2)",
+            ("0", "pi/2"),
+            "0",
+        ),
+        "R2-2023-Relay-Q10": (
+            "Max(sqrt(Symbol('r', positive=True)**2-x**2), Abs(x))",
+            ("-Symbol('r', positive=True)", "Symbol('r', positive=True)"),
+            "(1+pi/4)*Symbol('r', positive=True)**2",
+        ),
+        "R2-2022-Group-Q03": (
+            "(1-x)*log(1-x)/x",
+            ("0", "1"),
+            "1-pi**2/6",
+        ),
+        "R2-2021-Group-Q08": (
+            "sqrt(tan(x))*sqrt(1-tan(x))",
+            ("0", "pi/4"),
+            "pi*(sqrt(2+2*sqrt(2))/2-1)",
+        ),
+        "R2-2025-SG-Group-Q01": (
+            "log(asin(x))/sqrt((1-x**2)*asin(x))",
+            ("0", "1"),
+            "sqrt(2*pi)*(log(pi/2)-2)",
+        ),
+        "R2-2025-SG-Group-Q08": (
+            "1/((E+exp(x))*(x**4-4*x**3+6*x**2-4*x+2))",
+            ("-oo", "oo"),
+            "pi/(2*E*sqrt(2))",
+        ),
+        "R2-2025-UK-Group-Q07": (
+            "1/((E+exp(x))*(x**4-4*x**3+6*x**2-4*x+2))",
+            ("-oo", "oo"),
+            "pi/(2*E*sqrt(2))",
+        ),
+        "R2-2025-SG-Group-Q09": (
+            "sin(x)**6/x**2+sin(x)**5/x+sin(x)**4/x**2+sin(x)**3/x**3",
+            ("0", "oo"),
+            "pi",
+        ),
+        "R2-2025-UK-Group-Q08": (
+            "sin(x)**6/x**2+sin(x)**5/x+sin(x)**4/x**2+sin(x)**3/x**3",
+            ("0", "oo"),
+            "pi",
+        ),
+        "R2-2025-SG-Group-Q10": (
+            "x*(2*x+3)*(x+1)**(Rational(1,3))/(x**6+x**2+2*x+1)",
+            ("0", "oo"),
+            "pi/sqrt(3)",
+        ),
+        "R2-2025-SG-Relay-Q09": (
+            "exp(LambertW(x))/x**2",
+            ("E", "2*E**2"),
+            "log(2)+Rational(1,2)",
+        ),
+        "R2-2025-UK-Relay-Q12": (
+            "(1+polylog(2,x))/(4+polylog(2,x**2))",
+            ("-1", "1"),
+            "Rational(1,2)",
+        ),
+        "R1-2022-Q24": (
+            "exp(cos(x))*cos(Symbol('n', integer=True)*x-sin(x))",
+            ("0", "2*pi"),
+            "Piecewise((2*pi/factorial(Symbol('n', integer=True)), Symbol('n', integer=True)>=0), (0, True))",
+        ),
+        "R2-2023-Group-Q09": (
+            "binomial(Symbol('n', integer=True, nonnegative=True), x)",
+            ("-oo", "oo"),
+            "2**Symbol('n', integer=True, nonnegative=True)",
+        ),
+        "R2-2023-Relay-Q08": ("e**x", None, "e**(x+1)/(x+1)", "e"),
+        "R2-2024-Relay-Q18": (
+            "log((1+x)/(1-x))*log(1+exp(x))",
+            ("-1", "1"),
+            "1",
+        ),
+        "R1-2025-Online-Q28": (
+            "Piecewise((0, Abs(x)<2), (sqrt(x**2-4), Abs(x)<=3/sqrt(2)), ((Abs(x)-sqrt(x**2-4))/2, True))",
+            ("-90", "90"),
+            "90*(45-sqrt(2024))-2*log(45-sqrt(2024))-3*log(2)",
+        ),
+    }
+)
+
 
 # Answer slides. Each pack note names the integral and states that the
 # printed mark equals the derived value. The Q03-v4 and Q04-v10 mismatch
