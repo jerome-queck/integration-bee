@@ -46,7 +46,10 @@ def load_pair(cache: dict, pdf: str, kind: str):
 GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
 # R2-2023-Relay-Q19 prints upper bound n. That limit is not the mark-scheme
 # value sqrt(pi/2), so recovery must not replace the manual row.
-HELD_MANUAL = frozenset({"R2-2023-Relay-Q19"})
+# R3-2024-Tournament-Q02-v9 is x**3*sin(log(x))**2*cos(log(x))**2 on [0, 1].
+# The generic proof of 1/64 exceeds PROOF_TIMEOUT on CI, so recovery must
+# leave that row manual. Q02-v10 and Q02-v11 are the same integral.
+HELD_MANUAL = frozenset({"R2-2023-Relay-Q19", "R3-2024-Tournament-Q02-v9"})
 
 _RELAY_M = "Symbol('m', integer=True, positive=True)"
 _RELAY_N = "Symbol('n', integer=True, positive=True)"
@@ -268,11 +271,6 @@ TRANSCRIPTS = {
         "((x+1)**2+(3*x+1)*sqrt(x+log(x)))/(x*sqrt(x+log(x))*(x+sqrt(x+log(x))))",
         None,
         "2*sqrt(x+log(x))+2*log(Abs(x+sqrt(x+log(x))))",
-    ),
-    "R3-2024-Tournament-Q02-v9": (
-        "x**3*sin(log(x))**2*cos(log(x))**2",
-        ("0", "1"),
-        "Rational(1, 64)",
     ),
     "R3-2024-Tournament-Q03": (
         "(2-sqrt(tan(x))+tan(x))/(1+tan(x)**(Rational(3, 2)))",
@@ -841,9 +839,9 @@ TRANSCRIPTS.update(
 
 # Answer slides. Each pack note names the integral and states that the
 # printed mark equals the derived value. The Q03-v4 and Q04-v10 mismatch
-# families are absent, as are Q03-v10 and Q06-v4. Q02-v10 and Q02-v11 are
-# the same reading as Q02-v9; that integral's generic proof exceeded 20s
-# on CI, so those two slides stay manual.
+# families are absent, as are Q03-v10 and Q06-v4. Q02-v9, Q02-v10, and
+# Q02-v11 share x**3*sin(log(x))**2*cos(log(x))**2 on [0, 1]. That proof
+# exceeded 20s on CI, so none of the three is aliased.
 ANSWER_SLIDES = {
     "R3-2024-Tournament-Q01-v11": "R3-2024-Tournament-Q01-v10",
     "R3-2024-Tournament-Q01-v12": "R3-2024-Tournament-Q01-v10",
@@ -919,6 +917,7 @@ _ANSWER_SLIDE_EXCLUDED = frozenset(
         "R3-2024-Tournament-Q04-v12",
         "R3-2024-Tournament-Q06-v4",
         "R3-2024-Tournament-Q06-v5",
+        "R3-2024-Tournament-Q02-v9",
         "R3-2024-Tournament-Q02-v10",
         "R3-2024-Tournament-Q02-v11",
     }
