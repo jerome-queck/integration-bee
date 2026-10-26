@@ -3,6 +3,8 @@ from __future__ import annotations
 import check_math
 import gap_index
 import model
+import pack_answer_contracts
+import pack_gate
 import problem_catalog
 import sympy as sp
 import yaml
@@ -460,8 +462,14 @@ def _drop_abs(expr):
 def expressions_match(answer: str, submitted: str, indefinite: bool, variable: str = "x") -> bool:
     ns = _mark_namespace()
     ns[variable] = sp.Symbol(variable, real=True)
-    ans = sp.sympify(answer, locals=ns)
-    got = sp.sympify(submitted, locals=ns)
+    ans = sp.sympify(pack_answer_contracts.infinity_text(answer), locals=ns)
+    got = sp.sympify(pack_answer_contracts.infinity_text(submitted), locals=ns)
+    if not isinstance(ans, sp.Expr) or not isinstance(got, sp.Expr):
+        return False
+    if ans in (sp.oo, -sp.oo) or got in (sp.oo, -sp.oo):
+        return not indefinite and ans == got
+    if ans.has(sp.nan, sp.zoo) or got.has(sp.nan, sp.zoo):
+        return False
     if sp.simplify(got - ans) == 0:
         return True
     if not indefinite:
@@ -474,6 +482,8 @@ def expressions_match(answer: str, submitted: str, indefinite: bool, variable: s
 
 
 def _indefinite(row: dict) -> bool:
+    if row.get("kind") in pack_answer_contracts.KINDS:
+        return False
     if row.get("kind") == "indefinite":
         return True
     limits = row.get("limits")
@@ -481,6 +491,13 @@ def _indefinite(row: dict) -> bool:
 
 
 def answer_matches(row: dict, submitted: str) -> bool:
+    if row.get("kind") in pack_answer_contracts.KINDS:
+        # Parse before the bounded proof process, whose failure result is a
+        # boolean. Syntax errors must still exit 2 without a learner write.
+        pack_answer_contracts.parse_answer(
+            row["kind"], submitted, pack_gate.namespace(row.get("variable", "x")))
+        return pack_gate.proven(row["kind"], row["sympy_expr"], row["limits"],
+                                submitted, row.get("variable", "x"))
     return expressions_match(row["answer_sympy"], submitted, _indefinite(row), row.get("variable", "x"))
 
 
@@ -510,7 +527,7 @@ def grade_problem(
             if not isinstance(answer, str) or not answer or variable not in problem_catalog.SYMPY_VARIABLES:
                 return None, "catalog problem is not sympy-checked"
             try:
-                correct = expressions_match(answer, submitted, _indefinite(catalog_row), variable)
+                correct = answer_matches(catalog_row, submitted)
             except Exception as exc:
                 return None, f"answer did not parse: {exc}"
             tags = list(catalog_row.get("technique_tags") or [])

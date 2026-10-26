@@ -2,8 +2,8 @@
 
 - Problem: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (Battle 4, Fight 2, problem 4, answer slide 171)
 - Printed answer: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (slide 171)
-- Worked source: `sources/past/r3/2024/Tournament_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (section 4.2, problem 1)
-- The catalog row is not changed.
+- Worked source: `sources/past/r3/2024/Tournament_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (page 15, section 4.2, problem 1)
+- Verification: **manual**. The original integral and the printed answer disagree.
 
 ## Problem
 
@@ -15,7 +15,7 @@ For integers \(m>n\),
 \int_{0}^{\pi/2^{n}}\frac{\sin\bigl((2^{m}+2025\cdot 2^{n})x\bigr)}{\sin(2^{m}x)}\prod_{k=1}^{m-n}\cos(2^{m-k}x)\,dx.
 \]
 
-The integral itself is the previous slide, catalogued as `R3-2024-Tournament-Q04-v10`.
+The integral itself is on slide 169, catalogued as `R3-2024-Tournament-Q04-v10`.
 
 Slide 171 prints \(\pi/2^{m-2n}\), and the solutions PDF prints the same exponent. That exponent is what the calculation produces if \(dx=dy/2^{n}\) is replaced by \(dx=2^{n}\,dy\). The value of the integral is \(\pi/2^{m}\).
 

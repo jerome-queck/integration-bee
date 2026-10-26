@@ -3,7 +3,7 @@
 - Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf`, PDF p. 5 (relay 17).
 - Printed answer: none in the pack. The value below is derived in this note.
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- Catalog contract: `product_indefinite`, on the real positive domain \(x>0\), with \(C>0\).
 
 ## Problem
 
@@ -28,7 +28,7 @@ with \(C>0\) because a product integral of a positive integrand is positive.
 ## Final answer
 
 \[
-C\,x^{x^{2}/2}e^{-x^{2}/4}\qquad(C>0).
+C\,x^{x^{2}/2}e^{-x^{2}/4}\qquad(C>0,\ x>0).
 \]
 
 ## SymPy self-check
@@ -37,4 +37,10 @@ C\,x^{x^{2}/2}e^{-x^{2}/4}\qquad(C>0).
 
 ## Catalog gate
 
-This row remains `verify: manual`. The current gate's indefinite contract checks the ordinary derivative, with an additive constant. A product primitive instead satisfies \(F'/F=\ln(x^x)\), with a positive multiplicative constant. Storing \(x^x\) as an ordinary integrand and accepting the product primitive would certify a different problem. A future product-integral contract can encode this closed form without weakening ordinary antiderivative verification.
+`verify/pack_handoff_f_integrals.py` checks a positive product primitive by
+\[
+\frac{F'(x)}{F(x)}=\ln(x^x)=x\ln x\qquad(x>0).
+\]
+On the connected interval \((0,\infty)\), any two positive solutions have constant positive ratio, so this is exactly the multiplicative-constant freedom. The explicit `product_indefinite` kind preserves the meaning of the differential in the exponent. The ordinary `indefinite` kind continues to use an additive constant and an ordinary derivative.
+
+The product contract accepts positive multiples of the displayed primitive and equivalent exponential forms. It requires a continuous first derivative throughout \((0,\infty)\), so a multiplier with jumps between different constants cannot pass through a merely formal derivative identity. It rejects additive shifts, zero and negative multiples, an explicitly nonpositive \(C\), and ordinary antiderivatives whose logarithmic derivative is not \(x\log x\).
