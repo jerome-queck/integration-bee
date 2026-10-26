@@ -71,3 +71,58 @@ The entries in Down 13,14,15 concatenate to `721394856`, which contains
 every digit 1 through 9 exactly once. The shared grid contract checks
 the crossings, but cannot turn the deficient Down 7 hypothesis into a
 point-value theorem. All other Down checks pass independently.
+
+## Handoff J source recheck (2026-10-27)
+
+The complete problem PDF (pp.1-3) and complete mark PDF (pp.1-4) were
+rendered and reread visually. Down 7 on problem p.3 explicitly has
+`n -> 0+`; it still gives no continuity condition. The cover and Across
+page add none. Mark p.3 gives the completed lattice and digit-by-digit
+marking instructions, without supplementing the function hypothesis.
+
+The [current official resource pack](https://integration.soc.srcf.net/Resource%20pack.zip)
+was downloaded for this recheck. Its 2023 Crossnumber and Mark Scheme
+PDFs are byte-for-byte identical to the committed copies. Its Round 2/2023
+directory contains only the problem, blank grid, group round, mark scheme,
+and relay PDFs; it supplies no separate 2023 participant or marker guide.
+The [official 2023/24 syllabus](https://integration.soc.srcf.net/UK_University_Integration_Bee_Syllabus.pdf),
+pp.1-2, also supplies no general continuity assumption. Its statement
+setting aside convergence questions concerns interchanging infinite
+series and integrals, not recovering a function's value at an isolated
+point. The [official contest page](https://integration.soc.srcf.net/)
+and [past-competitions page](https://integration.soc.srcf.net/pastcomp.html),
+and targeted searches for a crossnumber correction, provided no applicable
+erratum. This records the scope of the search, not a claim that no
+unpublished clarification exists.
+
+The counterexample above was rechecked symbolically: for positive `n`,
+the integral is exactly `100*atan(1/(5*n))`, and its right-hand limit at
+zero is `50*pi`. Any finite change to `f(0)` preserves each integral.
+Thus neither ordinary Riemann integrability nor the syllabus's convergence
+convention supplies the missing point-value information. The row remains
+manual; no answer, sibling-map constraint, or certificate was changed.
+
+### Escalation: R2-2023-Crossnumber-Down-1
+
+- Obstacle: Down 7 asks for `f(0)` from an integral limit unchanged by
+  altering `f` at zero. The marked 250 follows if continuity at zero is
+  assumed, but the complete printed problem, mark scheme, and checked
+  official supplementary material do not state that assumption. A source
+  correction or an applicable official regularity convention is still
+  needed before this clue can be certified.
+- PDF problem: [Crossnumber, pp.1-3; Down 7 on p.3](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2023/Crossnumber_2023_R2_UK_University_Integration_Bee.pdf)
+- PDF mark: [Mark Scheme, pp.1-4; completed grid on p.3](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2023/Mark_Scheme_2023_R2_UK_University_Integration_Bee.pdf)
+- What a follow-up agent should try next:
+
+  ```text
+  Revisit R2-2023-Crossnumber-Down-1, specifically Down 7.
+  Seek an official 2023/24 event instruction or dated organizer erratum.
+  It must state continuity at zero, or another sufficient hypothesis,
+  and explicitly apply to this paper; retain its URL and exact page.
+  Recheck f(x)=250 for x!=0 with arbitrary finite f(0) against that wording.
+  If authority resolves it, derive 250 and recheck every Down clue/crossing.
+  Otherwise retain manual status and record precisely what remains missing.
+  Do not silently add continuity and do not mark impossible.
+  ```
+
+- Do not mark impossible.
