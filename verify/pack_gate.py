@@ -128,9 +128,19 @@ forms extend the open-expression whitelist. Further hard forms cover four
 Catalan reductions, a Laplace/binomial Fourier coefficient, a sine Bose kernel,
 an alternating logarithmic series, and four floor integrals. Their exact
 continued-fraction, indexed-maximum, and Sum shapes are checked before the
-ordinary closed-integrand guard. Answers must be closed, except the truncated
-exponential and finite-polynomial antiderivatives, which keep their finite sums.
-Numeric agreement is not a proof.
+ordinary closed-integrand guard. Handoff D retains shuttle pass-on
+operations as Subs around complete Integrals, two-sided shrinking integrals,
+root and integral-average limits, an E1 definition, the binary-frequency
+supremum as its exact log-sum-exp limit, digit and Lagrange-inversion series,
+and outer rounding and definite product-integral operations. Their original
+inner bounds must agree with the catalog metadata. Exact rational enclosures
+certify floors without evaluating a floor of an unevaluated integral. A finite
+cell recurrence checks the 2025-fold absolute value before its triangular
+reduction is integrated. These integral problems keep scalar final answers;
+comparison, root-count, unordered-pair, scalar-only-limit, and indefinite
+product-integral questions are not reclassified as ordinary integrals.
+Answers must be closed, except the truncated exponential and finite-polynomial
+antiderivatives, which keep their finite sums. Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -143,6 +153,10 @@ import check_math
 import pack_certificates
 import pack_handoff_b
 import pack_handoff_c
+import pack_handoff_d_2021
+import pack_handoff_d_2022
+import pack_handoff_d_2023
+import pack_handoff_d_2024_2025
 import pack_hard_catalan
 import pack_hard_floor
 import pack_hard_series
@@ -5906,6 +5920,10 @@ def _worker(payload, queue) -> None:
                 _handoff_a_fourier_values,
                 _handoff_a_classical_values,
                 pack_handoff_c.definite_value,
+                pack_handoff_d_2021.definite_value,
+                pack_handoff_d_2022.definite_value,
+                pack_handoff_d_2023.definite_value,
+                pack_handoff_d_2024_2025.definite_value,
                 _stable_fourier_line,
                 _wave_hard_fourier_values,
                 pack_certificates.sphere_integral_value,
@@ -6087,6 +6105,10 @@ def canon_integrand(text: str, variable: str) -> str | None:
         or pack_wave5k.open_integrand(expr, symbol)
         or pack_handoff_b.open_integrand(expr, symbol)
         or pack_handoff_c.open_integrand(expr, symbol)
+        or pack_handoff_d_2021.open_integrand(expr, symbol)
+        or pack_handoff_d_2022.open_integrand(expr, symbol)
+        or pack_handoff_d_2023.open_integrand(expr, symbol)
+        or pack_handoff_d_2024_2025.open_integrand(expr, symbol)
         or _hard_classical_telescope_shape(expr, symbol)
         or pack_hard_catalan.open_integrand(expr, symbol)
         or pack_hard_floor.open_integrand(expr, symbol)

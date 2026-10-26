@@ -3,7 +3,7 @@
 - Problem: `sources/past/r2/2025/sg/2025_R2_Group_Round_SG.pdf` (PDF page 2, group 11)
 - Printed answer: no Singapore mark scheme is in this tree. The value below is derived from the problem sheet.
 - Worked source: derived in this note.
-- Gate status: manual. The original PDF prints an outer floor, not absolute-value bars. Its bottom horizontal bracket strokes are visible on page 2. The earlier note and the catalog's derived final omitted this floor. No Singapore mark scheme is in this tree; the UK mark scheme is not an answer source for this distinct problem.
+- Verification: `sympy`. The original PDF prints an outer floor, with bottom horizontal bracket strokes visible on page 2. The earlier derived catalog final omitted this floor; its corrected final is 20. No Singapore mark scheme is in this tree; the UK mark scheme is not an answer source for this distinct problem.
 
 ## Problem
 
@@ -49,4 +49,4 @@ Exact rational arithmetic places this entire interval strictly between \(20\) an
 
 ## SymPy self-check
 
-SymPy evaluates the reduced integral as \(e^{\pi}-\pi+1/1000\); exact rational arithmetic verifies both displayed enclosures. The original outer floor is not supported by the existing definite/indefinite gate schema. The catalog remains manual with its existing fields unchanged, pending a correction of its derived final and a suitable expression-kind proof path. The inner integral must not be promoted as if it were the printed question.
+SymPy evaluates the reduced integral as \(e^{\pi}-\pi+1/1000\); exact rational arithmetic verifies both displayed enclosures. The gate retains the outer floor as `Subs(floor(v), v, Integral(...))`, including the finite geometric sum and original bounds. This unevaluated form survives serialization without triggering a numerical floor evaluation. The exact rational enclosure above certifies the requested floor; the unrounded integral is not used as the final answer.

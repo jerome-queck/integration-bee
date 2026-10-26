@@ -3,7 +3,7 @@
 - Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (page 4, relay 16). The same floor of an integral is relay 20 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (page 6).
 - Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (page 4, UK relay 20)
 - Worked source: derived in this note; the UK mark scheme prints the final value.
-- Verification: **manual**. The value is proved below, but the current catalog's definite-integral kind cannot preserve the outer floor.
+- Verification: `sympy`. The transcript retains the complete floor of the integral as `Subs(floor(v), v, Integral(...))`, together with its original bounds.
 
 ## Problem
 
@@ -46,4 +46,4 @@ Thus \(\lfloor I\rfloor=1999\), agreeing with the UK mark. The integral itself i
 
 SymPy checks \(2\ln 5+4\ln 3=\ln 2025\). The enclosure uses only integer powers and rational arithmetic, so it does not depend on numerical agreement at a chosen precision.
 
-No ordinary-integral transcript with answer \(1999\) is added: it would omit the outer floor and certify the wrong operation. Promotion requires a catalog/consumer representation for a floor of a definite integral.
+The gate checks the original complete expression, partitions the integral into its ten constant blocks, and verifies each rational root bracket by integer powers. The outer floor remains unevaluated through serialization; the certificate returns 1999 only after proving the displayed enclosure.

@@ -9,6 +9,7 @@ import sympy as sp
 
 import pack_gate
 import problem_catalog
+import turn_contract
 
 
 IDS = (
@@ -288,6 +289,164 @@ def check_hard_open_forms(rows):
     probe(expr, limits, answer + 1, False, "log-cosine Laplace wrong answer")
 
 
+def check_handoff_d(rows):
+    """Reprove all scalar D rows without erasing their source operations."""
+    expected = {
+        "R2-2021-Relay-A01": "4",
+        "R2-2021-Relay-A02": "2*sqrt(2)",
+        "R2-2021-Relay-A03": "pi",
+        "R2-2021-Relay-B02": "0",
+        "R2-2021-Relay-C01": "0",
+        "R2-2021-Relay-C02": "2",
+        "R2-2021-Relay-C03": "2",
+        "R2-2021-Relay-D02": "1",
+        # The input keeps a>0; the displayed output uses the same plain name
+        # a that the learner parser receives, without losing that input guard.
+        "R2-2022-Relay-Q10": "log(1+a)/a",
+        "R2-2022-Relay-Q11": "log(2)",
+        "R2-2022-Relay-Q20": "1",
+        "R2-2023-Relay-Q02": "pi",
+        "R2-2023-Relay-Q05": "17",
+        "R2-2023-Relay-Q13": "log(2)",
+        "R2-2024-Relay-Q02": "log(2)",
+        "R2-2024-Relay-Q03": "Rational(1,2)",
+        "R2-2024-Relay-Q06": "2",
+        "R2-2024-Relay-Q07": "Rational(1,2)",
+        "R2-2024-Relay-Q14": "Rational(2025,2)",
+        "R2-2025-SG-Group-Q11": "20",
+        "R2-2025-SG-Group-Q13": "1",
+        "R2-2025-SG-Group-Q15": "pi/2-1",
+        "R2-2025-SG-Relay-Q16": "1999",
+        "R2-2025-UK-Relay-Q20": "1999",
+    }
+    deferred = (
+        "R2-2021-Relay-B03", "R2-2021-Relay-D01", "R2-2021-Relay-D03",
+        "R2-2022-Relay-Q01", "R2-2022-Relay-Q09", "R2-2022-Relay-Q12",
+        "R2-2022-Relay-Q13", "R2-2022-Relay-Q15", "R2-2023-Group-Q01-v2",
+        "R2-2023-Relay-Q11", "R2-2023-Relay-Q20", "R2-2025-SG-Relay-Q17",
+    )
+    required_shapes = {
+        "R2-2022-Relay-Q10": (sp.Integral,),
+        "R2-2022-Relay-Q11": (sp.Limit, sp.Integral),
+        "R2-2022-Relay-Q20": (sp.Limit, sp.Integral),
+        "R2-2023-Relay-Q02": (sp.Limit, sp.Sum),
+        "R2-2023-Relay-Q05": (sp.Limit, sp.Integral),
+        "R2-2023-Relay-Q13": (sp.Limit, sp.Integral),
+        "R2-2024-Relay-Q02": (sp.Limit, sp.Integral, sp.Sum),
+        "R2-2024-Relay-Q03": (sp.Sum, sp.KroneckerDelta, sp.floor),
+        "R2-2024-Relay-Q06": (sp.Limit, sp.Integral),
+        "R2-2024-Relay-Q07": (sp.exp, sp.Integral),
+        "R2-2024-Relay-Q14": (sp.Abs, sp.frac),
+        "R2-2025-SG-Group-Q11": (sp.Subs, sp.floor, sp.Integral, sp.Sum),
+        "R2-2025-SG-Group-Q13": (sp.Subs, sp.ceiling, sp.Integral),
+        "R2-2025-SG-Group-Q15": (sp.Sum, sp.Limit, sp.Derivative),
+        "R2-2025-SG-Relay-Q16": (sp.Subs, sp.floor, sp.Integral),
+        "R2-2025-UK-Relay-Q20": (sp.Subs, sp.floor, sp.Integral),
+    }
+    modules = {
+        "2021": pack_gate.pack_handoff_d_2021,
+        "2022": pack_gate.pack_handoff_d_2022,
+        "2023": pack_gate.pack_handoff_d_2023,
+        "2024": pack_gate.pack_handoff_d_2024_2025,
+        "2025": pack_gate.pack_handoff_d_2024_2025,
+    }
+    selected = [rows[ident] for ident in expected]
+    require(len(selected) == 24 and all(row["verify"] == "sympy" for row in selected),
+            "Handoff D 24 scalar rows")
+    require(all(rows[ident]["verify"] == "manual" for ident in deferred),
+            "Handoff D source/schema deferrals and duplicate remain manual")
+    require(pack_gate.reprove_rows(selected) is None, "Handoff D stored-row reproof")
+    parsed = {}
+    for row in selected:
+        ident, variable = row["id"], row["variable"]
+        symbol = pack_gate.namespace(variable)[variable]
+        expr = pack_gate._parse(row["sympy_expr"], variable)
+        answer = pack_gate._parse(expected[ident], variable)
+        limits = tuple(pack_gate._parse(part, variable) for part in row["limits"])
+        module = modules[ident.split("-")[1]]
+        parsed[ident] = (row, expr, symbol, limits, answer, module)
+        require(row["kind"] == "definite", ident + " retains scalar answer semantics")
+        require(pack_gate._certificate_same(pack_gate._parse(row["answer_sympy"], variable), answer),
+                ident + " expected source answer")
+        shapes = required_shapes.get(ident, (sp.Subs, sp.Integral))
+        require(all(expr.has(shape) for shape in shapes), ident + " original source operations")
+        canonical = pack_gate.canon_integrand(row["sympy_expr"], variable)
+        require(canonical is not None and pack_gate._parse(canonical, variable) == expr,
+                ident + " source shape survives canonicalization")
+        require(pack_gate.proven("definite", canonical, row["limits"], expected[ident], variable),
+                ident + " positive proof")
+        wrong = pack_gate._canonical_text(answer + 1, variable)
+        require(not pack_gate.proven("definite", canonical, row["limits"], wrong, variable),
+                ident + " wrong answer rejected")
+        require(turn_contract.answer_matches(row, expected[ident]), ident + " learner accepts source answer")
+        require(not turn_contract.answer_matches(row, wrong), ident + " learner rejects wrong answer")
+        # A miss must be rejected before doing certificate work. Direct matcher
+        # checks avoid spending a whole proof timeout on unrelated generic
+        # integration, especially for the compiled 2025-cell triangle.
+        require(module.definite_value(expr, symbol, limits[0] + 1, limits[1]) is None,
+                ident + " changed bound metadata")
+        require(module.definite_value(2 * expr, symbol, *limits) is None,
+                ident + " changed whole expression")
+        if expr.has(sp.Subs) and isinstance(expr, sp.Subs):
+            if expr.expr.has(sp.floor, sp.ceiling, sp.Mod):
+                changed = sp.Subs(expr.expr + 1, expr.variables, expr.point)
+                for label, candidate in (("changed rounding", changed),
+                                         ("removed rounding", expr.point[0])):
+                    require(not pack_gate.proven("definite", sp.srepr(candidate), row["limits"],
+                                                 expected[ident], variable), ident + " " + label)
+        # All unbounded n families require a positive integer index. Finite
+        # sums with explicit integer endpoints need no extra assumptions.
+        for index in expr.atoms(sp.Symbol):
+            if index.name == "n" and index.is_integer is True and index.is_positive is True:
+                changed = expr.xreplace({index: sp.Symbol("n", positive=True)})
+                require(not module.open_integrand(changed, symbol), ident + " missing integer assumption")
+                break
+
+    row, expr, symbol, limits, answer, module = parsed["R2-2022-Relay-Q10"]
+    parameter = next(item for item in expr.free_symbols if item != symbol)
+    changed = expr.xreplace({parameter: sp.Symbol(parameter.name)})
+    require(not module.open_integrand(changed, symbol), "2022 Q10 keeps positive input parameter")
+    require(not pack_gate.proven("definite", sp.srepr(changed), row["limits"], "log(1+a)/a", row["variable"]),
+            "2022 Q10 plain output does not weaken input-domain gate")
+    require(turn_contract.answer_matches(row, "ln(1+a)/a"), "2022 Q10 natural logarithm alias")
+
+    row, expr, symbol, limits, answer, module = parsed["R2-2023-Relay-Q02"]
+    series = next(iter(expr.atoms(sp.Sum)))
+    index = series.limits[0][0]
+    changed = expr.xreplace({2**index: 2 * index})
+    require(changed != expr and not module.open_integrand(changed, symbol),
+            "2023 Q02 rejects linear-frequency OCR in place of exponential frequency")
+    require(not pack_gate.proven("definite", sp.srepr(changed), row["limits"], "pi", row["variable"]),
+            "2023 Q02 linear-frequency reading cannot reuse doubling proof")
+
+    row, expr, symbol, limits, answer, module = parsed["R2-2023-Relay-Q13"]
+    require(isinstance(expr, sp.Limit) and isinstance(expr.args[0], sp.Integral),
+            "2023 Q13 keeps the full limit of its moving integral")
+    integral, endpoint, destination, direction = expr.args
+    require(str(direction) == "+-", "2023 Q13 source limit is two-sided")
+    variants = (
+        ("direction", sp.Limit(integral, endpoint, destination, dir="+"), limits),
+        ("power", sp.Limit(sp.Integral(integral.function * sp.sin(symbol),
+                                      *integral.limits), endpoint, destination, dir="+-"), limits),
+        ("moving bound", sp.Limit(sp.Integral(integral.function, (symbol, endpoint, 3 * endpoint)),
+                                  endpoint, destination, dir="+-"), (endpoint, 3 * endpoint)),
+    )
+    for label, candidate, bounds in variants:
+        require(module.definite_value(candidate, symbol, *bounds) is None,
+                "2023 Q13 rejects changed " + label)
+        require(not module.open_integrand(candidate, symbol), "2023 Q13 closed whitelist for " + label)
+
+    row, expr, symbol, limits, answer, module = parsed["R2-2024-Relay-Q07"]
+    integral = expr.point[0] if isinstance(expr, sp.Subs) else expr.args[0]
+    require(isinstance(integral, sp.Integral) and module._d25_outer_shape(expr, symbol)[0] == "product",
+            "2024 Q07 keeps exp of the literal logarithmic integral")
+    require(not pack_gate.proven("definite", sp.srepr(integral), row["limits"], "1/2", row["variable"]),
+            "2024 Q07 cannot drop product-integral exponentiation")
+    _, triangle, symbol, _, _, _ = parsed["R2-2024-Relay-Q14"]
+    require(triangle == sp.Abs(2 * sp.frac(symbol / 2) - 1),
+            "2024 Q14 retains the independently checked triangle compilation")
+
+
 def main():
     rows = {row["id"]: row for row in problem_catalog.load_records()}
     selected = [rows[ident] for ident in IDS]
@@ -302,7 +461,11 @@ def main():
     check_answer_preprocessing(rows)
     check_source_discrepancy(rows)
     check_hard_open_forms(rows)
-    print("PASS pack certificates (symbolic families, literal operators, mutations, source discrepancy)")
+    check_handoff_d(rows)
+    print(
+        "PASS pack certificates (symbolic families, literal operators, "
+        "24 Handoff D rows, mutations, source discrepancies)"
+    )
     return 0
 
 

@@ -3,7 +3,7 @@
 - Problem: `sources/past/r2/2025/sg/2025_R2_Group_Round_SG.pdf` (group 13). The same integral is group 10 of `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf`.
 - Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK group 10)
 - Worked source: derived in this note; the UK mark scheme prints the final value.
-- The catalog row is not changed.
+- Verification: `sympy`. The transcript retains the outer ceiling and complete original integral. The certificate proves the strict positive lower bound and an upper bound below 1.
 
 ## Problem
 
