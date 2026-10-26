@@ -110,7 +110,11 @@ King tangent, a hyperbolic secant, an exponential quartic, a factorial beta
 series, a pair of nested roots, a floor tangent telescope, a floor tower, a
 logarithmic semicircle, an alternating eta square, two arctangent rational
 forms, a nested gamma tail, a shifted odd phase, a logistic King reflection,
-a cubed logarithm, and a Lambert antiderivative. Answers must be closed, except the truncated exponential
+a cubed logarithm, and a Lambert antiderivative. Handoff C adds four literal
+limit families with checked limit exchanges, a nested iterated Fresnel integral,
+and exact floor, reciprocal, dilogarithm, Gaussian, and hyperbolic certificates.
+These five open shapes are the only additional closed-integrand exceptions.
+Answers must be closed, except the truncated exponential
 antiderivative, which keeps its finite sum. Numeric agreement is not a proof.
 """
 
@@ -122,6 +126,7 @@ import sympy as sp
 
 import check_math
 import pack_certificates
+import pack_handoff_c
 import pack_wave5k
 import pack_wave5l
 
@@ -5791,6 +5796,7 @@ def _worker(payload, queue) -> None:
                 _handoff_a_discrete_values,
                 _handoff_a_fourier_values,
                 _handoff_a_classical_values,
+                pack_handoff_c.definite_value,
                 _stable_fourier_line,
                 _wave_hard_fourier_values,
                 pack_certificates.sphere_integral_value,
@@ -5966,6 +5972,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
         or pack_certificates.matches_legendre_grid(expr, symbol)
         or _infinite_integrand_form(expr, symbol) is not None
         or pack_wave5k.open_integrand(expr, symbol)
+        or pack_handoff_c.open_integrand(expr, symbol)
         or _hard_classical_telescope_shape(expr, symbol)
     ):
         return None

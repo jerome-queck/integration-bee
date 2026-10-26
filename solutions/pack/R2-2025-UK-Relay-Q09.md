@@ -1,9 +1,8 @@
 # R2-2025-UK-Relay-Q09
 
-- Problem: `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (relay 9)
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (relay 9)
+- Problem: `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (p. 3, relay 9)
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (p. 3, relay 9)
 - Worked source: derived in this note; the mark scheme prints the final value.
-- The catalog row is not changed.
 
 ## Problem
 
@@ -37,4 +36,9 @@ As \(r\to 1^{-}\), the damped integrand tends pointwise to the printed integrand
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r2_2025_uk_relay_q09`. SymPy checks the imaginary-part identity, the Dirichlet integral \(\int_{0}^{\infty}e^{-ax}\sin(ax)/x\,dx=\pi/4\), the finite geometric sum, and the limit \((\pi/2)\,r/(1+r)\to\pi/4\).
+The pack-gate certificate checks the imaginary-part identity, the finite
+geometric-sum recurrence and its vanishing remainder, the exact Laplace
+integral \(\int_0^\infty e^{-ax}\sin(ax)/x\,dx=\pi/4\), and the
+limit of the integrated Abel kernel. It also verifies the algebra of the
+uniform denominator bound and finiteness of the tail majorant used for
+dominated convergence.

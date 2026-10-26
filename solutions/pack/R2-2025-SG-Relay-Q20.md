@@ -1,9 +1,8 @@
 # R2-2025-SG-Relay-Q20
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 20). The same integral is relay 12 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK relay 12)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (PDF page 6, relay 20). The same integral is relay 12 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (PDF page 3, UK relay 12)
 - Worked source: derived in this note; the UK mark scheme prints the final value.
-- The catalog row is not changed.
 
 ## Problem
 
@@ -44,3 +43,5 @@ The UK mark scheme prints \(1/2\).
 ## SymPy self-check
 
 `solutions/self_check.py` runs `check_r2_2025_sg_relay_q20`. SymPy checks \(\operatorname{Li}_{1}(z)=-\log(1-z)\), the cancellation of the logarithmic derivative, the value at \(0\), and the rational average \((2+L/2)/(4+L)=1/2\).
+
+The pack gate verifies the logarithm identity on the positive parameterization \(x=u/(1+u)\), checks the constant at zero and positivity of the denominator, then integrates the exact reflected sum.

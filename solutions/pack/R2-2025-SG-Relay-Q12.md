@@ -1,9 +1,8 @@
 # R2-2025-SG-Relay-Q12
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 12)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (PDF page 3, relay 12)
 - Printed answer: no Singapore mark scheme is in this tree. The value below is derived from the problem sheet.
 - Worked source: derived in this note.
-- The catalog row is not changed.
 
 ## Problem
 
@@ -29,3 +28,5 @@ Four such intervals give \(2\). The integers themselves do not affect the integr
 ## SymPy self-check
 
 SymPy evaluates \(\int_{n}^{n+1}(10+n-x)/19\,dx=1/2\). Four copies sum to \(2\).
+
+The pack gate checks the strict inequalities defining each open unit block and integrates the resulting linear piece exactly. Integer endpoints form a finite set and do not affect the result.

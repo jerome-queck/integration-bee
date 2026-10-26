@@ -1,9 +1,8 @@
 # R2-2025-SG-Relay-Q22
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 22). The same integral is relay 16 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK relay 16)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (PDF page 6, relay 22). The same integral is relay 16 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (PDF page 4, UK relay 16)
 - Worked source: derived in this note.
-- The catalog row is not changed.
 
 ## Problem
 
@@ -32,3 +31,5 @@ The integrand in \(t\) is the first term. Folding the symmetric interval multipl
 ## SymPy self-check
 
 `solutions/self_check.py` runs `check_r2_2025_sg_relay_q22`. SymPy checks the same endpoint reflection as the UK relay 16 note.
+
+The pack gate checks the positive logarithm branches under \(x\mapsto1/x\), the reciprocal endpoints, and the reflected sum \(1/(ex)\). Since the transformed factor is between \(0\) and \(1/e\), the undefined point \(x=1\) does not cause divergence.
