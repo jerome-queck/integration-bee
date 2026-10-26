@@ -92,6 +92,113 @@ TRANSCRIPTS = {
         ("0", "pi/2"),
         "1/6",
     ),
+    "R1-2020-Q05": (
+        "sqrt(tan(x))",
+        None,
+        "sqrt(2)/4*(log(Abs((tan(x)-sqrt(2*tan(x))+1)/(tan(x)+sqrt(2*tan(x))+1)))+2*atan(sqrt(2*tan(x))-1)+2*atan(sqrt(2*tan(x))+1))",
+    ),
+    "R1-2021-Q02": ("cos(x)**420", ("0", "2*pi"), "pi*binomial(420, 210)/2**419"),
+    "R1-2021-Q26": (
+        "(x-x*log(x)+1)/(x*(x+1)**2+x*log(x)**2)",
+        ("1", "E"),
+        "acot(1+E)",
+    ),
+    "R1-2021-Q31": ("1/(1+floor(1/x))", ("0", "1"), "2-pi**2/6"),
+    "R1-2022-Oxford-Q15": (
+        "x**(2*n)*exp(-x**2)",
+        ("0", "oo"),
+        "factorial(2*n)*sqrt(pi)/(4**n*factorial(n)*2)",
+    ),
+    "R1-2022-Oxford-Q16": ("(sqrt(x)-x)**(Rational(3, 2))", ("0", "1"), "3*pi/128"),
+    "R1-2022-Q05": ("1/x-floor(1/x)", ("0", "1"), "1-EulerGamma"),
+    "R1-2022-Q15": (
+        "cos(x)**2*(1+cos(x))/(1+cos(x)+sin(x))**2",
+        ("0", "pi/2"),
+        "(pi-2)/4",
+    ),
+    "R1-2022-Q16": ("(x-floor(x))/x**2", ("1", "oo"), "1-EulerGamma"),
+    "R1-2022-TB2022-Q12": (
+        "x**(2*n)*exp(-x**2)",
+        ("0", "oo"),
+        "factorial(2*n)*sqrt(pi)/(4**n*factorial(n)*2)",
+    ),
+    "R1-2023-Q09": ("(-(x-floor(x)))**floor(x)", ("0", "oo"), "log(2)"),
+    "R1-2023-Q20": (
+        "4**(4**x/(2+4**x))/(2+4**(4**x/(2+4**x)))",
+        ("Rational(1, 4)", "Rational(3, 4)"),
+        "Rational(1, 4)",
+    ),
+    "R1-2024-Q07": (
+        "x**(Rational(1, 3))*floor(1/x**(Rational(1, 3)))",
+        ("0", "1"),
+        "pi**4/120",
+    ),
+    "R1-2024-Q20": (
+        "x**(x-floor(x)-1)*(log(x**x)+(x-floor(x)))",
+        ("0", "100"),
+        "4950",
+    ),
+    "R1-2024-Q22": (
+        "(atan(x/a)+atan(x/b))/x",
+        ("a", "b"),
+        "pi*log(b/a)/2",
+    ),
+    "R1-2024-Q27": ("exp(-x-1/x)/sqrt(x)", ("0", "oo"), "sqrt(pi)/exp(2)"),
+    "R1-2024-Q30": ("acosh(sin(x)+cos(x))", ("0", "pi/2"), "pi*log(2)/2"),
+    "R1-2025-Online-Q10": ("atan(b*sin(x))/sin(x)", ("0", "pi/2"), "pi*asinh(b)/2"),
+    "R1-2025-Online-Q27": (
+        "2**x/((1+sqrt(3))**x+(2+sqrt(3))**x)",
+        None,
+        "((sqrt(3)-1)**x-log(1+(sqrt(3)-1)**x))/log(sqrt(3)-1)",
+    ),
+    "R2-2021-Group-Q03": ("1/(2+cos(x))**3", ("0", "pi"), "pi/(2*sqrt(3))"),
+    "R2-2021-Group-Q10": ("sin(x**2)", ("0", "oo"), "sqrt(pi/2)/2"),
+    "R2-2022-Group-Q04": ("1/(sin(x)+cos(x))**2", ("0", "pi/2"), "1"),
+    "R2-2022-Group-Q06": ("1/(x+sqrt(1+x**2))**2", ("0", "oo"), "Rational(2, 3)"),
+    "R2-2023-Relay-Q14": ("exp(x+exp(x))", ("0", "1"), "exp(E)-E"),
+    "R2-2024-Group-Q04": ("atan(sin(x))/sin(x)", ("0", "pi/2"), "pi*log(1+sqrt(2))/2"),
+    "R2-2024-Relay-Q01": (
+        "x**2*cos(x)/(1+exp(x))",
+        ("-pi/2", "pi/2"),
+        "(pi**2-8)/4",
+    ),
+    "R2-2025-SG-Group-Q14": (
+        "((x+1)**2+(3*x+1)*sqrt(x+log(x)))/(x*sqrt(x+log(x))*(x+sqrt(x+log(x))))",
+        None,
+        "2*sqrt(x+log(x))+2*log(Abs(x+sqrt(x+log(x))))",
+    ),
+    "R3-2024-Tournament-Q02-v9": (
+        "x**3*sin(log(x))**2*cos(log(x))**2",
+        ("0", "1"),
+        "Rational(1, 64)",
+    ),
+    "R3-2024-Tournament-Q03": (
+        "(2-sqrt(tan(x))+tan(x))/(1+tan(x)**(Rational(3, 2)))",
+        ("0", "pi/2"),
+        "pi/2",
+    ),
+    "R3-2024-Tournament-Q04": (
+        "(x-1)/((x-2)*(x-3))+(x-2)/((x-3)*(x-1))+(x-3)/((x-1)*(x-2))",
+        None,
+        "Rational(5, 2)*log(Abs(x-3))+Rational(5, 2)*log(Abs(x-1))-2*log(Abs(x-2))",
+    ),
+    "R3-2024-Tournament-Q05": ("1/(x*(x**log(2048)+1))", ("1", "oo"), "Rational(1, 11)"),
+    "R3-2024-Tournament-Q07": (
+        "(2025+exp(x)+exp(-x))/(1+2025**x)",
+        ("-1", "1"),
+        "2025+E-1/E",
+    ),
+    "R3-2024-Tournament-Q09-v4": (
+        "sec(x)*(sec(x)+tan(x))**2025",
+        None,
+        "(sec(x)+tan(x))**2025/2025",
+    ),
+    "R3-2024-Tournament-Q09-v7": (
+        "1/(sin(x)*(log(sin(x))-log(1+cos(x))))",
+        None,
+        "log(Abs(log(sin(x))-log(1+cos(x))))",
+    ),
+    "R3-2024-Tournament-Q09-v10": ("log(x)/(x**2+3)", ("1", "3"), "pi*log(3)/(12*sqrt(3))"),
 }
 
 
@@ -110,6 +217,11 @@ def gate_row(row: dict, cache: dict) -> dict | None:
         return None
     if not str(row.get("answer_plain") or "").strip():
         return None
+    # An id-specific transcript wins over the shared problem number. Tournament
+    # sheets repeat a number for a different integral, and for an answer slide.
+    known = transcribed(row)
+    if known is not None:
+        return known
     number = problem_number(row)
     problem_pdf = row.get("pdf_path")
     answer_pdf = row.get("answer_source_pdf")
@@ -123,7 +235,7 @@ def gate_row(row: dict, cache: dict) -> dict | None:
                 fields = pack_gate.fields_for(number, integral, answer)
                 if fields is not None:
                     return fields
-    return transcribed(row)
+    return None
 
 
 def apply_fields(row: dict, fields: dict) -> None:
