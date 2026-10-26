@@ -85,9 +85,18 @@ log-cosine parameter integral. Two literal infinite forms are checked before
 the closed-expression gate: a telescoping cosine product and a geometric series
 with a reflected 2024th power. Three further certificates check a sphere
 rotation, a full-line tangent integral by a rectangular contour, and finite
-Fourier grids by Legendre orthogonality. Only those nested structures, and the
-two infinite forms, may retain an inner Integral, Sum, or Product; answers
-must be closed. Numeric agreement is not a proof.
+Fourier grids by Legendre orthogonality. Further checked forms, proved before
+the closed-expression gate, are a Mellin sine, a half-angle square-root sine,
+an arctangent quartic, a truncated exponential sum, a Fibonacci product, a
+binary geometric logarithm, a Riemann-sum power of two, a fractional-part
+power gap, a nested exponential series, a nested absolute value, cancelling
+radicals, a reflected double exponential, a unit-cube maximum, two Frullani
+endpoint integrals, an implicit cubic, a fractional-part beta integral, a
+cosine-sum magnitude, a reflected logarithmic radical, and a substituted
+Gaussian. Only the sphere, tangent, and Legendre certificates, the two infinite
+forms, and those open wave-5k forms may retain an inner Integral, Sum,
+Product, or Limit. Answers must be closed, except the truncated exponential
+antiderivative, which keeps its finite sum. Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -98,6 +107,7 @@ import sympy as sp
 
 import check_math
 import pack_certificates
+import pack_wave5k
 
 PROOF_TIMEOUT = 20.0
 
@@ -4772,6 +4782,11 @@ def _worker(payload, queue) -> None:
         kind, integrand_s, limits, answer_s, variable = payload
         integrand = _parse(integrand_s, variable)
         answer = _answer_expr(answer_s, variable, allow_constant=kind == "indefinite")
+        symbol = namespace(variable)[variable]
+        # The truncated exponential antiderivative keeps its finite sum.
+        if kind == "indefinite" and answer is not None and pack_wave5k.indefinite_ok(answer, integrand, symbol):
+            queue.put(("ok", True))
+            return
         if not _closed(answer):
             queue.put(("ok", False))
             return
@@ -4811,6 +4826,13 @@ def _worker(payload, queue) -> None:
                 return
             queue.put(("ok", _matches(builder(integrand, symbol, lo, hi), answer)))
             return
+        if kind == "definite":
+            wave_lo = _parse(limits[0], variable)
+            wave_hi = _parse(limits[1], variable)
+            wave = pack_wave5k.definite_value(integrand, symbol, wave_lo, wave_hi)
+            if _matches(wave, answer):
+                queue.put(("ok", True))
+                return
         if not _closed(integrand) or not _closed(answer) or _simplified_zero(integrand):
             queue.put(("ok", False))
             return
@@ -4935,6 +4957,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
         pack_certificates.matches_sphere_integral(expr, symbol)
         or pack_certificates.matches_legendre_grid(expr, symbol)
         or _infinite_integrand_form(expr, symbol) is not None
+        or pack_wave5k.open_integrand(expr, symbol)
     ):
         return None
     return _canonical_text(expr, variable)

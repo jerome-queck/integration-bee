@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "verify"))
 
 import pack_gate  # noqa: E402
+import pack_wave5k  # noqa: E402
 import pdf_math  # noqa: E402
 import problem_catalog  # noqa: E402
 
@@ -498,6 +499,126 @@ TRANSCRIPTS = {
         "E-1/E",
     ),
 }
+
+# Printed integrals whose SymPy reading is not recovered from the shared
+# problem number. R1-2023-Q14's tower parses as log(x), which is the formal
+# rewrite in the worked PDF. R1-2025-Online-Q29 is the positive root of
+# f**3 + x f = 125, squared.
+TRANSCRIPTS.update(
+    {
+        "R1-2021-Q12": ("sin(x)/x**n", ("0", "oo"), "sin((1-n)*pi/2)*gamma(1-n)"),
+        "R1-2021-Q13": (
+            "cos(x)/(1+sqrt(sin(2*x)))**2",
+            ("0", "pi/2"),
+            "Rational(1,3)",
+        ),
+        "R1-2021-Q30": (
+            "atan(x**2)/(1+x**2)",
+            ("0", "1"),
+            "log(3-2*sqrt(2))**2/16",
+        ),
+        "R1-2022-MIT-TB-Q17": (
+            "x**n/Sum(x**k/factorial(k),(k,0,n))",
+            None,
+            "factorial(n)*(x-log(Sum(x**k/factorial(k),(k,0,n))))",
+        ),
+        "R1-2022-Oxford-Q08": ("x*Product(cos(x/2**k),(k,1,oo))", ("0", "pi/2"), "1"),
+        "R1-2022-Oxford-Q26": ("cos(x)/cosh(x)", ("-oo", "oo"), "pi*sech(pi/2)"),
+        "R1-2022-Q25": ("log(x)*sin(x)/x", ("0", "oo"), "-EulerGamma*pi/2"),
+        "R1-2023-Q14": (
+            "(log(log(x)))**(log(log(x))/log(log(log(x))))",
+            ("0", "1"),
+            "-1",
+        ),
+        "R1-2023-Q30": (
+            "sqrt(frac(1/x)/(1-frac(1/x)))/(1-x)",
+            ("0", "1"),
+            "pi",
+        ),
+        "R1-2024-Q21": (
+            "exp(x**x)/Product(fibonacci(k)/x,(k,1,oo))",
+            ("1", "2024"),
+            "0",
+        ),
+        "R1-2024-Q24": (
+            "log(Product(1+x**(2**k),(k,0,2024)))/x",
+            ("-1", "1"),
+            "pi**2/4",
+        ),
+        "R1-2024-Q29": (
+            "Limit(Sum(2**(k*x/n)*k*x**4/(n*k*x**3+1),(k,1,n)), n, oo)",
+            ("1/log(2)", "2024"),
+            "(1/log(2))*((2**2024 - E + 1)/log(2) - 2024)",
+        ),
+        "R1-2025-Online-Q07": (
+            "Sum(x**k,(k,0,2025))-Sum(x**k,(k,1,2025))",
+            ("0", "1"),
+            "1",
+        ),
+        "R1-2025-Online-Q08": (
+            "Limit(Sum((-x)**k/factorial(k),(k,0,n)), n, oo)",
+            ("0", "oo"),
+            "1",
+        ),
+        "R1-2025-Online-Q12": (
+            "Limit(Sum((-1)**(j+1)*x**j,(j,1,n)), n, oo)",
+            ("0", "1"),
+            "1-log(2)",
+        ),
+        "R1-2025-Online-Q19": (
+            "x/(sqrt(4*x+1)/2+1/2) - sqrt(4*x+1)/2 + 1/2",
+            ("0", "2025"),
+            "0",
+        ),
+        "R1-2025-Online-Q20": (
+            "Integral(exp(t + t**tan(x)), (t, 0, 1))",
+            ("0", "pi/2"),
+            "pi/4*(exp(2)-1)",
+        ),
+        "R1-2025-Online-Q21": ("2025*x**2025", ("0", "1"), "Rational(2025,2026)"),
+        "R1-2025-Online-Q22": (
+            "x/(2**x-1)**2 - 4*x/(4**x-1)**2",
+            ("0", "oo"),
+            "1/log(2)",
+        ),
+        "R1-2025-Online-Q24": (
+            "(x**2 + 2**(-x/6)/7 - 2**(-x/7)/6)/((2**(-x/7)+36*x**2)*(2**(-x/6)+49*x**2))",
+            ("0", "oo"),
+            "0",
+        ),
+        "R1-2025-Online-Q29": (pack_wave5k.cubic_square_text(), ("0", "124"), "812"),
+        "R2-2022-Group-Q02": (
+            "x**n/Sum(x**k/factorial(k),(k,0,n))",
+            None,
+            "factorial(n)*(x-log(Sum(x**k/factorial(k),(k,0,n))))",
+        ),
+        "R2-2023-Group-Q08": (
+            "sqrt((sin(23*x)+10*sin(24*x)+sin(25*x))**2+(cos(23*x)+10*cos(24*x)+cos(25*x))**2)",
+            None,
+            "10*x+2*sin(x)",
+        ),
+        "R2-2023-Relay-Q09": ("x**(E-2)", None, "x**(E-1)/(E-1)"),
+        "R2-2024-Group-Q02": (
+            "(log(exp(x)-1)-x)/(exp(x)-1)",
+            None,
+            "log(1-exp(-x))**2/2",
+        ),
+        "R2-2025-SG-Group-Q02": (
+            "log(cos(x)+sqrt(1+cos(x)**2))",
+            ("0", "pi"),
+            "0",
+        ),
+        "R2-2025-SG-Relay-Q21": ("exp(x-sinh(x)**2)", ("-oo", "oo"), "sqrt(pi)"),
+        "R2-2025-SG-Relay-Q30": ("log(x)*sin(x)/x", ("0", "oo"), "-EulerGamma*pi/2"),
+        "R2-2025-UK-Group-Q01": (
+            "log(cos(x)+sqrt(1+cos(x)**2))",
+            ("0", "pi"),
+            "0",
+        ),
+        "R2-2025-UK-Relay-Q11": ("log(x)*sin(x)/x", ("0", "oo"), "-EulerGamma*pi/2"),
+        "R2-2025-UK-Relay-Q13": ("exp(x-sinh(x)**2)", ("-oo", "oo"), "sqrt(pi)"),
+    }
+)
 
 
 def transcribed(row: dict) -> dict | None:
