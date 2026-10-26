@@ -457,8 +457,9 @@ def _drop_abs(expr):
     return expr.replace(sp.Abs, lambda arg: arg)
 
 
-def expressions_match(answer: str, submitted: str, indefinite: bool) -> bool:
+def expressions_match(answer: str, submitted: str, indefinite: bool, variable: str = "x") -> bool:
     ns = _mark_namespace()
+    ns[variable] = sp.Symbol(variable, real=True)
     ans = sp.sympify(answer, locals=ns)
     got = sp.sympify(submitted, locals=ns)
     if sp.simplify(got - ans) == 0:
@@ -469,7 +470,7 @@ def expressions_match(answer: str, submitted: str, indefinite: bool) -> bool:
     got = _drop_abs(got)
     if sp.simplify(got - ans) == 0:
         return True
-    return sp.simplify(sp.diff(got - ans, ns["x"])) == 0
+    return sp.simplify(sp.diff(got - ans, ns[variable])) == 0
 
 
 def _indefinite(row: dict) -> bool:
@@ -480,7 +481,7 @@ def _indefinite(row: dict) -> bool:
 
 
 def answer_matches(row: dict, submitted: str) -> bool:
-    return expressions_match(row["answer_sympy"], submitted, _indefinite(row))
+    return expressions_match(row["answer_sympy"], submitted, _indefinite(row), row.get("variable", "x"))
 
 
 def grade_problem(
@@ -505,10 +506,11 @@ def grade_problem(
     if catalog_row is not None:
         if catalog_row.get("verify") == "sympy":
             answer = catalog_row.get("answer_sympy")
-            if not isinstance(answer, str) or not answer or catalog_row.get("variable") != "x":
+            variable = catalog_row.get("variable")
+            if not isinstance(answer, str) or not answer or variable not in problem_catalog.SYMPY_VARIABLES:
                 return None, "catalog problem is not sympy-checked"
             try:
-                correct = expressions_match(answer, submitted, _indefinite(catalog_row))
+                correct = expressions_match(answer, submitted, _indefinite(catalog_row), variable)
             except Exception as exc:
                 return None, f"answer did not parse: {exc}"
             tags = list(catalog_row.get("technique_tags") or [])
@@ -522,6 +524,7 @@ def grade_problem(
                     "answer_sympy": answer,
                     "kind": catalog_row.get("kind"),
                     "limits": catalog_row.get("limits"),
+                    "variable": variable,
                 },
                 "manual": False,
             }, None

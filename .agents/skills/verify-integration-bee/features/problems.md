@@ -22,7 +22,7 @@ Preconditions:
 - `IB_DATA_DIR` is empty.
 
 - **Round list.** Run `scripts/control-integration-bee problems list --round r1 --format json >"$IB_EVIDENCE/problems-round.json"`. Exit code is 0. Stdout contains `R1-2024-Q01` and `"count": 280`. Stdout does not contain `answer_plain` or `answer_sympy`.
-- **Show one.** Run `scripts/control-integration-bee problems show --id R1-2024-Q01 --format json >"$IB_EVIDENCE/problems-show.json"`. Exit code is 0. Stdout contains `sin(1)`, `manual`, and `Mark_Scheme_2024_Round_1_UK_University_Integration_Bee.pdf`.
+- **Show one.** Run `scripts/control-integration-bee problems show --id R1-2024-Q01 --format json >"$IB_EVIDENCE/problems-show.json"`. Exit code is 0. Stdout contains `sin(1)`, `"verify": "sympy"`, and `Mark_Scheme_2024_Round_1_UK_University_Integration_Bee.pdf`.
 - **Show a proved row.** Run `scripts/control-integration-bee problems show --id R1-2020-Q08 --format json >"$IB_EVIDENCE/problems-show-sympy.json"`. Exit code is 0. Stdout contains `"verify": "sympy"`, `answer_sympy`, and `Virtual_integration_competition_answers.pdf`.
 - **Select one.** Run `scripts/control-integration-bee problems select --id YANG-1.1-P01 --format json >"$IB_EVIDENCE/problems-select.json"`. Exit code is 0. Stdout contains `unchecked` and `integrand_plain`. Stdout does not contain `answer_plain`.
 - **Ambiguous select.** Run `scripts/control-integration-bee problems select --round r1 --format json >"$IB_EVIDENCE/problems-ambiguous.txt" 2>"$IB_EVIDENCE/problems-ambiguous.err"`. Exit code is 2. Stderr contains `matched`.

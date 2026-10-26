@@ -3,8 +3,7 @@
 
 The script rewrites problems/records.jsonl only for rows whose layout reading
 is proved by SymPy. Every other row stays manual or unchecked. Run it again
-after a parser change. It is deterministic. R1-2024-Q01 stays manual: it is
-the cited example of a mark-scheme verdict.
+after a parser change. It is deterministic.
 
 PyMuPDF is required for this script. The catalog check does not import it.
 """
@@ -44,13 +43,33 @@ def load_pair(cache: dict, pdf: str, kind: str):
 
 
 GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
-# R1-2024-Q01 is the manual mark example. R1-2024-Q10 integrates in t while x
-# is a parameter, and a sympy row has to use the letter x.
-HELD_MANUAL = frozenset({"R1-2024-Q01", "R1-2024-Q10"})
 # Layout readings that do not prove. Each triple is the printed integrand, its
 # limits (None when indefinite), and the printed final, taken from the worked
 # note that cites the mark scheme. proven() still has to accept the triple.
+# An optional fourth item preserves a printed integration variable when x is
+# already a parameter.
 TRANSCRIPTS = {
+    "R1-2020-Q25": (
+        "log(a+b*cos(x))",
+        ("0", "pi"),
+        "pi*log((a+sqrt(a**2-b**2))/2)",
+    ),
+    "R1-2022-Q07": ("x*Product(cos(x/2**k), (k, 1, oo))", ("0", "pi/2"), "1"),
+    "R1-2022-Q17": ("cos(x)/cosh(x)", ("-oo", "oo"), "pi*sech(pi/2)"),
+    "R1-2023-Q04": ("2*x", None, "2*x*X", "X"),
+    "R1-2024-Q01": ("exp(i*x)/2", ("-1", "1"), "sin(1)"),
+    "R1-2024-Q10": (
+        "exp(-t**2)*cos(2*x*t)",
+        ("0", "oo"),
+        "sqrt(pi)*exp(-x**2)/2",
+        "t",
+    ),
+    "R2-2024-Group-Q01": ("1/(1+Sum(x**k, (k, 1, oo))**2024)", ("0", "1"), "1/2"),
+    "R3-2024-Chainlink-G2-Q05": (
+        "sin(x)/(cos(x)+tan(x))",
+        ("0", "pi/2"),
+        "2*atanh(1/sqrt(5))/sqrt(5)",
+    ),
     "R1-2020-Q10": ("sqrt(log(9-x))/(sqrt(log(9-x))+sqrt(log(x+3)))", ("2", "4"), "1"),
     "R1-2020-Q11": (
         "(3*x**10+2*x**8-2)*(x**10+x**8+1)**(Rational(1,4))/x**6",
@@ -454,14 +473,12 @@ def transcribed(row: dict) -> dict | None:
     item = TRANSCRIPTS.get(row.get("id"))
     if item is None:
         return None
-    integrand, limits, answer = item
-    return pack_gate.fields_from_parts(integrand, limits, answer, "x")
+    integrand, limits, answer, *variable = item
+    return pack_gate.fields_from_parts(integrand, limits, answer, variable[0] if variable else "x")
 
 
 def gate_row(row: dict, cache: dict) -> dict | None:
     if row.get("round") not in GATED_ROUNDS or row.get("source") != "resource_pack":
-        return None
-    if row.get("id") in HELD_MANUAL:
         return None
     if not str(row.get("answer_plain") or "").strip():
         return None

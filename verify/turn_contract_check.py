@@ -313,7 +313,6 @@ def gap_cases(data: Path, check) -> None:
             "kind": "mark",
             "problem_id": "R1-2024-Q01",
             "source": "typed",
-            "verdict": "incorrect",
             "extract": {"final_answer": "0"},
         },
     )
@@ -618,20 +617,20 @@ def main() -> int:
             data,
             {
                 "kind": "mark",
-                "problem_id": "R1-2024-Q01",
+                "problem_id": "R1-2023-Q05",
                 "source": "typed",
-                "extract": {"final_answer": "sin(1)"},
+                "extract": {"final_answer": "0"},
             },
         )
         check(refused.returncode == 2 and "manual problem needs verdict" in refused.stderr, "catalog mark needs a verdict")
         attempts_doc = json.loads((data / "attempts.json").read_text())
         before = len(attempts_doc["items"])
-        check(not any(item["problem_id"] == "R1-2024-Q01" for item in attempts_doc["items"]), "refused catalog mark writes no attempt")
+        check(not any(item["problem_id"] == "R1-2023-Q05" for item in attempts_doc["items"]), "refused catalog mark writes no attempt")
         accepted = apply(
             data,
             {
                 "kind": "mark",
-                "problem_id": "R1-2024-Q01",
+                "problem_id": "R1-2023-Q05",
                 "source": "typed",
                 "verdict": "correct",
                 "extract": {"final_answer": "not-a-sympy-expression"},
@@ -639,18 +638,18 @@ def main() -> int:
         )
         accepted_doc = load(accepted)
         check(accepted.returncode == 0 and accepted_doc["mark"]["correct"] is True, "manual catalog mark stores the verdict")
-        check("sin(1)" in accepted_doc["mark"]["expected_display"], "manual mark shows the cited answer")
+        check(accepted_doc["mark"]["expected_display"] == "0", "manual mark shows the cited answer")
         shown = run(data, ["progress", "show", "--format", "json"])
-        check("R1-2024-Q01" in shown.stdout, "progress show reads the catalog attempt")
+        check("R1-2023-Q05" in shown.stdout, "progress show reads the catalog attempt")
         after = json.loads((data / "attempts.json").read_text())
         check(len(after["items"]) == before + 1, "catalog mark appends one attempt")
         gated = apply(
             data,
             {
                 "kind": "mark",
-                "problem_id": "R1-2020-Q08",
+                "problem_id": "R1-2024-Q01",
                 "source": "typed",
-                "extract": {"final_answer": "1/2"},
+                "extract": {"final_answer": "sin(1)"},
             },
         )
         gated_doc = load(gated)
@@ -659,14 +658,34 @@ def main() -> int:
             data,
             {
                 "kind": "mark",
-                "problem_id": "R1-2020-Q08",
+                "problem_id": "R1-2024-Q01",
                 "source": "typed",
                 "verdict": "correct",
-                "extract": {"final_answer": "1"},
+                "extract": {"final_answer": "0"},
             },
         )
         overridden_doc = load(overridden)
         check(overridden.returncode == 1 and overridden_doc["mark"]["correct"] is False, "a verdict cannot override a wrong sympy answer")
+        for problem_id, final, correct in (
+            ("R1-2023-Q04", "2*x*X+C", True),
+            ("R1-2023-Q04", "2*x*X+sin(x)", True),
+            ("R1-2023-Q04", "2*x*X+X", False),
+            ("R1-2024-Q10", "sqrt(pi)*exp(-x**2)/2", True),
+            ("R1-2024-Q10", "sqrt(pi)*exp(-t**2)/2", False),
+        ):
+            marked = apply(
+                data,
+                {
+                    "kind": "mark",
+                    "problem_id": problem_id,
+                    "source": "typed",
+                    "extract": {"final_answer": final},
+                },
+            )
+            check(
+                marked.returncode == (0 if correct else 1) and load(marked)["mark"]["correct"] is correct,
+                f"{problem_id} grades {final} with its integration variable",
+            )
         invented = apply(
             data,
             {

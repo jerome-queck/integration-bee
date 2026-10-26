@@ -15,11 +15,12 @@ SAMPLE_PROBLEM_PDF = "sources/Integration_Competition_Sample_problems.pdf"
 SAMPLE_ANSWERS_PDF = "sources/Integration_bee_sample_problems_answers.pdf"
 SAMPLE_SOLUTIONS_PDF = "sources/UK_University_integration_bee_sample_problems_solutions.pdf"
 VERIFIES = frozenset({"manual", "unchecked", "sympy"})
+SYMPY_VARIABLES = frozenset({"x", "t", "X"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
 EXPECTED_COUNT = 946
-EXPECTED_MANUAL = 331
-EXPECTED_SYMPY = 345
+EXPECTED_MANUAL = 323
+EXPECTED_SYMPY = 353
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
@@ -140,8 +141,8 @@ def _sympy_shape(row: dict) -> str | None:
     ident = row.get("id")
     if row.get("round") == "yang" or row.get("source") != "resource_pack":
         return f"{ident} sympy outside the resource pack"
-    if row.get("variable") != "x":
-        return f"{ident} sympy variable is not x"
+    if row.get("variable") not in SYMPY_VARIABLES:
+        return f"{ident} unsupported sympy variable"
     if row.get("kind") not in {"definite", "indefinite"}:
         return f"{ident} sympy kind"
     for key in ("sympy_expr", "answer_sympy", "integrand_latex", "answer_latex"):
@@ -342,6 +343,6 @@ def catalog_problem(rows: list[dict]) -> str | None:
         return "R1-2024-Q01 mark scheme cite changed"
     if pinned.get("worked_solution_origin") != "pdf_copy":
         return "R1-2024-Q01 lost its worked solution"
-    if pinned.get("verify") != "manual":
-        return "R1-2024-Q01 is not manual"
+    if pinned.get("verify") != "sympy":
+        return "R1-2024-Q01 is not sympy"
     return None
