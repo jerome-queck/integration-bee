@@ -44,8 +44,9 @@ def load_pair(cache: dict, pdf: str, kind: str):
 
 
 GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
-# The turn contract and the catalog pin use this row as the manual mark example.
-HELD_MANUAL = frozenset({"R1-2024-Q01"})
+# R1-2024-Q01 is the manual mark example. R1-2024-Q10 integrates in t while x
+# is a parameter, and a sympy row has to use the letter x.
+HELD_MANUAL = frozenset({"R1-2024-Q01", "R1-2024-Q10"})
 # Layout readings that do not prove. Each triple is the printed integrand, its
 # limits (None when indefinite), and the printed final, taken from the worked
 # note that cites the mark scheme. proven() still has to accept the triple.
@@ -299,6 +300,152 @@ TRANSCRIPTS = {
         "(x**2+1)/(x**3+1)",
         ("0", "1"),
         "(2*log(2)+sqrt(3)*pi/3)/3",
+    ),
+    # Wave 5j. Each triple is the printed integrand and the printed final.
+    "R1-2024-Q11": ("Si(x)*sin(x)/x", ("0", "oo"), "pi**2/8"),
+    "R1-2024-Q13": ("(sin(x)+sin(1/x))/(x*(1+x**2))", ("0", "oo"), "pi/2"),
+    "R1-2024-Q15": (
+        "sin(sqrt(x))/(sinh(sqrt(x))+sin(sqrt(x)))",
+        ("-1", "1"),
+        "1",
+    ),
+    "R1-2025-Online-Q30": ("atan(1+x)/x", ("1", "2"), "3*pi*log(2)/8"),
+    "R2-2022-Group-Q01": ("1/x-cot(x)", ("0", "1"), "-log(sin(1))"),
+    "R2-2023-Group-Q01": (
+        "cos(cos(x)**2)**2+sin(sin(x)**2)**2",
+        ("0", "pi"),
+        "pi",
+    ),
+    "R2-2024-Relay-Q05": ("1/(1+(x+1/x)**2)", ("-oo", "oo"), "pi/sqrt(5)"),
+    "R2-2024-Relay-Q11": (
+        "atan(atan(x/(1-x))/atan((1-x)/x))",
+        ("0", "1"),
+        "pi/4",
+    ),
+    "R2-2024-Relay-Q15": ("sin(pi*x/2)**2/sqrt(x-x**2)", ("0", "1"), "pi/2"),
+    "R2-2024-Relay-Q16": (
+        "Max(Min(x, sin(x)), Min(x, cos(x)))",
+        ("pi", "3*pi"),
+        "2*sqrt(2)",
+    ),
+    "R2-2024-Relay-Q19": ("sqrt(log(x)+1)/x**2", ("exp(-1)", "oo"), "E*sqrt(pi)/2"),
+    "R2-2025-SG-Group-Q03": (
+        "1/(x**Rational(1,3)-x)**Rational(1,3)",
+        ("0", "1"),
+        "pi/sqrt(3)",
+    ),
+    "R2-2025-SG-Group-Q04": (
+        "(2*x-1)/(sqrt(2*x-x**2)-sqrt(1-x**2))",
+        ("0", "1"),
+        "pi/2",
+    ),
+    "R2-2025-SG-Relay-Q06": (
+        "x**((sqrt(5)-1)/2)/(1+x**((1+sqrt(5))/2))",
+        None,
+        "2*log(1+x**((1+sqrt(5))/2))/(1+sqrt(5))",
+    ),
+    "R2-2025-SG-Relay-Q08": (
+        "sin(x)**(tan(x)-2)*(tan(x)**2*log(sin(x))+sin(x)**2)",
+        ("pi/4", "pi/2"),
+        "1-1/sqrt(2)",
+    ),
+    "R2-2025-SG-Relay-Q13": (
+        "x*sqrt(x**2-1)*exp(-x**2)",
+        ("1", "oo"),
+        "sqrt(pi)/(4*E)",
+    ),
+    "R2-2025-SG-Relay-Q25": (
+        "(1-x)/((1+x)*sqrt(x+x**2+x**3))",
+        ("0", "1"),
+        "pi/3",
+    ),
+    "R2-2025-SG-Relay-Q26": ("1/(1+sin(x)**2*cos(x)**2)", ("0", "pi/2"), "pi/sqrt(5)"),
+    "R2-2025-UK-Group-Q03": (
+        "(2*x-1)/(sqrt(2*x-x**2)-sqrt(1-x**2))",
+        ("0", "1"),
+        "pi/2",
+    ),
+    "R2-2025-UK-Relay-Q06": (
+        "x**((sqrt(5)-1)/2)/(1+x**((1+sqrt(5))/2))",
+        None,
+        "2*log(1+x**((1+sqrt(5))/2))/(1+sqrt(5))",
+    ),
+    "R2-2025-UK-Relay-Q07": (
+        "sin(x)**(tan(x)-2)*(tan(x)**2*log(sin(x))+sin(x)**2)",
+        ("pi/4", "pi/2"),
+        "1-1/sqrt(2)",
+    ),
+    "R3-2024-Chainlink-G1-Q01": ("(x-floor(x))**floor(x)", ("1", "4"), "Rational(13,12)"),
+    "R3-2024-Chainlink-G3-Q02": (
+        "exp(-x**2)*(5*x**4-2*x**6)",
+        ("-1", "oo"),
+        "exp(-1)",
+    ),
+    "R3-2024-Chainlink-G4-Q02": (
+        "(1+sqrt(1-x**2))/(sqrt(1+x)+sqrt(1-x))",
+        ("0", "1"),
+        "2*sqrt(2)/3",
+    ),
+    "R3-2024-Chainlink-G4-Q06": (
+        "atan((4*x-4*x**3)/(x**4-6*x**2+1))/(1+x**2)",
+        None,
+        "atan((4*x-4*x**3)/(x**4-6*x**2+1))**2/8",
+    ),
+    "R3-2024-Chainlink-G5-Q03": (
+        "1/(1+sqrt((1-x+sqrt(x))/(x+sqrt(1-x))))",
+        ("0", "1"),
+        "Rational(1,2)",
+    ),
+    "R3-2024-Dichotomy-S1-Q02a": (
+        "tan(2*x)/tan(x)",
+        None,
+        "x+log(Abs(1+tan(x)))/2-log(Abs(1-tan(x)))/2",
+    ),
+    "R3-2024-Dichotomy-S1-Q06a": (
+        "tan(sin(x)**2)/(1-tan(sin(x)**2)*tan(cos(x)**2))",
+        ("0", "pi/2"),
+        "pi*tan(1)/4",
+    ),
+    "R3-2024-Dichotomy-S1-Q06b": (
+        "log((cos(x)+sin(x))/(sqrt(2)*sin(x)))+log(tan(x))",
+        ("0", "pi/4"),
+        "0",
+    ),
+    "R3-2024-Dichotomy-S2-Q01a": ("log(1+x**4)/x**3", ("0", "1"), "pi/4-log(2)/2"),
+    "R3-2024-Dichotomy-S2-Q01b": ("log(1+x**4)/x**3", ("-1", "1"), "0"),
+    "R3-2024-Dichotomy-S2-Q02b": (
+        "1/((sqrt(x)+1)*x+2*sqrt(x))",
+        None,
+        "4*atan((2*sqrt(x)+1)/sqrt(7))/sqrt(7)",
+    ),
+    "R3-2024-Dichotomy-S2-Q04a": (
+        "1/((x+sqrt(1+x**2))*(1+x**2))",
+        ("0", "oo"),
+        "log(2)",
+    ),
+    "R3-2024-Dichotomy-S3-Q04b": ("atan(1/x)/x**2", ("1", "oo"), "pi/4-log(2)/2"),
+    "R3-2024-Dichotomy-S3-Q06a": ("cos(x)**8-sin(x)**8", ("0", "pi/4"), "Rational(5,12)"),
+    "R3-2024-Dichotomy-S3-Q06b": ("cos(x)**6-sin(x)**6", ("0", "pi/4"), "Rational(11,24)"),
+    "R3-2024-Tournament-Q01-v4": (
+        "x*log(x)/(1+log(x))**3",
+        ("1", "E"),
+        "Rational(1,2)*(exp(2)/4-1)",
+    ),
+    "R3-2024-Tournament-Q03-v7": ("sin(x)*sqrt(sin(2*x))", ("0", "pi/2"), "pi/4"),
+    "R3-2024-Tournament-Q05-v6": (
+        "sin(x)**tan(x)*(sec(x)**2*log(sin(x))+1)",
+        ("pi/4", "pi/2"),
+        "1-sqrt(2)/2",
+    ),
+    "R3-2024-Tournament-Q07-v4": (
+        "(x-sqrt(7*x-x**2))/(2*x-7)",
+        ("3", "4"),
+        "Rational(1,2)",
+    ),
+    "R3-2024-Tournament-Q08-v6": (
+        "x**E*(exp(x)+exp(-x))+x**(E-1)*(exp(x+1)-exp(1-x))",
+        ("0", "1"),
+        "E-1/E",
     ),
 }
 
