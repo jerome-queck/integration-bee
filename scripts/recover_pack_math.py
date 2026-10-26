@@ -5,7 +5,8 @@ The script rewrites problems/records.jsonl only for rows whose layout reading
 is proved by SymPy. Every other row stays manual or unchecked. Run it again
 after a parser change. It is deterministic.
 
-PyMuPDF is required for this script. The catalog check does not import it.
+PyMuPDF is required for layout recovery. Transcript-only reproofs do not
+import the PDF reader, so the ordinary check dependencies stay unchanged.
 """
 
 from __future__ import annotations
@@ -20,7 +21,6 @@ sys.path.insert(0, str(ROOT / "verify"))
 import pack_gate  # noqa: E402
 import pack_answer_contracts  # noqa: E402
 import pack_wave5k  # noqa: E402
-import pdf_math  # noqa: E402
 import problem_catalog  # noqa: E402
 
 CONTRACT_TRANSCRIPTS = pack_answer_contracts.transcripts()
@@ -34,6 +34,8 @@ def problem_number(row: dict) -> int | None:
 
 
 def load_pair(cache: dict, pdf: str, kind: str):
+    import pdf_math
+
     key = (kind, pdf)
     if key not in cache:
         path = ROOT / pdf
@@ -1657,6 +1659,27 @@ TRANSCRIPTS["R1-2022-Q30"] = (
     ("0", "oo"),
     "pi*log(1+Symbol('a',positive=True))**2/(2*Symbol('a',positive=True)**2)",
 )
+# Handoff H: UK Group problem/mark p.2; product problems UK p.3 and SG p.8,
+# with both Gamma forms on UK mark p.3. The product's x lies outside 2026/2025.
+# Product inverses explicitly opt into their own kind instead of being
+# inferred as ordinary indefinite integrals from their absent endpoints.
+_HANDOFF_H_PRODUCT = (
+    "2025*x+2026", None, "2025**x*gamma(x+Rational(2026,2025))",
+)
+TRANSCRIPTS.update(
+    {
+        "R2-2025-UK-Relay-Q10": _HANDOFF_H_PRODUCT,
+        "R2-2025-SG-Relay-Q29": _HANDOFF_H_PRODUCT,
+        "R2-2025-UK-Group-Q10": (
+            "Subs(ceiling(rounded_value),rounded_value,Integral(1/atan(x)-(1+x**2)/(1+atan(x)+x**2*atan(x)),(x,1,oo)))",
+            ("1", "oo"), "1",
+        ),
+    }
+)
+TRANSCRIPT_KINDS = {
+    "R2-2025-UK-Relay-Q10": "discrete_multiplicative",
+    "R2-2025-SG-Relay-Q29": "discrete_multiplicative",
+}
 
 
 def transcribed(row: dict) -> dict | None:
@@ -1672,7 +1695,10 @@ def transcribed(row: dict) -> dict | None:
     if item is None:
         return None
     integrand, limits, answer, *variable = item
-    return pack_gate.fields_from_parts(integrand, limits, answer, variable[0] if variable else "x")
+    return pack_gate.fields_from_parts(
+        integrand, limits, answer, variable[0] if variable else "x",
+        kind=TRANSCRIPT_KINDS.get(ident),
+    )
 
 
 def gate_row(row: dict, cache: dict) -> dict | None:

@@ -21,8 +21,8 @@ SYMPY_VARIABLES = frozenset({"x", "t", "X", "e"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
 EXPECTED_COUNT = 946
-EXPECTED_MANUAL = 18
-EXPECTED_SYMPY = 658
+EXPECTED_MANUAL = 15
+EXPECTED_SYMPY = 661
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
@@ -150,7 +150,7 @@ def _sympy_shape(row: dict) -> str | None:
         return f"{ident} {error}" if error else None
     if row.get("variable") not in SYMPY_VARIABLES:
         return f"{ident} unsupported sympy variable"
-    if row.get("kind") not in {"definite", "indefinite"} | pack_answer_contracts.KINDS:
+    if row.get("kind") not in {"definite", "indefinite", "discrete_multiplicative"} | pack_answer_contracts.KINDS:
         return f"{ident} sympy kind"
     for key in ("sympy_expr", "answer_sympy", "integrand_latex", "answer_latex"):
         if _blank(row.get(key)) or not isinstance(row.get(key), str):
