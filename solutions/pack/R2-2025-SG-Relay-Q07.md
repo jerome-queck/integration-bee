@@ -3,7 +3,7 @@
 - Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 7)
 - Printed answer: no Singapore mark scheme is in this tree. The value below is derived from the problem sheet.
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- `verify/pack_gate.py` checks this reduction before the catalog row is marked `sympy`.
 
 ## Problem
 
@@ -25,7 +25,7 @@ because \(|1-e^{i\phi}|^{2}=4\sin^{2}(\phi/2)\). With \(\phi=2\theta\),
 \log|\sin\theta|=-\log 2-\sum_{k\geq 1}\frac{\cos(2k\theta)}{k}
 \]
 
-away from integer multiples of \(\pi\). Those singularities are logarithmic, hence integrable on \([0,\pi/2]\).
+away from integer multiples of \(\pi\). Use Abel regularisations with coefficients \(r^k/k\), \(0<r<1\), before multiplying the series. The coefficients are square summable and cosine modes are orthogonal, so the regularisations converge in \(L^2\). Their products therefore converge in \(L^1\) by Cauchy–Schwarz. This justifies the termwise calculation below; the logarithmic singularities also have finite square integrals.
 
 The product of the two series contributes only when the frequencies agree. Since \(2026!=(2026)\,2025!\), the condition \(k\cdot 2025!=m\cdot 2026!\) says \(k=2026m\). For positive integers \(p\neq q\),
 

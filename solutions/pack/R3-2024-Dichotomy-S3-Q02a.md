@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Dichotomy_Segment_3_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (problem 2a)
 - Printed answer: `sources/past/r3/2024/Dichotomy_answers_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Segment 3, problem 2a)
 - Worked source: `sources/past/r3/2024/Dichotomy_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (Set 3/Segment 3, problem 2a)
-- The catalog row is not changed.
+- Verification: the SymPy gate checks the source transcription and its reduction.
 
 ## Problem
 
@@ -21,4 +21,4 @@ The answers sheet also prints \(4\operatorname{arsinh} 1\) and \(4\operatorname{
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r3_2024_dichotomy_s3_q02a`. SymPy checks \(u'=(u^{2}-1)/(4u)\) and the agreement of the three printed closed forms.
+The gate checks \(u'=(u^{2}-1)/(4u)\), the substitution's endpoint limits, the rational primitive, and the printed logarithmic final.
