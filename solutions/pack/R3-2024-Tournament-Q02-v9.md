@@ -3,7 +3,7 @@
 - Problem: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (Battle 4, Fight 1, problem 2, slide 158)
 - Printed answer: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (slide 160)
 - Worked source: `sources/past/r3/2024/Tournament_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (section 4.1, problem 2)
-- The catalog row is not changed.
+- The catalog stores this source integral with a SymPy certificate.
 
 ## Problem
 
@@ -48,3 +48,5 @@ The solutions PDF reaches the same value by taking the real part of \(\int e^{4y
 ## SymPy self-check
 
 `solutions/self_check.py` runs `check_r3_2024_tournament_q02_v9`. SymPy checks the trigonometric reduction, differentiates \(e^{4y}(\cos 4y+\sin 4y)/8\), and evaluates \(1/32-1/64\).
+
+`verify/pack_handoff_e_tournament.py` checks the exponential substitution, the damped trigonometric primitive, and its vanishing lower endpoint within the catalog proof timeout.

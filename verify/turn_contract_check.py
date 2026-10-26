@@ -93,7 +93,7 @@ def placement(data: Path, check) -> None:
     check(first_drill.returncode == 0, "U01-D07 aptitude mark exit")
     check(first_doc["tick"] is None or first_doc["tick"].get("status") != "skipped", "aptitude drill is not skipped")
     check(first_doc["session"]["phase"] == "aptitude", "a correct drill opens the contest probe")
-    check(first_doc["session"]["problem_id"] == "R1-2020-Q19", "contest probe is R1-2020-Q19")
+    check(first_doc["session"]["problem_id"] == "R1-2022-MIT-TB-Q01", "contest probe is R1-2022-MIT-TB-Q01")
     check(first_doc["session"]["node"] is None, "contest probe has no node")
     check("answer_plain" not in first_drill.stdout, "contest probe hides answer_plain")
     policy = json.loads((data / "session.json").read_text())["policy"]["basic-integration"]
@@ -104,7 +104,7 @@ def placement(data: Path, check) -> None:
         data,
         {
             "kind": "mark",
-            "problem_id": "R1-2020-Q19",
+            "problem_id": "R1-2022-MIT-TB-Q01",
             "source": "typed",
             "verdict": "correct",
             "extract": {"final_answer": "1"},
@@ -114,7 +114,7 @@ def placement(data: Path, check) -> None:
     check(catalog_mark.returncode == 0, "catalog probe mark exit")
     attempts = json.loads((data / "attempts.json").read_text())
     check(
-        any(item["problem_id"] == "R1-2020-Q19" and item["correct"] is True for item in attempts["items"]),
+        any(item["problem_id"] == "R1-2022-MIT-TB-Q01" and item["correct"] is True for item in attempts["items"]),
         "catalog probe stores an attempt",
     )
     ticks = json.loads((data / "skill-ticks.json").read_text())["ticks"] if (data / "skill-ticks.json").exists() else {}
@@ -135,7 +135,7 @@ def placement(data: Path, check) -> None:
     check(again.returncode == 0, "aptitude continues after a decline")
     check(again_doc["session"]["phase"] == "aptitude", "the next probe is open")
     check(again_doc["session"]["problem_id"] != "U01-D07", "a declined node is not probed again")
-    check(again_doc["session"]["problem_id"] != "R1-2020-Q19", "the contest probe is not repeated")
+    check(again_doc["session"]["problem_id"] != "R1-2022-MIT-TB-Q01", "the contest probe is not repeated")
     probe_id = again_doc["session"]["problem_id"]
     node_id = again_doc["session"]["node"]
     check(node_id and not str(probe_id).startswith("YANG-"), "the next probe is a unit drill")
@@ -617,7 +617,7 @@ def main() -> int:
             data,
             {
                 "kind": "mark",
-                "problem_id": "R1-2023-Q05",
+                "problem_id": "R1-2022-Oxford-Q01",
                 "source": "typed",
                 "extract": {"final_answer": "0"},
             },
@@ -625,12 +625,12 @@ def main() -> int:
         check(refused.returncode == 2 and "manual problem needs verdict" in refused.stderr, "catalog mark needs a verdict")
         attempts_doc = json.loads((data / "attempts.json").read_text())
         before = len(attempts_doc["items"])
-        check(not any(item["problem_id"] == "R1-2023-Q05" for item in attempts_doc["items"]), "refused catalog mark writes no attempt")
+        check(not any(item["problem_id"] == "R1-2022-Oxford-Q01" for item in attempts_doc["items"]), "refused catalog mark writes no attempt")
         accepted = apply(
             data,
             {
                 "kind": "mark",
-                "problem_id": "R1-2023-Q05",
+                "problem_id": "R1-2022-Oxford-Q01",
                 "source": "typed",
                 "verdict": "correct",
                 "extract": {"final_answer": "not-a-sympy-expression"},
@@ -638,9 +638,9 @@ def main() -> int:
         )
         accepted_doc = load(accepted)
         check(accepted.returncode == 0 and accepted_doc["mark"]["correct"] is True, "manual catalog mark stores the verdict")
-        check(accepted_doc["mark"]["expected_display"] == "0", "manual mark shows the cited answer")
+        check(accepted_doc["mark"]["expected_display"] == "sin(1)", "manual mark shows the cited answer")
         shown = run(data, ["progress", "show", "--format", "json"])
-        check("R1-2023-Q05" in shown.stdout, "progress show reads the catalog attempt")
+        check("R1-2022-Oxford-Q01" in shown.stdout, "progress show reads the catalog attempt")
         after = json.loads((data / "attempts.json").read_text())
         check(len(after["items"]) == before + 1, "catalog mark appends one attempt")
         gated = apply(
