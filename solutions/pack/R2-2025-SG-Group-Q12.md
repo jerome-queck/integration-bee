@@ -1,9 +1,9 @@
 # R2-2025-SG-Group-Q12
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Group_Round_SG.pdf` (group 12). The same series of integrals is group 9 of `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK group 9)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Group_Round_SG.pdf`, PDF page 2, group 12. The same series of integrals is group 9 on PDF page 2 of `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf`, PDF page 2, UK group 9. This is the UK mark for the identical question, not a separate Singapore mark scheme.
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- All three pages were visually checked. Both problem sheets print the same series, and the UK group mark is \(\ln 2-1\).
 
 ## Problem
 
@@ -27,6 +27,12 @@ The difference of the two logarithms integrates to \(H_{n+1}-H_{n}=1/(n+1)\). Th
 \]
 The mark scheme prints \(\ln 2-1\).
 
+The stored transcript keeps the logarithmic summands as a `Sum` inside the integral. The justification for exchanging their order is given in `solutions/pack/R2-2025-UK-Group-Q09.md`: with \(b_n(x)\) the positive logarithm above and \(c_n=\ln((n+1)/n)\), one has \(c_n-b_n\geq0\) and
+\[
+\sum_{n=1}^\infty\int_0^1(c_n-b_n(x))\,dx=1-\gamma<\infty.
+\]
+The alternating constants \(\sum(-1)^nc_n\) converge, and the remainder is absolutely summable in \(L^1\). Thus the transcript and the printed series of integrals have the same value.
+
 ## Final answer
 
 \[
@@ -35,4 +41,4 @@ The mark scheme prints \(\ln 2-1\).
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_r2_2025_sg_group_q12`. SymPy checks the same beta derivative and alternating harmonic tail as the UK group 9 note.
+`verify/pack_hard_series.py` checks the same substitution, beta derivative, digamma recurrence, absolutely summable remainder, and alternating harmonic tail as UK group 9. The certificate matches the exact Sum and its \([0,1]\) bounds before doing any symbolic work.
