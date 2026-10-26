@@ -83,7 +83,11 @@ forms are a complex average, a Gaussian cosine transform, a sine substitution
 into a quadratic, a sech transform on a rectangular contour, and a positive
 log-cosine parameter integral. Two literal infinite forms are checked before
 the closed-expression gate: a telescoping cosine product and a geometric series
-with a reflected 2024th power. Numeric agreement is not a proof.
+with a reflected 2024th power. Three further certificates check a sphere
+rotation, a full-line tangent integral by a rectangular contour, and finite
+Fourier grids by Legendre orthogonality. Only those nested structures, and the
+two infinite forms, may retain an inner Integral, Sum, or Product; answers
+must be closed. Numeric agreement is not a proof.
 """
 
 from __future__ import annotations
@@ -93,6 +97,7 @@ import multiprocessing as mp
 import sympy as sp
 
 import check_math
+import pack_certificates
 
 PROOF_TIMEOUT = 20.0
 
@@ -142,23 +147,26 @@ def _unwrap_equality(expr):
             return None
         left = _unwrap_equality(expr.lhs) if isinstance(expr.lhs, sp.Equality) else expr.lhs
         right = _unwrap_equality(expr.rhs) if isinstance(expr.rhs, sp.Equality) else expr.rhs
-        if left is None or right is None or not _zero(left - right):
+        if left is None or right is None or not _certificate_same(left, right):
             return None
         expr = right
     return expr
 
 
-def _answer_expr(text: str, variable: str):
+def _answer_expr(text: str, variable: str, *, allow_constant: bool = True):
     expr = _parse(text, variable)
+    constant = sp.Symbol("C")
+    if not allow_constant and expr.has(constant):
+        return None
     if isinstance(expr, sp.Equality):
         expr = _unwrap_equality(expr)
         if expr is None:
             return None
-    constant = sp.Symbol("C")
     if not expr.has(constant):
         # Expanding (sec+tan)^n for a large printed n is not a proof, and it
         # hides the compact antiderivative the derivative check needs.
-        if _large_integer_power(expr):
+        # Conditional finals likewise retain their printed factored form.
+        if _large_integer_power(expr) or isinstance(expr, sp.Piecewise):
             return expr
         return sp.expand(expr).subs(constant, 0)
     expanded = sp.expand(expr)
@@ -178,7 +186,7 @@ def _closed(expr) -> bool:
     has = getattr(expr, "has", None)
     if has is None:
         return False
-    if has(sp.Integral) or has(sp.Sum) or has(sp.Product):
+    if has(sp.Integral, sp.Sum, sp.Product, sp.Limit):
         return False
     return True
 
@@ -4747,11 +4755,41 @@ def _wave5j_values(integrand, symbol, lo, hi):
     return None
 
 
+def _certificate_same(value, answer) -> bool:
+    """Compare definite values without dropping signs or logarithm branches."""
+    if not _closed(value) or not _closed(answer):
+        return False
+    delta = sp.simplify(value - answer)
+    if delta == 0:
+        return True
+    if delta.has(sp.sinh, sp.cosh):
+        return sp.simplify(delta.rewrite(sp.exp)) == 0
+    return False
+
+
 def _worker(payload, queue) -> None:
     try:
         kind, integrand_s, limits, answer_s, variable = payload
         integrand = _parse(integrand_s, variable)
-        answer = _answer_expr(answer_s, variable)
+        answer = _answer_expr(answer_s, variable, allow_constant=kind == "indefinite")
+        if not _closed(answer):
+            queue.put(("ok", False))
+            return
+        # These checked forms retain the original finite sums or inner
+        # integral. The ordinary closed-integrand guard still rejects a miss.
+        if kind == "definite":
+            lo = _parse(limits[0], variable)
+            hi = _parse(limits[1], variable)
+            symbol = namespace(variable)[variable]
+            for builder in (
+                pack_certificates.sphere_integral_value,
+                pack_certificates.legendre_grid_value,
+                pack_certificates.tangent_ray_value,
+            ):
+                value = builder(integrand, symbol, lo, hi)
+                if value is not None:
+                    queue.put(("ok", _certificate_same(value, answer)))
+                    return
         if answer is not None and kind == "definite" and _floor_sine_zero(integrand, answer, variable, limits):
             queue.put(("ok", True))
             return
@@ -4871,14 +4909,20 @@ def proven(kind: str, integrand: str, limits, answer: str, variable: str) -> boo
     return status == "ok" and value is True
 
 
-def canon_expr(text: str, variable: str) -> str | None:
+def _canonical_text(expr, variable: str) -> str:
+    """Keep explicit symbol assumptions when plain names would discard them."""
+    plain = sp.sstr(expr)
+    return plain if _parse(plain, variable) == expr else sp.srepr(expr)
+
+
+def canon_expr(text: str, variable: str, *, allow_constant: bool = True) -> str | None:
     try:
-        expr = _answer_expr(text, variable)
+        expr = _answer_expr(text, variable, allow_constant=allow_constant)
         if expr is not None and _huge_integer(expr):
             expr = _printable(text, variable)
     except Exception:
         return None
-    return None if expr is None else sp.sstr(expr)
+    return None if expr is None else _canonical_text(expr, variable)
 
 
 def canon_integrand(text: str, variable: str) -> str | None:
@@ -4886,9 +4930,14 @@ def canon_integrand(text: str, variable: str) -> str | None:
         expr = _parse(text, variable)
     except Exception:
         return None
-    if not _closed(expr) and _infinite_integrand_form(expr, namespace(variable)[variable]) is None:
+    symbol = namespace(variable)[variable]
+    if not _closed(expr) and not (
+        pack_certificates.matches_sphere_integral(expr, symbol)
+        or pack_certificates.matches_legendre_grid(expr, symbol)
+        or _infinite_integrand_form(expr, symbol) is not None
+    ):
         return None
-    return sp.sstr(expr)
+    return _canonical_text(expr, variable)
 
 
 _DUMMY_VARIABLES = frozenset({"t", "u", "y", "z", "theta", "X"})
@@ -4907,7 +4956,7 @@ def rename_dummy(integrand: str, limits, answer: str, variable: str):
         expr = _parse(text, variable)
         if any(getattr(symbol, "name", None) == "x" for symbol in expr.atoms(sp.Symbol)):
             raise ValueError("x is a parameter")
-        return sp.sstr(expr.xreplace({old: target}))
+        return _canonical_text(expr.xreplace({old: target}), "x")
 
     try:
         new_limits = None if limits is None else [convert(item) for item in limits]
@@ -4922,12 +4971,15 @@ def rename_dummy(integrand: str, limits, answer: str, variable: str):
 
 def fields_from_parts(integrand_text: str, limits_text, answer_text: str, variable: str) -> dict | None:
     """Prove one integrand and answer already written as SymPy text."""
+    answer_text = canon_expr(answer_text, variable, allow_constant=limits_text is None)
+    if answer_text is None:
+        return None
     renamed = rename_dummy(integrand_text, limits_text, answer_text, variable)
     if renamed is None:
         return None
     integrand_text, limits_text, answer_text, variable = renamed
     integrand = canon_integrand(integrand_text, variable)
-    answer_s = canon_expr(answer_text, variable)
+    answer_s = canon_expr(answer_text, variable, allow_constant=limits_text is None)
     if integrand is None or answer_s is None:
         return None
     if limits_text is None:

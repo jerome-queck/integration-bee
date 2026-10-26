@@ -43,6 +43,24 @@ def load_pair(cache: dict, pdf: str, kind: str):
 
 
 GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
+# R2-2023-Relay-Q19 prints upper bound n. That limit is not the mark-scheme
+# value sqrt(pi/2), so recovery must not replace the manual row.
+HELD_MANUAL = frozenset({"R2-2023-Relay-Q19"})
+
+_RELAY_M = "Symbol('m', integer=True, positive=True)"
+_RELAY_N = "Symbol('n', integer=True, positive=True)"
+_RELAY_K = "Symbol('k', integer=True)"
+_RELAY_GRID = "*".join(
+    f"Sum((x+sqrt(x**2-1)*cos(2*pi*{_RELAY_K}/({index}+2026)))**({index}+26),"
+    f"({_RELAY_K},0,{index}+2025))"
+    for index in (_RELAY_M, _RELAY_N)
+)
+_RELAY_TRANSCRIPT = (
+    _RELAY_GRID,
+    ("-1", "1"),
+    f"Piecewise((2*({_RELAY_N}+2026)**2/(2*{_RELAY_N}+53),"
+    f"Eq({_RELAY_M},{_RELAY_N})),(0,True))",
+)
 # Layout readings that do not prove. Each triple is the printed integrand, its
 # limits (None when indefinite), and the printed final, taken from the worked
 # note that cites the mark scheme. proven() still has to accept the triple.
@@ -175,6 +193,11 @@ TRANSCRIPTS = {
     "R2-2021-Group-Q10": ("sin(x**2)", ("0", "oo"), "sqrt(pi/2)/2"),
     "R2-2022-Group-Q04": ("1/(sin(x)+cos(x))**2", ("0", "pi/2"), "1"),
     "R2-2022-Group-Q06": ("1/(x+sqrt(1+x**2))**2", ("0", "oo"), "Rational(2, 3)"),
+    "R2-2023-Group-Q05": (
+        "sin(x)*Integral(exp(sin(x)*(cos(t)-sin(t))), (t, 0, 2*pi))",
+        ("0", "pi"),
+        "2*sqrt(2)*pi*sinh(sqrt(2))",
+    ),
     "R2-2023-Relay-Q14": ("exp(x+exp(x))", ("0", "1"), "exp(E)-E"),
     "R2-2024-Group-Q04": ("atan(sin(x))/sin(x)", ("0", "pi/2"), "pi*log(1+sqrt(2))/2"),
     "R2-2024-Relay-Q01": (
@@ -182,6 +205,14 @@ TRANSCRIPTS = {
         ("-pi/2", "pi/2"),
         "(pi**2-8)/4",
     ),
+    "R2-2025-SG-Group-Q07": (
+        "cos(x)**2/(cos(x)**2+(x*cos(x)+sin(x)+1)**2)", ("-oo", "oo"), "pi",
+    ),
+    "R2-2025-SG-Relay-Q03": _RELAY_TRANSCRIPT,
+    "R2-2025-UK-Group-Q06": (
+        "cos(x)**2/(cos(x)**2+(x*cos(x)+sin(x)+1)**2)", ("-oo", "oo"), "pi",
+    ),
+    "R2-2025-UK-Relay-Q03": _RELAY_TRANSCRIPT,
     "R2-2025-SG-Group-Q14": (
         "((x+1)**2+(3*x+1)*sqrt(x+log(x)))/(x*sqrt(x+log(x))*(x+sqrt(x+log(x))))",
         None,
@@ -479,6 +510,8 @@ def transcribed(row: dict) -> dict | None:
 
 def gate_row(row: dict, cache: dict) -> dict | None:
     if row.get("round") not in GATED_ROUNDS or row.get("source") != "resource_pack":
+        return None
+    if row.get("id") in HELD_MANUAL:
         return None
     if not str(row.get("answer_plain") or "").strip():
         return None
