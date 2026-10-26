@@ -1,9 +1,9 @@
 # R2-2025-SG-Relay-Q23
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 23). The same integral is relay 5 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK relay 5)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (page 6, relay 23). The same integral is relay 5 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (page 3, UK relay 5)
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- The transcript retains the source assumptions that both parameters are positive integers.
 
 ## Problem
 
@@ -29,3 +29,5 @@ The UK mark scheme prints that value for this integral.
 ## SymPy self-check
 
 For a positive integer \(m\) and \(k\ge 1\), SymPy evaluates \(\int_{0}^{\infty}s^{m}e^{-ks}\,ds=m!/k^{m+1}\), and sums the series as \(m!\,\zeta(m+1)\).
+
+The same checked substitution, geometric-series, and Gamma certificate as UK relay 5 proves this transcript. It rejects parameters without the printed positive-integer assumptions.

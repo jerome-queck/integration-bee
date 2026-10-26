@@ -1,9 +1,9 @@
 # R2-2025-SG-Relay-Q24
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 24). The same integral is relay 14 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK relay 14)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (p. 7, relay 24). The same integral is relay 14 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (p. 3, UK relay 14)
 - Worked source: derived in this note; the UK mark scheme prints the final value.
-- The catalog row is not changed.
+- Catalog proof: the source integral and final are checked by `verify/pack_gate.py`.
 
 ## Problem
 

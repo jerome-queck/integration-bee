@@ -1,9 +1,9 @@
 # R2-2025-UK-Group-Q04
 
-- Problem: `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf` (group 4)
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (group 4)
+- Problem: `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf` (page 2, group 4)
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (page 2, group 4)
 - Worked source: derived in this note; the mark scheme prints the final value.
-- The catalog row is not changed.
+- The gate checks both interval partitions and the convergent series for the original integrand.
 
 ## Problem
 

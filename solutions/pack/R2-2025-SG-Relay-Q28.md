@@ -1,9 +1,9 @@
 # R2-2025-SG-Relay-Q28
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 28). The same integral is relay 18 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK relay 18)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (PDF p. 8, relay 28). The same integral is relay 18 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (PDF p. 5).
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (PDF p. 4, UK relay 18)
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- The catalog gate checks the Dirichlet reduction and rational cosine transform against this printed final.
 
 ## Problem
 

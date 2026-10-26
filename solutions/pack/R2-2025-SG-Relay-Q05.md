@@ -1,9 +1,9 @@
 # R2-2025-SG-Relay-Q05
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (relay 5). The same integral is relay 17 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK relay 17)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Relay_problems_SG.pdf` (page 2, relay 5). The same integral is relay 17 of `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (page 4, UK relay 17)
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- The gate checks the floor identity on every integer cell and sums the resulting Basel series.
 
 ## Problem
 

@@ -71,6 +71,73 @@ _RELAY_TRANSCRIPT = (
 # An optional fourth item preserves a printed integration variable when x is
 # already a parameter.
 TRANSCRIPTS = {
+    "R2-2024-Relay-Q17": (
+        "x/(floor(x)**4+4)", ("1", "oo"), "(5+pi*coth(pi))/16",
+    ),
+    "R2-2025-UK-Relay-Q05": (
+        f"log(1-x**{_RELAY_N})**{_RELAY_M}/x",
+        ("0", "1"),
+        f"(-1)**{_RELAY_M}*factorial({_RELAY_M})*zeta({_RELAY_M}+1)/{_RELAY_N}",
+    ),
+    "R2-2025-SG-Relay-Q23": (
+        f"log(1-x**{_RELAY_N})**{_RELAY_M}/x",
+        ("0", "1"),
+        f"(-1)**{_RELAY_M}*factorial({_RELAY_M})*zeta({_RELAY_M}+1)/{_RELAY_N}",
+    ),
+    "R2-2025-SG-Relay-Q05": (
+        "1/floor(x+floor(x))**2", ("1", "oo"), "pi**2/24",
+    ),
+    "R2-2025-SG-Group-Q05": (
+        "frac(x)*floor(2/frac(x))**(-floor(x))", ("1", "oo"), "2-pi**2/6",
+    ),
+    "R2-2025-UK-Group-Q04": (
+        "frac(x)*floor(2/frac(x))**(-floor(x))", ("1", "oo"), "2-pi**2/6",
+    ),
+    "R2-2023-Relay-Q04": (
+        # The gate checks this unique f against the printed ODE and boundary.
+        "exp(-x/2)*(polylog(2,exp(-x/2))-polylog(2,-exp(-x/2)))/2",
+        ("0", "oo"), "pi**2/4-2*log(2)",
+    ),
+    "R2-2024-Group-Q07": (
+        "sin(x)*sin(sin(x))*exp(cos(x))/x**2",
+        ("0", "oo"),
+        "pi*(E-1)/2",
+    ),
+    "R2-2025-SG-Relay-Q28": (
+        "(x**2-1)*sin(x)/(x*(x**2+1))",
+        ("0", "oo"),
+        "pi/E-pi/2",
+    ),
+    "R2-2025-UK-Relay-Q18": (
+        "(x**2-1)*sin(x)/(x*(x**2+1))",
+        ("0", "oo"),
+        "pi/E-pi/2",
+    ),
+    "R2-2022-Group-Q10": (
+        "atan(exp(x))*tanh(x/2)/(x*cosh(x))",
+        ("-oo", "oo"),
+        "pi*log(2)/2",
+    ),
+    "R1-2021-Q36": (
+        "atan(x)**2/x",
+        ("0", "1"),
+        "pi*G/2-7*zeta(3)/8",
+    ),
+    "R1-2022-Q28": (
+        "log((sqrt(1+x)+1)/(sqrt(1+x)-1))/sqrt(1-x**2)",
+        ("0", "1"),
+        "4*G",
+    ),
+    "R3-2024-Dichotomy-S2-Q06a": (
+        "(cos(x)-cos(x)**2)*log(x)/x**2",
+        ("0", "oo"),
+        "-pi*log(2)/2",
+    ),
+    "R2-2023-Relay-Q15": (
+        "4*pi*(1-x**2)**Rational(3,2)/3",
+        ("-1", "1"),
+        "pi**2/2",
+    ),
     "R2-2024-Relay-Q10": (
         "(exp(I*Symbol('theta', real=True)*x)-1-I*Symbol('theta', real=True)*sin(x))/Abs(x)**(1+Symbol('alpha', positive=True))",
         ("-oo", "oo"),
@@ -835,6 +902,36 @@ TRANSCRIPTS.update(
         ),
     }
 )
+
+
+TRANSCRIPTS.update({
+    # UK 2025 group sheet p.2; the group answers are on mark-scheme p.2.
+    "R2-2025-UK-Group-Q02": (
+        "1/(x**Rational(1,3)-x)**Rational(1,3)", ("0", "1"), "pi/sqrt(3)",
+    ),
+    "R2-2025-UK-Group-Q05": (
+        "(sin(x)+cos(x))*atan(sin(x))", ("0", "pi/2"),
+        "pi/sqrt(2)-pi/4-log(2)/2",
+    ),
+    "R2-2025-SG-Group-Q06": (
+        "(sin(x)+cos(x))*atan(sin(x))", ("0", "pi/2"),
+        "pi/sqrt(2)-pi/4-log(2)/2",
+    ),
+    # SG relay 24 is UK relay 14, printed as pi/e on UK mark-scheme p.3.
+    "R2-2025-SG-Relay-Q24": (
+        "x**(E/2-1)*(1+log(x))/(x**E+1)", ("0", "oo"), "pi/E",
+    ),
+    # Shuttle paper pp.2-3 and mark-scheme p.4 give c=pi and c=-oo.
+    "R2-2021-Relay-A04": (
+        "x*log(sin(x))", ("0", "pi"), "-pi**2*log(2)/2",
+    ),
+    "R2-2021-Relay-B04": (
+        "log(x)/(x**2+pi**2)", ("0", "oo"), "log(pi)/2",
+    ),
+    "R2-2023-Group-Q10": (
+        "atan(1+cos(x))", ("0", "pi"), "pi*acot(sqrt((1+sqrt(5))/2))",
+    ),
+})
 
 
 # Answer slides. Each pack note names the integral and states that the

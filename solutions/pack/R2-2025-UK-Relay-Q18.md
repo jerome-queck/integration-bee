@@ -1,9 +1,9 @@
 # R2-2025-UK-Relay-Q18
 
-- Problem: `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (relay 18)
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (relay 18)
+- Problem: `sources/past/r2/2025/uk/2025_Relay_Round_2.pdf` (PDF p. 5, relay 18)
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (PDF p. 4, relay 18)
 - Worked source: derived in this note; the mark scheme prints the final value.
-- The catalog row is not changed.
+- The catalog gate checks the Dirichlet reduction and rational cosine transform against this printed final.
 
 ## Problem
 

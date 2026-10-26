@@ -1,9 +1,9 @@
 # R2-2025-SG-Group-Q06
 
-- Problem: `sources/past/r2/2025/sg/2025_R2_Group_Round_SG.pdf` (group 6). The same integral is group 5 of `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf`.
-- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (UK group 5)
+- Problem: `sources/past/r2/2025/sg/2025_R2_Group_Round_SG.pdf` (p. 2, group 6). The same integral is group 5 of `sources/past/r2/2025/uk/2025_Group_Round_2_Integration_Bee.pdf`.
+- Printed answer: `sources/past/r2/2025/uk/2025_Round_2_Mark_Scheme.pdf` (p. 2, UK group 5)
 - Worked source: derived in this note.
-- The catalog row is not changed.
+- Catalog proof: the source integral and final are checked by `verify/pack_gate.py`.
 
 ## Problem
 
