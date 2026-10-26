@@ -841,7 +841,9 @@ TRANSCRIPTS.update(
 
 # Answer slides. Each pack note names the integral and states that the
 # printed mark equals the derived value. The Q03-v4 and Q04-v10 mismatch
-# families are absent, as are Q03-v10 and Q06-v4.
+# families are absent, as are Q03-v10 and Q06-v4. Q02-v10 and Q02-v11 are
+# the same reading as Q02-v9; that integral's generic proof exceeded 20s
+# on CI, so those two slides stay manual.
 ANSWER_SLIDES = {
     "R3-2024-Tournament-Q01-v11": "R3-2024-Tournament-Q01-v10",
     "R3-2024-Tournament-Q01-v12": "R3-2024-Tournament-Q01-v10",
@@ -851,8 +853,6 @@ ANSWER_SLIDES = {
     "R3-2024-Tournament-Q01-v6": "R3-2024-Tournament-Q01-v4",
     "R3-2024-Tournament-Q01-v8": "R3-2024-Tournament-Q01-v7",
     "R3-2024-Tournament-Q01-v9": "R3-2024-Tournament-Q01-v7",
-    "R3-2024-Tournament-Q02-v10": "R3-2024-Tournament-Q02-v9",
-    "R3-2024-Tournament-Q02-v11": "R3-2024-Tournament-Q02-v9",
     "R3-2024-Tournament-Q02-v2": "R3-2024-Tournament-Q02",
     "R3-2024-Tournament-Q02-v4": "R3-2024-Tournament-Q02-v3",
     "R3-2024-Tournament-Q02-v5": "R3-2024-Tournament-Q02-v3",
@@ -919,6 +919,8 @@ _ANSWER_SLIDE_EXCLUDED = frozenset(
         "R3-2024-Tournament-Q04-v12",
         "R3-2024-Tournament-Q06-v4",
         "R3-2024-Tournament-Q06-v5",
+        "R3-2024-Tournament-Q02-v10",
+        "R3-2024-Tournament-Q02-v11",
     }
 )
 
