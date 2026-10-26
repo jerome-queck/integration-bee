@@ -56,7 +56,14 @@ cosine-sine mean on [0, π/2], a root-exponential reflection on [-π/2, π/2],
 1/(1+|cos x|) on [0, 2π], a shifted square-root logarithm reduced to a gamma
 value, an arcsec substitution on [1, ∞), and an even power of cosine on a full
 period reduced by the Wallis recurrence. Those seven patterns are checked before
-the general reductions. Numeric agreement is not a proof.
+the general reductions. Further checked forms are acosh(sin+cos) on [0, π/2],
+atan(log(x)/(1+x)) on [1, e], a logistic composition on [1/4, 3/4],
+(atan(x/a)+atan(x/b))/x between positive endpoints, floor pieces of
+x**({x}-1)*(log(x**x)+{x}) on [0, 100], floor(1/x) on (0, 1], an alternating
+power of a fractional part, a cube-root floor on (0, 1], the two integrals
+equal to 1-γ, and x**2*cos(x)/(1+e**x) on [-π/2, π/2]. A positive integer
+power of sec+tan differentiates from the symbolic exponent. Numeric agreement
+is not a proof.
 """
 
 from __future__ import annotations
@@ -90,6 +97,7 @@ def namespace(variable: str) -> dict:
     ns["gamma"] = sp.gamma
     ns["binomial"] = sp.binomial
     ns["G"] = sp.Catalan
+    ns["EulerGamma"] = sp.EulerGamma
     ns["i"] = sp.I
     ns[variable] = sp.symbols(variable, real=True)
     ns["C"] = sp.Symbol("C")
@@ -128,6 +136,10 @@ def _answer_expr(text: str, variable: str):
             return None
     constant = sp.Symbol("C")
     if not expr.has(constant):
+        # Expanding (sec+tan)^n for a large printed n is not a proof, and it
+        # hides the compact antiderivative the derivative check needs.
+        if _large_integer_power(expr):
+            return expr
         return sp.expand(expr).subs(constant, 0)
     expanded = sp.expand(expr)
     cleaned = expanded.subs(constant, 0)
@@ -769,8 +781,39 @@ def _radical_branch(answer, integrand, symbol) -> bool:
     return False
 
 
+def _sec_tan_power(answer, integrand, symbol) -> bool:
+    """d/dx (sec+tan)^n / n = sec(sec+tan)^n for a positive integer n.
+
+    The identity is checked for a symbolic exponent, so a large printed power
+    does not have to be expanded.
+    """
+    degree = sp.Wild("n", exclude=[symbol])
+    orders = (
+        sp.sec(symbol) + sp.tan(symbol),
+        sp.tan(symbol) + sp.sec(symbol),
+    )
+    power = None
+    for base in orders:
+        matched = integrand.match(sp.sec(symbol) * base**degree)
+        if matched and degree in matched:
+            power = matched[degree]
+            break
+    if power is None or power.has(symbol) or not getattr(power, "is_Integer", False) or power <= 0:
+        return False
+    wanted = [(base**power) / power for base in orders]
+    if answer not in wanted:
+        return False
+    exponent = sp.Symbol("_n", integer=True, positive=True)
+    general = sp.sec(symbol) + sp.tan(symbol)
+    slope = sp.diff(general**exponent, symbol)
+    claim = exponent * sp.sec(symbol) * general**exponent
+    return _zero(sp.simplify(slope - claim))
+
+
 def _antiderivative(answer, integrand, variable: str) -> bool:
     symbol = namespace(variable)[variable]
+    if _sec_tan_power(answer, integrand, symbol):
+        return True
     plain = _drop_log_abs(answer)
     if plain != answer and _zero(sp.diff(plain, symbol) - integrand):
         return True
@@ -972,6 +1015,13 @@ def _atan_sin_parameter(integrand, symbol, lo, hi):
     """d/db of atan(b sin x)/sin x is 1/(1+b² sin² x), and t=tan x evaluates it."""
     if not (_zero(lo) and _zero(hi - sp.pi / 2)) or not integrand.has(sp.atan):
         return None
+    plain = sp.atan(sp.sin(symbol)) / sp.sin(symbol)
+    if integrand == plain:
+        height = sp.Symbol("_b", positive=True)
+        value = _atan_sin_parameter(sp.atan(height * sp.sin(symbol)) / sp.sin(symbol), symbol, lo, hi)
+        if value is None:
+            return None
+        return sp.simplify(value.subs(height, 1))
     coeff = sp.Wild("b", exclude=[symbol])
     matched = integrand.match(sp.atan(coeff * sp.sin(symbol)) / sp.sin(symbol))
     if not matched:
@@ -2963,6 +3013,344 @@ def _even_cosine_period(integrand, symbol, lo, hi):
     return sp.simplify(full)
 
 
+def _acosh_sum_quarter(integrand, symbol, lo, hi):
+    """acosh(sin+cos) on [0, π/2] is 2 I(√2), and I'(t)=π/(2t)."""
+    if not (_zero(lo) and _zero(hi - sp.pi / 2)) or not integrand.has(sp.acosh):
+        return None
+    target = sp.acosh(sp.sin(symbol) + sp.cos(symbol))
+    if integrand != target and not _zero(integrand - target):
+        return None
+    shifted = sp.sqrt(2) * sp.cos(symbol - sp.pi / 4)
+    if not _zero(sp.sin(symbol) + sp.cos(symbol) - shifted):
+        return None
+    if not _zero(sp.asec(sp.sqrt(2)) - sp.pi / 4):
+        return None
+    angle = sp.Symbol("_p", real=True)
+    if not _zero(sp.acosh(sp.sqrt(2) * sp.cos(-angle)) - sp.acosh(sp.sqrt(2) * sp.cos(angle))):
+        return None
+    height = sp.Symbol("_t", positive=True)
+    phase = sp.Symbol("_q", real=True)
+    if not _zero(sp.cos(sp.asec(height)) - 1 / height):
+        return None
+    if not _zero(sp.acosh(1)) or not _zero(sp.acosh(height * sp.cos(sp.asec(height)))):
+        return None
+    if not _zero(sp.simplify(height * sp.sin(sp.asec(height)) - sp.sqrt(height**2 - 1))):
+        return None
+    inside = height * sp.cos(phase)
+    partial = sp.diff(sp.acosh(inside), height)
+    expect = sp.cos(phase) / sp.sqrt(inside**2 - 1)
+    # acosh' splits the radicand into a product of square roots. Their squares
+    # agree, and the quotient of those roots has no minus sign, so it is +1.
+    quoted = sp.cos(phase) / (sp.sqrt(inside - 1) * sp.sqrt(inside + 1))
+    if not _zero(sp.simplify(partial - quoted)):
+        return None
+    if not _zero(sp.expand((sp.sqrt(inside - 1) * sp.sqrt(inside + 1)) ** 2 - (inside**2 - 1))):
+        return None
+    if not _zero(sp.expand(sp.sqrt(inside**2 - 1) ** 2 - (inside**2 - 1))):
+        return None
+    ratio = sp.simplify(quoted / expect)
+    if not _zero(sp.simplify(ratio**2 - 1)) or ratio.could_extract_minus_sign():
+        return None
+    slope = sp.Symbol("_u", positive=True)
+    radicand = height**2 * (1 - (slope / height) ** 2) - 1
+    if not _zero(sp.expand(radicand - (height**2 - slope**2 - 1))):
+        return None
+    # dθ = dv/(t cos θ) turns the θ-density into 1/(t √(t²-v²-1)).
+    kernel = 1 / (height * sp.sqrt(height**2 - slope**2 - 1))
+    density = 1 / (height * sp.sqrt(height**2 * sp.cos(phase) ** 2 - 1))
+    if not _zero(sp.simplify(expect / (height * sp.cos(phase)) - density)):
+        return None
+    substituted = density.subs(sp.cos(phase) ** 2, 1 - (slope / height) ** 2)
+    if not _zero(sp.simplify(substituted - kernel)):
+        return None
+    span = sp.sqrt(height**2 - 1)
+    primitive = sp.asin(slope / span) / height
+    phi = sp.Symbol("_phi", real=True)
+    along = span * sp.sin(phi)
+    moved = sp.diff(primitive.subs(slope, along), phi)
+    claim = kernel.subs(slope, along) * sp.diff(along, phi)
+    if not _zero(sp.simplify(moved - claim)):
+        return None
+    if not _zero(along.subs(phi, 0)) or not _zero(along.subs(phi, sp.pi / 2) - span):
+        return None
+    if not _zero(primitive.subs(slope, 0)):
+        return None
+    if not _zero(primitive.subs(slope, span) - sp.pi / (2 * height)):
+        return None
+    if not _zero(sp.diff(sp.pi / 2 * sp.log(height), height) - sp.pi / (2 * height)):
+        return None
+    if not _zero(sp.limit(sp.pi / 2 * sp.log(height), height, 1)):
+        return None
+    if not _zero(sp.log(sp.sqrt(2)) - sp.log(2) / 2):
+        return None
+    return sp.simplify(sp.pi * sp.log(2) / 2)
+
+
+def _log_shift_acot(integrand, symbol, lo, hi):
+    """The integrand is d/dx atan(log(x)/(1+x)) on [1, e], which is acot(1+e)."""
+    if not (_zero(lo - 1) and _zero(hi - sp.E)) or not integrand.has(sp.log):
+        return None
+    target = (symbol - symbol * sp.log(symbol) + 1) / (
+        symbol * (symbol + 1) ** 2 + symbol * sp.log(symbol) ** 2
+    )
+    if integrand != target and not _zero(integrand - target):
+        return None
+    positive = sp.Symbol("_p", positive=True)
+    prime = sp.atan(sp.log(positive) / (1 + positive))
+    copied = target.subs(symbol, positive)
+    if not _zero(sp.diff(prime, positive) - copied):
+        return None
+    upper = sp.simplify(prime.subs(positive, sp.E))
+    lower = sp.simplify(prime.subs(positive, 1))
+    if not _zero(upper - sp.atan(1 / (1 + sp.E))) or not _zero(lower):
+        return None
+    height = sp.Symbol("_y", positive=True)
+    if not _zero(sp.diff(sp.acot(height) - sp.atan(1 / height), height)):
+        return None
+    if not _zero(sp.acot(1) - sp.atan(1)):
+        return None
+    return sp.acot(1 + sp.E)
+
+
+def _logistic_composition(integrand, symbol, lo, hi):
+    """f(x)=4**x/(2+4**x) satisfies f(1-x)=1-f(x), so f(f(x)) averages to 1/2."""
+    if not (_zero(lo - sp.Rational(1, 4)) and _zero(hi - sp.Rational(3, 4))):
+        return None
+    base = 4**symbol / (2 + 4**symbol)
+    composed = base.subs(symbol, base)
+    if integrand != composed and not _zero(integrand - composed):
+        return None
+    slot = sp.Symbol("_u", positive=True)
+    rule = 4**slot / (2 + 4**slot)
+    # f(1-u)=1-f(u), hence f(f(1-u))=f(1-f(u))=1-f(f(u)).
+    if not _zero(sp.simplify(rule.subs(slot, 1 - slot) - (1 - rule))):
+        return None
+    nested = rule.subs(slot, rule)
+    if not _zero(sp.simplify(rule.subs(slot, rule.subs(slot, 1 - slot)) - rule.subs(slot, 1 - rule))):
+        return None
+    if not _zero(sp.simplify(rule.subs(slot, 1 - rule) - (1 - nested))):
+        return None
+    # [1/4, 3/4] is symmetric about 1/2, so the integral of g is half its length.
+    if not _zero(lo + hi - 1) or not _zero((hi - lo) - sp.Rational(1, 2)):
+        return None
+    return sp.Rational(1, 4)
+
+
+def _atan_endpoint_ratio(integrand, symbol, lo, hi):
+    """On [a, b] with a>0 and b>0, the two arctangents add to π/2 after x→ab/x."""
+    if integrand.has(sp.floor) or not integrand.has(sp.atan):
+        return None
+    left = sp.Wild("A", exclude=[symbol])
+    right = sp.Wild("B", exclude=[symbol])
+    matched = integrand.match((sp.atan(symbol / left) + sp.atan(symbol / right)) / symbol)
+    if not matched:
+        return None
+    start, stop = matched[left], matched[right]
+    if start.has(symbol) or stop.has(symbol):
+        return None
+    if not (_zero(lo - start) and _zero(hi - stop)):
+        return None
+    if _zero(start) or _zero(stop):
+        return None
+
+    def ready():
+        a = sp.Symbol("_a", positive=True)
+        b = sp.Symbol("_b", positive=True)
+        x = sp.Symbol("_x", positive=True)
+        y = sp.Symbol("_y", positive=True)
+        _require(_zero(sp.diff(sp.atan(y) + sp.atan(1 / y), y)), "atan-diff")
+        _require(_zero(2 * sp.atan(1) - sp.pi / 2), "atan-one")
+        sub = a * b / y
+        _require(_zero(sp.simplify(sp.diff(sp.log(sub), y) + 1 / y)), "measure")
+        _require(_zero(sp.simplify(sp.atan(sub / a) + sp.atan(sub / b) - (sp.atan(b / y) + sp.atan(a / y)))), "swap")
+        copied = (sp.atan(sub / a) + sp.atan(sub / b)) / sub
+        reflected = (sp.atan(a / y) + sp.atan(b / y)) / y
+        _require(_zero(sp.simplify(copied * sp.diff(sub, y) + reflected)), "jacobian")
+        gap = sp.atan(x / a) + sp.atan(a / x) - sp.pi / 2
+        gap_b = sp.atan(x / b) + sp.atan(b / x) - sp.pi / 2
+        _require(_zero(sp.diff(gap, x)) and _zero(gap.subs(x, a)), "gap-a")
+        _require(_zero(sp.diff(gap_b, x)) and _zero(gap_b.subs(x, b)), "gap-b")
+        combined = gap + gap_b
+        _require(_zero(sp.diff(combined, x)), "pair")
+        four = sp.atan(x / a) + sp.atan(x / b) + sp.atan(a / x) + sp.atan(b / x)
+        _require(_zero(four - sp.pi - combined), "pair-link")
+        _require(_zero(sp.integrate(sp.pi / x, (x, a, b)) - sp.pi * sp.log(b / a)), "log")
+        return True
+
+    if _fact("atan-endpoint-ratio", ready) is not True:
+        return None
+    return sp.simplify(sp.pi / 2 * sp.log(stop / start))
+
+
+def _power_frac_span(integrand, symbol, lo, hi):
+    """On each [n, n+1], the integrand is d/dx x^{x-n}, and the pieces sum to 4950."""
+    if not (_zero(lo) and _zero(hi - 100)) or not integrand.has(sp.floor):
+        return None
+    frac = symbol - sp.floor(symbol)
+    target = symbol ** (frac - 1) * (sp.log(symbol**symbol) + frac)
+    if integrand != target and not _zero(integrand - target):
+        return None
+    step = sp.Symbol("_n", integer=True, nonnegative=True)
+    positive = sp.Symbol("_p", positive=True)
+    if not _zero(sp.log(positive**positive) - positive * sp.log(positive)):
+        return None
+    local = positive ** (positive - step)
+    slope = sp.diff(local, positive)
+    piece = target.xreplace({sp.floor(symbol): step}).subs(symbol, positive)
+    if not _zero(sp.simplify(slope - piece)):
+        return None
+    if not _zero(sp.simplify(local.subs(positive, step + 1) - (step + 1))):
+        return None
+    if not _zero(sp.limit(local, positive, step, dir="+") - 1):
+        return None
+    total = sp.summation(step, (step, 0, 99))
+    if total != 4950:
+        return None
+    return sp.Integer(4950)
+
+
+def _floor_reciprocal_unit(integrand, symbol, lo, hi):
+    """floor(1/x)=n on (1/(n+1), 1/n], and the pieces sum to 2-π²/6."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.floor):
+        return None
+    target = 1 / (1 + sp.floor(1 / symbol))
+    if integrand != target and not _zero(integrand - target):
+        return None
+    step = sp.Symbol("_n", integer=True, positive=True)
+    sample = 1 / (step + sp.Rational(1, 2))
+    if sp.floor(1 / sample) != step:
+        return None
+    length = 1 / step - 1 / (step + 1)
+    piece = sp.simplify(length / (step + 1))
+    claim = 1 / (step * (step + 1) ** 2)
+    if not _zero(piece - claim):
+        return None
+    total = sp.summation(claim, (step, 1, sp.oo))
+    goal = 2 - sp.pi**2 / 6
+    if not _zero(total - goal):
+        return None
+    return sp.simplify(total)
+
+
+def _alternating_frac_power(integrand, symbol, lo, hi):
+    """(-{x})^{floor(x)} on [n, n+1) integrates to (-1)^n/(n+1), summing to log 2."""
+    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.floor):
+        return None
+    frac = symbol - sp.floor(symbol)
+    target = (-frac) ** sp.floor(symbol)
+    if integrand != target and not _zero(integrand - target):
+        return None
+    step = sp.Symbol("_n", integer=True, nonnegative=True)
+    height = sp.Symbol("_t", positive=True)
+    if not _zero(sp.simplify(((-height) ** step) / (((-1) ** step) * height**step) - 1)):
+        return None
+    if not _zero(sp.integrate(height**step, (height, 0, 1)) - 1 / (step + 1)):
+        return None
+    total = sp.summation(((-1) ** step) / (step + 1), (step, 0, sp.oo))
+    if not _zero(total - sp.log(2)):
+        return None
+    return sp.simplify(total)
+
+
+def _cube_floor_zeta(integrand, symbol, lo, hi):
+    """x=y^{-3} turns x^{1/3} floor(x^{-1/3}) into 3 floor(y)/y**5, summing to π⁴/120."""
+    if not (_zero(lo) and _zero(hi - 1)) or not integrand.has(sp.floor):
+        return None
+    root = symbol ** sp.Rational(1, 3)
+    target = root * sp.floor(1 / root)
+    if integrand != target and not _zero(integrand - target):
+        return None
+    ray = sp.Symbol("_y", positive=True)
+    moved = ray ** (-3)
+    factor = sp.simplify(moved ** sp.Rational(1, 3) * sp.diff(moved, ray))
+    if not _zero(factor + 3 / ray**5):
+        return None
+    if sp.limit(moved, ray, sp.oo) != 0 or not _zero(moved.subs(ray, 1) - 1):
+        return None
+    step = sp.Symbol("_n", integer=True, positive=True)
+    if sp.floor(step + sp.Rational(1, 2)) != step:
+        return None
+    piece = sp.integrate(3 * step / ray**5, (ray, step, step + 1))
+    claim = sp.Rational(3, 4) * step * (1 / step**4 - 1 / (step + 1) ** 4)
+    if not _zero(sp.simplify(piece - claim)):
+        return None
+    total = sp.summation(claim, (step, 1, sp.oo))
+    goal = sp.pi**4 / 120
+    if not _zero(total - goal):
+        return None
+    return sp.simplify(total)
+
+
+def _euler_mascheroni_series():
+    """sum_{n≥1} (log(n+1)-log(n)-1/(n+1)) = 1-γ."""
+
+    def ready():
+        step = sp.Symbol("_n", integer=True, positive=True)
+        upper = sp.Symbol("_N", integer=True, positive=True)
+        index = sp.Symbol("_i", integer=True, positive=True)
+        logs = sp.summation(sp.log(step + 1) - sp.log(step), (step, 1, upper))
+        _require(_zero(sp.simplify(logs - sp.log(upper + 1))), "telescopes")
+        # H_{n+1}-H_n = 1/(n+1), so the harmonic pieces telescope to H_{N+1}-1.
+        step_gap = sp.harmonic(step + 1) - sp.harmonic(step) - 1 / (step + 1)
+        _require(sp.expand_func(step_gap) == 0, "step")
+        telescoped = sp.summation(sp.harmonic(step + 1) - sp.harmonic(step), (step, 1, upper))
+        _require(telescoped == sp.harmonic(upper + 1) - 1, "harmonic")
+        shifted = sp.summation(1 / index, (index, 2, upper + 1))
+        _require(shifted == sp.harmonic(upper + 1) - 1, "reindex")
+        partial = sp.log(upper + 1) - (sp.harmonic(upper + 1) - 1)
+        _require(_zero(sp.limit(partial, upper, sp.oo) - (1 - sp.EulerGamma)), "limit")
+        return 1 - sp.EulerGamma
+
+    value = _fact("euler-frac", ready)
+    if value is True or value is None:
+        return None
+    return value
+
+
+def _fractional_euler(integrand, symbol, lo, hi):
+    """{1/x} on (0, 1] and {x}/x**2 on [1, ∞) both sum to 1-γ."""
+    if not integrand.has(sp.floor):
+        return None
+    step = sp.Symbol("_n", integer=True, positive=True)
+    term = sp.log(step + 1) - sp.log(step) - 1 / (step + 1)
+    if _zero(lo) and _zero(hi - 1):
+        target = 1 / symbol - sp.floor(1 / symbol)
+        if integrand != target and not _zero(integrand - target):
+            return None
+        sample = 1 / (step + sp.Rational(1, 2))
+        if sp.floor(1 / sample) != step:
+            return None
+        piece = sp.integrate(1 / symbol - step, (symbol, 1 / (step + 1), 1 / step))
+    elif _zero(lo - 1) and hi == sp.oo:
+        target = (symbol - sp.floor(symbol)) / symbol**2
+        if integrand != target and not _zero(integrand - target):
+            return None
+        if sp.floor(step + sp.Rational(1, 2)) != step:
+            return None
+        piece = sp.integrate((symbol - step) / symbol**2, (symbol, step, step + 1))
+    else:
+        return None
+    if not _zero(sp.simplify(piece - term)):
+        return None
+    return _euler_mascheroni_series()
+
+
+def _even_cosine_weight(integrand, symbol, lo, hi):
+    """x**2 cos(x)/(1+e^x) plus its reflection is x**2 cos(x) on [-π/2, π/2]."""
+    if not (_zero(lo + sp.pi / 2) and _zero(hi - sp.pi / 2)) or not integrand.has(sp.exp):
+        return None
+    target = symbol**2 * sp.cos(symbol) / (1 + sp.exp(symbol))
+    if integrand != target and not _zero(integrand - target):
+        return None
+    if not _zero(sp.simplify(target + target.subs(symbol, -symbol) - symbol**2 * sp.cos(symbol))):
+        return None
+    value = sp.integrate(symbol**2 * sp.cos(symbol), (symbol, 0, sp.pi / 2))
+    goal = (sp.pi**2 - 8) / 4
+    if not _same(value, goal):
+        return None
+    return sp.simplify(value)
+
+
 def _structural_values(integrand, symbol, lo, hi):
     """Exact integrand patterns. A miss returns before any search."""
     for builder in (
@@ -3034,6 +3422,16 @@ def _extra_values(integrand, symbol, lo, hi):
         _biquadratic_ray,
         _cubic_radical_unit,
         _floor_reciprocal_square,
+        _acosh_sum_quarter,
+        _log_shift_acot,
+        _logistic_composition,
+        _atan_endpoint_ratio,
+        _power_frac_span,
+        _floor_reciprocal_unit,
+        _alternating_frac_power,
+        _cube_floor_zeta,
+        _fractional_euler,
+        _even_cosine_weight,
     ):
         try:
             value = builder(integrand, symbol, lo, hi)
