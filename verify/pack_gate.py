@@ -1,6 +1,10 @@
 """Prove a layout reading against a mark-scheme reading.
 
-A row is gated only when SymPy differentiates an indefinite answer back to the
+Crossnumber rows have a separate grid kind. Their source-bound clue manifests
+and integer answer maps are checked by pack_grid, one timed job per clue.
+They never enter the scalar integral or antiderivative paths below.
+
+A scalar row is gated only when SymPy differentiates an indefinite answer back to the
 integrand, or evaluates a definite integral to the printed answer. When the
 direct value stays an unevaluated Integral, SymPy may still prove the printed
 answer by an algebraic identity: the even part on symmetric limits, King's
@@ -164,6 +168,7 @@ import sympy as sp
 import check_math
 import pack_answer_contracts
 import pack_certificates
+import pack_grid
 import pack_handoff_b
 import pack_handoff_c
 import pack_handoff_d_2021
@@ -5947,6 +5952,9 @@ def _handoff_e_octahedron(integrand, symbol, lo, hi):
 def _worker(payload, queue) -> None:
     try:
         kind, integrand_s, limits, answer_s, variable = payload
+        if kind == "_grid_clue":
+            queue.put(("ok", pack_grid.check_clue(integrand_s, answer_s, limits, variable)))
+            return
         integrand = _parse(integrand_s, variable)
         symbol = namespace(variable)[variable]
         if kind in pack_answer_contracts.KINDS:
@@ -6152,6 +6160,11 @@ def _worker(payload, queue) -> None:
 
 
 def proven(kind: str, integrand: str, limits, answer: str, variable: str) -> bool:
+    # Crossnumber maps use one timed job per clue. All other kinds — including
+    # Handoff F answer contracts — still go through the bounded worker.
+    if kind == "grid":
+        jobs = pack_grid.proof_jobs(integrand, limits, answer, variable)
+        return jobs is not None and _finish_reprove(jobs) is None
     payload = (kind, integrand, limits, answer, variable)
     queue: mp.Queue = mp.Queue()
     proc = mp.Process(target=_worker, args=(payload, queue))
@@ -6180,6 +6193,9 @@ def _canonical_text(expr, variable: str) -> str:
 
 
 def canon_expr(text: str, variable: str, *, allow_constant: bool = True) -> str | None:
+    if variable == "grid":
+        values = pack_grid.answer_map(text)
+        return None if values is None else pack_grid.answer_text(values)
     try:
         expr = _answer_expr(text, variable, allow_constant=allow_constant)
         if expr is not None and _huge_integer(expr):
@@ -6190,6 +6206,9 @@ def canon_expr(text: str, variable: str, *, allow_constant: bool = True) -> str 
 
 
 def canon_integrand(text: str, variable: str) -> str | None:
+    if variable == "grid":
+        description = pack_grid.read_problem(text)
+        return None if description is None else pack_grid.problem_text(description["puzzle"], description["direction"])
     try:
         expr = _parse(text, variable)
         if _huge_integer(expr):
@@ -6250,7 +6269,19 @@ def rename_dummy(integrand: str, limits, answer: str, variable: str):
 
 
 def fields_from_parts(integrand_text: str, limits_text, answer_text: str, variable: str) -> dict | None:
-    """Prove one integrand and answer already written as SymPy text."""
+    """Prove SymPy text, or a grid manifest and map when variable is grid."""
+    if variable == "grid":
+        problem = canon_integrand(integrand_text, variable)
+        answer = canon_expr(answer_text, variable)
+        if problem is None or answer is None or not proven("grid", problem, limits_text, answer, variable):
+            return None
+        prompt_latex, answer_latex = pack_grid.latex_fields(problem, answer)
+        return {
+            "verify": "sympy", "kind": "grid", "variable": "grid", "limits": [],
+            "sympy_expr": problem, "answer_sympy": answer,
+            "integrand_plain": pack_grid.prompt_text(pack_grid.read_problem(problem)),
+            "integrand_latex": prompt_latex, "answer_latex": answer_latex,
+        }
     answer_text = canon_expr(answer_text, variable, allow_constant=limits_text is None)
     if answer_text is None:
         return None
@@ -6338,6 +6369,9 @@ def fields_from_contract(kind: str, expression: str, limits, answer: str,
 
 def reprove_rows(rows: list[dict]) -> str | None:
     """Re-prove stored SymPy rows. Does not read PDFs."""
+    sibling_error = pack_grid.sibling_problem(rows)
+    if sibling_error:
+        return sibling_error
     jobs = []
     for row in rows:
         if row.get("verify") != "sympy":
@@ -6347,6 +6381,15 @@ def reprove_rows(rows: list[dict]) -> str | None:
         answer = row.get("answer_sympy")
         if not isinstance(variable, str) or not isinstance(integrand, str) or not isinstance(answer, str):
             return f"{row.get('id')} sympy fields missing"
+        if row.get("kind") == "grid":
+            shape_error = pack_grid.row_problem(row)
+            if shape_error:
+                return f"{row.get('id')} {shape_error}"
+            clue_jobs = pack_grid.proof_jobs(integrand, row.get("limits"), answer, variable)
+            if clue_jobs is None:
+                return f"{row.get('id')} grid proof jobs missing"
+            jobs.extend((f"{row['id']}/{item[0]}", *item[1:]) for item in clue_jobs)
+            continue
         try:
             integrand_expr = _printable(integrand, variable)
             answer_expr = _printable(answer, variable)

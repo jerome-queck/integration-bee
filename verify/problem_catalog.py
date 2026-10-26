@@ -21,8 +21,8 @@ SYMPY_VARIABLES = frozenset({"x", "t", "X", "e"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
 EXPECTED_COUNT = 946
-EXPECTED_MANUAL = 27
-EXPECTED_SYMPY = 649
+EXPECTED_MANUAL = 18
+EXPECTED_SYMPY = 658
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
@@ -143,6 +143,11 @@ def _sympy_shape(row: dict) -> str | None:
     ident = row.get("id")
     if row.get("round") == "yang" or row.get("source") != "resource_pack":
         return f"{ident} sympy outside the resource pack"
+    if row.get("kind") == "grid":
+        import pack_grid
+
+        error = pack_grid.row_problem(row)
+        return f"{ident} {error}" if error else None
     if row.get("variable") not in SYMPY_VARIABLES:
         return f"{ident} unsupported sympy variable"
     if row.get("kind") not in {"definite", "indefinite"} | pack_answer_contracts.KINDS:
