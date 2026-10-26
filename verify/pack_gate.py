@@ -4219,40 +4219,41 @@ def _quarter_disk_sum(integrand, symbol, lo, hi):
 
 
 def _paired_root_span(integrand, symbol, lo, hi):
-    """Rationalising leaves (sqrt(1+x)+sqrt(1-x))/2, whose antiderivative ends at 2√2/3."""
+    """Rationalising leaves (sqrt(1+x)+sqrt(1-x))/2, whose antiderivative ends at 2√2/3.
+
+    Squares of the two nonnegative roots agree, so the roots agree on [-1, 1].
+    Clearing the conjugate then cancels to that half-sum except at x=0, which
+    matches by substitution. The half-sum is the derivative of the printed ends.
+    """
     if not _span(lo, hi, 0, 1) or not _has_square_root(integrand):
         return None
     left = sp.sqrt(1 + symbol)
     right = sp.sqrt(1 - symbol)
-    target = (1 + sp.sqrt(1 - symbol**2)) / (left + right)
+    branch = sp.sqrt(1 - symbol**2)
+    target = (1 + branch) / (left + right)
     if integrand != target:
         return None
-    sample = sp.Symbol("_x", positive=True)
-    split = sp.ask(
-        sp.Q.eq(sp.sqrt(1 - sample**2), sp.sqrt(1 - sample) * sp.sqrt(1 + sample)),
-        sp.Q.lt(sample, 1),
-    )
-    if split is not True:
+    if sp.expand(branch**2 - (left * right) ** 2) != 0:
         return None
-    if sp.simplify(left**2 * right**2 - (1 - symbol**2)) != 0:
+    radical = sp.Symbol("_u", nonnegative=True)
+    if sp.ask(sp.Q.nonnegative(sp.sqrt(radical))) is not True:
         return None
-    if sp.simplify((1 + left * right) * (left - right) - symbol * (left + right)) != 0:
+    if sp.expand((1 + left * right) * (left - right) - symbol * (left + right)) != 0:
         return None
-    if sp.simplify(left**2 - right**2 - 2 * symbol) != 0:
+    if sp.expand(left**2 - right**2 - 2 * symbol) != 0:
         return None
     reduced = (left + right) / 2
-    quotient = (1 + left * right) * (left - right) / (left**2 - right**2)
-    if sp.simplify(quotient - reduced) != 0:
+    if sp.together(symbol * (left + right) / (2 * symbol) - reduced) != 0:
         return None
-    if sp.simplify(target.subs(symbol, 0) - reduced.subs(symbol, 0)) != 0:
+    if sp.expand(target.subs(symbol, 0) - reduced.subs(symbol, 0)) != 0:
         return None
-    if sp.simplify(target.subs(symbol, 1) - reduced.subs(symbol, 1)) != 0:
+    if sp.together(target.subs(symbol, 1) - reduced.subs(symbol, 1)) != 0:
         return None
     anti = ((1 + symbol) ** sp.Rational(3, 2) - (1 - symbol) ** sp.Rational(3, 2)) / 3
-    if not _zero(sp.diff(anti, symbol) - reduced):
+    if sp.diff(anti, symbol) != reduced:
         return None
     goal = 2 * sp.sqrt(2) / 3
-    if not _same(anti.subs(symbol, 1) - anti.subs(symbol, 0), goal):
+    if anti.subs(symbol, 1) - anti.subs(symbol, 0) != goal:
         return None
     return goal
 
