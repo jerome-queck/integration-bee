@@ -12,7 +12,8 @@ Depth means one of the following.
 | unit | The unit `teaching.tex` already states the move and a stored drill. The card only points there. No new example was added. |
 | thin | Empty after the habit card. A node landed here when its unit had not yet taught the stored drills. Those eleven nodes are `habits.md`. |
 | deferred-taught | The catalog id has no unit, so it stays deferred. A note and drills exist. Leave the id unticked. |
-| deferred-open | No drill and no checked value. Name the syllabus entry. Do not invent a value. |
+| deferred-noted | A recognition note supplies definitions, a derivation or cited identity, and coach guidance. It adds no unit or drill for this catalog id and gives no readiness credit. Leave the id unticked. |
+| deferred-open | No teachable note yet. Name the syllabus entry. Do not invent a value. |
 | index | A paper or a mock. Not a technique. |
 
 ## Round 1 nodes
@@ -108,11 +109,13 @@ Yang inventory 4.3 has no node. It stays skipped.
 |---|---|---|---|
 | `floor` | deferred-taught | `docs/techniques/floor.md`, drills `U11-D09` through `U11-D12` | Leave unticked. The id has no unit. |
 | `dutis` | deferred-taught | `docs/techniques/introduce-constant.md` for a fixed interval, unit 34 for a moving endpoint. Drills `U11-D13` through `U11-D15`. | Leave unticked. |
-| `vector-calc` | deferred-open | Syllabus §1 lists it and does not require it for Round 1. The polar sketch of the Gaussian is optional background in unit 30. | No tick. |
-| `beta` | deferred-open | Syllabus §2 names the Beta function. No unit and no drill. | No value. |
-| `zeta` | deferred-open | Syllabus §2 names zeta. The series card refuses a new zeta evaluation. | No value. |
-| `euler-mascheroni` | deferred-open | Syllabus §2 names the constant. No unit. | No value. |
-| `catalan` | deferred-open | Unit 36 tells the coach to leave \(G\) as \(G\). | No replacement by a logarithm or a rational. |
+| `vector-calc` | deferred-noted | [Optional Gaussian background](../docs/techniques/concepts/vector-calc.md): polar area factor and increasing disks, tied to unit 30. Syllabus §1 excludes it from the Round 1 requirement. | Leave unticked; no new multivariable contest final. |
+| `beta` | deferred-noted | [Beta recognition](../docs/techniques/concepts/beta.md): endpoint powers, the Gamma identity, and an original \(B(2,3)=1/12\) micro-example. | Leave unticked; no unit or stored drill. |
+| `zeta` | deferred-noted | [Zeta recognition](../docs/techniques/concepts/zeta.md): convergent series and a sourced integral identity, keeping \(\zeta(3)\) named. The series card's no-invented-evaluations policy remains. | Leave unticked; no new evaluated zeta constant. |
+| `euler-mascheroni` | deferred-noted | [Euler's constant](../docs/techniques/concepts/euler-mascheroni.md): harmonic-sum offset, a limit comparison, and the sourced \(\Gamma'(1)=-\gamma\) identity. | Leave unticked; keep \(\gamma\) exact. |
+| `catalan` | deferred-noted | [Catalan recognition](../docs/techniques/concepts/catalan.md): unit 36's `U36-D03`, a finite-remainder argument, and the stopping rule at \(G\). | Leave unticked; no guessed logarithm or rational replacement. |
+
+All seven ids remain `status: deferred`, with no unit or gate in `trackers/catalog.json`. The five recognition cards close the missing-note gap; they do not add a Round 1 requirement or change the 36 ready units. Their examples are exposition or existing stored drills, not new contest answers. `floor` and `dutis` keep their existing note-and-drill coverage.
 
 ## Practice indexes
 
@@ -139,8 +142,9 @@ These nine nodes are not concepts. Round formats are `docs/techniques/formats.md
 | unit lesson, no new example | 4 |
 | thin | 0 |
 | deferred-taught | 2 (`floor`, `dutis`) |
-| deferred-open | 5 |
+| deferred-noted | 5 |
+| deferred-open | 0 |
 | index | 9 |
 | Total | 72 |
 
-The thin count was 11 before the habit card. It is 0. The 20 Round 1 nodes and the 32 later card rows are what an agent can teach without a Yang answer key. The 5 deferred-open rows are the remaining gap. `floor` and `dutis` stay unticked.
+The thin count was 11 before the habit card. It is 0. The 20 Round 1 nodes and the 32 later card rows are what an agent can teach without a Yang answer key. The five formerly deferred-open rows now have recognition notes; their depth is deferred-noted, not ready. All seven deferred nodes, including `floor` and `dutis`, stay unticked.

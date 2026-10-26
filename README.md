@@ -171,6 +171,24 @@ The session file is `session.json` in the data directory. One replace holds the 
 
 `make check` runs `verify/run.sh`. That script drives the turn contract, including aptitude, confirm, cover, and the gap index.
 
+## Pack status
+
+The audit baseline is `6ac8f7d`: all 674 Resource pack rows have cited answers, with **661 SymPy-proved, 13 manual, and 0 unchecked**. Twelve manual rows are source holds: the printed problem and the printed mark conflict, or the printed conditions do not determine the marked answer. Their sources, worked notes, and next research steps are in the [pack source holds registry](docs/decisions/0016-pack-source-holds.md). The thirteenth row, `R2-2023-Group-Q01-v2`, belongs to Handoff I. If I proves it, the pack becomes 662 SymPy / 12 manual. The verifier's manual total also includes two Yang rows: 661/15 at the baseline, or 662/14 after that flip. SAMPLE rows have separate counts.
+
+A manual mark requires the companion's explicit `verdict`; the CLI does not compare its final answer with SymPy. Its displayed answer remains the cited catalog `answer_plain`. The companion reads the linked hold note and explains any source discrepancy before judging the working. For example, the Oxford fixture displays the printed `sin(1)` while its note derives `1` from the printed bounds. Neither an automatic pass nor a silent replacement of the cited answer resolves that conflict.
+
+Pack solution notes cover 673/674 rows at the baseline; only I's `R2-2023-Group-Q01-v2` note is pending. The historical “19 honest note skips” list is no longer a missing-notes count. The registry records the current coverage and how to recheck it.
+
+The [concept map](pedagogy/concept-map.md) routes all five formerly open syllabus topics to teachable recognition notes: vector calculus, Beta, zeta, Euler–Mascheroni, and Catalan. These catalog nodes stay unticked and are not required for Round 1. `floor` and `dutis` keep their existing notes and drills and also stay unticked.
+
+The companion and maintainer use this readiness checklist:
+
+- `scripts/control-integration-bee doctor` reports `READY integration-bee`.
+- `make check` passes on the proposed revision; `doctor` alone is not the proof gate.
+- Every Resource pack row has a cited answer: SymPy rows grade automatically and manual rows require a verdict.
+- The twelve source holds are explained in the registry and their Status blocks; no Resource pack row is `unchecked`.
+- The five syllabus recognition notes are available through the concept map; their nodes and `floor` / `dutis` stay unticked.
+
 ## Learner
 
 Ask the companion for a concept, or send a photo of a solution.

@@ -1,6 +1,15 @@
 # R2-2021-Crossnumber-Across-1
 
-## Status: source reading held
+## Status: source hold (print-vs-math)
+
+- verify: manual
+- conflict: A8 asks for first publication, but the marked journal-volume year 1868 differs from the cited standalone edition dated 1867.
+- derived / problem reading: The cited primary standalone-edition records date the work to 1867; the journal volume is dated 1868.
+- printed mark: A8: \(1868\); the complete marked Across map is retained below.
+- erratum: none documented in the cited repository sources as of 2026-10-27.
+- registry: docs/decisions/0016-pack-source-holds.md
+
+## Source reading
 
 The original clues were read visually from `sources/past/r2/2021/Crossnumber_2021_R2_UK_University_Integration_Bee_Round_Two.pdf`, PDF pp.2-3. The completed lattice was read visually from `sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf`, PDF p.3. Its Across entries are:
 
