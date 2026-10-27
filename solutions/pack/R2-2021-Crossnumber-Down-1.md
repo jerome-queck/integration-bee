@@ -1,17 +1,17 @@
 # R2-2021-Crossnumber-Down-1
 
-## Status: source hold (print-vs-math)
+## Status: resolved by contest convention
 
-- verify: manual
+- verify: sympy; kind: grid
 - conflict: D3 needs extra modulus parentheses to produce the mark, and D4's printed digit-sum equality differs from the congruence satisfied by the marked palindrome.
-- derived / problem reading: D3 gives \(36\) under the literal grouping; D4's marked palindrome has digit sum \(26\), not either root residue \(4\) or \(8\).
+- derived / problem reading: Handoff N adopts \(7^{D_9}\bmod(D_7+1)\), giving triangular entry \(28\), and digit-sum congruence \(26\equiv8\pmod9\) for D4. The conflicting literal readings remain documented below.
 - printed mark: D3: \(28\); D4: \(7134317\); the complete marked Down map is retained below.
-- erratum: none documented in the cited repository sources as of 2026-10-27.
+- erratum: none claimed; Jerome's t636u override and Handoff N explicitly authorize these published grading conventions.
 - registry: docs/decisions/0016-pack-source-holds.md
 
 ## Source reading
 
-The original Down clues are in `sources/past/r2/2021/Crossnumber_2021_R2_UK_University_Integration_Bee_Round_Two.pdf`, PDF p.3, with Across clues and the same lattice on p.2. The completed grid was read visually from `sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf`, PDF p.3.
+The original Down clues are in `sources/past/r2/2021/Crossnumber_2021_R2_UK_University_Integration_Bee_Round_Two.pdf`, PDF p.3, with Across clues and the same lattice on p.2 ([immutable problem copy](https://github.com/jerome-queck/integration-bee/blob/db203fa3e4b9a96456993b85c49449ece4148cea/sources/past/r2/2021/Crossnumber_2021_R2_UK_University_Integration_Bee_Round_Two.pdf#page=3)). The completed grid was read visually from `sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf`, PDF p.3 ([immutable mark copy](https://github.com/jerome-queck/integration-bee/blob/db203fa3e4b9a96456993b85c49449ece4148cea/sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf#page=3)).
 
 | Down clue | Printed entry |
 |---|---:|
@@ -26,9 +26,9 @@ The original Down clues are in `sources/past/r2/2021/Crossnumber_2021_R2_UK_Univ
 | 13 | 1904 |
 | 14 | 315 |
 
-The row remains manual. Two source readings require clarification before every printed clue can be certified without silently changing its arithmetic. `verify/pack_grid_2021.py` keeps the literal checks, source text, full shared lattice, and explicit numbered starts. Every other mathematical clue has an exact certificate.
+All ten Down clues are certified under the declared D3 and D4 readings below. `verify/pack_grid_2021.py` retains the literal source transcript, full shared lattice, and explicit numbered starts. The separate `CLARIFICATIONS` entries publish the grading conventions in the problem manifest. Every marked digit is preserved, and each clue is checked independently of grid equality.
 
-## Held readings
+## Declared contest readings
 
 ### D3: the modulus lacks necessary parentheses
 
@@ -52,13 +52,22 @@ x=7^{85}\bmod(12+1)=7,
 \qquad \frac{x(x+1)}2=28.
 \]
 
-The second reading is plausible authorial intent, but adding those parentheses changes the unparenthesized expression. The certificate reports the original reading's disagreement instead of treating the mark digits as permission to change the clue.
+The certificate explicitly adopts the second reading: the modulus is the complete expression \(D_7+1\). Exact modular exponentiation gives \(7^{85}\bmod13=7\), since \(7^{12}\equiv1\pmod{13}\) and \(85\equiv1\pmod{12}\). Therefore the marked triangular number is \(T_7=28\). This grouping is a declared contest clarification, not a claim about universal precedence for the unparenthesized word "mod". The original clue transcript still records the omitted parentheses.
+
+The Handoff N shorthand \((D_9\bmod D_7)+1\) drops the printed base and exponent: with these entries it equals 2, yielding \(T_2=3\), not 28. Retaining the exponent but putting the final addition outside the modulus yields \(T_8=36\), as calculated above. The implementation corrects that shorthand to \(7^{D_9}\bmod(D_7+1)\), the explicit reading that agrees with the marked entry. It rejects both 3 and 36 as answers under this grading convention.
 
 ### D4: equality versus congruence
 
 The source asks for a palindrome with digit product 1764, whose digit sum "is (x\bmod9)", where (x^2-D_7x+32=0). With (D_7=12), the roots are 4 and 8. The marked palindrome 7134317 has digit product 1764 and digit sum 26. Thus it does **not** have digit sum equal to either residue 4 or 8.
 
-It does satisfy the likely intended congruence (26\equiv8\pmod9). The transcript records both readings. The literal equality checker remains false rather than silently turning an equality with a remainder into a congruence.
+The declared contest reading is that the digit sum is **congruent to a quadratic root modulo 9**. Indeed,
+
+\[
+7\cdot1\cdot3\cdot4\cdot3\cdot1\cdot7=1764,
+\qquad 7+1+3+4+3+1+7=26\equiv8\pmod9,
+\]
+
+and \(7134317\) is a palindrome. The checker solves the source quadratic exactly, then requires palindromicity, the exact digit product, and \((\text{digit sum}-x)\bmod9=0\) for at least one root. It tests all three conditions instead of accepting the marked number by equality alone. The transcript preserves the conflict with literal equality; the separate grading clarification declares the congruence reading.
 
 ## Verified remaining clues
 
@@ -147,9 +156,9 @@ so (C=117), and (f(6)=12\cdot36-117=315). SymPy checks the polynomial integral e
 
 ## Certificate outcome
 
-Eight Down checks pass; D3 and D4 remain false under their literal readings. The preserved mark map is useful evidence, but it does not erase those two differences. The common map contract separately rejects missing keys, scalar answers, digit mutations, and inconsistent crossings. Neither this note nor the helper claims a fully proved Down row.
+All ten Down checks return true under the published contest readings, with D3 using modulus \(D_7+1\) and D4 using congruence modulo 9. The map is certified as `kind: grid`, `verify: sympy`. The original source-wording conflicts remain documented. The common map contract separately rejects missing keys, scalar answers, digit mutations, and inconsistent crossings; the clue checks also reject false values independently of the lattice. No organiser erratum or alteration to the printed grid is asserted.
 
-## Handoff J typography recheck
+## Source typography audit
 
 Rechecked on 2026-10-27 by rendering problem pp.2-3 and mark p.3. In D3,
 `9 DOWN` is visibly the exponent of 7, while `mod 7 DOWN + 1` is on the
@@ -157,40 +166,25 @@ baseline, with no parentheses around `7 DOWN + 1`. This rules out an OCR
 loss of printed parentheses; it does not resolve the author's intended
 operator grouping. D4 visibly says that the digit sum "is x mod 9".
 There is no printed congruence sign or instruction to reduce the digit
-sum modulo 9 first. Consequently D4 is an independent blocker even if
-an authoritative convention were to settle D3.
+sum modulo 9 first. Handoff N therefore supplies two separate grading
+clarifications; resolving D3's grouping alone would not resolve D4.
 
-The [official contest homepage](https://integration.soc.srcf.net/) and
+The prior Handoff J search of the [official contest homepage](https://integration.soc.srcf.net/) and
 [2021 competition account](https://integration.soc.srcf.net/pastcomp.html)
 provide no convention or correction for these two clues. Targeted searches
 for the 2021 crossnumber, errata, and the modular wording located no public
 clarification. This bounded search does not establish that none exists.
-The original digits and both failed literal checks are retained.
+The original digits and literal clue transcript are retained. The selected
+grading interpretations are now stated explicitly rather than attributed
+to an unlocated organiser correction.
 
 The current [official resource pack](https://integration.soc.srcf.net/Resource%20pack.zip)
 contains the same four `Round 2/2021/` PDFs as the repository, verified
 byte-for-byte, and no additional correction sheet in that directory.
 
-### Escalation: R2-2021-Crossnumber-Down-1
-
-- Obstacle: D3's unparenthesized modulus admits the known reading yielding
-  36 rather than marked 28. Obtaining 28 requires putting `D7 + 1` inside
-  the modulus. Independently, D4's marked palindrome has digit sum 26,
-  whereas the quadratic roots have residues 4 and 8; only a congruence
-  interpretation yields agreement. The visual recheck found no missing
-  punctuation or explicit convention that resolves both readings.
-- PDF problem: [p.3 at 6ac8f7d1552e32b6007bed7e8206ab3c284ab10b](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2021/Crossnumber_2021_R2_UK_University_Integration_Bee_Round_Two.pdf#page=3)
-- PDF mark: [p.3 at 6ac8f7d1552e32b6007bed7e8206ab3c284ab10b](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf#page=3)
-- What a follow-up agent should try next:
-
-  ```text
-  Inspect original 2021 Down clues 3 and 4 together with the marked lattice.
-  Seek an official correction or a published contest notation convention.
-  For D3, establish whether the modulus is D7 or the complete expression D7 + 1.
-  For D4, establish whether the digit-sum condition is equality or congruence.
-  Require authority for both readings; resolving D3 alone does not certify this row.
-  Preserve 28 and 7134317 as the printed marks until a source resolves the wording.
-  Recheck every Down clue and the sibling Across crossings before any status flip.
-  ```
-
-- Do not mark impossible.
+Handoff N re-rendered the problem and mark pages on 2026-10-27 and confirmed
+the exponent, omitted parentheses, wording, and marked entries. The source
+pages linked above support the literal transcript and final digits. The
+explicit conventions supply the additional interpretation needed for
+grading, and the exact computations establish that each marked entry
+satisfies its stated convention.

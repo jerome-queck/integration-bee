@@ -10,10 +10,10 @@ import problem_catalog
 import turn_contract
 
 
-HELD = {
-    "R2-2021-Crossnumber-Across-1",
-    "R2-2021-Crossnumber-Down-1",
-    "R2-2023-Crossnumber-Down-1",
+RESOLVED_CLUES = {
+    "R2-2021-Crossnumber-Across-1": {"A8"},
+    "R2-2021-Crossnumber-Down-1": {"D3", "D4"},
+    "R2-2023-Crossnumber-Down-1": {"D7"},
 }
 
 
@@ -115,7 +115,9 @@ def check_siblings(rows):
 
 
 def check_math_is_executed():
-    for puzzle, label in (("2022", "A7"), ("2023", "A11"), ("2024", "D5"), ("2025-UK", "D1")):
+    for puzzle, label in (("2021", "A8"), ("2021", "D3"), ("2021", "D4"),
+                          ("2022", "A7"), ("2023", "A11"), ("2023", "D7"),
+                          ("2024", "D5"), ("2025-UK", "D1")):
         module = import_module(pack_grid.SOURCES[puzzle].module)
         across, down = dict(module.ACROSS), dict(module.DOWN)
         require(module.checks(across, down)[label]() is True, puzzle + " integral certificate")
@@ -125,32 +127,92 @@ def check_math_is_executed():
                 puzzle + " integral certificate rejects a false value independently of grid equality")
 
 
+def check_clarifications(rows):
+    for row in rows:
+        source = json.loads(row["sympy_expr"])
+        expected = RESOLVED_CLUES.get(row["id"], set())
+        require(set(source.get("clarifications", {})) == expected,
+                row["id"] + " only selected clues carry grading clarifications")
+        if not expected:
+            continue
+        prompt = problem_catalog.prompt_view(row)
+        require("answer_sympy" not in prompt and "answer_plain" not in prompt,
+                row["id"] + " clarified learner prompt hides the answer map")
+        changed = deepcopy(source)
+        del changed["clarifications"]
+        rejected(row, row["answer_sympy"], row["id"] + " unqualified printed clue is not certified",
+                 json.dumps(changed))
+        changed = deepcopy(source)
+        changed["clarifications"]["A999"] = "An unrelated grading convention."
+        rejected(row, row["answer_sympy"], row["id"] + " rejects misplaced clarification",
+                 json.dumps(changed))
+        for label in expected:
+            require(source["clarifications"][label] in prompt["integrand_plain"],
+                    row["id"] + " learner sees " + label + " clarification")
+            for replacement in (None, "", "No additional assumption or convention."):
+                changed = deepcopy(source)
+                if replacement is None:
+                    del changed["clarifications"][label]
+                else:
+                    changed["clarifications"][label] = replacement
+                rejected(row, row["answer_sympy"], row["id"] + " rejects changed " + label + " convention",
+                         json.dumps(changed))
+        if "D7" in expected:
+            changed = deepcopy(source)
+            changed["clarifications"]["D7"] = "For grading Down 7, f is absolutely integrable on [-1,1]."
+            rejected(row, row["answer_sympy"], "D7 cannot omit continuity at zero",
+                     json.dumps(changed))
+
+
+def check_contest_readings():
+    module = import_module("pack_grid_2021")
+    across, down = dict(module.ACROSS), dict(module.DOWN)
+    checks = module.checks(across, down)
+    # These alternative readings are mathematically different, even before
+    # the fixed lattice is considered. Do not quietly reintroduce either one.
+    for index in (pow(7, down[9], down[7]) + 1, down[9] % down[7] + 1):
+        down[3] = index * (index + 1) // 2
+        require(checks["D3"]() is False, "D3 rejects the ungrouped and handoff-shorthand readings")
+    down[3] = module.DOWN[3]
+    across[8] = 1867
+    require(checks["A8"]() is False, "A8 uses the journal-volume year, not the pamphlet year")
+    # Same palindrome and digit product as the mark, but wrong residue:
+    # 2*1*7*9*7*1*2=1764 and digit sum 29 == 2 (mod 9).
+    for answer, label in ((2179712, "digit-sum congruence"),
+                           (7134371, "palindrome"), (7126217, "digit product")):
+        down[4] = answer
+        require(checks["D4"]() is False, "D4 independently enforces the " + label)
+    down[4] = module.DOWN[4]
+    down[9] += 1
+    require(checks["D3"]() is False, "D3 recomputes the exponent from its sibling clue")
+    down[9] = module.DOWN[9]
+    down[7] = 10
+    require(checks["D3"]() is False, "D3 recomputes the modulus from its sibling clue")
+    down[7] = 18
+    require(checks["D4"]() is False, "D4 recomputes the roots from its sibling clue")
+    module = import_module("pack_grid_2023")
+    across, down = dict(module.ACROSS), dict(module.DOWN)
+    for answer in (0, 249, 251, 1250):
+        down[7] = answer
+        require(module.checks(across, down)["D7"]() is False,
+                "D7 rejects a wrong point value independently of the mark lattice")
+
+
 def check_all(rows=None):
     rows = rows or problem_catalog.load_records()
     targets = {ident for source in pack_grid.SOURCES.values() for ident in (source.across_id, source.down_id)}
     selected = [row for row in rows if row["id"] in targets]
-    require(len(selected) == 12, "twelve Handoff G target rows")
+    require(len(selected) == 12, "twelve crossnumber target rows")
     require(pack_gate.PROOF_TIMEOUT == 20.0, "ordinary proof timeout is unchanged")
     require(pack_gate.reprove_rows(selected) is None, "crossnumber catalog reproof and sibling consistency")
     for row in selected:
-        if row["id"] in HELD:
-            require(row["verify"] == "manual" and "answer_sympy" not in row,
-                    row["id"] + " unresolved source stays manual")
-            for puzzle, source in pack_grid.SOURCES.items():
-                if row["id"] not in (source.across_id, source.down_id):
-                    continue
-                direction = "across" if row["id"] == source.across_id else "down"
-                module = import_module(source.module)
-                values = module.ACROSS if direction == "across" else module.DOWN
-                require(not pack_gate.proven("grid", pack_grid.problem_text(puzzle, direction), [],
-                                             pack_grid.answer_text(values), "grid"),
-                        row["id"] + " marked digits alone do not pass")
-        else:
-            require(row["verify"] == "sympy" and row["kind"] == "grid", row["id"] + " promoted map")
-            check_promoted(row)
+        require(row["verify"] == "sympy" and row["kind"] == "grid", row["id"] + " promoted map")
+        check_promoted(row)
     check_siblings(selected)
     check_math_is_executed()
-    print("PASS crossnumber contract (nine proved maps, three source holds, wrong answers, source mutations, siblings, marking)")
+    check_clarifications(selected)
+    check_contest_readings()
+    print("PASS crossnumber contract (twelve proved maps, explicit conventions, wrong answers, source mutations, siblings, marking)")
 
 
 if __name__ == "__main__":

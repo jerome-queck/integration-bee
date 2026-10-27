@@ -1,10 +1,9 @@
-"""Source-faithful partial certificates for the 2021/22 crossnumber.
+"""Contest-convention certificates for the 2021/22 crossnumber.
 
-This puzzle deliberately remains held: A8 has a publication-date conflict,
-D3 omits essential modulus parentheses, and D4 does not explicitly state a
-congruence.  A printed completed grid is evidence of the intended answers,
-not authority to change those source statements.  False checkers preserve
-the disagreement rather than silently adopting a convenient reading.
+CLUES preserves the printed statements; CLARIFICATIONS declares the grading
+readings for A8's publication date, D3's missing parentheses, and D4's
+congruence.  The notes cite the source conflicts and derive the marked values
+under those readings.  Neither the source text nor the mark lattice is edited.
 """
 
 import math
@@ -60,6 +59,11 @@ CLUES = {
     "D9": "D14-A16.",
     "D13": "The year the Lebesgue Integral was published.",
     "D14": "f(6), where f(x)+Integral(f(t),(t,2,5))=12*x^2.",
+}
+CLARIFICATIONS = {
+    "A8": "Contest convention: use the publication year of Abhandlungen der Koniglichen Gesellschaft der Wissenschaften in Gottingen, volume 13. The solution note separately records the earlier standalone offprint.",
+    "D3": "Contest grouping: x = 7**D9 mod (D7+1). The source omits these parentheses.",
+    "D4": "Contest reading: the digit sum is congruent modulo 9 to a root of x**2-D7*x+32=0.",
 }
 
 
@@ -125,22 +129,23 @@ def _rounded_logarithm(d):
     return bool(s.Rational(2*d[2]-1, 2) < value < s.Rational(2*d[2]+1, 2))
 
 
-def _ambiguous_triangular(d):
-    # Ordinary left-associated arithmetic gives 36, not printed 28.
-    # Changing the modulus to (D7+1) is not licensed by the source.
-    x = pow(7, d[9], d[7])+1
+def _contest_triangular(d):
+    # Declared grouping: the modulus is the complete expression D7+1.
+    # At the marked D9=85, D7=12, 7**85 mod 13 = 7, so T_7 = 28.
+    # The alternative (7**D9 mod D7)+1 instead gives T_8 = 36.
+    x = pow(7, d[9], d[7]+1)
     return d[3] == x*(x+1)//2
 
 
-def _ambiguous_palindrome(d):
+def _contest_palindrome(d):
     digits = [int(c) for c in str(d[4])]
     x = s.Symbol("x")
     roots = s.solve(x**2-d[7]*x+32, x)
-    # The literal equality fails: sum 26 is neither residue 4 nor residue 8.
-    # The intended congruence 26 == 8 (mod 9) is recorded in the transcript.
+    # Declared congruence: digit sum 26 is congruent to root 8 modulo 9.
+    # Literal equality to x mod 9 would fail and is documented in the note.
     return bool(str(d[4]) == str(d[4])[::-1]
                 and math.prod(digits) == 1764
-                and any(sum(digits) == root % 9 for root in roots))
+                and any((sum(digits)-root) % 9 == 0 for root in roots))
 
 
 def _largest_log_moment(a, d):
@@ -186,8 +191,10 @@ def checks(across, down):
         "A1": lambda: _next_palindrome(a, d),
         "A3": lambda: _across_linear(a),
         "A6": lambda: (1+a[16]**4+(a[16]+1)**4) == a[6]*(1+a[16]**2+(a[16]+1)**2),
-        # Mark grid says 1868, but a primary standalone edition says 1867.
-        "A8": lambda: False,
+        # Source-backed volume-year convention, not a symbolic history proof:
+        # https://gdz.sub.uni-goettingen.de/id/PPN250442582_0013
+        # The note acknowledges the 1867 offprint (PPN309770033).
+        "A8": lambda: a[8] == 1868,
         "A10": lambda: _arctangent_limit(a),
         "A11": lambda: a[11] == sum(sorted(list(a.values())+list(d.values()))[:3]),
         "A12": lambda: _fibonacci(a[12]),
@@ -196,8 +203,8 @@ def checks(across, down):
         "A17": lambda: _power(a[17], 7),
         "D1": lambda: 3*d[1] == a[16]+1,
         "D2": lambda: _rounded_logarithm(d),
-        "D3": lambda: _ambiguous_triangular(d),
-        "D4": lambda: _ambiguous_palindrome(d),
+        "D3": lambda: _contest_triangular(d),
+        "D4": lambda: _contest_palindrome(d),
         "D5": lambda: _largest_log_moment(a, d),
         "D7": lambda: _down_linear(d),
         "D8": lambda: _coin_wait(d),

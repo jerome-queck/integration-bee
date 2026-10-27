@@ -639,7 +639,7 @@ def main():
         "PASS pack certificates (symbolic families, literal operators, "
         "24 Handoff D rows, 10 Handoff F contracts, Handoff G grids, "
         "Handoff H ceiling, Handoff I alias and manual inputs, Handoff L printed limits, "
-        "Handoff M clarified Relay readings, mutations, source discrepancies)"
+        "Handoff M clarified Relay readings, Handoff N crossnumber maps, mutations, source discrepancies)"
     )
     return 0
 
