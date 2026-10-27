@@ -58,6 +58,19 @@ HELD_MANUAL = frozenset(problem_catalog.MANUAL_INPUT_KINDS)
 MANUAL_TRANSCRIPTS = {
 }
 
+# Handoff Q: source slide 169 and worked p.15, section 4.2. Set d=m-n>0
+# and n=m-d to retain exactly the printed integer domain. Both PDFs print
+# pi/2**(m-2*n); the note and finite-product certificate derive pi/2**m.
+_Q_M = "Symbol('m',integer=True)"
+_Q_D = "Symbol('d',integer=True,positive=True)"
+_Q_K = "Symbol('k',integer=True)"
+_Q_TRANSCRIPT = (
+    f"sin((2**{_Q_M}+2025*2**({_Q_M}-{_Q_D}))*x)/sin(2**{_Q_M}*x)"
+    f"*Product(cos(2**({_Q_M}-{_Q_K})*x),({_Q_K},1,{_Q_D}))",
+    ("0", f"pi/2**({_Q_M}-{_Q_D})"),
+    "pi/2**m",
+)
+
 _RELAY_M = "Symbol('m', integer=True, positive=True)"
 _RELAY_N = "Symbol('n', integer=True, positive=True)"
 _RELAY_K = "Symbol('k', integer=True)"
@@ -73,11 +86,13 @@ _RELAY_TRANSCRIPT = (
     f"Eq({_RELAY_M},{_RELAY_N})),(0,True))",
 )
 # Layout readings that do not prove. Each triple is the printed integrand, its
-# limits (None when indefinite), and the printed final, taken from the worked
-# note that cites the mark scheme. proven() still has to accept the triple.
+# limits (None when indefinite), and the cited final, taken from the worked
+# note. A documented source correction retains the original problem and names
+# the conflicting printed final. proven() still has to accept the triple.
 # An optional fourth item preserves a printed integration variable when x is
 # already a parameter.
 TRANSCRIPTS = {
+    "R3-2024-Tournament-Q04-v10": _Q_TRANSCRIPT,
     # R1 2023 problem/mark p.2, worked p.6. The unresolved rationality
     # predicates each give a binary endpoint; no rationality claim is needed.
     "R1-2023-Q05": (
@@ -1276,7 +1291,7 @@ TRANSCRIPTS.update(
 )
 
 # Answer slides. Each pack note names the source integral and mark.
-# The Q04-v10 family remains excluded for a genuine printed discrepancy.
+# Q04-v10's aliases use the same certified correction to the printed final.
 ANSWER_SLIDES = {
     "R3-2024-Tournament-Q02-v10": "R3-2024-Tournament-Q02-v9",
     "R3-2024-Tournament-Q02-v11": "R3-2024-Tournament-Q02-v9",
@@ -1307,6 +1322,8 @@ ANSWER_SLIDES = {
     "R3-2024-Tournament-Q04-v6": "R3-2024-Tournament-Q04-v4",
     "R3-2024-Tournament-Q04-v8": "R3-2024-Tournament-Q04-v7",
     "R3-2024-Tournament-Q04-v9": "R3-2024-Tournament-Q04-v7",
+    "R3-2024-Tournament-Q04-v11": "R3-2024-Tournament-Q04-v10",
+    "R3-2024-Tournament-Q04-v12": "R3-2024-Tournament-Q04-v10",
     "R3-2024-Tournament-Q05-v10": "R3-2024-Tournament-Q05-v9",
     "R3-2024-Tournament-Q05-v11": "R3-2024-Tournament-Q05-v9",
     "R3-2024-Tournament-Q05-v2": "R3-2024-Tournament-Q05",
@@ -1347,9 +1364,6 @@ ANSWER_SLIDES = {
 
 _ANSWER_SLIDE_EXCLUDED = frozenset(
     {
-        "R3-2024-Tournament-Q04-v10",
-        "R3-2024-Tournament-Q04-v11",
-        "R3-2024-Tournament-Q04-v12",
         "R3-2024-Tournament-Q06-v4",
         "R3-2024-Tournament-Q06-v5",
     }
@@ -1686,19 +1700,6 @@ TRANSCRIPT_KINDS = {
 # Group problem/mark p.2: v2 is matrix-layout extraction debris assigned Q01,
 # not another integral. Reprove the same source reading for either catalog id.
 TRANSCRIPTS["R2-2023-Group-Q01-v2"] = TRANSCRIPTS["R2-2023-Group-Q01"]
-
-# Handoff L: each 2022 Q01 problem p.2 prints [-pi/2, pi/2], while its
-# mark p.2 says sin(1). Prove the printed problem's value 1 by reflection.
-# The identical 2020 Q01 problem/answer p.1 and worked p.3 corroborate 1;
-# the catalog notes retain each conflicting 2022 mark citation.
-_HANDOFF_L_LOGISTIC = ("cos(x)/(1+exp(x))", ("-pi/2", "pi/2"), "1")
-TRANSCRIPTS.update(
-    {
-        "R1-2022-MIT-TB-Q01": _HANDOFF_L_LOGISTIC,
-        "R1-2022-Oxford-Q01": _HANDOFF_L_LOGISTIC,
-        "R1-2022-TB2022-Q01": _HANDOFF_L_LOGISTIC,
-    }
-)
 
 
 def transcribed(row: dict) -> dict | None:

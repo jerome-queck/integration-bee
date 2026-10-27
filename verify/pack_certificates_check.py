@@ -524,7 +524,7 @@ def check_handoff_h_ceiling(rows):
 
 
 def check_handoff_i(rows):
-    """Prove the Group alias and keep transcribed source conflicts manual."""
+    """Prove the Group alias; source-conflict manuals are cleared by L–Q."""
     def same_recovery(before, after):
         if len(before) != len(after):
             return False
@@ -556,63 +556,17 @@ def check_handoff_i(rows):
                     ident + " wrong answer " + wrong)
             require(not turn_contract.answer_matches(row, wrong), ident + " learner wrong answer " + wrong)
 
-    m, n, k = sp.symbols("m n k", integer=True)
-    tournament = (sp.sin((2**m + 2025*2**n)*x) / sp.sin(2**m*x)
-                  * sp.Product(sp.cos(2**(m-k)*x), (k, 1, m-n)))
-    for ident in ("R3-2024-Tournament-Q04-v11", "R3-2024-Tournament-Q04-v12"):
-        row = rows[ident]
-        require(pack_gate._parse(row["sympy_expr"], "x") == tournament,
-                ident + " printed product and integer parameters")
-        require(tuple(pack_gate._parse(part, "x") for part in row["limits"]) == (0, sp.pi/2**n),
-                ident + " original bounds")
-        require("m > n" in row["integrand_plain"], ident + " printed parameter ordering")
-    manual_rows = [rows[ident] for ident in problem_catalog.MANUAL_INPUT_KINDS]
-    for row in manual_rows:
-        ident = row["id"]
-        require(problem_catalog.manual_input_problem(row) is None, ident + " valid manual input")
-        require(sp.latex(pack_gate._parse(row["sympy_expr"], row["variable"])) == row["integrand_latex"],
-                ident + " display agrees with transcribed input")
-        require("source discrepancy" in row["notes"], ident + " conflict remains visible")
-        require(problem_catalog.prompt_view(row)["integrand_plain"] != row["extraction"]["raw_snippet"],
-                ident + " prompt replaces the lossy extract")
-        marked, error = turn_contract.grade_problem(ident, row["answer_plain"], None, [], [], [row])
-        require(marked is None and error == "manual problem needs verdict",
-                ident + " never grades automatically")
-        for verdict in ("correct", "incorrect"):
-            marked, error = turn_contract.grade_problem(ident, "not a symbolic answer", verdict, [], [], [row])
-            require(error is None and marked["manual"] and marked["correct"] == (verdict == "correct"),
-                    ident + " preserves explicit manual verdict")
-            require(marked["display"] == row["answer_plain"], ident + " retains printed answer")
-        for field, value in (("answer_sympy", "1"), ("answer_latex", "1"),
-                             ("kind", "unknown"), ("sympy_expr", ""),
-                             ("limits", None), ("variable", "unknown")):
-            mutated = dict(row, **{field: value})
-            require(problem_catalog.manual_input_problem(mutated) is not None,
-                    ident + " rejects invalid manual " + field)
-            marked, error = turn_contract.grade_problem(ident, "1", "correct", [], [], [mutated])
-            require(marked is None and error == "catalog problem is not sympy-checked",
-                    ident + " invalid transcription cannot bypass the manual guard")
-
-    unrelated = dict(manual_rows[0], id="R1-2022-Oxford-Q01")
-    require(problem_catalog.manual_input_problem(unrelated) is not None,
-            "manual input exception is restricted to the remaining source transcriptions")
+    require(not problem_catalog.MANUAL_INPUT_KINDS,
+            "L–Q cleared every pack MANUAL_INPUT_KINDS transcription")
     require(problem_catalog.catalog_problem(list(rows.values())) is None, "Handoff I counts and schema")
     sys.path.insert(0, str(problem_catalog.ROOT / "scripts"))
     import recover_pack_math
 
-    selected = [rows[ident] for ident in group_ids] + manual_rows
+    selected = [rows[ident] for ident in group_ids]
     recovered, gated = recover_pack_math.recover(copy.deepcopy(selected))
     require(same_recovery(selected, recovered) and set(gated) == set(group_ids),
-            "recovery re-proves both twins and preserves all manual source fields")
-    cleared = copy.deepcopy(manual_rows)
-    for row in cleared:
-        for field in ("sympy_expr", "variable", "integrand_latex", "limits"):
-            row.pop(field)
-        row["kind"] = "unknown"
-        row["integrand_plain"] = row["extraction"]["raw_snippet"]
-    regenerated, gated = recover_pack_math.recover(cleared)
-    require(same_recovery(manual_rows, regenerated) and gated == [],
-            "source transcripts restore the display fields without promoting manual answers")
+            "recovery re-proves both Group twins without inventing manuals")
+
 
 
 def main():
@@ -640,7 +594,7 @@ def main():
     print(
         "PASS pack certificates (symbolic families, literal operators, "
         "24 Handoff D rows, 10 Handoff F contracts, Handoff G grids, "
-        "Handoff H ceiling, Handoff I alias and manual inputs, Handoff L printed limits, "
+        "Handoff H ceiling, Handoff I Group alias, Handoff L printed limits, "
         "Handoff M clarified Relay readings, Handoff N crossnumber maps, Handoff Q derived final, mutations, source discrepancies)"
     )
     return 0
