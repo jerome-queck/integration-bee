@@ -2,10 +2,18 @@
 
 ## Status
 
-- Catalog node: `vector-calc`; depth: deferred-noted.
-- Round 1: leave unticked. There is no unit or drill assigned to this node.
+- Catalog node: `vector-calc`; status: ready; depth: card; unit: `30-gaussian-dirichlet`.
+- Round 1: optional, with no readiness gate. Content readiness does not award a learner mastery tick.
 - Source: [syllabus §1](../../../sources/UK_University_Integration_Bee_Syllabus.pdf), which excludes vector calculus from the Round 1 requirement; [unit 30](../../../units/30-gaussian-dirichlet/teaching.tex) supplies the optional Gaussian sketch.
 - Use: explain where the Gaussian constant comes from when the learner asks. This note adds no multivariable contest problem or final.
+
+## Adaptive
+
+| Node | Difficulty | Prerequisites | Lesson |
+|---|---|---|---|
+| `vector-calc` | 4, optional recognition | `basic-u-substitution`, `gaussian-integrals` | [unit 30](../../../units/30-gaussian-dirichlet/teaching.tex), optional polar recognition |
+
+The recognition drill below is an oral worked/faded/bare pattern. The optional node has no automatic drill queue. `U30-D01` and `U30-D03` remain stored one-variable follow-ups, with practice credit on their existing `advanced-gaussian` node. Their correct answers alone do not demonstrate understanding of a change of area coordinates or automatically credit `vector-calc`.
 
 ## When to mention it
 
@@ -32,4 +40,12 @@ Increasing the disks to the whole plane and using nonnegativity gives \(I^2=\pi\
 
 Ask why the area factor is \(r\), why the angular interval has length \(2\pi\), and why the positive square root is selected. A missing \(r\), a half-plane used for the full plane, or a full-line value copied onto a half-line changes the answer. Nonnegative integrands justify the product and increasing-domain limits here; an arbitrary improper double integral needs its own justification.
 
-Stop after the requested background. Return to unit 30 for scaling or to unit 11 for elementary Gaussian cousins. Do not turn this explanation into a prerequisite for Round 1 or a tick of `vector-calc`.
+## Recognition drill
+
+**Worked.** Read the finite-disk computation above and identify the radial variable, angular interval, area factor, and increasing-domain limit. The conclusion is the existing full-line value `U30-D03`.
+
+**Faded.** Hide the factor multiplying \(dr\,d\theta\). Ask the learner to differentiate \(x=r\cos\theta\), \(y=r\sin\theta\) and recover the absolute determinant \(r\), then explain why the positive square root is used.
+
+**Bare.** Give only \(I=\int_{-\infty}^{\infty}e^{-x^2}\,dx\) and ask for the polar setup for \(I^2\), its radial bounds, and the reason the half-line result is half as large. Accept the derivation above; reject a setup without \(r\) or an angular range of length \(\pi\) for the whole plane. This is a recognition explanation, not a new contest answer or a `practice check` id.
+
+Stop after the requested background. Return to unit 30 for scaling or to unit 11 for elementary Gaussian cousins. This card is ready to teach but is not a prerequisite for Round 1; using a quoted Gaussian value does not automatically establish `vector-calc` mastery.

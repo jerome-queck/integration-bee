@@ -8,6 +8,7 @@ problem_id_prefix: "U34-D"
 technique_tags:
   - frullani
   - feynman
+  - dutis
 yang_tags:
   - "yang:6.6"
   - "yang:6.7"
@@ -15,7 +16,7 @@ syllabus_refs:
   - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
     section: "§§6.6 Frullani Integrals, 6.7 Feynman Technique"
   - source: UK_University_Integration_Bee_Syllabus.pdf
-    section: "§1 Integration Techniques (supporting)"
+    section: "§1 DUTIS (fixed interval and moving endpoints)"
 prerequisites:
   - "30-gaussian-dirichlet"
   - "17-infinite-functions"

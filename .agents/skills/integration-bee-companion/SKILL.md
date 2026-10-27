@@ -164,6 +164,12 @@ Confirmed skips stay out of the queue until the learner asks for the whole set. 
 
 Send `{"kind":"teach"}`. Obey `say`. Teach from `drill.teaching`. When `coach.detail` is absent or `worked`, give the worked example, then a faded step, then the integral. When it is `faded`, give one faded step, then the integral. When it is `bare`, set the integral and do not show a worked example. `coach.approach`, `coach.kind`, and `coach.volume` are the dosage for `coach.next_node`. The CLI picked the drill. When the learner answers, send a mark turn. If the command exits 2, ask for the final answer again. Do not record that turn yourself.
 
+## Optional syllabus recognition
+
+Open the ready card in `pedagogy/concept-map.md` when the learner asks about vector calculus, Beta, zeta, Euler–Mascheroni, or Catalan. Follow that card's worked/faded/bare recognition prompts and its host unit. These are oral exercises, not new machine ids. Their empty catalog `drill_ids` lists keep them outside `turn teach` and automatic mastery; do not infer those skills from unrelated host-unit attempts. Keep the exact named constants and the stated convergence conditions. Round 1 still uses the same 20 required nodes.
+
+Floor and DUTIS have ready unit homes and explicit stored-drill lists. Their unit 11 bridge still serves `special-wildcard`; obey the node selected by the CLI and its ordinary two-distinct-correct evidence rule. Reading a lesson does not award a tick.
+
 ## Miss
 
 On a miss, teach the file named in `say`. That file is one unit note or one technique note. `turn apply` stores `extract.gap` on the attempt and does not write that file. A study session does not edit a teaching note. If the named note lacks the move, add it in a later commit to that same file, using an original example or an existing drill id. Do not invent an unchecked answer or copy a contest answer.

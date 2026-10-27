@@ -7,6 +7,8 @@ past_paper: false
 problem_id_prefix: "U14-D"
 technique_tags:
   - gamma
+  - beta
+  - euler-mascheroni
 yang_tags:
   - "yang:2.4"
 syllabus_refs:
@@ -14,6 +16,8 @@ syllabus_refs:
     section: "§2.4 Gamma Function Integral"
   - source: UK_University_Integration_Bee_Syllabus.pdf
     section: "§1 Integration Techniques (supporting)"
+  - source: UK_University_Integration_Bee_Syllabus.pdf
+    section: "§2 Gamma, Beta, and Euler–Mascheroni constant"
 prerequisites:
   - "03-exponential-parts"
   - "11-gaussian-wildcard"

@@ -9,9 +9,17 @@ The companion reads ticks and chooses a page. This note does not change session 
 3. If a prerequisite on the coach card is missing or `learning`, teach that earlier card's worked example and set one of its drills. Stop the turn there.
 4. If this node is missing or `learning`, teach the card's worked example, then the faded step, then one drill named on the card. The unit `teaching.tex` is the drill-tied lesson beside the card.
 5. If this node is `solid`, skip the lecture. Set the next due drill in the same unit.
-6. If this node is `skipped`, a non-cold mock still waits until the node is solid. A later miss on that node's drill returns the tick to `learning`. Teach the card at the difficulty in its table.
+6. If this node has `gate: round1` and is `skipped`, a non-cold mock still waits until the node is solid. A later miss on that node's drill returns the tick to `learning`. Teach the card at the difficulty in its table.
 
 Past-paper integrals are not the lesson. The practice rows in the concept map are indexes. The shape-to-unit route is `pedagogy/past-paper-routing.md`. It names a coach card and a unit drill. It does not open a paper.
+
+## Ready lessons and learner evidence
+
+The catalog's `status: ready` says a lesson exists. It does not set a learner's `learning`, `solid`, or `skipped` tick. The Round 1 gate still consists of the same 20 nodes.
+
+`floor` is hosted by unit 11 and uses only `U11-D09` through `U11-D12` as its automatic evidence. `dutis` is hosted by unit 34 and uses `U11-D13` through `U11-D15`, `U34-D04`, and `U34-D05`. Its moving-endpoint exercise remains a recognition check beside those drills. The explicit catalog `drill_ids` lists let these nodes share the existing wildcard practice without claiming credit for a Gaussian or a method-refusal drill. Two distinct correctly answered eligible drills are still required for the automatic solid tick.
+
+`vector-calc`, `beta`, `zeta`, `euler-mascheroni`, and `catalan` have optional recognition cards and unit lessons. Teach their worked/faded/bare prompts when requested. These are oral checks with supplied reasoning, not machine ids for `practice check`. Their explicit empty drill lists keep them outside the automatic drill queue and its mastery evidence. Supporting Gaussian, series, Gamma, and Catalan drills retain their original node routes. An empty automatic queue can therefore coexist with ready optional lessons the learner has not studied.
 
 ## Difficulty
 
@@ -28,7 +36,7 @@ Teach at the learner's highest solid band, plus one step. A band 4 card waits un
 
 Quote a stored drill id and the value printed in the unit note or the drill feed. Quote an original example in `docs/techniques/concepts/` that the card says was checked. Quote the six gap notes.
 
-Leave a pack final alone. Leave a Yang practice final alone when the extract does not print it. Quote a zeta value only when unit 35 already prints it. `pedagogy/concept-map.md` records a thin count of 0. `floor` and `dutis` stay unticked. Leave \(G\) as \(G\).
+Leave a pack final alone. Leave a Yang practice final alone when the extract does not print it. Quote a zeta value only when unit 35 already prints it. `pedagogy/concept-map.md` records a thin count of 0. `floor` and `dutis` have ready unit homes and explicit drill evidence; see the syllabus-card rows in the map. Leave \(G\) as \(G\).
 
 ## After a miss
 

@@ -73,13 +73,17 @@ Personal/session ticks live in gitignored `progress.local.json` (CLI-owned); nev
 | modified-famous | 6.8 | 35-modified-famous | content ready |
 | unique-tricks | 6.9 | 36-unique-tricks | content ready |
 
-**Still deferred:** official syllabus nodes that have no drill (vector calculus, Beta, zeta, Euler-Mascheroni, Catalan's constant). Yang inventory 4.3 is skipped. See `sources/user/yang-topics-inventory.md`.
+All concept nodes are content ready. The seven official syllabus nodes below now have unit homes; the five named-function/vector-calculus cards use optional recognition exercises. Yang inventory 4.3 stays skipped because it has no catalog node. See `sources/user/yang-topics-inventory.md`.
 
-The Yang chapters are one source. Floor is taught: Guide §1.7, `docs/techniques/floor.md`, and drills `U11-D09` through `U11-D12`. Introducing a constant, which is not a catalog id, is `docs/techniques/introduce-constant.md`: add and subtract, scale the numerator, or multiply and divide by a constant, plus a smaller parameter. DUTIS drills `U11-D13` through `U11-D15` are the fixed-interval parameter on the same wildcard node. A moving limit stays in unit 34. Round 1 is a 30-problem paper. Round 2 and Round 3 formats, with the 2024 scoring, are `docs/techniques/formats.md`. Those notes do not tick a node. The catalog ids `floor` and `dutis` still have no unit, so the coach serves the new drills with `special-wildcard`. Do not tick `floor` or `dutis`. Reflection, the recurrence $I_n$, and the half-angle substitution are taught in units 10, 20, and 26. A first pass of $t=\tan(x/2)$ is in unit 09, before the named note in unit 26. The factorial reduction is unit 14. The parts reduction for $x^n\ln x$, and the rational family $x^n/(1+x)$, are unit 15. The index of the six gaps is `docs/techniques/beyond-yang.md`. How to teach a miss is `pedagogy/contest-gaps.md`. Coach cards for the Round 1 families, which are not gap ids, are `docs/techniques/concepts/`. The node inventory is `pedagogy/concept-map.md`. The eleven habits modified textbook, sneaky algebra, sneaky u-sub, sneaky symmetry, sneaky product rule, speed bashing, complexifying, ninja substitution, inversion, modified famous, and unique tricks are taught from the stored drills in their unit files. The scaled fences are `docs/techniques/concepts/habits.md`. The thin count is 0. `floor` and `batis` stay unticked.
+The Yang chapters are one source. Floor is taught by Guide §1.7, `docs/techniques/floor.md`, and unit 11 drills `U11-D09` through `U11-D12`. DUTIS is hosted by unit 34, including its moving-endpoint lesson, with the fixed-interval bridge `U11-D13` through `U11-D15`. Those unit 11 drills still serve `special-wildcard`. Explicit catalog drill lists also let the coach teach `floor` and `dutis` using their relevant evidence. Content readiness itself writes no learner tick and does not add a Round 1 gate.
+
+Introducing a constant is an algebraic move rather than a catalog id; its note is `docs/techniques/introduce-constant.md`. The six gap ids remain in `docs/techniques/beyond-yang.md`, with coaching in `pedagogy/contest-gaps.md`. Reflection, recurrence, and half-angle substitution are taught in units 10, 20, and 26; unit 09 gives the first half-angle pass. Unit 14 teaches the factorial reduction and hosts Beta and Euler–Mascheroni recognition. Unit 15 treats the parts and rational reductions. Units 30, 35, and 36 host vector-calculus, zeta, and Catalan recognition respectively.
+
+Round 1 is a 30-problem paper. The Round 2 and Round 3 formats, with the 2024 scoring, are `docs/techniques/formats.md`. Coach cards are in `docs/techniques/concepts/`, and `pedagogy/concept-map.md` inventories all 72 nodes. The eleven habit nodes retain their stored drills and the scaled examples in `docs/techniques/concepts/habits.md`. Thin and deferred counts are zero.
 
 Prerequisites (soft): 1.1 then 1.2 then 1.11. 1.5 then 1.7 then 1.15 and 1.16. 1.3 with 1.18. 1.6 before reverse-product (1.13).
 
-## Official Round 1 syllabus
+## Official syllabus nodes
 
 Ready nodes already cover substitution and du/u (`basic-u-substitution`, `algebra-manipulation`), parts (`basic-integration-by-parts`, `parts-regular`), odd and even functions (`symmetry`), reflection and King's rule (`kings-queens-rule`), series (`basic-series`), and Gamma (`gamma`).
 
@@ -87,15 +91,15 @@ Yang ids in the tables above run from yang:1.1 through yang:1.20, yang:2.1 throu
 
 | Node | Syllabus | Status in curriculum |
 |---|---|---|
-| dutis | §1 DUTIS, drills U11-D13 through U11-D15, moving limit in unit 34 | content ready |
+| dutis | §1 DUTIS, unit 34; fixed-interval bridge U11-D13 through U11-D15 | content ready; stored drills and moving-endpoint recognition |
 | weierstrass | §1 Weierstrass, Yang 4.5, unit 26 | content ready |
-| vector-calc | §1 vector calculus, not required for Round 1 | deferred |
-| beta | §2 Beta | deferred |
-| zeta | §2 zeta | deferred |
-| floor | §2 floor, Guide §1.7, drills U11-D09 through U11-D12 | content ready |
+| vector-calc | §1 vector calculus, unit 30; not required for Round 1 | content ready; optional recognition card |
+| beta | §2 Beta, unit 14 | content ready; optional recognition card |
+| zeta | §2 zeta, unit 35 | content ready; optional recognition card |
+| floor | §2 floor, Guide §1.7, unit 11, drills U11-D09 through U11-D12 | content ready; stored drills |
 | wallis | Guide §1.4 Wallis product, Yang 3.3, unit 20 | content ready |
-| euler-mascheroni | §2 Euler-Mascheroni constant | deferred |
-| catalan | §2 Catalan's constant | deferred |
+| euler-mascheroni | §2 Euler-Mascheroni constant, unit 14 | content ready; optional recognition card |
+| catalan | §2 Catalan's constant, unit 36 | content ready; optional recognition card; keep G |
 
 ## Practice nodes (past and mocks, framework only)
 

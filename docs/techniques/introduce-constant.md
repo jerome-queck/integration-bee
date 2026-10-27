@@ -2,7 +2,7 @@
 
 Guide section 1.9 is an algebraic move. You add and subtract a constant so the numerator matches the derivative of the denominator, or so a fraction becomes 1 plus a remainder. You can also multiply and divide by a constant that does not depend on \(x\), when that constant is the numerator an addition formula wants. This move is not dutis.
 
-The syllabus names DUTIS as its own technique, in two forms: a fixed interval, and an interval whose endpoints move with the parameter. The catalog id `dutis` has no unit of its own, and nothing in this note ticks it. The fixed-interval drills are `U11-D13`, `U11-D14`, and `U11-D15` on the special-wildcard node. Differentiating under the integral sign when an endpoint moves is `units/34-frullani-feynman/teaching.tex`.
+The syllabus names DUTIS as its own technique, in two forms: a fixed interval, and an interval whose endpoints move with the parameter. The catalog home of `dutis` is [unit 34](../../units/34-frullani-feynman/teaching.tex), which teaches both forms. This note is its fixed-interval bridge and keeps that technique distinct from adding a constant. The introductory drills `U11-D13`, `U11-D14`, and `U11-D15` remain on the `special-wildcard` route. `dutis` is ready curriculum with no separate Round 1 gate; reading this note alone does not award learner mastery.
 
 ## Rewrite the fraction
 
@@ -12,7 +12,7 @@ The integral below is not a stored drill. On \([0, 1]\),
 \frac{x+1}{x+2} = 1 - \frac{1}{x+2}.
 \]
 
-The numerator is 1 less than the derivative of the denominator, so you add and subtract that 1. The antiderivative is \(x - \ln|x+2|\). The definite value is \(1 + \ln(2/3)\).
+The numerator is 1 less than the denominator, so write \(x+1=(x+2)-1\). The antiderivative is \(x - \ln|x+2|\). The definite value is \(1 + \ln(2/3)\).
 
 ```ib-example
 integrand: (x+1)/(x+2)
@@ -90,7 +90,7 @@ This integral is not a stored drill. The constant had to be independent of \(x\)
 
 The smaller parameter here is the same idea on a different power. You introduce a constant in the exponent, integrate a family you already know, and differentiate.
 
-For \(a > -1\), the integral of \(x^a\) from 0 to 1 is \(1/(a+1)\). The integrand \(x^a \ln x\) is the derivative of that family in \(a\). On a compact interval \([\varepsilon, 1]\) with \(\varepsilon>0\), \(x^a\ln x\) is continuous for \(a>-1\), so the Leibniz rule applies there: the derivative in \(a\) passes under the integral sign. Then let \(\varepsilon\to 0\). The integral of \(x^a\ln x\) from 0 to 1 is \(-1/(a+1)^2\). At \(a=3\) the value is \(-1/16\).
+For \(a > -1\), the integral of \(x^a\) from 0 to 1 is \(1/(a+1)\). The integrand \(x^a \ln x\) is the derivative of that family in \(a\). On a compact interval \([\varepsilon, 1]\) with \(\varepsilon>0\), \(x^a\ln x\) is continuous for \(a>-1\), so the Leibniz rule applies there: the derivative in \(a\) passes under the integral sign. To let \(\varepsilon\to 0\), restrict \(a\) to a compact interval \([\alpha,\beta]\) with \(\alpha>-1\). Then \(|x^a\ln x|\leq x^\alpha|\ln x|\) on \((0,1)\), and the bound is integrable. It justifies passing the derivative through the improper limit. The result is \(-1/(a+1)^2\). At \(a=3\) the value is \(-1/16\).
 
 ```ib-example
 integrand: x**3*log(x)
@@ -98,9 +98,9 @@ limits: 0, 1
 answer: -1/16
 ```
 
-That is a smaller parameter than the unit 34 chapter. The stored drill `U34-D05` is the same family at \(a=2\), where the value is \(-1/9\). Do not tick `dutis` from this note.
+That is a smaller parameter than the unit 34 chapter. The stored drill `U34-D05` is the same family at \(a=2\), where the value is \(-1/9\). The full DUTIS dose, including moving endpoints, is in that unit.
 
-Differentiate again. The second derivative of \(1/(a+1)\) is \(2/(a+1)^3\), and that is \(\int_0^1 x^a(\ln x)^2\,dx\). At \(a=1\) the value is \(1/4\).
+Differentiate again, using the integrable bound \(x^\alpha(\ln x)^2\) on the same parameter interval. The second derivative of \(1/(a+1)\) is \(2/(a+1)^3\), and that is \(\int_0^1 x^a(\ln x)^2\,dx\). At \(a=1\) the value is \(1/4\).
 
 ```ib-example
 integrand: x*log(x)**2
@@ -114,7 +114,7 @@ The Leibniz rule you are using, on a rectangle where \(f\) and \(\partial f/\par
 \frac{d}{da}\int_c^d f(x,a)\,dx = \int_c^d \partial_a f(x,a)\,dx.
 \]
 
-An infinite limit or an endpoint blow-up needs the limit argument above, or a sign that lets you switch the integrals. Unit 34 writes that out for the Frullani shape \((e^{-x}-e^{-2x})/x\), and it writes the syllabus form whose endpoints move with the parameter. A moving endpoint is not the algebra on this page.
+An infinite limit or an endpoint blow-up needs the integrable bound above before passing a derivative through the limit. A nonnegative integrand separately justifies switching two integrals; it does not by itself justify differentiation. Unit 34 uses that order-of-integration argument for the Frullani shape \((e^{-x}-e^{-2x})/x\), and it writes the syllabus form whose endpoints move with the parameter. A moving endpoint is not the algebra on this page.
 
 ## Stored DUTIS drills
 
@@ -126,7 +126,7 @@ These three are the fixed-interval form. The moving-limit form stays in unit 34.
 \int_0^1 x^4\ln x\,dx=-\frac{1}{25}.
 \]
 
-`U11-D14` differentiates \(\int_0^\infty e^{-ax}\,dx=1/a\) at \(a=2\). The integral of \(x e^{-2x}\) from 0 to \(\infty\) is \(1/4\). Take the limit of a compact interval \([0, R]\) before you quote the value.
+`U11-D14` differentiates \(\int_0^\infty e^{-ax}\,dx=1/a\) at \(a=2\). The integral of \(x e^{-2x}\) from 0 to \(\infty\) is \(1/4\). For parameters \(a\geq c>0\), the derivative has the integrable bound \(xe^{-cx}\). That bound justifies the passage from compact intervals \([0,R]\) to the half-line.
 
 `U11-D15` integrates the parameter instead of differentiating it. For \(a>-1\), \(\int_0^1 x^a\,dx=1/(a+1)\). Integrate in \(a\) from 0 to 3:
 
@@ -138,4 +138,4 @@ That is the stored answer of `U11-D15`. It is an original power, not a contest r
 
 ## On a miss
 
-Teach this file when the miss is the algebra, and teach `units/34-frullani-feynman/teaching.tex` when the miss is a moving limit. For a fixed-interval parameter, set `U11-D13`, `U11-D14`, or `U11-D15`. Do not invent an unchecked answer. Do not tick `dutis`. A correct final answer that used the wrong method still needs the method named in the mark. Completing the square and the decision to open this note are `docs/techniques/concepts/algebra.md`.
+Teach this file when the miss is the algebra, and teach `units/34-frullani-feynman/teaching.tex` when the miss is a moving limit. For a fixed-interval parameter, set `U11-D13`, `U11-D14`, or `U11-D15`; the unit 34 DUTIS dose works `U34-D05`, fades `U34-D04`, and sets bare `U11-D14`. Do not invent an unchecked answer. A correct final answer that used the wrong method still needs the method named in the mark. Learner ticks follow the coach's evidence rule. Completing the square and the decision to open this note are `docs/techniques/concepts/algebra.md`.

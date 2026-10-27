@@ -2,10 +2,18 @@
 
 ## Status
 
-- Catalog node: `zeta`; depth: deferred-noted.
-- Round 1: leave unticked. This recognition note adds no unit, drill, or gate.
+- Catalog node: `zeta`; status: ready; depth: card; unit: `35-modified-famous`.
+- Round 1: optional, with no readiness gate. Content readiness does not award a learner mastery tick.
 - Source: [syllabus §2](../../../sources/UK_University_Integration_Bee_Syllabus.pdf); [NIST DLMF 25.2.1](https://dlmf.nist.gov/25.2.E1) defines the convergent zeta series.
 - Coach policy: [the series card](series.md) and [unit 35](../../../units/35-modified-famous/teaching.tex) keep their cited values. Do not invent a new evaluation of \(\zeta(s)\).
+
+## Adaptive
+
+| Node | Difficulty | Prerequisites | Lesson |
+|---|---|---|---|
+| `zeta` | 4, optional recognition | `basic-series`, `gamma` | [unit 35](../../../units/35-modified-famous/teaching.tex), optional zeta recognition |
+
+Use the oral recognition drill below, then the stored series pair `U35-D04` and `U35-D05` if practice is wanted. Those ids retain their practice credit on `modified-famous`. The optional `zeta` node has no automatic drill queue, and host-unit answers do not automatically credit it.
 
 ## Definition and scope
 
@@ -45,4 +53,12 @@ The last equality follows by scaling and two integrations by parts. Summing yiel
 
 Ask where the series starts, why the power is 3, and what justifies exchanging sum and integral. Forgetting the index shift or the factor 2 changes the result. Applying the defining series at \(s=1\) ignores divergence. Positive-term interchange here does not justify an arbitrary signed series interchange.
 
-Preserve the exact named value when it is the answer's form. Use only the existing cited unit values when a stored drill requires further evaluation. This note grants no permission to fill a pack answer or tick `zeta`.
+## Recognition drill
+
+**Worked.** Use the nonnegative expansion above to identify the shifted index and the factor 2. Stop at \(2\zeta(3)\); no further evaluation of \(\zeta(3)\) is supplied.
+
+**Faded.** Hide the result of \(\int_0^1 x^n(\log x)^2\,dx\). Ask for the substitution \(x=e^{-t}\), then scale \(u=(n+1)t\) to recover \(2/(n+1)^3\) for integers \(n\geq0\).
+
+**Bare.** Ask whether \(\sum_{n=1}^{\infty}n^{-1}\) and \(\sum_{n=1}^{\infty}n^{-3}\) both define ordinary convergent zeta sums, and ask which sum the worked integral produced. The first diverges; the second is \(\zeta(3)\), and the worked integral is twice it. Require the range \(s>1\) and the index shift, not a guessed decimal or logarithm. This is a recognition prompt, not a machine drill id.
+
+Preserve the exact named value when it is the answer's form. Use only the existing cited unit values when a stored drill requires further evaluation. The lesson is ready for an optional session; it grants no permission to fill a pack answer or award mastery without evidence.

@@ -8,12 +8,9 @@ Depth means one of the following.
 
 | Depth | What to teach |
 |---|---|
-| card | A coach card states when to use the move, one worked example, and the usual failure. The unit file holds the stored drills. |
+| card | A coach card states when to use the move, one worked example, and the usual failure. Its unit holds stored drills or an explicit optional recognition exercise. |
 | unit | The unit `teaching.tex` already states the move and a stored drill. The card only points there. No new example was added. |
 | thin | Empty after the habit card. A node landed here when its unit had not yet taught the stored drills. Those eleven nodes are `habits.md`. |
-| deferred-taught | The catalog id has no unit, so it stays deferred. A note and drills exist. Leave the id unticked. |
-| deferred-noted | A recognition note supplies definitions, a derivation or cited identity, and coach guidance. It adds no unit or drill for this catalog id and gives no readiness credit. Leave the id unticked. |
-| deferred-open | No teachable note yet. Name the syllabus entry. Do not invent a value. |
 | index | A paper or a mock. Not a technique. |
 
 ## Round 1 nodes
@@ -103,19 +100,25 @@ None. The eleven habits that were thin are rows of `docs/techniques/concepts/hab
 
 Yang inventory 4.3 has no node. It stays skipped.
 
+## Official syllabus cards
+
+All seven nodes below have catalog status `ready`, a unit, and `gate: null`. Ready describes available teaching; learner mastery still needs evidence. These seven cards extend the later-card inventory. The five optional recognition lessons do not add a Round 1 prerequisite or an automatic mastery claim.
+
+| Node | Depth | Card | Unit lesson | Practice |
+|---|---|---|---|---|
+| `floor` | card | `docs/techniques/floor.md` | `units/11-gaussian-wildcard/teaching.tex` | Stored `U11-D09` through `U11-D12`; split at integers, partial last intervals, fractional parts, and negative inputs. |
+| `dutis` | card | `docs/techniques/introduce-constant.md` | `units/34-frullani-feynman/teaching.tex` | Stored `U11-D13` through `U11-D15`, `U34-D04`, `U34-D05`; the moving-endpoint exercise is oral. |
+| `vector-calc` | card | `docs/techniques/concepts/vector-calc.md` | `units/30-gaussian-dirichlet/teaching.tex` | Optional recognition: polar Jacobian, angular range, positive square root. The Gaussian drills remain supporting practice on their existing nodes. |
+| `beta` | card | `docs/techniques/concepts/beta.md` | `units/14-gamma/teaching.tex` | Optional recognition: endpoint powers, Gamma ratio, and the endpoint convergence condition. |
+| `zeta` | card | `docs/techniques/concepts/zeta.md` | `units/35-modified-famous/teaching.tex` | Optional recognition: convergent series and termwise integration. Supporting `U35-D04` and `U35-D05` keep their existing values; no new zeta evaluation. |
+| `euler-mascheroni` | card | `docs/techniques/concepts/euler-mascheroni.md` | `units/14-gamma/teaching.tex` | Optional recognition: harmonic-sum offset, the sign of the logarithmic Gamma integral, and the distinction between gamma the constant and Gamma the function. |
+| `catalan` | card | `docs/techniques/concepts/catalan.md` | `units/36-unique-tricks/teaching.tex` | Optional recognition: odd squares, alternating signs, and the endpoint remainder. Supporting `U36-D03` keeps the exact answer \(G\). |
+
+The fixed-interval and floor drills still route through `special-wildcard` for the Round 1 dose. Explicit `drill_ids` in the catalog also give `floor` and `dutis` their own relevant evidence, including DUTIS drills across units 11 and 34. The five optional cards use an empty `drill_ids` list: teach their worked/faded/bare recognition prompts when requested, outside the automatic drill queue. Host-unit successes do not silently tick those nodes. Their cited supporting drills keep their original routes.
+
 ## Deferred in the catalog
 
-| Node | Depth | Teach | Tick |
-|---|---|---|---|
-| `floor` | deferred-taught | `docs/techniques/floor.md`, drills `U11-D09` through `U11-D12` | Leave unticked. The id has no unit. |
-| `dutis` | deferred-taught | `docs/techniques/introduce-constant.md` for a fixed interval, unit 34 for a moving endpoint. Drills `U11-D13` through `U11-D15`. | Leave unticked. |
-| `vector-calc` | deferred-noted | [Optional Gaussian background](../docs/techniques/concepts/vector-calc.md): polar area factor and increasing disks, tied to unit 30. Syllabus §1 excludes it from the Round 1 requirement. | Leave unticked; no new multivariable contest final. |
-| `beta` | deferred-noted | [Beta recognition](../docs/techniques/concepts/beta.md): endpoint powers, the Gamma identity, and an original \(B(2,3)=1/12\) micro-example. | Leave unticked; no unit or stored drill. |
-| `zeta` | deferred-noted | [Zeta recognition](../docs/techniques/concepts/zeta.md): convergent series and a sourced integral identity, keeping \(\zeta(3)\) named. The series card's no-invented-evaluations policy remains. | Leave unticked; no new evaluated zeta constant. |
-| `euler-mascheroni` | deferred-noted | [Euler's constant](../docs/techniques/concepts/euler-mascheroni.md): harmonic-sum offset, a limit comparison, and the sourced \(\Gamma'(1)=-\gamma\) identity. | Leave unticked; keep \(\gamma\) exact. |
-| `catalan` | deferred-noted | [Catalan recognition](../docs/techniques/concepts/catalan.md): unit 36's `U36-D03`, a finite-remainder argument, and the stopping rule at \(G\). | Leave unticked; no guessed logarithm or rational replacement. |
-
-All seven ids remain `status: deferred`, with no unit or gate in `trackers/catalog.json`. The five recognition cards close the missing-note gap; they do not add a Round 1 requirement or change the 36 ready units. Their examples are exposition or existing stored drills, not new contest answers. `floor` and `dutis` keep their existing note-and-drill coverage.
+None. Deferred-taught, deferred-noted, and deferred-open are all zero.
 
 ## Practice indexes
 
@@ -138,13 +141,13 @@ These nine nodes are not concepts. Round formats are `docs/techniques/formats.md
 | Depth | Nodes |
 |---|---|
 | card, Round 1 gate | 20 |
-| card, later chapter or syllabus technique | 32 |
+| card, later chapter or syllabus technique | 39 |
 | unit lesson, no new example | 4 |
 | thin | 0 |
-| deferred-taught | 2 (`floor`, `dutis`) |
-| deferred-noted | 5 |
+| deferred-taught | 0 |
+| deferred-noted | 0 |
 | deferred-open | 0 |
 | index | 9 |
 | Total | 72 |
 
-The thin count was 11 before the habit card. It is 0. The 20 Round 1 nodes and the 32 later card rows are what an agent can teach without a Yang answer key. The five formerly deferred-open rows now have recognition notes; their depth is deferred-noted, not ready. All seven deferred nodes, including `floor` and `dutis`, stay unticked.
+The thin count is 0. The 20 Round 1 cards, 39 later or syllabus cards, and 4 unit lessons cover all 63 concept nodes without inventing a Yang answer key. Nine practice indexes complete the 72-node catalog. No concept is deferred. Content readiness does not write learner ticks.

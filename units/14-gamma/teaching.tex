@@ -6,13 +6,15 @@
 \begin{document}
 \maketitle
 \section*{Status}
-Tags: \texttt{yang:2.4}, \texttt{gamma}.
+Tags: \texttt{yang:2.4}, \texttt{gamma}; optional syllabus nodes \texttt{beta} and \texttt{euler-mascheroni}.
 The identity $n!=\int_0^{\infty}x^n e^{-x}\,dx$ is the integer case of the Gamma function. Yang \S2.4 is one writeup. The reduction itself is parts: the index drops by 1. Unit 20 names the same family and stores neither $J_2$ nor $J_4$.
+The optional recognition lessons below host Beta and Euler's constant. They add no Round 1 gate or machine drill id. A ready lesson does not assert a learner's mastery.
 \section{Official anchors}
 \begin{itemize}
   \item Parts on $[0,\infty)$, any calculus text. Unit 20 for the trigonometric $I_n$.
   \item Syllabus §2 Gamma, as the name of this integral.
   \item Yang Topics Guide 2nd Ed §2.4 Gamma Function Integral.
+  \item Syllabus §2 Beta and Euler--Mascheroni; coach cards \path{docs/techniques/concepts/beta.md} and \path{docs/techniques/concepts/euler-mascheroni.md} contain the definitions, derivations, and NIST DLMF citations.
 \end{itemize}
 \section{Learning goals}
 \begin{enumerate}
@@ -50,6 +52,42 @@ Sixty seconds. From $J_0=1$,
 J_2=2,\quad J_3=6,\quad J_4=24,\quad J_5=120.
 \]
 Those four values are \texttt{U14-D10}, \texttt{U14-D02}, \texttt{U14-D09}, and \texttt{U14-D01}. The same minute carries the sign on $[0,1]$: \texttt{U14-D04} is $+2$, \texttt{U14-D03} is $-6$, and \texttt{U14-D11} is $+24$. \texttt{U14-D05} is the sum $J_2+2J_1+J_0=2+2+1=5$. The faded blank is the four factorials, then the three signs.
+
+\section{Optional recognition drill --- Beta}
+Prerequisites: substitution and the Gamma reduction above. For real $a,b>0$,
+\[
+B(a,b)=\int_0^1 t^{a-1}(1-t)^{b-1}\,dt
+=\frac{\Gamma(a)\Gamma(b)}{\Gamma(a+b)}.
+\]
+The endpoint restrictions matter. The card \path{docs/techniques/concepts/beta.md} derives the identity by $u=rt$, $v=r(1-t)$ in the product of two Gamma integrals; its Jacobian is $r$. Source: \url{https://dlmf.nist.gov/5.12.E1}.
+
+\textbf{Worked.} The original explanatory integral
+$\int_0^1 t(1-t)^2\,dt=B(2,3)=1!\,2!/4!=1/12$ also follows by expanding: $1/2-2/3+1/4=1/12$. SymPy checks both computations. It is not a contest answer.
+
+\textbf{Faded.} Hide the worked line. From $a-1=1$ and $b-1=2$, fill the arguments in $\Gamma(\square)\Gamma(\square)/\Gamma(\square)$, then convert to factorials. The key is $2,3,5$, then $1!,2!,4!$.
+
+\textbf{Bare.} Name the Beta integral for $t(1-t)^2$ on $[0,1]$, give its value and endpoint conditions, then decide whether $\int_0^1 t^{-1}(1-t)^2\,dt$ is finite. Accept $B(2,3)=1/12$ with $a,b>0$; refuse the variant because its first argument is 0 and it behaves like $1/t$ at zero. On an index miss, repeat the faded step; on an endpoint miss, compare with $t^p$, integrable at zero for $p>-1$.
+
+\section{Optional recognition drill --- Euler--Mascheroni}
+Prerequisites: the Gamma integral and finite sums. Let $H_n=\sum_{k=1}^n1/k$. The constant is $\gamma=\lim_{n\to\infty}(H_n-\ln n)$. Rectangle comparison shows $H_n-\ln n>0$ and
+\[
+(H_n-\ln n)-(H_{n+1}-\ln(n+1))
+=\int_n^{n+1}\frac{dx}{x}-\frac1{n+1}>0.
+\]
+The sequence decreases to its limit. Source: \url{https://dlmf.nist.gov/5.2.E3}.
+
+\textbf{Worked.} Distinguish the constant $\gamma$ from the function $\Gamma(s)$:
+\[
+\Gamma(1)=1,\qquad
+\Gamma'(1)=\int_0^\infty e^{-x}\ln x\,dx=-\gamma.
+\]
+The sign uses $\Gamma'(1)=-\gamma$ from \url{https://dlmf.nist.gov/5.4.E11}. The card \path{docs/techniques/concepts/euler-mascheroni.md} supplies the differentiation argument. For $1/2\le s\le3/2$, the derivative integrand is bounded in absolute value by $x^{-1/2}|\ln x|$ on $(0,1)$ and by $e^{-x}x^{1/2}\ln x$ on $[1,\infty)$; both are integrable. SymPy checks the integral and the Gamma derivative.
+
+\textbf{Faded.} Fill $\partial_s x^{s-1}=x^{s-1}\square$ and $\int_0^\infty e^{-x}\ln x\,dx=\square\gamma$. The blanks are $\ln x$ and $-1$. The cited special value supplies the sign; the differentiation rule alone does not.
+
+\textbf{Bare.} Define $\gamma$, give $\Gamma(1)$ and $\Gamma'(1)$, and explain why $3/2-\ln2$ is not $\gamma$. Accept the limit, $1$, $-\gamma$, and the strict decrease from $H_2-\ln2$. On a sign miss, return to the faded step; on a limit miss, return to the rectangle comparison. Keep the justified named constant as the exact value.
+
+Both optional recognition drills are oral checks of the exposition. They have no machine ids, are not submitted to \texttt{practice check}, and do not supply automatic tick evidence. The stored Gamma drills below assess the prerequisite, not these two optional nodes.
 
 \section{Drill pointers}
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit14.json}. The speed drill above checks stored rows. It adds no id.

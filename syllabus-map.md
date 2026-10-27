@@ -86,6 +86,22 @@ Syllabus: `UK_University_Integration_Bee_Syllabus.pdf` §1 (p.1).
 
 Syllabus §2 (p.2): Gamma Q7; Beta —; zeta Q6/Q8/Q9; floor Q9; Wallis Guide §1.4; γ —; Catalan's listed.
 
+## Ready official syllabus lessons
+
+These nodes have `status: ready` and `gate: null`. The existing 20 Round 1 gates are unchanged. A recognition exercise is original teaching with a supplied answer and reasoning; it is not an invented contest final or a new machine drill.
+
+| Node | Unit | Card / practice |
+|---|---|---|
+| `floor` | `11-gaussian-wildcard` | `docs/techniques/floor.md`; stored `U11-D09` through `U11-D12` |
+| `dutis` | `34-frullani-feynman` | `docs/techniques/introduce-constant.md`; stored `U11-D13` through `U11-D15`, `U34-D04` and `U34-D05`; moving-endpoint recognition |
+| `vector-calc` | `30-gaussian-dirichlet` | `docs/techniques/concepts/vector-calc.md`; optional polar-coordinate recognition, outside the Round 1 requirement |
+| `beta` | `14-gamma` | `docs/techniques/concepts/beta.md`; optional endpoint-power and Gamma-ratio recognition |
+| `zeta` | `35-modified-famous` | `docs/techniques/concepts/zeta.md`; optional convergent-series recognition; retain the stored unit values |
+| `euler-mascheroni` | `14-gamma` | `docs/techniques/concepts/euler-mascheroni.md`; optional harmonic-limit and Gamma-derivative recognition |
+| `catalan` | `36-unique-tricks` | `docs/techniques/concepts/catalan.md`; optional named-constant recognition; supporting `U36-D03` remains G |
+
+The unit 11 wildcard route still serves its floor and fixed-interval DUTIS drills. The five optional recognition cards have explicit oral worked/faded/bare exercises in their unit notes; their empty catalog `drill_ids` lists keep them outside automatic drill mastery. This is content readiness, not evidence that a learner has mastered the topics. No node remains deferred.
+
 ## Techniques Guide foundation order
 
 Guide Contents: §1.1 Odd/Even p.3 → §1.2 Reflection p.7 → §1.3 Recurrence p.11 → §1.4 Wallis* p.13 → §1.5 Inverse p.14 → §1.6 T-sub p.15 → §1.7 Floor p.17 → §1.8 Trig p.18 → §1.9 Constants p.21 → §1.10 Exercises p.22.
@@ -136,7 +152,7 @@ Guide Contents: §1.1 Odd/Even p.3 → §1.2 Reflection p.7 → §1.3 Recurrence
 | `yang:6.8` | Modified Famous Integrals | **Unit 35** (`U35-D01`…`D08`) |
 | `yang:6.9` | Unique Tricks | **Unit 36** (`U36-D01`…`D08`) |
 
-**Done:** Units 19–36 cover inventory `yang:3.1`…`yang:6.9` (4.3 skipped). Official syllabus nodes without a Yang unit stay deferred on `skill-tree.md`. The eleven habit nodes, from modified textbook through unique tricks, teach their stored drills in the unit notes. Scaled fences are `docs/techniques/concepts/habits.md`. The thin count in `pedagogy/concept-map.md` is 0.
+**Done:** Units 19–36 cover inventory `yang:3.1`…`yang:6.9` (4.3 skipped). All seven official syllabus nodes also have ready unit homes, listed below and on `skill-tree.md`. The eleven habit nodes, from modified textbook through unique tricks, teach their stored drills in the unit notes. Scaled fences are `docs/techniques/concepts/habits.md`. The thin count in `pedagogy/concept-map.md` is 0.
 
 ## Pedagogy order (Round 1)
 

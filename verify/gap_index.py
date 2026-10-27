@@ -207,7 +207,7 @@ def _catalog_errors(index: Index, catalog: list[dict]) -> list[str]:
             if not gap.note.endswith(".md"):
                 errors.append(f"{gap.id} deferred note is not markdown")
             continue
-        expected = f"units/{unit}/teaching.tex"
+        expected = node.get("teaching") or f"units/{unit}/teaching.tex"
         if gap.note != expected:
             errors.append(f"{gap.id} note is {gap.note}, catalog unit wants {expected}")
     return errors

@@ -57,6 +57,9 @@ done
 echo "== unit_order_check =="
 "$PY" "$ROOT/verify/unit_order_check.py" || fail=1
 
+echo "== teaching catalog and recognition routes =="
+"$PY" "$ROOT/verify/teaching_catalog_check.py" || fail=1
+
 echo "== check_math (all drills_unit*.json) =="
 "$PY" "$ROOT/verify/check_math.py" || fail=1
 
