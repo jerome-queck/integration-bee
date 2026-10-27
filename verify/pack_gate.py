@@ -197,6 +197,8 @@ import pack_multiplicative
 import pack_wave5k
 import pack_wave5l
 import pack_wave5n
+import sample_certificates
+import yang_certificates
 
 PROOF_TIMEOUT = 20.0
 
@@ -6015,6 +6017,11 @@ def _worker(payload, queue) -> None:
         if not _closed(answer):
             queue.put(("ok", False))
             return
+        if kind == "indefinite":
+            sample = sample_certificates.indefinite_ok(answer, integrand, symbol)
+            if sample is not None:
+                queue.put(("ok", sample))
+                return
         # These checked forms retain the original finite sums or inner
         # integral. The ordinary closed-integrand guard still rejects a miss.
         if kind == "definite":
@@ -6032,6 +6039,8 @@ def _worker(payload, queue) -> None:
                 queue.put(("ok", matched))
                 return
             for builder in (
+                sample_certificates.definite_value,
+                yang_certificates.definite_value,
                 _laplace_log_cosine,
                 pack_hard_catalan.definite_value,
                 pack_hard_floor.definite_value,

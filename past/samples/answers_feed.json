@@ -83,7 +83,7 @@
   },
   {
     "id": "SAMPLE-Q05",
-    "verify": "manual",
+    "verify": "sympy",
     "kind": "definite",
     "answer_display": "(π ln 2)/8",
     "source": "Integration_bee_sample_problems_answers.pdf",
@@ -93,7 +93,13 @@
     "yang": [
       "yang:1.7"
     ],
-    "note": "Answers PDF prints (π ln 2)/8. The pack gate does not finish this integral inside its time limit, so the row stays manual."
+    "note": "Answers PDF p. 1 prints (π ln 2)/8. The gate proves the shift and rational reflection equivalent to the tangent reflection in the solutions PDF p. 6.",
+    "sympy_expr": "log(x)/(x**2 - 2*x + 2)",
+    "answer_sympy": "pi*log(2)/8",
+    "limits": [
+      "1",
+      "2"
+    ]
   },
   {
     "id": "SAMPLE-Q06",
@@ -138,7 +144,7 @@
   },
   {
     "id": "SAMPLE-Q08",
-    "verify": "manual",
+    "verify": "sympy",
     "kind": "definite",
     "answer_display": "Γ(s)ζ(s)",
     "source": "Integration_bee_sample_problems_answers.pdf",
@@ -149,11 +155,17 @@
     "yang": [
       "yang:1.14"
     ],
-    "note": "Answers PDF prints Γ(s)ζ(s). The pack gate does not close the full integral, so the row stays manual."
+    "note": "Answers PDF p. 1 prints Γ(s)ζ(s); solutions PDF p. 9 gives the geometric-series/Gamma derivation. The integral converges absolutely for Re(s)>1. The symbolic fields encode the whole half-plane by s=1+sigma+i*tau, with sigma>0 and tau real; the gate checks this domain and the series certificate.",
+    "sympy_expr": "Mul(Pow(Symbol('x', real=True), Add(Symbol('sigma', positive=True), Mul(I, Symbol('tau', real=True)))), Pow(Add(exp(Symbol('x', real=True)), Integer(-1)), Integer(-1)))",
+    "answer_sympy": "Mul(gamma(Add(Symbol('sigma', positive=True), Mul(I, Symbol('tau', real=True)), Integer(1))), zeta(Add(Symbol('sigma', positive=True), Mul(I, Symbol('tau', real=True)), Integer(1))))",
+    "limits": [
+      "0",
+      "oo"
+    ]
   },
   {
     "id": "SAMPLE-Q09",
-    "verify": "manual",
+    "verify": "sympy",
     "kind": "definite",
     "answer_display": "1/2 − ζ(3)/3",
     "source": "Integration_bee_sample_problems_answers.pdf",
@@ -163,7 +175,13 @@
     "yang": [
       "yang:1.20"
     ],
-    "note": "Answers PDF prints 1/2 − ζ(3)/3. The pack gate does not close the floor integrand, so the row stays manual."
+    "note": "Answers PDF p. 1 prints 1/2 − ζ(3)/3. The gate proves the floor-piece sum from the solutions PDF p. 10, using the printed problem's lower endpoint 1 throughout.",
+    "sympy_expr": "(x - floor(x))/x**4",
+    "answer_sympy": "1/2 - zeta(3)/3",
+    "limits": [
+      "1",
+      "oo"
+    ]
   },
   {
     "id": "SAMPLE-Q10",
@@ -321,7 +339,7 @@
   },
   {
     "id": "SAMPLE-Q19",
-    "verify": "manual",
+    "verify": "sympy",
     "kind": "indefinite",
     "answer_display": "(1/2)(sin(arccos(x^2)) − arccos(x^2)) + C",
     "source": "Integration_bee_sample_problems_answers.pdf",
@@ -331,7 +349,9 @@
     "yang": [
       "yang:1.7"
     ],
-    "note": "Answers PDF prints (1/2)(sin(arccos(x^2)) − arccos(x^2)) + c. The derivative matches the integrand numerically, and the pack gate does not close that derivative, so the row stays manual."
+    "note": "Answers PDF p. 1 prints (1/2)(sin(arccos(x^2)) − arccos(x^2)) + c; solutions PDF p. 20 derives it. The gate proves the derivative identity on the real interior −1<x<1 with the nonnegative square-root branches.",
+    "sympy_expr": "x*sqrt(1 - x**2)/sqrt(x**2 + 1)",
+    "answer_sympy": "sqrt(1 - x**4)/2 - acos(x**2)/2"
   },
   {
     "id": "SAMPLE-Q20",

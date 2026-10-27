@@ -25,11 +25,12 @@ def mutate(rows: list[dict], name: str) -> None:
                 return
         raise SystemExit("no unproved row")
     if name == "missing-cite":
+        # Handoff O cleared remaining manuals; any cited answer still proves cite/answer coupling.
         for row in rows:
-            if row.get("verify") == "manual":
+            if row.get("answer_plain") and row.get("answer_source_pdf"):
                 row["answer_source_pdf"] = None
                 return
-        raise SystemExit("no manual row")
+        raise SystemExit("no cited answer")
     if name == "yang-invented":
         for row in rows:
             if row.get("id") == "YANG-1.1-P01":
@@ -111,7 +112,7 @@ def drive() -> int:
         selected_sample = run_cli(data, ["problems", "select", "--id", "SAMPLE-Q05", "--format", "json"])
         check(selected_sample.returncode == 0, "sample select exit")
         selected_doc = json.loads(selected_sample.stdout)
-        check(selected_doc["verify"] == "manual" and selected_doc["has_answer"] is True, "manual sample keeps a cited answer")
+        check(selected_doc["verify"] == "sympy" and selected_doc["has_answer"] is True, "proved sample keeps a cited answer")
         check("answer_plain" not in selected_sample.stdout, "sample select hides the answer")
         check(list(data.glob("*")) == [], "catalog commands write nothing")
     return fail

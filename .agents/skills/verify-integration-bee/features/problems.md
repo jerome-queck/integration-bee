@@ -29,7 +29,7 @@ Preconditions:
 - **Sample list.** Run `scripts/control-integration-bee problems list --round sample --format json >"$IB_EVIDENCE/problems-sample.json"`. Exit code is 0. Stdout contains `SAMPLE-Q01`, `SAMPLE-Q20`, and `"count": 20`. Stdout does not contain `answer_plain` or `answer_sympy`.
 - **Sample table.** Run `scripts/control-integration-bee problems list --round sample --limit 1 >"$IB_EVIDENCE/problems-sample-table.txt" 2>"$IB_EVIDENCE/problems-sample-table.err"`. Exit code is 0. The first line is `count=20 shown=1`. The next line is `id	round	year	problem_id	verify	kind	source	has_answer`. Stdout contains `SAMPLE-Q01` and `uk_sample`. Stdout does not contain `answer_plain`.
 - **Sample show.** Run `scripts/control-integration-bee problems show --id SAMPLE-Q17 --format json >"$IB_EVIDENCE/problems-sample-show.json"`. Exit code is 0. Stdout contains `"verify": "sympy"`, `E*x`, and `x^(1/ln x)`.
-- **Sample select.** Run `scripts/control-integration-bee problems select --id SAMPLE-Q05 --format json >"$IB_EVIDENCE/problems-sample-select.json"`. Exit code is 0. Stdout contains `manual` and `integrand_plain`. Stdout does not contain `answer_plain`.
+- **Sample select.** Run `scripts/control-integration-bee problems select --id SAMPLE-Q05 --format json >"$IB_EVIDENCE/problems-sample-select.json"`. Exit code is 0. Stdout contains `sympy` and `integrand_plain`. Stdout does not contain `answer_plain`.
 - **Confirm no write.** Run `find "$IB_DATA_DIR" -type f >"$IB_EVIDENCE/problems-files.txt"`. That file is empty.
 
 ## Gotchas

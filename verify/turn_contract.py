@@ -8,6 +8,7 @@ import pack_gate
 import pack_grid
 import pack_multiplicative
 import problem_catalog
+import sample_certificates
 import sympy as sp
 import yaml
 
@@ -516,6 +517,32 @@ def answer_matches(row: dict, submitted: str) -> bool:
         factor = sp.sympify(row["sympy_expr"], locals=ns)
         candidate = sp.sympify(submitted, locals=ns)
         return pack_multiplicative.answer_ok(factor, candidate, ns[variable])
+    if row.get("source") == problem_catalog.SAMPLE_SOURCE:
+        variable = row.get("variable", "x")
+        symbol = pack_gate.namespace(variable)[variable]
+        integrand = pack_gate._parse(row["sympy_expr"], variable)
+        if row.get("kind") == "indefinite" and sample_certificates.matches_radical(integrand, symbol):
+            # Preserve parse-error behavior before the timed proof. The
+            # generic indefinite matcher drops Abs, which loses this
+            # integrand's square-root branches on negative x.
+            pack_gate._parse(submitted, variable)
+            return pack_gate.proven("indefinite", row["sympy_expr"], None, submitted, variable)
+        parameter = None
+        if row.get("kind") == "definite":
+            parameter = sample_certificates.s_parameter(
+                integrand, symbol,
+                *(pack_gate._parse(bound, variable) for bound in row["limits"]),
+            )
+        if parameter is not None:
+            # The source writes s; the certificate writes s=1+sigma+i*tau
+            # with sigma>0 and tau real. Interpret both learner spellings
+            # on that exact, shape-checked parameter domain.
+            ns = _mark_namespace()
+            ns[variable] = symbol
+            ns.update({item.name: item for item in parameter.free_symbols})
+            ns["s"] = parameter
+            candidate = sp.sympify(submitted, locals=ns)
+            submitted = sp.srepr(candidate)
     return expressions_match(row["answer_sympy"], submitted, _indefinite(row), row.get("variable", "x"))
 
 

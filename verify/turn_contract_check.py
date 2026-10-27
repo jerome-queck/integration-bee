@@ -550,18 +550,17 @@ def main() -> int:
             },
         )
         check(printed.returncode == 1 and load(printed)["mark"]["correct"] is False, "SAMPLE-Q15 rejects the printed sign")
-        manual = apply(
+        q05 = apply(
             data,
             {
                 "kind": "mark",
                 "problem_id": "SAMPLE-Q05",
                 "source": "photo",
                 "extract": {"final_answer": "pi*log(2)/8"},
-                "verdict": "correct",
             },
         )
-        check(manual.returncode == 0 and load(manual)["mark"]["correct"] is True, "manual verdict can be correct")
-        bare = apply(
+        check(q05.returncode == 0 and load(q05)["mark"]["correct"] is True, "SAMPLE-Q05 grades without a verdict")
+        q09 = apply(
             data,
             {
                 "kind": "mark",
@@ -570,9 +569,32 @@ def main() -> int:
                 "extract": {"final_answer": "1/2 - zeta(3)/3"},
             },
         )
-        check(bare.returncode == 2 and "manual problem needs verdict" in bare.stderr, "manual mark without a verdict writes nothing")
+        check(q09.returncode == 0 and load(q09)["mark"]["correct"] is True, "SAMPLE-Q09 grades without a verdict")
         attempts = json.loads((data / "attempts.json").read_text())
-        check(not any(item["problem_id"] == "SAMPLE-Q09" for item in attempts["items"]), "refused manual mark is absent")
+        check(any(item["problem_id"] == "SAMPLE-Q09" and item["correct"] for item in attempts["items"]), "proved floor answer is recorded")
+
+        for ident, answer, expected in (
+            ("SAMPLE-Q05", "pi*log(2)/4", False),
+            ("SAMPLE-Q08", "gamma(s)*zeta(s)", True),
+            ("SAMPLE-Q08", "gamma(1+sigma+I*tau)*zeta(1+sigma+I*tau)", True),
+            ("SAMPLE-Q08", "gamma(s)*zeta(s)+1", False),
+            ("SAMPLE-Q08", "gamma(s)", False),
+            ("SAMPLE-Q19", "(sin(acos(x**2))-acos(x**2))/2+C", True),
+            ("SAMPLE-Q19", "(sin(acos(x**2))+acos(x**2))/2+C", False),
+            ("SAMPLE-Q19", "(sqrt(1-x**4)-acos(x**2))/2+Abs(x)-x", False),
+            ("SAMPLE-Q19", "(sqrt(1-x**4)-acos(x**2))/2+Piecewise((0,x<0),(1,True))", False),
+            ("YANG-1.3-Ex01", "8/3", True),
+            ("YANG-1.3-Ex01", "8", False),
+            ("YANG-1.3-Ex03", "2*atan(3)", True),
+            ("YANG-1.3-Ex03", "atan(3)", False),
+        ):
+            marked = apply(data, {
+                "kind": "mark", "problem_id": ident, "source": "typed",
+                "extract": {"final_answer": answer},
+            })
+            check(marked.returncode == (0 if expected else 1)
+                  and load(marked)["mark"]["correct"] is expected,
+                  f"{ident} automatically grades {answer}")
 
         indef = apply(
             data,
