@@ -106,12 +106,16 @@ def placement(data: Path, check) -> None:
             "kind": "mark",
             "problem_id": "R1-2022-MIT-TB-Q01",
             "source": "typed",
-            "verdict": "correct",
             "extract": {"final_answer": "1"},
         },
     )
     catalog_doc = load(catalog_mark)
-    check(catalog_mark.returncode == 0, "catalog probe mark exit")
+    check(
+        catalog_mark.returncode == 0
+        and catalog_doc["mark"]["correct"] is True
+        and catalog_doc["mark"]["expected_display"] == "1",
+        "catalog probe grades the printed integral as 1 without a verdict",
+    )
     attempts = json.loads((data / "attempts.json").read_text())
     check(
         any(item["problem_id"] == "R1-2022-MIT-TB-Q01" and item["correct"] is True for item in attempts["items"]),
@@ -613,36 +617,49 @@ def main() -> int:
         check(pdf_doc["problems"][0]["count"] == 40 and pdf_doc["problems"][0]["on_disk"] is True, "2021 is a 40-question paper and the committed PDF is on disk")
         check("repository" not in pdf_doc["say"], "the mock line does not mention the repository")
 
+        before_catalog = tracker_files(data)
         refused = apply(
             data,
             {
                 "kind": "mark",
                 "problem_id": "R1-2022-Oxford-Q01",
                 "source": "typed",
-                "extract": {"final_answer": "0"},
+                "extract": {"final_answer": "1+("},
             },
         )
-        check(refused.returncode == 2 and "manual problem needs verdict" in refused.stderr, "catalog mark needs a verdict")
+        check(refused.returncode == 2 and "answer did not parse" in refused.stderr, "proved catalog mark rejects an unparsable answer")
+        check(tracker_files(data) == before_catalog, "unparsable catalog mark writes nothing")
         attempts_doc = json.loads((data / "attempts.json").read_text())
         before = len(attempts_doc["items"])
-        check(not any(item["problem_id"] == "R1-2022-Oxford-Q01" for item in attempts_doc["items"]), "refused catalog mark writes no attempt")
-        accepted = apply(
-            data,
-            {
-                "kind": "mark",
-                "problem_id": "R1-2022-Oxford-Q01",
-                "source": "typed",
-                "verdict": "correct",
-                "extract": {"final_answer": "not-a-sympy-expression"},
-            },
-        )
-        accepted_doc = load(accepted)
-        check(accepted.returncode == 0 and accepted_doc["mark"]["correct"] is True, "manual catalog mark stores the verdict")
-        check(accepted_doc["mark"]["expected_display"] == "sin(1)", "manual mark shows the cited answer")
+        resolved_ids = ("R1-2022-MIT-TB-Q01", "R1-2022-Oxford-Q01", "R1-2022-TB2022-Q01")
+        for problem_id in resolved_ids:
+            for final, correct in (("1", True), ("sin(1)", False)):
+                body = {
+                    "kind": "mark",
+                    "problem_id": problem_id,
+                    "source": "typed",
+                    "extract": {"final_answer": final},
+                }
+                if not correct:
+                    body["verdict"] = "correct"
+                marked = apply(data, body)
+                marked_doc = load(marked)
+                check(
+                    marked.returncode == (0 if correct else 1)
+                    and marked_doc["mark"]["correct"] is correct,
+                    f"{problem_id} grades {final} from the printed limits, regardless of verdict",
+                )
+                check(marked_doc["mark"]["expected_display"] == "1", f"{problem_id} displays the derived answer 1")
         shown = run(data, ["progress", "show", "--format", "json"])
-        check("R1-2022-Oxford-Q01" in shown.stdout, "progress show reads the catalog attempt")
+        check(all(problem_id in shown.stdout for problem_id in resolved_ids), "progress show reads the resolved catalog attempts")
         after = json.loads((data / "attempts.json").read_text())
-        check(len(after["items"]) == before + 1, "catalog mark appends one attempt")
+        check(len(after["items"]) == before + 6, "each resolved catalog mark appends one attempt")
+        for problem_id in resolved_ids:
+            check(
+                [(item["submitted"], item["correct"]) for item in after["items"] if item["problem_id"] == problem_id]
+                == [("1", True), ("sin(1)", False)],
+                f"{problem_id} stores 1 as correct and the conflicting printed mark as incorrect",
+            )
         gated = apply(
             data,
             {
@@ -702,6 +719,28 @@ def main() -> int:
         projection = json.loads((data / "progress.local.json").read_text())
         check(projection["session"]["phase"] == "mock_open", "projection stores the session")
         check(any(row["problem_id"] == "U01-D07" for row in projection["mistakes"]), "projection stores the miss")
+
+    # Keep the manual contract independent of which source rows remain manual.
+    manual_row = {"id": "TEST-MANUAL", "verify": "manual", "answer_plain": "cited answer"}
+    manual_session = {"schema": "integration-bee-session/v1", "phase": "idle", "node": None, "problem_id": None, "mock_id": None, "updated": "t"}
+    manual_body = {"kind": "mark", "problem_id": "TEST-MANUAL", "source": "typed", "extract": {"final_answer": "1+("}}
+    refused = turn_contract.plan_mark(manual_session, [], {}, [], [], [], manual_body, "t2", [manual_row])
+    check(
+        refused["exit"] == 2 and refused["error"] == "manual problem needs verdict" and refused["effects"] == {},
+        "synthetic manual catalog mark needs a verdict and writes no effect",
+    )
+    for verdict, correct in (("correct", True), ("incorrect", False)):
+        planned = turn_contract.plan_mark(
+            manual_session, [], {}, [], [], [], dict(manual_body, verdict=verdict), "t2", [manual_row]
+        )
+        check(
+            planned["exit"] == (0 if correct else 1)
+            and planned["mark"]["correct"] is correct
+            and planned["mark"]["expected_display"] == "cited answer"
+            and planned["effects"]["attempt"]["correct"] is correct
+            and planned["effects"]["attempt"]["note"] == "manual mark",
+            f"synthetic manual catalog mark preserves the {verdict} verdict and cited display",
+        )
 
     session = {"schema": "integration-bee-session/v1", "phase": "awaiting_answer", "node": "basic-integration", "problem_id": "U01-D07", "mock_id": None, "updated": "t"}
     attempts = [{"problem_id": "U01-D07", "correct": False, "submitted": "1"}]

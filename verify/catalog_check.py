@@ -80,6 +80,14 @@ def drive() -> int:
         show_doc = json.loads(shown.stdout)
         check(show_doc["verify"] == "sympy" and "sin(1)" in show_doc["answer_plain"], "show keeps the mark-scheme cite")
         check(show_doc["answer_source_pdf"].endswith("Mark_Scheme_2024_Round_1_UK_University_Integration_Bee.pdf"), "show names the mark scheme")
+        for problem_id in ("R1-2022-MIT-TB-Q01", "R1-2022-Oxford-Q01", "R1-2022-TB2022-Q01"):
+            resolved = run_cli(data, ["problems", "show", "--id", problem_id, "--format", "json"])
+            resolved_doc = json.loads(resolved.stdout)
+            check(
+                resolved.returncode == 0 and resolved_doc["verify"] == "sympy"
+                and all(resolved_doc[field] == "1" for field in ("answer_plain", "answer_sympy", "answer_latex")),
+                f"{problem_id} shows the proved value 1 for the printed limits",
+            )
         selected = run_cli(data, ["problems", "select", "--id", "YANG-1.1-P01", "--format", "json"])
         check(selected.returncode == 0, "select exit")
         select_doc = json.loads(selected.stdout)

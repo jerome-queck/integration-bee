@@ -1711,6 +1711,19 @@ TRANSCRIPT_KINDS = {
 # not another integral. Reprove the same source reading for either catalog id.
 TRANSCRIPTS["R2-2023-Group-Q01-v2"] = TRANSCRIPTS["R2-2023-Group-Q01"]
 
+# Handoff L: each 2022 Q01 problem p.2 prints [-pi/2, pi/2], while its
+# mark p.2 says sin(1). Prove the printed problem's value 1 by reflection.
+# The identical 2020 Q01 problem/answer p.1 and worked p.3 corroborate 1;
+# the catalog notes retain each conflicting 2022 mark citation.
+_HANDOFF_L_LOGISTIC = ("cos(x)/(1+exp(x))", ("-pi/2", "pi/2"), "1")
+TRANSCRIPTS.update(
+    {
+        "R1-2022-MIT-TB-Q01": _HANDOFF_L_LOGISTIC,
+        "R1-2022-Oxford-Q01": _HANDOFF_L_LOGISTIC,
+        "R1-2022-TB2022-Q01": _HANDOFF_L_LOGISTIC,
+    }
+)
+
 
 def transcribed(row: dict) -> dict | None:
     ident = row.get("id")
