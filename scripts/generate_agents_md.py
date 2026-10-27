@@ -56,6 +56,7 @@ SCENARIOS = [
     ("You change what doctor, practice, drills, problems, progress, turn, or verify prints or records", f"{CANONICAL_SKILL_ROOT}/verify-integration-bee"),
     ("You change unit order, mock readiness, or tracker writes", f"{CANONICAL_SKILL_ROOT}/formal-verify-integration-bee"),
     ("You teach, mark a photo, or answer an empty message", f"{CANONICAL_SKILL_ROOT}/integration-bee-companion"),
+    ("You teach a concept, give an integral solution, or correct wrong pack mathematics", "`docs/learning-capture.md`"),
     ("The same mistake shows up twice", "pstack skill `correct` from the harness plugin cache"),
     ("You add a learner-facing command", "pstack skill `create-verification-skill`, then `maintain-verification-skill`, from the harness plugin cache"),
     ("You change `verify/model.py`", "pstack skill `maintain-formal-verification-skill` from the harness plugin cache"),
@@ -186,6 +187,8 @@ Set `IB_DATA_DIR` or pass `--data-dir` so two runs do not share tracker files. `
 One-way choices are in `docs/decisions/`.
 
 Before editing pack manuals, read the [source conflicts registry](docs/decisions/0016-pack-source-holds.md). Preserve conflicting source marks in the notes, certify the printed problem with an exact gate-accepted answer, and update answer citations, grading fixtures, and counts together. Do not invent agreement with a wrong mark.
+
+A study turn writes learner state only. When teaching or a solved integral should change the pack, follow [learning capture](docs/learning-capture.md).
 """
 
 
