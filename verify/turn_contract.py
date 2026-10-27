@@ -219,6 +219,13 @@ def _techniques(rows: list[dict]) -> list[str]:
 
 
 def contest_probe_id(records: list[dict]) -> str | None:
+    # Keep the established aptitude question after its printed-limit answer
+    # becomes proved; converting a source hold must not remove the probe.
+    for row in records:
+        if (row.get("id") == "R1-2022-MIT-TB-Q01" and row.get("round") == "r1"
+                and row.get("verify") == "sympy" and row.get("answer_plain")
+                and row.get("answer_sympy")):
+            return row["id"]
     for row in records:
         if row.get("round") != "r1" or row.get("verify") != "manual":
             continue

@@ -1,18 +1,21 @@
 # R1-2022-Oxford-Q01
 
-## Status: source hold (print-vs-math)
+## Status: resolved (printed problem certified)
 
-- verify: manual
-- conflict: The printed limits \(-\pi/2,\pi/2\) give \(1\), while the mark scheme prints \(\sin(1)\).
-- derived / problem reading: \(\int_{-\pi/2}^{\pi/2}\cos x/(1+e^x)\,dx=1\).
-- printed mark: \(\sin(1)\); this is the companion manual-mark fixture.
-- erratum: none documented in the cited repository sources as of 2026-10-27.
+- verify: sympy
+- conflict: The printed limits \(-\pi/2,\pi/2\) give \(1\), while the 2022 mark scheme prints \(\sin(1)\).
+- derived / problem reading: \(\int_{-\pi/2}^{\pi/2}\cos x/(1+e^x)\,dx=1\); this is the catalog answer and graded final.
+- printed mark: \(\sin(1)\), retained as a documented source conflict and rejected for the printed endpoints.
+- erratum: none documented in the cited repository sources as of 2026-10-27; the exact proof resolves the printed problem without changing its limits.
 - registry: docs/decisions/0016-pack-source-holds.md
+
+## Sources
 
 - Problem: `sources/past/r1/2022/Oxford_2022_Round_1_UK_University_Integration_Bee_(1).pdf` (p. 2, problem 1)
 - Printed answer: `sources/past/r1/2022/Oxford_Mark_Scheme_2022_Round_1_UK_University_Integration_Bee_(5).pdf` (p. 2, answer 1)
-- Worked source: derived in this note; the mark scheme prints the final value.
-- The catalog row stays `manual`: the printed problem and mark scheme genuinely disagree.
+- Answer authority: `sources/past/r1/2020/Virtual_integration_competition_answers.pdf` (p. 1, answer 1): \(1\) for the identical integral. The catalog's `answer_source_pdf` cites this answer; the original 2022 mark remains cited above and in the catalog note.
+- Worked source: the reflection proof below, also given in the 2020 worked PDF cited under Source recheck.
+- The catalog row is `sympy`: it certifies the printed integral and grades the derived answer \(1\).
 
 ## Problem
 
@@ -30,7 +33,7 @@ so \(f(x)+f(-x)=\cos x\). Adding the original integral to its substitution \(u=-
 \[
 2I=\int_{-\pi/2}^{\pi/2}\cos x\,dx=2,
 \]
-and \(I=1\). The same integral is problem 1 of the 2020 paper, whose answers sheet prints \(1\). The cited problem PDF, page 2, prints the limits \(-\pi/2\) and \(\pi/2\); the cited mark scheme, page 2, prints \(\sin 1\). Since \(0<1<\pi/2\), we have \(\sin 1<1\). This is a genuine source conflict, so the row stays `manual` under the source-agreement rule.
+and \(I=1\). The same integral is problem 1 of the 2020 paper, whose answers sheet prints \(1\). The cited problem PDF, page 2, prints the limits \(-\pi/2\) and \(\pi/2\); the cited mark scheme, page 2, prints \(\sin 1\). Since \(0<1<\pi/2\), we have \(\sin 1<1\). The catalog resolves this source conflict by certifying the printed problem with answer \(1\), supported independently by the 2020 answer and worked calculation.
 
 ## Final answer
 
@@ -42,7 +45,9 @@ This is the value derived for the printed limits; the 2022 mark still says \(\si
 
 ## Source recheck and erratum status
 
-Visually rechecked both cited pages on 26 October 2026. The endpoints are
+Visually rechecked both cited 2022 pages and the three 2020 comparison pages on
+27 October 2026, using the committed copies at
+`db203fa3e4b9a96456993b85c49449ece4148cea`. The endpoints are
 \(-\pi/2,\pi/2\), and the mark is \(\sin(1)\); neither reading is an OCR ambiguity.
 The 2020 comparison is independently supported by:
 
@@ -50,24 +55,31 @@ The 2020 comparison is independently supported by:
 - `sources/past/r1/2020/Virtual_integration_competition_answers.pdf` (p. 1, answer 1): \(1\).
 - `sources/past/r1/2020/2020_Virtual_Worked_Answers_UK_University_Integration_Bee.pdf` (p. 3): the displayed symmetry calculation uses \(-\pi/2,\pi/2\) and ends at \(1\).
 
-The [official homepage](https://integration.soc.srcf.net/) and
+The source audit on 26 October 2026 consulted the
+[official homepage](https://integration.soc.srcf.net/) and
 [past-competition history](https://integration.soc.srcf.net/pastcomp.html),
-together with targeted public searches for the Oxford problem and corrections,
-did not provide an authoritative erratum. The
+together with targeted public searches for the Oxford problem and corrections;
+it did not find an authoritative erratum. The
 [current official resource archive](https://integration.soc.srcf.net/Resource%20pack.zip)
-was downloaded on that date; its SHA-256 is
+was downloaded on 26 October 2026; its SHA-256 is
 `88fdacd9ecce55d3efe20def25da40573a0c85e3bb748db2498f4453aa0aec3e`.
-Both 2022 source PDFs are byte-identical to the committed copies in both the
-outer archive and its nested `Resource pack 2025.zip`. All three 2020 comparison
-PDFs also match the outer archive. No replacement or erratum was found in these
+That audit found both 2022 source PDFs byte-identical to the committed copies in
+both the outer archive and its nested `Resource pack 2025.zip`. The audit also
+matched all three 2020 comparison PDFs to the outer archive. No replacement or erratum was found in these
 sources.
 
 For a general positive endpoint \(a\), the same reflection proves
 \(\int_{-a}^{a}\cos x/(1+e^x)\,dx=\sin a\). Thus \([-1,1]\) would explain the
 mark, but this is only a possible correction, not source authority to change
-the problem. Leave the row manual pending an authoritative correction to the
-2022 mark or endpoints; the 2020 answer alone does not resolve that decision.
+the problem. Handoff L keeps the printed endpoints, certifies the value \(1\),
+and preserves the conflicting mark as provenance. The exact reflection proof is
+the reason for the resolution; the matching 2020 sources corroborate it.
 
 ## SymPy self-check
 
 `solutions/self_check.py` runs `check_r1_2022_oxford_q01`. SymPy simplifies \(f(x)+f(-x)-\cos x\) to \(0\), evaluates \(\int_{-\pi/2}^{\pi/2}\cos x\,dx=2\), and checks that \(\sin 1\) does not simplify to \(1\).
+
+The catalog gate proves the same input with `kind: definite`,
+`sympy_expr: cos(x)/(exp(x) + 1)`, `limits: ["-pi/2", "pi/2"]`,
+`variable: x`, and `answer_sympy: 1`. The certificate checks reject
+`sin(1)`, `0`, `2`, and `pi/2` as final answers for these printed limits.

@@ -180,9 +180,9 @@ def check_answer_preprocessing(rows):
             "indefinite integration constant fields")
 
 
-def check_source_discrepancy(rows):
-    # The three 2022 Q01 PDFs print +/-pi/2, whereas their marks print
-    # sin(1). These diagnostics establish the discrepancy, not the mark.
+def check_handoff_l(rows):
+    # The printed +/-pi/2 endpoints determine the graded value, despite
+    # sin(1) in the three 2022 marks. The identical 2020 Q01 supports 1.
     x = sp.Symbol("x", real=True)
     logistic = sp.cos(x) / (1 + sp.exp(x))
     require(sp.simplify(logistic + logistic.subs(x, -x) - sp.cos(x)) == 0,
@@ -190,6 +190,38 @@ def check_source_discrepancy(rows):
     require(sp.integrate(sp.cos(x), (x, -sp.pi / 2, sp.pi / 2)) / 2 == 1,
             "2022 Q01 printed limits give one")
     require(sp.sin(1) < 1, "2022 Q01 printed mark differs")
+    ids = ("R1-2022-MIT-TB-Q01", "R1-2022-Oxford-Q01", "R1-2022-TB2022-Q01")
+    selected = [rows[ident] for ident in ids]
+    for row in selected:
+        ident = row["id"]
+        require(row["verify"] == "sympy" and row["kind"] == "definite"
+                and row["variable"] == "x", ident + " symbolic definite integral")
+        require(pack_gate._parse(row["sympy_expr"], "x") == logistic
+                and row["limits"] == ["-pi/2", "pi/2"], ident + " printed problem")
+        require(all(row[field] == "1" for field in ("answer_plain", "answer_sympy", "answer_latex")),
+                ident + " consistent graded final")
+        require(row["answer_source_pdf"] == "sources/past/r1/2020/Virtual_integration_competition_answers.pdf"
+                and "source discrepancy" in row["notes"] and "sin(1)" in row["notes"],
+                ident + " answer authority and conflicting mark")
+        require(pack_gate.reprove_rows([row]) is None, ident + " stored reproof")
+        require(turn_contract.answer_matches(row, "1"), ident + " learner final")
+        for wrong in ("sin(1)", "0", "2", "pi/2"):
+            require(not pack_gate.proven(row["kind"], row["sympy_expr"], row["limits"], wrong, "x"),
+                    ident + " wrong answer " + wrong)
+            require(not turn_contract.answer_matches(row, wrong), ident + " learner wrong answer " + wrong)
+
+    probe(2 * logistic, (-sp.pi / 2, sp.pi / 2), sp.Integer(1), False, "2022 Q01 numerator mutation")
+    probe(logistic, (-1, 1), sp.Integer(1), False, "2022 Q01 endpoint mutation")
+    probe(logistic, (-1, 1), sp.sin(1), True, "2022 mark matches different endpoints")
+    sys.path.insert(0, str(problem_catalog.ROOT / "scripts"))
+    import recover_pack_math
+
+    recovered, gated = recover_pack_math.recover(copy.deepcopy(selected))
+    require(recovered == selected and set(gated) == set(ids),
+            "2022 Q01 recovery preserves the resolved source reading and answer")
+
+
+def check_source_discrepancy(rows):
     row = rows["R2-2023-Relay-Q19"]
     require(row["verify"] == "manual", "Relay-Q19 must remain manual")
     require("source discrepancy" in row["notes"], "Relay-Q19 source note")
@@ -610,10 +642,12 @@ def main():
     pack_grid_check.check_all(list(rows.values()))
     check_handoff_h_ceiling(rows)
     check_handoff_i(rows)
+    check_handoff_l(rows)
     print(
         "PASS pack certificates (symbolic families, literal operators, "
         "24 Handoff D rows, 10 Handoff F contracts, Handoff G grids, "
-        "Handoff H ceiling, Handoff I alias and manual inputs, mutations, source discrepancies)"
+        "Handoff H ceiling, Handoff I alias and manual inputs, Handoff L printed limits, "
+        "mutations, source discrepancies)"
     )
     return 0
 
