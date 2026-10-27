@@ -6,8 +6,8 @@
 \begin{document}
 \maketitle
 \section*{Status}
-Tags: \texttt{yang:6.9}; techniques: \texttt{unique-tricks}.
-Yang \S6.9 is a drawer of leftovers. In this drill set every integral is one of three things: a parameter integral from unit 34, a substitution $u=\ln x$, or Catalan's constant left as Catalan's constant. There is no fourth trick to memorize, and there is no elementary closed form hiding behind $G$. The route is \texttt{docs/techniques/concepts/habits.md}. The catalog id \texttt{catalan} stays unticked.
+Tags: \texttt{yang:6.9}; techniques: \texttt{unique-tricks}, optional \texttt{catalan}.
+Yang \S6.9 is a drawer of leftovers. In this drill set every integral is one of three things: a parameter integral from unit 34, a substitution $u=\ln x$, or Catalan's constant left as Catalan's constant. Stop at the justified value $G$; do not guess an elementary replacement. The route is \texttt{docs/techniques/concepts/habits.md}. This unit hosts the ready \texttt{catalan} recognition lesson, with card \texttt{docs/techniques/concepts/catalan.md}. It is optional and has no Round 1 gate. Ready describes the lesson, not a learner's mastery.
 \section{Official anchors}
 \begin{itemize}
 \item Unit 34 for $\int_0^1 (x^b-x^a)/\ln x\,dx=\ln((b+1)/(a+1))$.
@@ -45,7 +45,7 @@ The same formula with the upper limit $4$ is a fence on \texttt{docs/techniques/
 \[
 \int_0^1\frac{x^4-1}{\ln x}\,dx=\ln 5.
 \]
-SymPy checks $\ln 5$. The parameter from $0$ to $3$ is already stored as \texttt{U11-D15}, value $\ln 4$. Leave \texttt{batis} unticked. The fence $\ln 5$ is a parameter value, not a replacement for $G$.
+SymPy checks $\ln 5$. The parameter from $0$ to $3$ is already stored as \texttt{U11-D15}, value $\ln 4$. The \texttt{dutis} lesson in unit 34 links that fixed-interval argument. The fence $\ln 5$ is a parameter value, not a replacement for $G$.
 
 \section{Worked constant --- \texttt{U36-D03}}
 \[
@@ -55,10 +55,10 @@ On $[0,1)$, $\arctan x=\sum_{k=0}^{\infty}(-1)^k x^{2k+1}/(2k+1)$, so
 \[
 \frac{\arctan x}{x}=\sum_{k=0}^{\infty}(-1)^k\frac{x^{2k}}{2k+1}.
 \]
-Integrate termwise. Each term contributes $(-1)^k/(2k+1)^2$. The series at $x=1$ is the definition of $G$. The integrand extends continuously through $x=0$ by the value $1$. The stored answer is the constant $G$, written \texttt{Catalan} in the drill feed. The worked dose stops there.
+To justify the endpoint, integrate the finite geometric expansion of $1/(1+x^2)$. Truncating the arctangent series at $k=N$ leaves a remainder of absolute value at most $x^{2N+3}/(2N+3)$ for $0\leq x\leq1$. After division by $x$ and integration, the error is at most $1/(2N+3)^2$, which tends to zero. Each polynomial term contributes $(-1)^k/(2k+1)^2$. The resulting sum is the definition of $G$. The integrand extends continuously through $x=0$ by the value $1$. The stored answer is the constant $G$, written \texttt{Catalan} in the drill feed. The worked dose stops there.
 
 \section{Faded term --- \texttt{U36-D03}}
-The blank is the general term $(-1)^k/(2k+1)^2$. There is no second stored drill for this constant. After the term is written, uncover $G$.
+The blank is the general term $(-1)^k/(2k+1)^2$. Then ask why the integrated error $1/(2N+3)^2$ tends to zero. There is no second stored drill for this constant. After the term is written, uncover $G$.
 
 \section{Bare --- \texttt{U36-D03}}
 Set
@@ -68,7 +68,7 @@ Set
 and show nothing else. The bare dose hides the series. After a line is written, uncover $G$.
 
 \section{Refusal --- $G$ stays $G$}
-A logarithm or a rational in place of $G$ is the miss. The stored answer of \texttt{U36-D03} is $G$. Leave the catalog id \texttt{catalan} unticked. Do not invent a closed form.
+A guessed logarithm or a rational in place of $G$ is the miss. The stored answer of \texttt{U36-D03} is $G$. This stopping rule does not claim that an alternative exact form has been proved impossible; such a replacement would need its own justified identity.
 
 \section{Worked logarithm --- \texttt{U36-D04}}
 \[
@@ -108,11 +108,11 @@ That is the stored value.
 is \texttt{U35-D06}. Use the double-angle argument in that note. Calling it a unique trick does not change the proof. The stored value is not $G$.
 
 \section{Dose}
-For a parameter quotient, worked reads \texttt{U36-D01}, then the faded upper limit on \texttt{U36-D07}. Faded gives only that limit. A copied $\ln 2$ opens the refusal and sets \texttt{U36-D07}. The value $\ln 5$ is the fence on \texttt{docs/techniques/concepts/habits.md}, not a drill. Leave \texttt{batis} unticked.
+For a parameter quotient, worked reads \texttt{U36-D01}, then the faded upper limit on \texttt{U36-D07}. Faded gives only that limit. A copied $\ln 2$ opens the refusal and sets \texttt{U36-D07}. The value $\ln 5$ is the fence on \texttt{docs/techniques/concepts/habits.md}, not a drill. The \texttt{dutis} lesson is hosted in unit 34.
 
 For $1/(x\ln x)$, worked reads \texttt{U36-D04}, then the faded subtraction on \texttt{U36-D05}, then sets \texttt{U36-D06}. Faded gives only that subtraction. Bare sets \texttt{U36-D06}. Writing $\ln|\ln x|$ for $\int(\ln x)/x\,dx$ opens the refusal and sets \texttt{U36-D08}.
 
-For Catalan's constant, worked reads the series for \texttt{U36-D03} and stops at $G$. Faded gives only the general term. Bare sets \texttt{U36-D03}. A logarithm or a rational opens the refusal and sets \texttt{U36-D03}. Leave \texttt{catalan} unticked.
+For Catalan's constant, worked reads the series for \texttt{U36-D03} and stops at $G$. Faded gives only the general term and asks for the error limit. Bare sets \texttt{U36-D03}. A guessed logarithm or a rational opens the refusal and sets \texttt{U36-D03}. These three doses use one stored drill id, whose practice credit stays on \texttt{unique-tricks}. The optional \texttt{catalan} node has no automatic drill queue or automatic credit from that host-unit answer. The oral recognition explanation supplements the existing drill and adds no new machine id.
 
 \texttt{U36-D02} is \texttt{U35-D06}. Use that note. The stored value is $-(\pi/2)\ln 2$.
 
@@ -120,5 +120,5 @@ For Catalan's constant, worked reads the series for \texttt{U36-D03} and stops a
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit36.json}.
 
 \section*{On a miss}
-Teach this file. If the answer is $G$, say so and stop. If the denominator is $\ln x$, build the parameter or the substitution $u=\ln x$. If $\ln 2$ was written for $(x^2-1)/\ln x$, set \texttt{U36-D07}. If $\ln|\ln x|$ was written for $(\ln x)/x$, set \texttt{U36-D08}. Do not invent an answer that is not in \texttt{drills.md}. Do not tick \texttt{catalan}.
+Teach this file. If the answer is $G$, say so and stop. If the denominator is $\ln x$, build the parameter or the substitution $u=\ln x$. If $\ln 2$ was written for $(x^2-1)/\ln x$, set \texttt{U36-D07}. If $\ln|\ln x|$ was written for $(\ln x)/x$, set \texttt{U36-D08}. For a Catalan recognition miss, reopen the alternating odd-square term and the remainder bound. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

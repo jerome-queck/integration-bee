@@ -64,13 +64,7 @@ def node_tags(node: dict, drills: list[dict]) -> set[str]:
     tags: set[str] = set()
     if tag:
         tags.add(tag)
-    for drill in drills:
-        if drill.get("unit") != node.get("unit"):
-            continue
-        bag = set(drill.get("yang") or [])
-        bag.update(drill.get("technique_tags") or [])
-        if tag and tag not in bag:
-            continue
+    for drill in candidates_for(node, drills):
         if drill.get("technique"):
             tags.add(drill["technique"])
         tags.update(drill.get("technique_tags") or [])
@@ -95,7 +89,8 @@ def recommend_node(
     drills: list[dict],
     full_coverage: bool = False,
 ) -> dict | None:
-    nodes = teachable(catalog)
+    # A ready recognition lesson can have no automatic practice or tick evidence.
+    nodes = [node for node in teachable(catalog) if candidates_for(node, drills)]
     tagged = [(node, node_tags(node, drills)) for node in nodes]
     for topic in weak_topics(heat):
         for node, tags in tagged:
@@ -130,6 +125,11 @@ def drill_public(row: dict) -> dict:
 
 
 def candidates_for(node: dict, drills: list[dict]) -> list[dict]:
+    # Explicit ids keep shared units from crediting an unrelated syllabus node.
+    # An empty list is a ready, oral recognition lesson outside the drill queue.
+    if "drill_ids" in node:
+        by_id = {drill["id"]: drill for drill in drills}
+        return [by_id[ident] for ident in node["drill_ids"] if ident in by_id]
     tag = yang_tag(node)
     rows = []
     for drill in drills:
@@ -664,7 +664,7 @@ def _teach_say(node: dict, row: dict | None) -> str:
 
 def _queue_say(catalog: list[dict], ticks: dict) -> str:
     if readiness(catalog, ticks)["ready"]:
-        return "Every teachable node is solid. Offer a mock or a due review."
+        return "The drill queue is clear. Offer a mock, an optional recognition lesson, or a due review."
     return (
         "The default queue is clear. Skipped Round 1 nodes still block the mock. "
         "Ask for full coverage or teach a skipped node until it is solid."

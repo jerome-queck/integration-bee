@@ -14,7 +14,7 @@ The longer writeup of adding and subtracting a constant, and of a small paramete
 | `dutis` | 3 for a fixed interval, 4 for a moving endpoint | `basic-integration` | `docs/techniques/introduce-constant.md`, then `units/34-frullani-feynman/teaching.tex` |
 | `feynman` | 4 | `basic-integration` | `units/34-frullani-feynman/teaching.tex` |
 
-`dutis` is deferred in `trackers/catalog.json` because it has no unit. The fixed-interval drills are `U11-D13` through `U11-D15` on `special-wildcard`. A moving endpoint is unit 34. Leave `batis` unticked. `feynman` is the catalog node for that moving endpoint. The row above points at unit 34. It does not tick `batis`.
+`dutis` is ready in `trackers/catalog.json` and hosted by unit 34. The fixed-interval drills `U11-D13` through `U11-D15` keep their `special-wildcard` route and also supply direct DUTIS evidence, alongside `U34-D04` and `U34-D05`. Unit 34 teaches the moving-endpoint rule. Reading the lesson does not award a learner tick.
 
 ### Miss to the next drill
 
@@ -23,10 +23,10 @@ The longer writeup of adding and subtracting a constant, and of a small paramete
 | An improper fraction was decomposed before the division | `docs/techniques/introduce-constant.md`, the worked split of \((x+1)/(x+2)\). |
 | A quadratic with no completed square was integrated as \(1/x\) | The arctangent on this card, value \(\arctan 2-\pi/4\). |
 | A parameter was built for a substitution that already finishes | `U34-D07`, stored \((\ln 2)^2/2\). |
-| A moving endpoint was differentiated as a fixed interval | Unit 34. The worked case there has derivative \(6\) at \(t=2\). That case is not a drill. Leave `batis` unticked. |
+| A moving endpoint was differentiated as a fixed interval | Unit 34. The worked case there has derivative \(6\) at \(t=2\). That case is not a drill. |
 | \(\pi/2\) was written for \((\cos x-\cos 2x)/x\) | `U34-D03`, stored \(\ln 2\). |
 | \(-1/9\) was written for \((x^2-1)/\ln x\) | `U34-D04`, stored \(\ln 3\). |
-| A fixed-interval parameter was the miss | `U11-D13`, stored \(-1/25\). Leave `batis` unticked. |
+| A fixed-interval parameter was the miss | `U11-D13`, stored \(-1/25\). |
 
 `sneaky-algebra` and `modified-textbook` are habits on top of this card. Their stored drills are unit 12. The scaled fences are `habits.md`.
 
@@ -86,7 +86,7 @@ If the endpoints move with the parameter, the derivative picks up the fundamenta
 +f(b(t),t)\,b'(t)-f(a(t),t)\,a'(t).
 \]
 
-The unit's worked case is \(\int_0^t tx\,dx\). At \(t=2\) the integral equals 4 and the derivative equals 6. That case is not a drill, and it does not tick `dutis`. The stored parameter works `U34-D05`, fades `U34-D04`, and sets bare `U34-D08`. Frullani in the same file works `U34-D01`, fades `U34-D02`, and sets bare `U34-D03`. Teach both from `units/34-frullani-feynman/teaching.tex`.
+The unit's worked case is \(\int_0^t tx\,dx\). At \(t=2\) the integral equals 4 and the derivative equals 6. That case is an oral recognition exercise, not a machine drill or automatic tick evidence. The stored parameter works `U34-D05`, fades `U34-D04`, and sets bare `U34-D08`. Frullani in the same file works `U34-D01`, fades `U34-D02`, and sets bare `U34-D03`. Teach both from `units/34-frullani-feynman/teaching.tex`.
 
 ## Faded step
 
@@ -104,4 +104,4 @@ An endpoint that moves was differentiated as if the interval were fixed. The two
 
 ## On a miss
 
-An algebraic miss teaches `docs/techniques/introduce-constant.md` when the move is add-and-subtract or a fixed parameter, and this file when the move is completing the square or rationalizing. Use the miss table. A moving endpoint teaches unit 34 and the `feynman` row. That unit works `U34-D05`, fades `U34-D04`, and sets bare `U34-D08`. Frullani works `U34-D01`, fades `U34-D02`, and sets bare `U34-D03`. Set `U11-D13` for the fixed-interval parameter. Leave `dutis` unticked.
+An algebraic miss teaches `docs/techniques/introduce-constant.md` when the move is add-and-subtract or a fixed parameter, and this file when the move is completing the square or rationalizing. Use the miss table. A moving endpoint teaches unit 34 and the `feynman` row. That unit works `U34-D05`, fades `U34-D04`, and sets bare `U34-D08`. Frullani works `U34-D01`, fades `U34-D02`, and sets bare `U34-D03`. Set `U11-D13` for the fixed-interval parameter. Use the explicit DUTIS drill list for learner evidence.

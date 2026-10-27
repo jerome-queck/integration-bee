@@ -7,7 +7,7 @@
 \maketitle
 \section*{Status}
 Tags: \texttt{gaussian}, \texttt{wildcard}, \texttt{floor}, \texttt{dutis}; \texttt{yang:1.19}, \texttt{yang:1.20}.
-Yang \S1.19 is the Gaussian. Yang \S1.20 is the wildcard that the sample list uses for a floor integral and for a parameter integral. The floor note is \texttt{docs/techniques/floor.md}. The algebra of adding a constant is \texttt{docs/techniques/introduce-constant.md}. The catalog ids \texttt{floor} and \texttt{dutis} have no unit of their own, so these drills ride on \texttt{special-wildcard}. Do not tick either id.
+Yang \S1.19 is the Gaussian. Yang \S1.20 is the wildcard that the sample list uses for a floor integral and for a parameter integral. This unit is the catalog home of \texttt{floor}; its coach card is \texttt{docs/techniques/floor.md}. The catalog home of \texttt{dutis} is unit 34, with \texttt{docs/techniques/introduce-constant.md} as the fixed-interval bridge. The existing floor and parameter drills remain available through \texttt{special-wildcard}. Curriculum readiness does not award a learner tick or add a Round 1 gate.
 \section{Official anchors}
 \begin{itemize}
   \item Yang §§1.19 Gaussian Integrals, 1.20 Special Wildcard.
@@ -47,19 +47,22 @@ That is the stored answer. The machine feed stores the piecewise split, because 
 
 The worked fences, including a non-constant factor left inside a piece, stay in \texttt{docs/techniques/floor.md}. An infinite upper limit becomes a series. Do not quote a zeta value.
 
+\section{Floor dose}
+Worked reads \texttt{U11-D09} and draws its four steps. Faded sets \texttt{U11-D11} with only the split at $1$ and $2$; ask for the last piece's length before uncovering the total. Bare sets \texttt{U11-D10} without the sawtooth hint. A negative-argument miss sets \texttt{U11-D12}, after asking whether floor means rounding down or truncating toward zero. The same drill ids still serve the Round 1 \texttt{special-wildcard} route.
+
 \section{Worked parameter --- \texttt{U11-D13}}
 For $a>-1$,
 \[
 \int_0^1 x^a\,dx=\frac{1}{a+1}.
 \]
-On $[\varepsilon,1]$ the derivative in $a$ passes under the integral sign. Let $\varepsilon\to 0$. The integral of $x^a\ln x$ is $-1/(a+1)^2$. At $a=4$ the value is $-1/25$, the stored answer of \texttt{U11-D13}. The fence at $a=3$ is in \texttt{docs/techniques/introduce-constant.md}. \texttt{U34-D05} is the same family at $a=2$.
+On $[\varepsilon,1]$ the derivative in $a$ passes under the integral sign. To let $\varepsilon\to 0$, restrict $a$ to a compact interval $[\alpha,\beta]$ with $\alpha>-1$. The derivative is bounded in absolute value by $x^\alpha|\ln x|$, an integrable function on $(0,1)$. This justifies the limit and gives $\int_0^1x^a\ln x\,dx=-1/(a+1)^2$. At $a=4$ the value is $-1/25$, the stored answer of \texttt{U11-D13}. The fence at $a=3$ is in \texttt{docs/techniques/introduce-constant.md}. \texttt{U34-D05} is the same family at $a=2$.
 
 \section{Two more fixed intervals}
 \texttt{U11-D14} starts from $\int_0^{\infty}e^{-ax}\,dx=1/a$ for $a>0$. Differentiate in $a$ and set $a=2$:
 \[
 \int_0^{\infty}x e^{-2x}\,dx=\frac14.
 \]
-Take a compact upper limit first, then let it tend to infinity.
+Take a compact upper limit first. For parameters $a\ge c>0$, the derivative is bounded in absolute value by $xe^{-cx}$, which is integrable. That bound justifies letting the upper limit tend to infinity after differentiating.
 
 \texttt{U11-D15} integrates the parameter instead of differentiating it. Integrate $1/(a+1)$ for $a$ from 0 to 3:
 \[
@@ -71,5 +74,5 @@ A moving endpoint is a different syllabus formula. It is unit 34, and it is not 
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit11.json}.
 
 \section*{On a miss}
-Teach this file for a Gaussian, a floor split, or a fixed-interval parameter. Teach \texttt{docs/techniques/floor.md} when the gap is the floor, and \texttt{docs/techniques/introduce-constant.md} when the gap is only the algebra. Do not tick \texttt{floor} or \texttt{dutis}. Do not invent an answer that is not in \texttt{drills.md}.
+Teach this file for a Gaussian, a floor split, or a fixed-interval parameter. Teach \texttt{docs/techniques/floor.md} when the gap is the floor, and \texttt{docs/techniques/introduce-constant.md} when the gap is only the algebra. Use unit 34 for the full \texttt{dutis} lesson and its moving-endpoint check. A learner tick still follows the coach's evidence rule. Do not invent an answer that is not in \texttt{drills.md}.
 \end{document}

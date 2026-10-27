@@ -7,13 +7,14 @@ past_paper: false
 problem_id_prefix: "U35-D"
 technique_tags:
   - modified-famous
+  - zeta
 yang_tags:
   - "yang:6.8"
 syllabus_refs:
   - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
     section: "§6.8 Modified Famous Integrals"
   - source: UK_University_Integration_Bee_Syllabus.pdf
-    section: "§1 Integration Techniques (supporting)"
+    section: "§1 Integration Techniques (supporting); §2 zeta"
 prerequisites:
   - "30-gaussian-dirichlet"
   - "14-gamma"

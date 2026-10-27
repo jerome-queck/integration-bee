@@ -25,7 +25,7 @@ Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the
 | A geometric kernel was expanded term by term when the closed form is one integral | `U17-D01`, stored \(\ln 2\). The shorter interval is `U17-D08`, stored \(\ln(3/2)\). A coefficient \(n\) is `U17-D07`, stored \(1\). |
 | A substitution was replaced by a series | `U17-D02`, stored \(\ln 2\). In unit 32, `U32-D03` stores \(\frac12 e^{x^2}\). |
 | The endpoint \(x=1\) of an alternating series was the worry | `U32-D01`, stored \(\ln 2\), after the unit 08 drills are solid. |
-| A named constant was replaced, or a new zeta value was written | Refuse. Unit 35 keeps the series it already prints. This card does not quote a zeta value. `zeta` stays unticked. |
+| A named constant was replaced, or a new zeta value was written | Refuse. Unit 35 keeps the series it already prints. This card does not quote a zeta value. The ready optional `zeta` lesson is `docs/techniques/concepts/zeta.md`. |
 | A four-term polynomial in unit 32 was treated as an infinite series | `U32-D02`, stored \(26/35\). Bare `U32-D04` stores \(1/4\). |
 | The value \(1/2\) was written for \(\int e^x\cos x\,dx\) | `U32-D07`, stored \(\frac12 e^x(\sin x+\cos x)\). The sine antiderivative is bare `U32-D08`. |
 

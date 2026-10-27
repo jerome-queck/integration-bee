@@ -6,8 +6,9 @@
 \begin{document}
 \maketitle
 \section*{Status}
-Tags: \texttt{yang:5.3}, \texttt{yang:5.4}; techniques: \texttt{advanced-gaussian}, \texttt{dirichlet}.
+Tags: \texttt{yang:5.3}, \texttt{yang:5.4}; techniques: \texttt{advanced-gaussian}, \texttt{dirichlet}, optional \texttt{vector-calc}.
 Two named values do the heavy lifting: $\int_{-\infty}^{\infty}e^{-x^2}\,dx=\sqrt{\pi}$ and $\int_0^{\infty}(\sin x)/x\,dx=\pi/2$. Everything else in the drill set is a substitution, a parameter derivative, or one parts step on top of those values. Yang \S\S5.3--5.4 records the contest forms. The evaluations below are the usual public arguments.
+This unit also hosts the ready recognition lesson for \texttt{vector-calc}, with card \texttt{docs/techniques/concepts/vector-calc.md}. It is optional and has no Round 1 gate. Ready describes the lesson, not a learner's mastery.
 \section{Official anchors}
 \begin{itemize}
 \item Unit 11 for the first Gaussian cousins. Unit 34 for a parameter derivative.
@@ -36,6 +37,20 @@ One evaluation of the square, optional here, is the polar computation
 The positive square root of that value is the stored full-line value $\sqrt{\pi}$. Vector calculus is not required for Round 1.
 
 For $a>0$, the substitution $u=x\sqrt{a}$ yields $\int_0^{\infty}e^{-a x^2}\,dx=\frac12\sqrt{\pi/a}$. \texttt{U35-D01} is the case $a=2$. That drill lives in unit 35.
+
+\section{Optional recognition --- polar area}
+For \texttt{vector-calc}, teach the meaning of the area change before returning to one-variable Gaussian drills. The card gives the full justification. Let $I=\int_{-\infty}^{\infty}e^{-x^2}\,dx$. It is finite and positive: for $x\geq1$, $e^{-x^2}\leq e^{-x}$, and the integrand is even. Its nonnegative product integral can be approached by disks of radius $R$.
+
+\textbf{Worked.} Set $x=r\cos\theta$, $y=r\sin\theta$, where $r$ is the distance from the origin and $\theta$ is the angle. The absolute Jacobian is $r$, so the integral on a disk is
+\[
+\int_0^{2\pi}\int_0^R e^{-r^2}r\,dr\,d\theta
+=\pi(1-e^{-R^2}).
+\]
+As $R\to\infty$, nonnegativity justifies the increasing-domain limit, giving $I^2=\pi$. Since $I>0$, take the positive root. The full-line and half-line conclusions are the existing \texttt{U30-D03} and \texttt{U30-D01}.
+
+\textbf{Faded.} Hide the factor in $dx\,dy=\underline{\hspace{1cm}}\,dr\,d\theta$. Differentiating the two coordinate formulas gives determinant $r(\cos^2\theta+\sin^2\theta)=r$. Ask why the angular interval has length $2\pi$.
+
+\textbf{Bare.} Give only $I$ and ask for the polar setup for $I^2$, its radial bounds, and the reason to halve $I$ on $[0,\infty)$. Refuse a missing area factor or a half-plane used for the whole plane. These are oral recognition prompts, not new machine ids. A quoted Gaussian value alone does not demonstrate this coordinate change, and the optional lesson is not required for Round 1.
 
 \section{Faded --- \texttt{U30-D04}}
 \[

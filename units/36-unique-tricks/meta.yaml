@@ -7,13 +7,14 @@ past_paper: false
 problem_id_prefix: "U36-D"
 technique_tags:
   - unique-tricks
+  - catalan
 yang_tags:
   - "yang:6.9"
 syllabus_refs:
   - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
     section: "§6.9 Unique Tricks"
   - source: UK_University_Integration_Bee_Syllabus.pdf
-    section: "§1 Integration Techniques (supporting)"
+    section: "§1 Integration Techniques (supporting); §2 Catalan's constant"
 prerequisites:
   - "23-periodicity-speed"
   - "33-ninja-inversion"

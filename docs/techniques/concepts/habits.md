@@ -2,7 +2,7 @@
 
 Coach card for the eleven nodes that package more than one identity. Original fences on this page were checked with SymPy. They are not catalog rows. Stored drills stay in the unit file named below. A contest row is not a source for a new number.
 
-Open the parent card in `README.md` first. Open this page when the integrand is one of the shapes below. Teach the stored drill in the unit, then the fence. Stop. Do not tick `floor` or `dutis`. Do not invent a value for `vector-calc`, `beta`, `zeta`, `euler-mascheroni`, or `catalan`. Unit 35 already prints two Basel values. This page does not add another. Unit 36 leaves Catalan's constant as \(G\).
+Open the parent card in `README.md` first. Open this page when the integrand is one of the shapes below. Teach the stored drill in the unit, then the fence. Stop. Do not invent a value for `vector-calc`, `beta`, `zeta`, `euler-mascheroni`, or `catalan`. Unit 35 already prints two Basel values. This page does not add another. Unit 36 leaves Catalan's constant as \(G\).
 
 ## Adaptive
 
@@ -35,7 +35,7 @@ Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the
 | Two parts reductions for one complex exponential | `U32-D05`, stored \(1/2\) |
 | The half-angle substitution when the numerator is already the derivative | `U33-D01`, stored \((\ln 2)/2\) |
 | Inversion when the numerator is already the derivative of the denominator | `U33-D08`, stored \(1/2\) |
-| A new zeta value, or an elementary antiderivative of \(e^{-x^2}\) | `U35-D01` for the scale. The stored series stay `U35-D04` and `U35-D05`. Do not tick `zeta`. |
+| A new zeta value, or an elementary antiderivative of \(e^{-x^2}\) | `U35-D01` for the scale. The stored series stay `U35-D04` and `U35-D05`. Open the optional recognition card `docs/techniques/concepts/zeta.md` when the name needs explaining. |
 | A Gaussian quote on the linear exponent \(e^{-3x}\) | `U35-D03`, stored \(1/3\). |
 | A series on \((e^{-x}-e^{-2x})/x\) | `U35-D07`, stored \(\ln 2\). That integral is `U34-D01`. |
 | \(G\) replaced by a logarithm or a rational | `U36-D03` stays \(G\). The parameter drill is `U36-D01`, stored \(\ln 2\). |
@@ -218,4 +218,4 @@ A named constant was unwrapped. \(G\) stays \(G\). The Basel values in unit 35 s
 
 ## On a miss
 
-Teach this file, then the unit in the table. Use the miss table, then the stored drill named in the section. Complexifying works `U32-D05`, fades `U32-D07`, and sets bare `U32-D08`. Ninja substitution works `U33-D04`, fades `U33-D03`, and sets bare `U33-D02`. Inversion works `U33-D06`, fades `U33-D07`, and sets bare `U33-D05`. Modified famous works `U35-D01`, fades `U35-D02`, and sets bare `U35-D03`. Its series works `U35-D04`, fades `U35-D05`, and sets bare `U35-D08`. Unique tricks works `U36-D01`, fades `U36-D07`, and sets bare `U36-D06`. `U36-D03` stays \(G\). The fences above are scales of those drills. They are not drill ids. Leave `floor` and `batis` unticked. A correct value reached by a second technique still needs the first move named.
+Teach this file, then the unit in the table. Use the miss table, then the stored drill named in the section. Complexifying works `U32-D05`, fades `U32-D07`, and sets bare `U32-D08`. Ninja substitution works `U33-D04`, fades `U33-D03`, and sets bare `U33-D02`. Inversion works `U33-D06`, fades `U33-D07`, and sets bare `U33-D05`. Modified famous works `U35-D01`, fades `U35-D02`, and sets bare `U35-D03`. Its series works `U35-D04`, fades `U35-D05`, and sets bare `U35-D08`. Unique tricks works `U36-D01`, fades `U36-D07`, and sets bare `U36-D06`. `U36-D03` stays \(G\). The fences above are scales of those drills. They are not drill ids. A correct value reached by a second technique still needs the first move named.

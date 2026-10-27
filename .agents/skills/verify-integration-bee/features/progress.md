@@ -18,7 +18,7 @@ Progress stores ticks, misses, mocks, journal notes, and the study streak. `prog
 
 - The companion marks a concept after practice, records a diagnosed miss, stores a technique note, and does not start a timed mock early.
 - A cold paper is `progress mock-start --cold`. The score is `progress mock-finish`.
-- `skill-tree.md` marks `floor` and `dutis` content ready and names drills `U11-D09` through `U11-D15`. The catalog rows stay `deferred`, with no unit and no Round 1 gate. The coach queue keeps `next_node` on a `gate: round1` node. The served node for those drills is `special-wildcard`.
+- `floor` and `dutis` are ready catalog nodes hosted by units 11 and 34, with `gate: null`. Their explicit stored-drill evidence is listed in `pedagogy/round1-coach.md`; unit 11 still serves the same bridge on `special-wildcard`. The top-level `progress show` field `next_node` remains the first unmet Round 1 gate, independently of the wider `coach.next_node` queue.
 
 ## Driving it with control-integration-bee
 
@@ -49,6 +49,6 @@ Preconditions:
 - `mock-start --cold` bypasses the Round 1 gate. The blocked proof must omit `--cold`.
 - A second `mock-start` while a session has `"score": null` returns that session and does not append another. `mock-finish` exits 2 while the session phase is `awaiting_answer` or `aptitude` (`an integral is still open`) or `proposing` (`confirm the skip offer first`). The mock file is unchanged.
 - An unknown node exits 1, stderr contains `unknown node`, and `skill-ticks.json` is unchanged.
-- `skill-tree.md` marks `floor` and `dutis` content ready. `trackers/catalog.json` keeps both rows `"status": "deferred"`, `"unit": null`, and `"gate": null`. `progress tick` accepts the ids because they are catalog ids. `progress show` sets `next_node` from nodes whose `gate` is `round1`, so the value stays `basic-integration`. The drills `U11-D09` through `U11-D15` are served on `special-wildcard`. The curriculum note says to leave `floor` and `dutis` unticked.
+- `trackers/catalog.json` gives `floor` and `dutis` `status: ready`, real unit homes, and `gate: null`. Content readiness itself writes no learner ticks. `progress tick` still accepts the ids, and top-level `progress show.next_node` still reads the Round 1 gates, so the isolated syllabus-tick drive keeps `basic-integration`. The wider coach queue uses the explicit floor/DUTIS drill lists. The five optional recognition nodes have empty drill lists and receive no automatic mastery from unrelated host-unit attempts.
 - `progress show` does not include journal notes or mock scores. Read `journal.json` and `mocks.json`.
 - A second `progress streak` on the same Asia/Singapore day does not add another day.

@@ -382,9 +382,16 @@
     {
       "id": "dutis",
       "yang": null,
-      "unit": null,
+      "unit": "34-frullani-feynman",
       "gate": null,
-      "status": "deferred"
+      "status": "ready",
+      "drill_ids": [
+        "U11-D13",
+        "U11-D14",
+        "U11-D15",
+        "U34-D04",
+        "U34-D05"
+      ]
     },
     {
       "id": "weierstrass",
@@ -396,30 +403,40 @@
     {
       "id": "vector-calc",
       "yang": null,
-      "unit": null,
+      "unit": "30-gaussian-dirichlet",
       "gate": null,
-      "status": "deferred"
+      "status": "ready",
+      "drill_ids": []
     },
     {
       "id": "beta",
       "yang": null,
-      "unit": null,
+      "unit": "14-gamma",
       "gate": null,
-      "status": "deferred"
+      "status": "ready",
+      "drill_ids": []
     },
     {
       "id": "zeta",
       "yang": null,
-      "unit": null,
+      "unit": "35-modified-famous",
       "gate": null,
-      "status": "deferred"
+      "status": "ready",
+      "drill_ids": []
     },
     {
       "id": "floor",
       "yang": null,
-      "unit": null,
+      "unit": "11-gaussian-wildcard",
       "gate": null,
-      "status": "deferred"
+      "status": "ready",
+      "drill_ids": [
+        "U11-D09",
+        "U11-D10",
+        "U11-D11",
+        "U11-D12"
+      ],
+      "teaching": "docs/techniques/floor.md"
     },
     {
       "id": "wallis",
@@ -431,16 +448,18 @@
     {
       "id": "euler-mascheroni",
       "yang": null,
-      "unit": null,
+      "unit": "14-gamma",
       "gate": null,
-      "status": "deferred"
+      "status": "ready",
+      "drill_ids": []
     },
     {
       "id": "catalan",
       "yang": null,
-      "unit": null,
+      "unit": "36-unique-tricks",
       "gate": null,
-      "status": "deferred"
+      "status": "ready",
+      "drill_ids": []
     },
     {
       "id": "sample-bridge",

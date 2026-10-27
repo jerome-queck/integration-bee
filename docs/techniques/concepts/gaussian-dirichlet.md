@@ -23,7 +23,7 @@ Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the
 | \(\sqrt{\pi}\) was used on \([0,\infty)\) | `U30-D01`, stored \(\sqrt{\pi}/2\). The full line is `U30-D03`, stored \(\sqrt{\pi}\). |
 | The half-line value was used for the odd full-line integral | `U30-D02`, stored \(1/2\), is the half-line. The faded step on this card is \(0\). |
 | \((\sin x)/x\) was given an elementary antiderivative | `U30-D05`, stored \(\pi/2\). |
-| A new zeta value was written next to a scaled famous integral | `U35-D01` or `U35-D02`. Keep the series unit 35 already prints. Do not tick `zeta`. |
+| A new zeta value was written next to a scaled famous integral | `U35-D01` or `U35-D02`. Keep the series unit 35 already prints. Open the optional recognition card `docs/techniques/concepts/zeta.md` when the name needs explaining. |
 | \(\pi/2\) was written for a damped sine or cosine | `U30-D07` and `U30-D08`, each stored \(1/2\). Bare `U30-D06` is the integral that stores \(\pi/2\). |
 | \(\int_0^{\infty} x^2 e^{-x^2}\,dx\) was left unquoted | Faded `U30-D04`, stored \(\sqrt{\pi}/4\). |
 

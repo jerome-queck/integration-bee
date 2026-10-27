@@ -6,8 +6,9 @@
 \begin{document}
 \maketitle
 \section*{Status}
-Tags: \texttt{yang:6.8}; techniques: \texttt{modified-famous}.
-A famous integral with one constant changed is still that integral after a substitution. Yang \S6.8 collects those tweaks. Scaling a Gaussian or a Dirichlet integral is the Gaussian card, \texttt{docs/techniques/concepts/gaussian-dirichlet.md}. The drills below write that substitution out, then keep the series and $\ln(\sin x)$ that the card leaves in this file. The route is \texttt{docs/techniques/concepts/habits.md}. None of these drills needs a new constant invented on the spot.
+Tags: \texttt{yang:6.8}; techniques: \texttt{modified-famous}, optional \texttt{zeta}.
+A famous integral with one constant changed is still that integral after a substitution. Yang \S6.8 collects those tweaks. Scaling a Gaussian or a Dirichlet integral is the Gaussian card, \path{docs/techniques/concepts/gaussian-dirichlet.md}. The drills below write that substitution out, then keep the series and $\ln(\sin x)$ that the card leaves in this file. The route is \path{docs/techniques/concepts/habits.md}. None of these drills needs a new constant invented on the spot.
+The ready \texttt{zeta} recognition lesson is hosted here, with card \path{docs/techniques/concepts/zeta.md}. It is optional and has no Round 1 gate. Ready describes the lesson, not a learner's mastery.
 \section{Official anchors}
 \begin{itemize}
 \item Unit 30 for the Gaussian and $\int_0^{\infty}(\sin x)/x\,dx=\pi/2$.
@@ -18,7 +19,7 @@ A famous integral with one constant changed is still that integral after a subst
 \begin{enumerate}
   \item Scale the limit and the constant in the exponent or the argument. Write the substitution.
   \item Expand $1/(1\pm x)$ and integrate $x^n\ln x$ termwise when the famous value is a zeta number this unit already stores.
-  \item Refuse a Gaussian value on a linear exponent, a series on a Frullani difference, and any zeta number this file does not print.
+  \item Refuse a Gaussian value on a linear exponent, a series on a Frullani difference, and an invented evaluation of a named zeta value.
 \end{enumerate}
 
 \section{Worked Gaussian scale --- \texttt{U35-D01}}
@@ -31,7 +32,7 @@ A famous integral with one constant changed is still that integral after a subst
 \]
 That is the stored value. The worked dose stops there.
 
-The same substitution with $u=3x$ is a fence on \texttt{docs/techniques/concepts/habits.md}, not a drill:
+The same substitution with $u=3x$ is a fence on \path{docs/techniques/concepts/habits.md}, not a drill:
 \[
 \int_0^{\infty}e^{-9x^2}\,dx=\frac{1}{3}\cdot\frac{\sqrt{\pi}}{2}=\frac{\sqrt{\pi}}{6}.
 \]
@@ -51,7 +52,7 @@ The Gaussian card already records the same cancellation for a general $b>0$. In 
 \[
 \int_0^{\infty}\frac{\sin 3x}{x}\,dx=\frac\pi2
 \]
-is the fence on \texttt{docs/techniques/concepts/habits.md}, not a drill. SymPy returns $\pi/2$.
+is the fence on \path{docs/techniques/concepts/habits.md}, not a drill. SymPy returns $\pi/2$.
 
 \section{Bare --- \texttt{U35-D03}}
 Set
@@ -81,6 +82,28 @@ The blank is the sign in $\sum_{m=1}^{\infty}(-1)^{m-1}/m^2$. The alternating ex
 \]
 That is the stored answer. Refuse $-\pi^2/6$, the stored answer of \texttt{U35-D04}.
 
+\section{Optional recognition --- zeta stays named}
+After basic series and Gamma, define $\zeta(s)=\sum_{m=1}^{\infty}m^{-s}$ for real $s>1$. The integral test gives convergence. The definition does not evaluate a new zeta value in elementary constants. The card cites NIST DLMF 25.2.1 and 25.5.1 for the definition and Gamma integral representation.
+
+\textbf{Worked.} The card's expository example is
+\[
+\int_0^1\frac{(\log x)^2}{1-x}\,dx
+=\sum_{n=0}^{\infty}\int_0^1 x^n(\log x)^2\,dx
+=2\sum_{m=1}^{\infty}\frac1{m^3}=2\zeta(3).
+\]
+Each summand is nonnegative, so monotone convergence permits the interchange. At $x=1$ the integrand behaves like $1-x$; at zero, $(\log x)^2$ is integrable. The answer stays $2\zeta(3)$; this names the sum and supplies no new evaluation of $\zeta(3)$.
+
+\textbf{Faded.} Hide the term integral. For an integer $n\geq0$, set $x=e^{-t}$, then $u=(n+1)t$:
+\[
+\int_0^1x^n(\log x)^2\,dx
+=\int_0^{\infty}t^2e^{-(n+1)t}\,dt
+=\frac{1}{(n+1)^3}\int_0^{\infty}u^2e^{-u}\,du
+=\frac{2}{(n+1)^3}.
+\]
+The final Gamma integral is the unit 14 factorial reduction. Ask for the index shift $m=n+1$ and the factor 2.
+
+\textbf{Bare.} Ask which of $\sum_{m=1}^{\infty}1/m$ and $\sum_{m=1}^{\infty}1/m^3$ defines an ordinary convergent zeta sum, and which appears in the worked example. The first diverges; the second defines $\zeta(3)$, and the integral is twice it. These oral recognition prompts have no new machine ids. Stored follow-ups \texttt{U35-D04} and \texttt{U35-D05} keep their practice credit on \texttt{modified-famous}. The optional \texttt{zeta} node has no automatic drill queue or automatic credit from those host-unit answers. Only their already printed evaluations may be quoted.
+
 \section{Bare logarithm --- \texttt{U35-D08}}
 Set
 \[
@@ -101,7 +124,7 @@ The second integral is $(\pi/2)\ln 2$. For the first, $v=2x$ gives $\frac12\int_
 \section{Refusal --- the wrong famous integral}
 \texttt{U35-D07} is $(e^{-x}-e^{-2x})/x$ on $[0,\infty)$, stored value $\ln 2$. That is \texttt{U34-D01}. Use the parameter argument there. Refuse a series.
 
-The only zeta numbers in this drill set are $-\pi^2/6$ and $-\pi^2/12$, stored as \texttt{U35-D04} and \texttt{U35-D05}. A further zeta value is not part of the drill set. Do not tick \texttt{zeta}. An elementary antiderivative of $e^{-x^2}$ is not in this drill set. Scale \texttt{U35-D01} from \texttt{U30-D01}. Do not replace \texttt{U35-D06} by $G$. Leave \texttt{catalan} for unit 36.
+The only evaluated zeta-related series in this drill set are $-\pi^2/6$ and $-\pi^2/12$, stored as \texttt{U35-D04} and \texttt{U35-D05}. The optional recognition example leaves $\zeta(3)$ named. An elementary antiderivative of $e^{-x^2}$ is not in this drill set. Scale \texttt{U35-D01} from \texttt{U30-D01}. Do not replace \texttt{U35-D06} by $G$. Leave \texttt{catalan} for unit 36.
 
 \section{Dose}
 For a scale, worked reads \texttt{U35-D01}, then the faded cancellation on \texttt{U35-D02}, then sets \texttt{U35-D03}. Faded gives only that cancellation. Bare sets \texttt{U35-D03}. A Gaussian value on a linear exponent opens the refusal and sets \texttt{U35-D03}.
@@ -112,5 +135,5 @@ For a series, worked reads \texttt{U35-D04}, then the faded sign on \texttt{U35-
 See \texttt{drills.tex} / \texttt{drills.md}. Feed: \texttt{verify/drills\_unit35.json}.
 
 \section*{On a miss}
-Teach this file. Name the famous integral you scaled, or the series you integrated. If the exponent was linear, set \texttt{U35-D03}. If the integrand was $(e^{-x}-e^{-2x})/x$, set \texttt{U35-D07}. If the answer was $G$, set \texttt{U35-D06} and leave $G$ for unit 36. Do not invent an answer that is not in \texttt{drills.md}. Do not tick \texttt{zeta}.
+Teach this file. Name the famous integral you scaled, or the series you integrated. If the exponent was linear, set \texttt{U35-D03}. If the integrand was $(e^{-x}-e^{-2x})/x$, set \texttt{U35-D07}. If the answer was $G$, set \texttt{U35-D06} and leave $G$ for unit 36. For a zeta recognition miss, reopen the index shift and convergence restriction in the optional lesson. Do not invent a contest answer or a further evaluation of a named constant.
 \end{document}

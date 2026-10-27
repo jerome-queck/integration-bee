@@ -2,7 +2,7 @@
 
 Coach card for absolute values. The floor lesson, with its checked fences, is `docs/techniques/floor.md`. Original absolute-value examples on this page were checked with SymPy. They are not catalog rows. A contest row is not a source for a new number.
 
-The catalog id `floor` has no unit. The drills ride on `special-wildcard`. Teach the floor note. Leave `floor` unticked.
+The ready catalog id `floor` is hosted by unit 11. Its four floor drills also keep their `special-wildcard` route. Teach the floor note, then use the relevant stored drill.
 
 ## Adaptive
 
@@ -11,7 +11,7 @@ The catalog id `floor` has no unit. The drills ride on `special-wildcard`. Teach
 | `absolute-values` | 2 | `symmetry` | `units/07-abs-reverse-product/teaching.tex` |
 | `floor` | 2 | `absolute-values` | `docs/techniques/floor.md` |
 
-`floor` is deferred in `trackers/catalog.json` because it has no unit. The teaching is ready. A tick of `floor` is not the goal of this card.
+The catalog lists `U11-D09` through `U11-D12` as floor evidence. Content readiness does not award a learner tick; the ordinary evidence rule still applies.
 
 Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the next drill.
 
@@ -22,7 +22,7 @@ Read `pedagogy/round1-coach.md` for how a tick selects the worked example or the
 | The bars were dropped on the whole interval | `U07-D01`, stored \(1\) on \([-1,1]\). Then `U07-D02`, stored \(1\), with the kink at \(1\). |
 | A symmetric shortcut was used where the interval is not symmetric about the kink | `U07-D07`, stored \(5/2\) on \([-2,1]\). |
 | \(\lvert\sin x\rvert\) was integrated as \(\sin x\) through a zero | `U07-D03`, stored \(2\) on \([0,\pi]\). |
-| A floor on a negative argument was replaced by \(\lvert x\rvert\) or by \(-x\) | `U11-D12`, stored \(-3\). Leave `floor` unticked. |
+| A floor on a negative argument was replaced by \(\lvert x\rvert\) or by \(-x\) | `U11-D12`, stored \(-3\). |
 | The fractional part was integrated as the floor | `U11-D10`, stored \(3/2\). |
 | A last piece shorter than \(1\) was given length \(1\) | `U11-D11`, stored \(2\) on \([0,5/2]\). |
 | An exponential times an absolute value was not split | `U11-D06`, stored \(2-4e^{-1}\). |
@@ -55,7 +55,7 @@ The floor \(\lfloor x\rfloor\) is constant on each \([k,k+1)\), and that constan
 
 The worked fences, the negative argument, the fractional part \(\{x\}=x-\lfloor x\rfloor\), and the four drills `U11-D09` through `U11-D12` are `docs/techniques/floor.md`. Unit 11 teaches the same split beside the Gaussian cousins. An infinite upper limit becomes a series. The floor note does not quote a zeta value. This card does not either.
 
-\(\lfloor x\rfloor\) and \(|x|\) agree on \([0,\infty)\) and disagree on the negatives. \(\lfloor -0.2\rfloor=-1\). Truncation toward zero is a third function. Name which one is in the integrand.
+\(\lfloor x\rfloor\) and \(|x|\) agree at nonnegative integers, but not throughout \([0,\infty)\): at \(x=1/2\), the floor is 0 and the absolute value is \(1/2\). \(\lfloor -0.2\rfloor=-1\). Truncation toward zero is a third function. Name which one is in the integrand.
 
 ## Where this goes wrong
 
@@ -67,4 +67,4 @@ A floor on a negative argument was replaced by \(-x\) or by \(|x|\). Use the gre
 
 ## On a miss
 
-An absolute-value miss teaches this file, then unit 07. Use the miss table. The first drill is `U07-D01`. A floor miss teaches `docs/techniques/floor.md` and sets the floor row of that table. Leave `floor` unticked.
+An absolute-value miss teaches this file, then unit 07. Use the miss table. The first drill is `U07-D01`. A floor miss teaches `docs/techniques/floor.md` and sets the floor row of that table.

@@ -8,6 +8,7 @@ problem_id_prefix: "U30-D"
 technique_tags:
   - advanced-gaussian
   - dirichlet
+  - vector-calc
 yang_tags:
   - "yang:5.3"
   - "yang:5.4"
@@ -15,7 +16,7 @@ syllabus_refs:
   - source: user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf
     section: "§§5.3 Advanced Gaussian, 5.4 Dirichlet Integral"
   - source: UK_University_Integration_Bee_Syllabus.pdf
-    section: "§1 Integration Techniques (supporting)"
+    section: "§1 vector calculus (optional; not required for Round 1); §2 special functions"
 prerequisites:
   - "11-gaussian-wildcard"
 files:

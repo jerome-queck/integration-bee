@@ -53,7 +53,7 @@ First pass: `units/09-intermediate-trig/teaching.tex`. The note a miss names: `u
 
 ## Floor
 
-File: `docs/techniques/floor.md`. Drills: `U11-D09` through `U11-D12` on unit 11. Do not tick `floor`.
+File: `docs/techniques/floor.md`. Drills: `U11-D09` through `U11-D12` on unit 11.
 
 1. Worked. Split at the integers, pull out the constant, add the areas. The checked fences are piecewise. `U11-D09` is four steps on \([0, 4]\), value 6.
 2. Faded. Ask where \(\lfloor x\rfloor\) jumps on \([0, 5/2]\), and what length the last piece has. `U11-D11` stores 2.
@@ -62,13 +62,13 @@ File: `docs/techniques/floor.md`. Drills: `U11-D09` through `U11-D12` on unit 11
 
 ## Introducing a constant, and DUTIS
 
-Algebra file: `docs/techniques/introduce-constant.md`. Parameter file: `units/34-frullani-feynman/teaching.tex`. Drills: `U11-D13` through `U11-D15`. Do not tick `dutis`.
+Algebra file: `docs/techniques/introduce-constant.md`. Parameter file: `units/34-frullani-feynman/teaching.tex`. Drills: `U11-D13` through `U11-D15`.
 
 1. If the numerator is almost the denominator or almost its derivative, teach the algebra file. Work \((x+1)/(x+2)\), then the faded multiple \((3x+5)/(x+1)\).
 2. If a constant independent of \(x\) lets an addition formula split the integrand, stay in the algebra file. The cosine product on \([0, \pi/3]\) is the worked case.
 3. If the integrand is a derivative in a parameter on a fixed interval, set `U11-D13` (value \(-1/25\)) or teach unit 34. The algebra file keeps the smaller parameter at \(a=3\), which is a fence, not a drill id.
 4. `U11-D14` is the exponential family at \(a=2\), value \(1/4\). `U11-D15` integrates the parameter from 0 to 3 and stores \(\ln 4\).
-5. If an endpoint moves with the parameter, teach the second syllabus formula in unit 34. The worked case is \(\int_0^t tx\,dx\). Its derivative at \(t=2\) is 6. That is not a drill, and it does not tick `dutis`.
+5. If an endpoint moves with the parameter, teach the second syllabus formula in unit 34. The worked case is \(\int_0^t tx\,dx\). Its derivative at \(t=2\) is 6. That is an oral recognition exercise, not a machine drill or automatic tick evidence.
 6. If a substitution already finishes the integral, do not build a parameter. `U34-D07` is that refusal.
 
 ## Formats
@@ -82,10 +82,6 @@ File: `docs/techniques/formats.md`. Session: `pedagogy/round2-coach.md` for grou
 5. Do not invent a contest answer, and do not open a past-paper file as the lesson. A solutions note, when one exists, is opened only after an answer, and the rule is `pedagogy/README.md`. A paper shape, before any of that, opens `pedagogy/past-paper-routing.md`.
 6. Speed. Four stored drills, scored by the group row in `docs/techniques/formats.md`. This minute adds no rule. `U27-D01` stores the antiderivative \(\sin x/x\). `U28-D07` stores \(1\). `U29-D04` stores \(1/6\). `U31-D07` stores \(\pi/8\). A correct line scores 6. A blank or a wrong line scores 0. Four correct lines score 24. The faded dose shows those four stored values and asks for the score lines. The bare dose sets the four drills and hides the values. A crossnumber square takes the digit 1 from `U28-D07` once. It does not take the antiderivative of `U27-D01`. A relay covers the next of these four until the current one is answered or skipped. A first correct attempt scores 3 and a later one scores 1. The bonus stays in the formats note.
 
-## Other syllabus names
-
-The five formerly open syllabus nodes now have recognition notes: [vector calculus](../docs/techniques/concepts/vector-calc.md), [Beta](../docs/techniques/concepts/beta.md), [zeta](../docs/techniques/concepts/zeta.md), [Euler–Mascheroni](../docs/techniques/concepts/euler-mascheroni.md), and [Catalan](../docs/techniques/concepts/catalan.md). Use them when a learner asks about the name or pattern. They are `deferred-noted` in the concept map, carry no readiness credit, and stay unticked. They do not add a seventh `extract.gap` value or a Round 1 requirement. Keep \(\zeta(s)\), \(\gamma\), or \(G\) named unless a cited identity justifies the particular alternate form.
-
 ## What the session does not do
 
-The session does not edit the note and does not add a drill id. Do not tick `floor`, `dutis`, or the five recognition nodes: those catalog ids have no unit. A later commit is what adds an example, and only to the file the mark named.
+The session does not edit the note and does not add a drill id. `floor` and `dutis` have ready unit homes and explicit drill evidence. Reading a note does not award a learner tick. A later commit is what adds an example, and only to the file the mark named.

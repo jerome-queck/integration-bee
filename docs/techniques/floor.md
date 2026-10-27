@@ -1,6 +1,6 @@
 # Floor integrals
 
-Guide section 1.7. The floor drills are stored. `U11-D09` through `U11-D12` sit on unit 11, the special-wildcard node, because the catalog id `floor` has no unit of its own. The coach assigns those drills with that node. This note is the teaching for the gap. The Yang Topics Guide has no floor chapter. The syllabus lists the floor in section 2, and the Techniques Guide teaches the split. Those two, plus the checks below and the four drills, are the sources.
+Guide section 1.7. The catalog home of `floor` is [unit 11](../../units/11-gaussian-wildcard/teaching.tex), and this note is its coach card and gap lesson. The stored drills `U11-D09` through `U11-D12` also remain available through `special-wildcard`; the existing Round 1 route is unchanged. `floor` is ready curriculum with no separate Round 1 gate. A learner tick still needs the coach's evidence. The Yang Topics Guide has no floor chapter. The syllabus lists the floor in section 2, and the Techniques Guide teaches the split. Those two, plus the checks below and the four drills, are the sources.
 
 The floor of x is the greatest integer less than or equal to x. Write it \(\lfloor x\rfloor\). On each half-open interval \([k, k+1)\) the floor is the constant \(k\). You split at integers, pull that constant out, and sum the pieces. A single endpoint does not change a definite integral. A piece that stops between integers contributes its actual length, not a full unit.
 
@@ -14,7 +14,7 @@ limits: 0, 2
 answer: 1
 ```
 
-SymPy leaves `integrate(floor(x), (x, 0, 2))` unevaluated, so the checked fence is the piecewise split, not a call to `floor`. A contest row tagged floor in the sample list is still `verify: manual` until its own integrand is checked. Do not copy that answer into this note.
+SymPy leaves `integrate(floor(x), (x, 0, 2))` unevaluated, so the checked fence is the piecewise split, not a call to `floor`. A contest row tagged floor in the sample list needs its own integrand checked before it can carry `verify: sympy`. Do not copy that answer into this note.
 
 ## Three units
 
@@ -123,6 +123,10 @@ The feed stores the piecewise split, because SymPy leaves `floor` unevaluated. T
 - `U11-D11` stops at \(5/2\). The value is 2, the same fence as the section above.
 - `U11-D12` is \(\lfloor x\rfloor\) on \([-2, 0]\). The pieces are \(-2\) then \(-1\), and the value is \(-3\).
 
+## Coach dose
+
+Prerequisite: integrate constants and linear functions on a finite interval. Worked draws the four steps in `U11-D09` and sums their areas. Faded gives `U11-D11` with the split points at 1 and 2, then asks for the final piece's length before revealing the total. Bare sets `U11-D10` without the sawtooth hint. A negative-argument miss sets `U11-D12` and asks the learner to explain rounding down. These are stored drills, not new contest answers.
+
 ## On a miss
 
-Teach this file. Split the graph at the integers in the limits, write the piecewise, and add the areas. Watch a negative argument and a piece that ends between integers. Then set `U11-D09`, `U11-D10`, `U11-D11`, or `U11-D12`. Do not tick `floor`. Do not invent a pack answer. The absolute-value sibling is `docs/techniques/concepts/piecewise.md`. The node map is `pedagogy/concept-map.md`.
+Teach this file. Split the graph at the integers in the limits, write the piecewise, and add the areas. Watch a negative argument and a piece that ends between integers. Then set `U11-D09`, `U11-D10`, `U11-D11`, or `U11-D12`. Reading the card alone does not award a learner tick. Do not invent a pack answer. The absolute-value sibling is `docs/techniques/concepts/piecewise.md`. The node map is `pedagogy/concept-map.md`.
