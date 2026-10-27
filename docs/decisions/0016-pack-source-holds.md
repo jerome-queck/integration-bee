@@ -2,11 +2,11 @@
 
 Audit date: 27 October 2026. Source snapshot: [`6ac8f7d1552e32b6007bed7e8206ab3c284ab10b`](https://github.com/jerome-queck/integration-bee/commit/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b), after Handoff H. Handoff K adds documentation and teaching pointers; it does not release these holds.
 
-## Current status after Handoff L, M, N, and Q
+## Current status at tip `770c6e4`
 
-Handoff L resolves `R1-2022-MIT-TB-Q01`, `R1-2022-Oxford-Q01`, and `R1-2022-TB2022-Q01` as `verify: sympy` (printed endpoints → **1**; marks still print `sin(1)`). Handoff M resolves `R2-2021-Relay-D03`, `R2-2023-Relay-Q19`, and `R2-2023-Relay-Q20` under t636u clarifications. Handoff N certifies the three Crossnumber rows as `kind: grid`, `verify: sympy`. Handoff Q certifies `R3-2024-Tournament-Q04-v10`/`v11`/`v12` as `verify: sympy` with derived final \(\pi/2^m\), rejecting the printed Jacobian \(\pi/2^{m-2n}\).
+Handoff L resolves `R1-2022-MIT-TB-Q01`, `R1-2022-Oxford-Q01`, and `R1-2022-TB2022-Q01` as `verify: sympy` (printed endpoints → **1**; marks still print `sin(1)`). Handoff M resolves `R2-2021-Relay-D03`, `R2-2023-Relay-Q19`, and `R2-2023-Relay-Q20` under t636u clarifications. Handoff N certifies the three Crossnumber rows as `kind: grid`, `verify: sympy`. Handoff Q certifies `R3-2024-Tournament-Q04-v10`/`v11`/`v12` as `verify: sympy` with derived final \(\pi/2^m\), rejecting the printed Jacobian \(\pi/2^{m-2n}\). Handoff O certifies `SAMPLE-Q05`, `SAMPLE-Q08`, `SAMPLE-Q09`, and `SAMPLE-Q19`, plus `YANG-1.3-Ex01` (`8/3`) and `YANG-1.3-Ex03` (`2*atan(3)`), as `verify: sympy`.
 
-After I/J and L–Q, the measured resource-pack totals are **674 SymPy / 0 manual / 0 unchecked**, with notes for **674/674** rows. All twelve audited source holds are resolved. `EXPECTED_SYMPY=674` / `EXPECTED_MANUAL=2` is the two answered Yang manuals only.
+At tip `770c6e4` the resource pack is **674 SymPy / 0 manual / 0 unchecked**, with notes for **674/674** rows. All twelve audited source holds are resolved. [`verify/problem_catalog.py`](../../verify/problem_catalog.py) sets `EXPECTED_SYMPY=676` / `EXPECTED_MANUAL=0`: the 674 pack rows plus the two answered Yang examples. SAMPLE is **20 SymPy / 0 manual**, with no SAMPLE row deferred, and those rows sit outside the EXPECTED pair. 270 Yang practice rows stay `unchecked` by design; they are out-of-scope practice, and this registry does not invent their finals. Teaching deferred is **0** (63 ready concept nodes, 9 indexes, 72 nodes). `floor`, `dutis`, `vector-calc`, `beta`, `zeta`, `euler-mascheroni`, and `catalan` are ready.
 
 ## Purpose
 
@@ -28,16 +28,15 @@ original PDF extract remains unchanged. No organizer-issued erratum is claimed.
 | `R2-2021-Relay-D03` | Two allowed \((r,s,t,u)\) representations give pass-ons \(\varphi\) and \(1\); the mark selects \(\varphi\). | [`sources/past/r2/2021/Shuttle_2021_R2_UK_University_Integration_Bee.pdf`](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2021/Shuttle_2021_R2_UK_University_Integration_Bee.pdf) (p. 5, D3) | [`sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf`](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf) (p. 4, D3) | [R2-2021-Relay-D03.md](../../solutions/pack/R2-2021-Relay-D03.md) | Resolved by M under t636u: the prompt requires minimal u in addition to positivity and coprimality; the full integral and normalized pass-on are certified. |
 | `R2-2023-Relay-Q20` | Both \(f=0\) and \(f=\tfrac14\log(1+x^2)\) satisfy the equation; the latter yields the marked \((\pi+\log4-4)/4\). | [`sources/past/r2/2023/Relay_2023_R2_UK_University_Integration_Bee.pdf`](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2023/Relay_2023_R2_UK_University_Integration_Bee.pdf) (p. 3, Q20) | [`sources/past/r2/2023/Mark_Scheme_2023_R2_UK_University_Integration_Bee.pdf`](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2023/Mark_Scheme_2023_R2_UK_University_Integration_Bee.pdf) (p. 4, Q20) | [R2-2023-Relay-Q20.md](../../solutions/pack/R2-2023-Relay-Q20.md) | Resolved by M under t636u: the prompt requires differentiability and positivity away from zero on both sides; the selected branch and final integral are certified. |
 
-Against `db203fa`, M alone changes the Resource pack from 662 SymPy / 12 manual
-to 665 / 9. The non-sample EXPECTED pair becomes 665 / 11 because it includes
-two answered Yang manuals. The audit tables below remain historical snapshots;
-other handoffs have their own scopes and may change the current counts.
+Against `db203fa`, M alone changed the Resource pack from 662 SymPy / 12 manual
+to 665 / 9. The non-sample EXPECTED pair became 665 / 11 because it included
+two answered Yang manuals. This paragraph is the M-only snapshot on 27 October 2026, before N, Q, and O. The EXPECTED table below keeps that history; the tip row is 674 pack SymPy / 0 manual and `EXPECTED_SYMPY=676` / `EXPECTED_MANUAL=0`.
 
 ## Handoff N resolution (27 October 2026)
 
 After I/J and K, Handoff N certifies the three Crossnumber rows in this registry as `kind: grid`, `verify: sympy`. Jerome's later **t636u override and Handoff N** explicitly authorize the published grading conventions: A8 uses the 1868 journal-volume year; 2021 D3 uses \(7^{D_9}\bmod(D_7+1)\) and D4 uses digit-sum congruence; 2023 D7 assumes absolute integrability on \([-1,1]\) and continuity at zero. The three worked notes preserve the original wording, source conflicts, unchanged mark lattices, and conditional derivations. These clarifications are also bound into the certificates and shown in learner prompts.
 
-This explicit authorization supersedes the historical erratum-only release condition below for these three entries. No organiser erratum is claimed. The other nine registry entries and their separate task scopes are unchanged by N. After N alone, the Resource pack has **665 SymPy / 9 manual / 0 unchecked** rows; the aggregate EXPECTED pair is **665 / 11**, including two Yang manuals. K's original audit tables remain historical evidence.
+This explicit authorization supersedes the historical erratum-only release condition below for these three entries. No organiser erratum is claimed. The other nine registry entries and their separate task scopes were unchanged by N. After N alone, on 27 October 2026 and before Q and O, the Resource pack had **665 SymPy / 9 manual / 0 unchecked** rows; the aggregate EXPECTED pair was **665 / 11**, including two Yang manuals. K's original audit tables remain historical evidence. The tip counts are in the current-status section.
 
 ## Policy: t636u resolution and manual grading
 
@@ -51,7 +50,7 @@ The [companion skill](../../.agents/skills/integration-bee-companion/SKILL.md) a
 | `manual` | After the learner answers, read `problems show`, the cited mark, and the relevant worked note/PDF; send `verdict: correct` or `verdict: incorrect`. Explain any source hold. | Record the supplied verdict and display the stored `answer_plain`; it does not prove or parse the lossy printed integrand. A missing verdict is rejected without writing an attempt. |
 | `unchecked` | Explain that the source supplies no answer. | Do not invent a final or send a verdict. There are no such resource-pack rows at this snapshot. |
 
-For a remaining manual row, `answer_plain` is the **cited grading reference**, not a theorem about the printed problem. The resolved Oxford, MIT-TB, and TB2022 rows instead display and grade `1`: the notes preserve their conflicting `sin(1)` marks, and the catalog cites the 2020 answer for the same integral. Coaches send the learner's final answer without a verdict for these proved rows. The [turn fixtures](../../verify/turn_contract_check.py) check this grading and preserve manual-verdict behavior through a synthetic catalog row.
+A `manual` row's `answer_plain` is the **cited grading reference**, not a theorem about the printed problem. At tip `770c6e4` pack manuals are 0 and sample manuals are 0. The resolved Oxford, MIT-TB, and TB2022 rows display and grade `1`: the notes preserve their conflicting `sin(1)` marks, and the catalog cites the 2020 answer for the same integral. Coaches send the learner's final answer without a verdict for these proved rows. The [turn fixtures](../../verify/turn_contract_check.py) check this grading and preserve manual-verdict behavior through a synthetic catalog row.
 
 No authoritative erratum resolving the twelve audited conflicts is documented in the audited repository sources as of 27 October 2026; L's resolution rests on an exact proof of the printed integral and the corroborating 2020 sources. This is an audit of the committed evidence, not a claim that every external publication has been searched. Existing notes retain their separately dated external rechecks.
 
@@ -110,14 +109,15 @@ All twelve audited holds are resolved by L–Q. Keep this template for any futur
 | After L+M | 668 | 6: N Crossnumbers + Q Tournament | 2 | 668 | 8 |
 | After L+M+N | 671 | 3: Q Tournament | 2 | 671 | 5 |
 | After L–Q | 674 | 0 pack manuals | 2 | 674 | 2 |
+| Tip `770c6e4`, after Handoff O | 674 | 0 | 0 (`YANG-1.3-Ex01` and `YANG-1.3-Ex03` are `sympy`) | 676 | 0 |
 
-The two answered Yang rows are `YANG-1.3-Ex01` and `YANG-1.3-Ex03`. The other 270 Yang rows remain unchecked. No Yang finals are created here. The separate sample catalog has 20 rows: 16 `sympy` and 4 `manual`; these are excluded from the EXPECTED pair above. The complete JSONL has 966 rows.
+Rows above the tip are dated snapshots. At tip `770c6e4`, `YANG-1.3-Ex01` and `YANG-1.3-Ex03` are `verify: sympy` and count inside `EXPECTED_SYMPY=676`. The other 270 Yang practice rows remain `unchecked`. This registry does not invent their finals; they are out-of-scope practice. The sample catalog has 20 rows, all `sympy`, and those rows stay outside the EXPECTED pair. The complete JSONL has 966 rows.
 
-All 674 resource-pack rows have a nonempty `answer_plain` and `answer_source_pdf`; zero are unchecked. Catalog answers being present makes them available for grading, not all mathematically proved. Do not change EXPECTED pre-emptively. Recount after rebasing onto the latest main; additional encodes must be reflected in the actual catalog rather than inferred from the historical baseline or the L-only row.
+All 674 resource-pack rows have a nonempty `answer_plain` and `answer_source_pdf`, and all 674 are `verify: sympy`. The 270 unanswered Yang practice rows stay `unchecked` by design. Do not change EXPECTED ahead of the catalog. Recount after rebasing onto the latest tip; additional encodes must be reflected in the actual catalog rather than inferred from a historical row of this table.
 
 ## Worked-note coverage: retire the “19 skips” count
 
-At `6ac8f7d`, the tracked `solutions/pack/<id>.md` coverage is **673/674**. The sole absent note is `R2-2023-Group-Q01-v2.md`, assigned to I. All twelve source holds have notes, and all 661 currently SymPy-gated resource-pack rows have notes. Source-hold status is not missing-note status.
+At `6ac8f7d`, the tracked `solutions/pack/<id>.md` coverage is **673/674**. The sole absent note is `R2-2023-Group-Q01-v2.md`, assigned to I. All twelve source holds have notes, and all 661 SymPy-gated resource-pack rows at that snapshot have notes. Source-hold status is not missing-note status.
 
 The K handoff reports that 18 of the former 19 “honest note skips” already gained notes. The historical `SOLUTIONS_SKIPPED_HONEST.json` was outside the repository and is unavailable in this checkout, so this decision does not reconstruct or invent its nineteen ids. The measured audit snapshot is:
 
@@ -128,7 +128,7 @@ The K handoff reports that 18 of the former 19 “honest note skips” already g
 | I's remaining manual encode | 1 | 0 | `R2-2023-Group-Q01-v2` |
 | Total | 674 | 673 | One |
 
-At K's audit baseline the accurate statement was “notes complete except for I's twin note,” not “19 notes missing.” I has since added that note; the I/J plus L checkout measures **674/674** tracked pack notes. A note's existence alone does not imply a SymPy proof; the catalog certificate supplies that evidence.
+At K's audit baseline the accurate statement was “notes complete except for I's twin note,” not “19 notes missing.” I has since added that note; the I/J plus L checkout measures **674/674** tracked pack notes. At that baseline a note's existence did not imply a SymPy proof. At tip `770c6e4` every resource-pack row is `verify: sympy`; the catalog certificate remains the proof.
 
 ## Ready-to-use checklist
 
@@ -136,9 +136,8 @@ The learner talks to the [companion](../../.agents/skills/integration-bee-compan
 
 - Run `scripts/control-integration-bee doctor` and require `READY integration-bee`.
 - Run `make check` on the PR head. It includes catalog and certificate checks, manual/symbolic turn fixtures, readiness invariants, TeX compilation, and formal checks. Record the actual result and any omitted gate in the PR's `## Pre-review self-check`.
-- Confirm every resource-pack row has a cited grading answer and none is unchecked. Use automatic grading for `sympy`, an explicit companion verdict for `manual`, and open this registry for a hold.
-- Confirm all twelve L–Q notes say `Status: resolved` and `verify: sympy`; pack manuals are zero (Yang manuals remain outside this registry).
-- Confirm the five formerly `deferred-open` syllabus nodes have the notes linked by the [concept map](../../pedagogy/concept-map.md). They stay unticked and are not Round 1 requirements.
-- Preserve `floor` and `dutis` as deferred-taught and unticked. Units 01–36 and their 300 drills are already the established teaching path.
+- Confirm every resource-pack row is `verify: sympy` with a cited grading answer. Pack manuals are 0 and unchecked pack rows are 0. Grade `sympy` from `extract.final_answer`. A later `manual` row still needs an explicit companion verdict. Open this registry for a new hold.
+- Confirm all twelve L–Q notes say `Status: resolved` and `verify: sympy`. Pack manuals are 0. `YANG-1.3-Ex01` and `YANG-1.3-Ex03` are `verify: sympy`. The other 270 Yang practice rows stay `unchecked` and out of scope.
+- Confirm teaching deferred is 0 in the [concept map](../../pedagogy/concept-map.md): 63 ready concept nodes and 9 indexes. `floor`, `dutis`, `vector-calc`, `beta`, `zeta`, `euler-mascheroni`, and `catalan` are ready. They stay unticked until a learner has evidence and are not Round 1 requirements. Units 01–36 and their 300 drills remain the teaching path.
 
-The PR body carries the run-specific READY line and check summary. The owner re-runs pstack and `make check` before deciding whether to merge. K opens one PR; it does not merge or mix in I's encodes or J's bulk OCR changes.
+The PR body carries the run-specific READY line and check summary. The owner re-runs pstack and `make check` before deciding whether to merge. K's documentation PR did not merge I's encodes or J's bulk OCR; later handoffs landed on their own. The release condition at tip `770c6e4` is the checklist above.

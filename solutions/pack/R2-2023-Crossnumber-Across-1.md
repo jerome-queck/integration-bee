@@ -14,8 +14,9 @@ p.3. The answer is a map of clue numbers to integers, not one scalar:
 the 12-by-8 lattice, the printed start coordinates, and one exact check per
 clue. The shared contract also compares the answer to the printed map and
 checks all its crossings with the sibling grid. Its Across proof does not
-promote the Down row: Down 7 has a missing regularity hypothesis, documented
-in `R2-2023-Crossnumber-Down-1.md`.
+restate the Down certificate. Handoff N certifies Down 7 as `verify: sympy`
+under the published regularity clarification, documented in
+`R2-2023-Crossnumber-Down-1.md`.
 
 ## Across derivations
 
@@ -95,5 +96,5 @@ are exactly 1 through 9 with no repetition, as required jointly.
 Every Across clue has its own mathematical or exact integer check. The
 clue maps and crossings are additional checks, not substitutes for these
 derivations. No whole-paper symbolic integral is attempted. The sibling
-Down map is the visually read mark grid; its defective Down 7 clue remains
-manual and is not represented as a proved point-value theorem.
+Down map is the visually read mark grid. Down 7 is `verify: sympy` under
+Handoff N's regularity clarification; this Across note does not restate that proof.

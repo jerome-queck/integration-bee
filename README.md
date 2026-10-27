@@ -173,21 +173,21 @@ The session file is `session.json` in the data directory. One replace holds the 
 
 ## Pack status
 
-After Handoffs I/J and L, all 674 Resource pack rows have cited answers: **665 SymPy-proved, 9 manual, and 0 unchecked**. L resolves `R1-2022-MIT-TB-Q01`, `R1-2022-Oxford-Q01`, and `R1-2022-TB2022-Q01` to the proved answer **1** for their printed limits. The nine remaining manual rows belong to the Relay, Crossnumber, and Tournament follow-ups; their source conflicts remain documented in the [pack source conflicts registry](docs/decisions/0016-pack-source-holds.md). The verifier's `EXPECTED_SYMPY=665` / `EXPECTED_MANUAL=11` includes two answered Yang manuals; SAMPLE rows have separate counts. The registry preserves K's historical `6ac8f7d` baseline of 661 SymPy / 13 manual and the subsequent I/J state of 662 / 12.
+At tip `770c6e4`, the Resource pack is **674 SymPy / 0 manual / 0 unchecked**, with a note for all 674 rows. Handoffs L through Q resolved the twelve source holds in the [pack source conflicts registry](docs/decisions/0016-pack-source-holds.md): the 2022 Q01 trio grades **1**, and the Relay, Crossnumber, and Tournament rows are `verify: sympy`. Handoff O certified `SAMPLE-Q05`, `SAMPLE-Q08`, `SAMPLE-Q09`, and `SAMPLE-Q19`, plus `YANG-1.3-Ex01` and `YANG-1.3-Ex03`. The verifier's `EXPECTED_SYMPY=676` / `EXPECTED_MANUAL=0` is those 674 pack rows plus the two answered Yang examples. SAMPLE is **20 SymPy / 0 manual** and sits outside that pair. 270 Yang practice rows stay `unchecked` by design; they are out-of-scope practice, and this pack does not invent their finals. Dated mid-chain snapshots, including K's `6ac8f7d` baseline of 661 SymPy / 13 manual, stay in the registry as history.
 
-A manual mark requires the companion's explicit `verdict`; the CLI does not compare its final answer with SymPy. Its displayed answer remains the cited catalog `answer_plain`, and the companion reads the linked note before judging the working. The resolved 2022 Q01 trio now grades **1** automatically and rejects `sin(1)`, even with a supplied correct verdict. Each note preserves the conflicting 2022 mark and cites the 2020 answer and worked calculation for the identical printed integral. A synthetic fixture retains manual-verdict coverage as source rows become proved.
+A `sympy` row grades from `extract.final_answer`. The 2022 Q01 notes still preserve the conflicting `sin(1)` marks and cite the 2020 answer for the same printed integral. A synthetic fixture keeps the manual-verdict path. Pack manuals are 0 and sample manuals are 0.
 
-Pack solution notes now cover **674/674** rows, including I's `R2-2023-Group-Q01-v2` note. K's historical baseline covered 673/674. The historical “19 honest note skips” list is no longer a missing-notes count; the registry preserves the measured baseline and current coverage.
+Pack solution notes cover **674/674** rows, including I's `R2-2023-Group-Q01-v2` note. K's historical baseline covered 673/674. The historical “19 honest note skips” list is a past missing-notes count; the registry keeps that baseline beside the current 674/674 coverage.
 
-The [concept map](pedagogy/concept-map.md) routes all five formerly open syllabus topics to teachable recognition notes: vector calculus, Beta, zeta, Euler–Mascheroni, and Catalan. These catalog nodes stay unticked and are not required for Round 1. `floor` and `dutis` keep their existing notes and drills and also stay unticked.
+The [concept map](pedagogy/concept-map.md) records teaching deferred **0**: 63 ready concept nodes and 9 practice indexes, 72 nodes in all. `floor`, `dutis`, vector calculus, Beta, zeta, Euler–Mascheroni, and Catalan are ready. They stay unticked until a learner has evidence, and they are not Round 1 requirements.
 
 The companion and maintainer use this readiness checklist:
 
 - `scripts/control-integration-bee doctor` reports `READY integration-bee`.
 - `make check` passes on the proposed revision; `doctor` alone is not the proof gate.
-- Every Resource pack row has a cited answer: SymPy rows grade automatically and manual rows require a verdict.
-- The registry and note Status blocks distinguish the three conflicts resolved by L from the nine remaining manual rows; no Resource pack row is `unchecked`.
-- The five syllabus recognition notes are available through the concept map; their nodes and `floor` / `dutis` stay unticked.
+- Every Resource pack row is `verify: sympy` with a cited answer. Pack manuals are 0 and unchecked pack rows are 0.
+- The registry records the twelve resolved holds. 270 Yang practice rows remain `unchecked` and out of scope.
+- Teaching deferred is 0. The seven syllabus nodes are ready and stay unticked until learner evidence.
 
 ## Learner
 

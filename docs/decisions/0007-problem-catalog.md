@@ -2,7 +2,7 @@
 
 Contest and Yang integrals live in `problems/records.jsonl`. The file is public study material. It is not learner state.
 
-The import copies extract fields and does not add a SymPy answer. `verify` stays `manual` when the extract cites an answer, and `unchecked` when it does not. Two Yang examples already print an equality. The other Yang practice rows stay unanswered.
+The import copies extract fields and does not add a SymPy answer. At import, `verify` stays `manual` when the extract cites an answer, and `unchecked` when it does not. Two Yang examples already print an equality. The other Yang practice rows stay unanswered. Later exact certificates supersede that import flag for proved rows. The live counts are in [0016](0016-pack-source-holds.md): at tip `770c6e4` the resource pack is 674 SymPy / 0 manual / 0 unchecked, `EXPECTED_SYMPY=676` / `EXPECTED_MANUAL=0`, and SAMPLE is 20 SymPy / 0 manual. About 270 Yang practice rows stay `unchecked`. Teaching deferred is 0.
 
 `problems list`, `problems show`, and `problems select` only read that file. A mark of a manual row goes through `turn apply` and the same attempt writer as a drill. The lossy integrand is not sent to SymPy. An unanswered row cannot be marked.
 

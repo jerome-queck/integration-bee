@@ -1,6 +1,6 @@
 # Worked solutions
 
-These notes are worked solutions for resource-pack rows that remain `verify: manual`, and for the three Yang §1.3 examples whose guide prints a final. They do not change `problems/records.jsonl` or any verify flag.
+These notes record printed finals and worked readings. They do not change `problems/records.jsonl` or any verify flag. At tip `770c6e4` every resource-pack catalog row is `verify: sympy` (674 SymPy / 0 manual / 0 unchecked). The index below lists 81 of those notes. `YANG-1.3-Ex01` and `YANG-1.3-Ex03` are `verify: sympy`. `YANG-1.3-Ex02` copies a printed final and stays `verify: unchecked`. It is one of the 270 unchecked Yang practice rows. Those rows are out-of-scope practice.
 
 Each pack final is the value printed in the cited answers PDF or solutions PDF. Where a worked PDF and an answers PDF print equivalent antiderivatives, the note records both and the constant relating them. Yang notes copy only finals that the guide prints. Other Yang rows are left without a final.
 
@@ -96,7 +96,7 @@ python3 solutions/self_check.py
 | R1-2024-Q28 | \(\pi^2/4\) | [pack/R1-2024-Q28.md](pack/R1-2024-Q28.md) |
 | R1-2024-Q30 | \((\pi/2)\ln 2\) | [pack/R1-2024-Q30.md](pack/R1-2024-Q30.md) |
 
-81 pack manuals.
+81 pack notes. Their catalog rows are `verify: sympy`. Pack manuals are 0.
 
 ## Yang
 
@@ -108,4 +108,4 @@ python3 solutions/self_check.py
 
 ## Sample
 
-The UK site sample sheet is `solutions/sample/SAMPLE-Q01.md` through `SAMPLE-Q20.md`. Those ids are catalog rows. `python3 solutions/sample_self_check.py` re-proves the `sympy` rows and the manual checks for Q05, Q08, Q09, and Q19. Q15 grades the antiderivative obtained by finishing the solutions PDF's correct split. The printed last line has the wrong sign on the arctan term. Q17 is \(x^{1/\ln x}\), graded as \(ex+C\).
+The UK site sample sheet is `solutions/sample/SAMPLE-Q01.md` through `SAMPLE-Q20.md`. Those ids are catalog rows, and all 20 are `verify: sympy`. `python3 solutions/sample_self_check.py` re-proves them, including Q05, Q08, Q09, and Q19. Q15 grades the antiderivative obtained by finishing the solutions PDF's correct split. The printed last line has the wrong sign on the arctan term. Q17 is \(x^{1/\ln x}\), graded as \(ex+C\).

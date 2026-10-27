@@ -46,7 +46,7 @@ Yang is one source among others. These notes are original exposition for moves t
 - contains: group, crossnumber, relay, Shuttle, chainlink, dichotomy, tournament, Crossword, 2024_Participant_Guide_R2, Round_3_Integration_Bee_Participant_Guide
 - examples: 0
 
-Pack and Yang integrands in `problems/records.jsonl` start from the PDF text layer. A pack row with `verify` set to `sympy` also stores the proved `integrand_latex` and `answer_latex`. Every other `integrand_latex` stays null. An answer with `verify` set to `manual` is a mark-scheme cite, or a short equality already printed in a Yang example. It is not a SymPy result. Yang practice rows with `verify` set to `unchecked` have no printed answer in the extract. Do not invent one.
+Pack and Yang integrands in `problems/records.jsonl` start from the PDF text layer. A pack row with `verify` set to `sympy` also stores the proved `integrand_latex` and `answer_latex`. At tip `770c6e4` the resource pack is 674 SymPy / 0 manual / 0 unchecked, and `EXPECTED_SYMPY=676` / `EXPECTED_MANUAL=0` also counts `YANG-1.3-Ex01` and `YANG-1.3-Ex03`. SAMPLE is 20 SymPy / 0 manual. A `manual` flag marks a cited answer the gate has not proved. Pack manuals are 0 and sample manuals are 0. Yang practice rows with `verify` set to `unchecked` have no printed answer in the extract. 270 of those rows remain, by design. Do not invent one.
 
 On a miss, teach the one file `say` names. Read that note and work its displayed example. Do not edit the note in the study session. A later commit is what fills a missing move, with an original example or a stored drill id.
 
