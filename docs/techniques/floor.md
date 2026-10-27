@@ -14,7 +14,7 @@ limits: 0, 2
 answer: 1
 ```
 
-SymPy leaves `integrate(floor(x), (x, 0, 2))` unevaluated, so the checked fence is the piecewise split, not a call to `floor`. A contest row tagged floor in the sample list needs its own integrand checked before it can carry `verify: sympy`. Do not copy that answer into this note.
+SymPy leaves `integrate(floor(x), (x, 0, 2))` unevaluated, so the checked fence is the piecewise split, not a call to `floor`. `SAMPLE-Q09` is `verify: sympy` on its own floor-piece certificate. Do not copy that answer into this note. The `floor` catalog node is ready. Teaching deferred is 0.
 
 ## Three units
 
