@@ -10,6 +10,7 @@ import sympy as sp
 
 import pack_gate
 import pack_handoff_f_check
+import pack_handoff_m_check
 import pack_grid_check
 import problem_catalog
 import turn_contract
@@ -223,8 +224,9 @@ def check_handoff_l(rows):
 
 def check_source_discrepancy(rows):
     row = rows["R2-2023-Relay-Q19"]
-    require(row["verify"] == "manual", "Relay-Q19 must remain manual")
+    require(row["verify"] == "sympy", "Relay-Q19 clarified reading is certified")
     require("source discrepancy" in row["notes"], "Relay-Q19 source note")
+    require("sqrt(n)-bound clarification" in row["notes"], "Relay-Q19 chosen reading is explicit")
     u = sp.Symbol("u", real=True)
     a = sp.Symbol("a", nonnegative=True)
     n = sp.Symbol("n", integer=True, positive=True)
@@ -363,11 +365,8 @@ def check_handoff_d(rows):
         "R2-2025-SG-Relay-Q16": "1999",
         "R2-2025-UK-Relay-Q20": "1999",
     }
-    # F proves the nine answer-schema deferrals; I proves the Group Q01 alias.
-    # The two remaining source conflicts still stay manual.
-    deferred = (
-        "R2-2021-Relay-D03", "R2-2023-Relay-Q20",
-    )
+    # F proves the answer-schema deferrals, I the Group alias, and M explicitly
+    # clarifies/certifies D03 and Q20 in its separate source-bound checks.
     required_shapes = {
         "R2-2022-Relay-Q10": (sp.Integral,),
         "R2-2022-Relay-Q11": (sp.Limit, sp.Integral),
@@ -396,8 +395,6 @@ def check_handoff_d(rows):
     selected = [rows[ident] for ident in expected]
     require(len(selected) == 24 and all(row["verify"] == "sympy" for row in selected),
             "Handoff D 24 scalar rows")
-    require(all(rows[ident]["verify"] == "manual" for ident in deferred),
-            "Handoff D source deferrals remain manual")
     require(pack_gate.reprove_rows(selected) is None, "Handoff D stored-row reproof")
     parsed = {}
     for row in selected:
@@ -568,12 +565,6 @@ def check_handoff_i(rows):
         require(tuple(pack_gate._parse(part, "x") for part in row["limits"]) == (0, sp.pi/2**n),
                 ident + " original bounds")
         require("m > n" in row["integrand_plain"], ident + " printed parameter ordering")
-    n = sp.Symbol("n", integer=True, positive=True)
-    relay = rows["R2-2023-Relay-Q19"]
-    original = sp.Limit(sp.Integral(sp.cos(x/sp.sqrt(n))**n, (x, 0, n)), n, sp.oo)
-    require(pack_gate._parse(relay["sympy_expr"], "x") == original and relay["limits"] == [],
-            "Relay Q19 retains the outer limit and upper bound n")
-
     manual_rows = [rows[ident] for ident in problem_catalog.MANUAL_INPUT_KINDS]
     for row in manual_rows:
         ident = row["id"]
@@ -603,7 +594,7 @@ def check_handoff_i(rows):
 
     unrelated = dict(manual_rows[0], id="R1-2022-Oxford-Q01")
     require(problem_catalog.manual_input_problem(unrelated) is not None,
-            "manual input exception is restricted to the three source transcriptions")
+            "manual input exception is restricted to the remaining source transcriptions")
     require(problem_catalog.catalog_problem(list(rows.values())) is None, "Handoff I counts and schema")
     sys.path.insert(0, str(problem_catalog.ROOT / "scripts"))
     import recover_pack_math
@@ -639,6 +630,7 @@ def main():
     check_hard_open_forms(rows)
     check_handoff_d(rows)
     pack_handoff_f_check.check(rows)
+    pack_handoff_m_check.check(rows)
     pack_grid_check.check_all(list(rows.values()))
     check_handoff_h_ceiling(rows)
     check_handoff_i(rows)
@@ -647,7 +639,7 @@ def main():
         "PASS pack certificates (symbolic families, literal operators, "
         "24 Handoff D rows, 10 Handoff F contracts, Handoff G grids, "
         "Handoff H ceiling, Handoff I alias and manual inputs, Handoff L printed limits, "
-        "mutations, source discrepancies)"
+        "Handoff M clarified Relay readings, mutations, source discrepancies)"
     )
     return 0
 

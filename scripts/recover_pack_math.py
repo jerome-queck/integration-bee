@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Recover pack integrand and answer readings from the committed PDFs.
 
-The script writes proved layout readings and three source-checked manual input
+The script writes proved layout readings and source-checked manual input
 transcriptions. A manual transcription never supplies a symbolic answer or
 promotes the row. Run it again after a parser change. It is deterministic.
 
@@ -51,7 +51,7 @@ def load_pair(cache: dict, pdf: str, kind: str):
 
 
 GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
-# The three source-conflict transcriptions must never fall through to PDF
+# The remaining source-conflict transcriptions must never fall through to PDF
 # matching by question number, especially on repeated Tournament Q04 slides.
 HELD_MANUAL = frozenset(problem_catalog.MANUAL_INPUT_KINDS)
 
@@ -68,16 +68,7 @@ _MANUAL_TOURNAMENT = (
     "For integers m and n with m > n: integral from 0 to pi/2^n of "
     "sin((2^m + 2025*2^n)*x)/sin(2^m*x) * product(k=1..m-n, cos(2^(m-k)*x)) dx.",
 )
-_MANUAL_INDEX = "Symbol('n',integer=True,positive=True)"
 MANUAL_TRANSCRIPTS = {
-    # Relay problem p.2, mark p.4: retain the outer limit and upper bound n.
-    "R2-2023-Relay-Q19": (
-        f"Limit(Integral(cos(x/sqrt({_MANUAL_INDEX}))**{_MANUAL_INDEX},"
-        f"(x,0,{_MANUAL_INDEX})),{_MANUAL_INDEX},oo)",
-        (),
-        "For positive integers n, find lim(n -> infinity) I_n, where I_n = "
-        "integral from 0 to n of cos(x/sqrt(n))^n dx.",
-    ),
     "R3-2024-Tournament-Q04-v11": _MANUAL_TOURNAMENT,
     "R3-2024-Tournament-Q04-v12": _MANUAL_TOURNAMENT,
 }

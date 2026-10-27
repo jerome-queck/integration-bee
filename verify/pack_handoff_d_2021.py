@@ -7,8 +7,9 @@ shuttle parameters are derived afresh, not asserted from the mark scheme.
 
 Sources: sources/past/r2/2021/Shuttle_2021_R2_UK_University_Integration_Bee.pdf,
 pages 2--5; Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf, page 4.
-The non-scalar prime-factor answer D1 and underdetermined form-extraction D3
-stay manual; D1 is nevertheless proved internally to obtain D2's parameters.
+D1 is also proved internally to obtain D2's parameters. Handoff F grades its
+prime-factor pair; Handoff M separately clarifies D3's form extraction with
+minimal-u normalization and certifies its resulting pass-on.
 """
 
 from __future__ import annotations

@@ -263,6 +263,12 @@ def check_r2_2021_relay_d03() -> None:
     _eq(value, sp.Rational(3, 4) * sp.log(3) - sp.Rational(1, 2))
     _eq(value, (sp.log(27) - 2) / 4)
     _eq((1 + sp.sqrt(1 + 4)) / 2, (1 + sp.sqrt(5)) / 2)
+    # The alternate printed representation has the same integral but a
+    # different pass-on. Minimal u selects k=1 from the full family.
+    _eq(value, (sp.log(729) - 4) / 8)
+    _eq((1 + sp.sqrt(1 + 8)) / 4, 1)
+    k = sp.symbols("k", positive=True, integer=True)
+    _eq(sp.expand_log((sp.log(27**k) - 2*k) / (4*k)), value)
 
 
 def check_r2_2021_relay_d04() -> None:

@@ -441,10 +441,17 @@ def check_r2_2023_relay_q17() -> None:
 
 
 def check_r2_2023_relay_q20() -> None:
-    x = sp.symbols("x", positive=True)
+    x, t = sp.symbols("x t", real=True)
     f = sp.log(1 + x**2) / 4
+    _eq(f.subs(x, 0), 0)
     _eq(sp.diff(f**2, x), x * f / (1 + x**2))
-    _eq(2 * sp.integrate(f, (x, 0, 1)), (sp.pi + sp.log(4) - 4) / 4)
+    _eq(sp.integrate(t * f.subs(x, t) / (1 + t**2), (t, 0, x)), f**2)
+    mark = (sp.pi + sp.log(4) - 4) / 4
+    _eq(sp.integrate(f, (x, -1, 1)), mark)
+    # A one-sided C1 branch solves the unamended equation but is excluded
+    # by the catalog's positivity hypothesis on both sides of zero.
+    _eq(sp.diff(f, x).subs(x, 0), 0)
+    _eq(sp.integrate(f, (x, 0, 1)), mark / 2)
 
 
 def check_r2_2024_group_q08() -> None:
