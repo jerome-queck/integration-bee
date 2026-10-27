@@ -55,22 +55,7 @@ GATED_ROUNDS = frozenset({"r1", "r2", "r3"})
 # matching by question number, especially on repeated Tournament Q04 slides.
 HELD_MANUAL = frozenset(problem_catalog.MANUAL_INPUT_KINDS)
 
-_MANUAL_M, _MANUAL_N, _MANUAL_K = (
-    f"Symbol('{name}',integer=True)" for name in ("m", "n", "k")
-)
-# Tournament problem slide 169, answer slide 171, worked p.15: m,n are
-# integers with m>n, not necessarily positive. The printed final conflicts.
-_MANUAL_TOURNAMENT = (
-    f"sin((2**{_MANUAL_M}+2025*2**{_MANUAL_N})*x)/sin(2**{_MANUAL_M}*x)"
-    f"*Product(cos(2**({_MANUAL_M}-{_MANUAL_K})*x),"
-    f"({_MANUAL_K},1,{_MANUAL_M}-{_MANUAL_N}))",
-    ("0", f"pi/2**{_MANUAL_N}"),
-    "For integers m and n with m > n: integral from 0 to pi/2^n of "
-    "sin((2^m + 2025*2^n)*x)/sin(2^m*x) * product(k=1..m-n, cos(2^(m-k)*x)) dx.",
-)
 MANUAL_TRANSCRIPTS = {
-    "R3-2024-Tournament-Q04-v11": _MANUAL_TOURNAMENT,
-    "R3-2024-Tournament-Q04-v12": _MANUAL_TOURNAMENT,
 }
 
 _RELAY_M = "Symbol('m', integer=True, positive=True)"

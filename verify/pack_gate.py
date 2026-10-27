@@ -189,6 +189,7 @@ import pack_handoff_e_tournament
 import pack_handoff_f_expressions
 import pack_handoff_f_integrals
 import pack_handoff_m
+import pack_handoff_q
 import pack_hard_catalan
 import pack_hard_floor
 import pack_hard_series
@@ -6020,7 +6021,10 @@ def _worker(payload, queue) -> None:
             lo = _parse(limits[0], variable)
             hi = _parse(limits[1], variable)
             symbol = namespace(variable)[variable]
-            # An outer Limit contains its complete integral. The certificate
+            handoff_q = pack_handoff_q.definite_answer_ok(integrand, symbol, lo, hi, answer)
+            if handoff_q is not None:
+                queue.put(("ok", handoff_q))
+                return            # An outer Limit contains its complete integral. The certificate
             # checks that its inner bounds agree with the stored metadata.
             handoff = pack_handoff_b.definite_value(integrand, symbol, lo, hi)
             if handoff is not None:
@@ -6251,6 +6255,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
         or _handoff_e_octahedron_shape(expr, symbol)
         or pack_handoff_e_tournament.open_integrand(expr, symbol)
         or pack_handoff_m.open_integrand(expr, symbol)
+        or pack_handoff_q.open_integrand(expr, symbol)
         or pack_answer_contracts.open_expression(expr, symbol)
         or _hard_classical_telescope_shape(expr, symbol)
         or pack_hard_catalan.open_integrand(expr, symbol)
