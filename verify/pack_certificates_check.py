@@ -14,7 +14,9 @@ import pack_handoff_m_check
 import pack_handoff_q_check
 import pack_grid_check
 import problem_catalog
+import sample_certificates_check
 import turn_contract
+import yang_certificates_check
 
 
 IDS = (
@@ -591,11 +593,15 @@ def main():
     check_handoff_i(rows)
     check_handoff_l(rows)
     pack_handoff_q_check.check(rows)
+    sample_certificates_check.check(rows)
+    yang_certificates_check.check(rows)
     print(
         "PASS pack certificates (symbolic families, literal operators, "
         "24 Handoff D rows, 10 Handoff F contracts, Handoff G grids, "
         "Handoff H ceiling, Handoff I Group alias, Handoff L printed limits, "
-        "Handoff M clarified Relay readings, Handoff N crossnumber maps, Handoff Q derived final, mutations, source discrepancies)"
+        "Handoff M clarified Relay readings, Handoff N crossnumber maps, "
+        "Handoff Q derived final, Handoff O SAMPLE/Yang examples, "
+        "mutations, source discrepancies)"
     )
     return 0
 

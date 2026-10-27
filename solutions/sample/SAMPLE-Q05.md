@@ -1,9 +1,12 @@
 # SAMPLE-Q05
 
-- Problem: `sources/Integration_Competition_Sample_problems.pdf` (question 5)
-- Printed answer: `sources/Integration_bee_sample_problems_answers.pdf`
-- Worked source: `sources/UK_University_integration_bee_sample_problems_solutions.pdf` (question 5)
-- Catalog row `SAMPLE-Q05` stays `verify: manual`. The pack gate does not finish the original integral inside its time limit.
+- Problem: `sources/Integration_Competition_Sample_problems.pdf`, p. 1, question 5
+- Printed answer: `sources/Integration_bee_sample_problems_answers.pdf`, p. 1, answer 5
+- Worked source: `sources/UK_University_integration_bee_sample_problems_solutions.pdf`, p. 6, question 5
+
+## Status: resolved symbolic certificate
+
+Catalog row `SAMPLE-Q05` is `verify: sympy`. The gate certifies the shift and rational form of the reflection below within the existing proof timeout. The derived answer agrees with both the printed answer and the worked source.
 
 ## Problem
 
@@ -33,6 +36,8 @@ I=\int_0^{\pi/4}\ln\left(\frac{2}{1+\tan t}\right)\,dt=\frac{\pi}{4}\ln 2-I.
 
 Therefore \(2I=(\pi/4)\ln 2\) and \(I=(\pi\ln 2)/8\).
 
+All logarithm arguments are positive: on \([0,\pi/4]\), \(1+\tan t\in[1,2]\) and \(2/(1+\tan t)\in[1,2]\). Thus the logarithm subtraction uses the real logarithm without a branch ambiguity. The substitutions have nonsingular positive Jacobians on these compact intervals.
+
 ## Final answer
 
 \[
@@ -41,4 +46,6 @@ Therefore \(2I=(\pi/4)\ln 2\) and \(I=(\pi\ln 2)/8\).
 
 ## SymPy self-check
 
-`solutions/sample_self_check.py` runs `check_q05`. SymPy simplifies \(\tan(\pi/4-t)-(1-\tan t)/(1+\tan t)\) to \(0\), and then \(\ln(1+(1-\tan t)/(1+\tan t))-\ln(2/(1+\tan t))\) to \(0\). A quadrature of the original integrand on \([1,2]\) matches \((\pi\ln 2)/8\) within \(10^{-12}\).
+`verify/sample_certificates.py` supplies the exact reflection certificate through `pack_gate.proven`. After checking \(u=x-1\), it uses the equivalent rational reflection \(u\mapsto(1-u)/(1+u)\). The certificate verifies reversed endpoints, the Jacobian-weight identity, and the logarithm sum \(\ln2\), then computes \(\int_0^1du/(1+u^2)=\pi/4\) before dividing by two. Numerical integration is not the acceptance criterion.
+
+`solutions/sample_self_check.py` reproves the stored row and runs `check_q05`. Its additional quadrature is a sanity check. The gate must reject the wrong answers \(0\), \(\pi/4\), and \((\pi\ln 2)/4\).

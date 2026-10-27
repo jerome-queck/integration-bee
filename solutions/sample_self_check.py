@@ -92,13 +92,16 @@ ROWS = [
     {
         "id": "SAMPLE-Q05",
         "kind": "definite",
-        "verify": "manual",
+        "verify": "sympy",
+        "integrand": "log(x)/(x**2-2*x+2)",
+        "limits": ["1", "2"],
+        "answer": "pi*log(2)/8",
         "integrand_plain": "∫_1^2 ln(x)/(x^2 − 2x + 2) dx",
         "answer_plain": "(π ln 2)/8",
         "technique_tags": ["trig-sub"],
         "yang": ["yang:1.7"],
         "answer_source_pdf": ANSWERS,
-        "note": "Answers PDF prints (π ln 2)/8. The pack gate does not finish this integral inside its time limit, so the row stays manual.",
+        "note": "Answers PDF p. 1 prints (π ln 2)/8. The gate proves the shift and rational reflection equivalent to the tangent reflection in the solutions PDF p. 6.",
     },
     {
         "id": "SAMPLE-Q06",
@@ -131,24 +134,35 @@ ROWS = [
     {
         "id": "SAMPLE-Q08",
         "kind": "definite",
-        "verify": "manual",
-        "integrand_plain": "∫_0^∞ x^(s−1)/(e^x − 1) dx",
+        "verify": "sympy",
+        "integrand": "x**(Symbol('sigma', positive=True)+I*Symbol('tau', real=True))/(exp(x)-1)",
+        "limits": ["0", "oo"],
+        "answer": "gamma(1+Symbol('sigma', positive=True)+I*Symbol('tau', real=True))*zeta(1+Symbol('sigma', positive=True)+I*Symbol('tau', real=True))",
+        "integrand_plain": "∫_0^∞ x^(s−1)/(e^x − 1) dx, Re(s)>1",
+        "raw_snippet": "∫_0^∞ x^(s−1)/(e^x − 1) dx",
         "answer_plain": "Γ(s)ζ(s)",
         "technique_tags": ["series", "gamma-zeta"],
         "yang": ["yang:1.14"],
         "answer_source_pdf": ANSWERS,
-        "note": "Answers PDF prints Γ(s)ζ(s). The pack gate does not close the full integral, so the row stays manual.",
+        "note": (
+            "Answers PDF p. 1 prints Γ(s)ζ(s); solutions PDF p. 9 gives the geometric-series/Gamma derivation. "
+            "The integral converges absolutely for Re(s)>1. The symbolic fields encode the whole half-plane by "
+            "s=1+sigma+i*tau, with sigma>0 and tau real; the gate checks this domain and the series certificate."
+        ),
     },
     {
         "id": "SAMPLE-Q09",
         "kind": "definite",
-        "verify": "manual",
+        "verify": "sympy",
+        "integrand": "(x-floor(x))/x**4",
+        "limits": ["1", "oo"],
+        "answer": "Rational(1,2)-zeta(3)/3",
         "integrand_plain": "∫_1^∞ (x − ⌊x⌋)/x^4 dx",
         "answer_plain": "1/2 − ζ(3)/3",
         "technique_tags": ["floor"],
         "yang": ["yang:1.20"],
         "answer_source_pdf": ANSWERS,
-        "note": "Answers PDF prints 1/2 − ζ(3)/3. The pack gate does not close the floor integrand, so the row stays manual.",
+        "note": "Answers PDF p. 1 prints 1/2 − ζ(3)/3. The gate proves the floor-piece sum from the solutions PDF p. 10, using the printed problem's lower endpoint 1 throughout.",
     },
     {
         "id": "SAMPLE-Q10",
@@ -279,15 +293,17 @@ ROWS = [
     {
         "id": "SAMPLE-Q19",
         "kind": "indefinite",
-        "verify": "manual",
+        "verify": "sympy",
+        "integrand": "x*sqrt((1-x**2)/(1+x**2))",
+        "answer": "(sin(acos(x**2))-acos(x**2))/2",
         "integrand_plain": "∫ x √((1−x^2)/(1+x^2)) dx",
         "answer_plain": "(1/2)(sin(arccos(x^2)) − arccos(x^2)) + C",
         "technique_tags": ["trig-sub"],
         "yang": ["yang:1.7"],
         "answer_source_pdf": ANSWERS,
         "note": (
-            "Answers PDF prints (1/2)(sin(arccos(x^2)) − arccos(x^2)) + c. "
-            "The derivative matches the integrand numerically, and the pack gate does not close that derivative, so the row stays manual."
+            "Answers PDF p. 1 prints (1/2)(sin(arccos(x^2)) − arccos(x^2)) + c; solutions PDF p. 20 derives it. "
+            "The gate proves the derivative identity on the real interior −1<x<1 with the nonnegative square-root branches."
         ),
     },
     {
@@ -372,7 +388,7 @@ def build_record(row: dict) -> dict:
         "extraction": {
             "confidence": "high",
             "method": "pymupdf",
-            "raw_snippet": row["integrand_plain"],
+            "raw_snippet": row.get("raw_snippet", row["integrand_plain"]),
         },
     }
     if row["verify"] == "sympy":
@@ -447,6 +463,14 @@ def _near(got, target, tol) -> None:
         raise AssertionError(f"{got} vs {target}, err {err}")
 
 
+def _reject_answers(ident: str, answers: tuple[str, ...]) -> None:
+    row = next(row for row in ROWS if row["id"] == ident)
+    limits = tuple(row["limits"]) if row["kind"] == "definite" else None
+    for answer in answers:
+        if pack_gate.proven(row["kind"], row["integrand"], limits, answer, "x"):
+            raise AssertionError(f"{ident} accepted wrong answer: {answer}")
+
+
 def check_q05() -> None:
     t = sp.symbols("t", real=True)
     tangent = sp.tan(t)
@@ -460,6 +484,7 @@ def check_q05() -> None:
         return mp.log(x) / (x * x - 2 * x + 2)
 
     _near(mp.quad(integrand, [1, 2]), mp.pi * mp.log(2) / 8, mp.mpf("1e-12"))
+    _reject_answers("SAMPLE-Q05", ("0", "pi/4", "pi*log(2)/4"))
 
 
 def check_q08() -> None:
@@ -467,6 +492,9 @@ def check_q08() -> None:
     x = sp.symbols("x", positive=True)
     term = sp.integrate(x ** (s - 1) * sp.exp(-k * x), (x, 0, sp.oo))
     _eq(term, sp.gamma(s) / k ** s)
+    row = next(row for row in ROWS if row["id"] == "SAMPLE-Q08")
+    answer = row["answer"]
+    _reject_answers("SAMPLE-Q08", ("0", f"2*({answer})", f"({answer})+1"))
 
 
 def check_q09() -> None:
@@ -475,6 +503,7 @@ def check_q09() -> None:
     piece = sp.simplify(sp.integrate((x - k) / x ** 4, (x, k, k + 1)))
     total = sp.summation(piece, (k, 1, sp.oo))
     _eq(total, sp.Rational(1, 2) - sp.zeta(3) / 3)
+    _reject_answers("SAMPLE-Q09", ("0", "Rational(1,2)+zeta(3)/3", "zeta(3)/3"))
 
 
 def check_q15_printed() -> None:
@@ -499,18 +528,32 @@ def check_q19() -> None:
     x = sp.symbols("x", real=True)
     printed = sp.sqrt(1 - x ** 4) / 2 - sp.acos(x ** 2) / 2
     integrand = x * sp.sqrt((1 - x ** 2) / (1 + x ** 2))
-    for value in (sp.Rational(1, 5), sp.Rational(1, 2), sp.Rational(4, 5)):
+    # Sanity probes include both signs and zero; the gate's symbolic
+    # certificate, required below, supplies the proof on the full interval.
+    for value in (-sp.Rational(4, 5), -sp.Rational(1, 2), sp.S.Zero,
+                  sp.Rational(1, 5), sp.Rational(1, 2), sp.Rational(4, 5)):
         gap = sp.diff(printed, x).subs(x, value) - integrand.subs(x, value)
         if abs(complex(sp.N(gap))) > 1e-9:
             raise AssertionError(f"SAMPLE-Q19 derivative gap at {value}")
-    if pack_gate.proven(
+    if not pack_gate.proven(
         "indefinite",
         "x*sqrt((1-x**2)/(1+x**2))",
         None,
         "sqrt(1-x**4)/2 - acos(x**2)/2",
         "x",
     ):
-        raise AssertionError("SAMPLE-Q19 should stay manual until the gate closes")
+        raise AssertionError("SAMPLE-Q19 symbolic derivative certificate failed")
+    if not pack_gate.proven(
+        "indefinite",
+        "x*sqrt((1-x**2)/(1+x**2))",
+        None,
+        "(sin(acos(x**2))-acos(x**2))/2 + C",
+        "x",
+    ):
+        raise AssertionError("SAMPLE-Q19 printed answer with additive C failed")
+    _reject_answers("SAMPLE-Q19", (
+        "0", "sqrt(1-x**4)/2 + acos(x**2)/2", "sqrt(1-x**4)-acos(x**2)",
+    ))
 
 
 def check() -> None:

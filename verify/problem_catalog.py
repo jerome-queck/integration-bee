@@ -21,8 +21,8 @@ SYMPY_VARIABLES = frozenset({"x", "t", "X", "e"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
 EXPECTED_COUNT = 946
-EXPECTED_MANUAL = 2
-EXPECTED_SYMPY = 674
+EXPECTED_MANUAL = 0
+EXPECTED_SYMPY = 676
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
@@ -169,7 +169,10 @@ def manual_input_problem(row: dict) -> str | None:
 
 def _sympy_shape(row: dict) -> str | None:
     ident = row.get("id")
-    if row.get("round") == "yang" or row.get("source") != "resource_pack":
+    if row.get("round") == "yang":
+        if row.get("source") != "yang_book" or ident not in YANG_WITH_ANSWER:
+            return f"{ident} sympy outside the answered Yang examples"
+    elif row.get("source") != "resource_pack":
         return f"{ident} sympy outside the resource pack"
     if row.get("kind") == "grid":
         import pack_grid

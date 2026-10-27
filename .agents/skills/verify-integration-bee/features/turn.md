@@ -8,7 +8,7 @@ The companion sends one JSON turn. The CLI teaches, marks a photo extract, opens
 - `turn-teach` serves `U01-D07` with the answer hidden and stores phase `awaiting_answer`.
 - `turn-mark` records a wrong photo extract, then a correct one, and reads both from `progress show`.
 - `turn-mock-blocked` refuses a mock before Round 1 nodes are solid.
-- `turn-sample` grades `SAMPLE-Q03` and `SAMPLE-Q01` with SymPy, accepts `SAMPLE-Q17` as `e*x+C`, rejects `ln|ln x|+C`, rejects the printed `SAMPLE-Q15` sign, and stores a manual `SAMPLE-Q05` only with `verdict`.
+- `turn-sample` grades the SAMPLE catalog with SymPy, including Q05, Q08, Q09 and Q19. It accepts the printed Q08 parameter `s`, retains additive constants for Q19, and rejects the Q15 printed sign. The two answered Yang examples also grade without a verdict.
 - `turn-method-gap` stores a correct final answer with a wrong method as a mark row and a technique card.
 - `turn-catalog-mark` grades the resolved 2022 Q01 trio as `1` without a verdict, rejects the conflicting `sin(1)` marks even with a correct verdict, and refuses an unanswered Yang practice problem. A synthetic catalog row in `turn_contract_check.py` preserves manual-verdict coverage independently of the remaining source rows.
 - `turn-aptitude` opens `U01-D07` in phase `aptitude` and hides the answer.
@@ -57,7 +57,30 @@ Preconditions:
 - **Mock stays blocked.** Write `{"kind":"mock-start"}` to `$IB_DATA_DIR/turn.json`. Run `scripts/control-integration-bee turn apply --file "$IB_DATA_DIR/turn.json" --format json >"$IB_EVIDENCE/turn-skip-mock.txt" 2>"$IB_EVIDENCE/turn-skip-mock.err"`. Exit code is 2. Stderr contains `round1 nodes not solid`.
 - **Cover.** Write `{"kind":"cover","full":true}` to `$IB_DATA_DIR/turn.json`. Run `scripts/control-integration-bee turn apply --file "$IB_DATA_DIR/turn.json" --format json >"$IB_EVIDENCE/turn-cover.json"`. Exit code is 0. Stdout contains `"full_coverage": true` and `"next_node": "basic-integration"`. `$IB_DATA_DIR/session.json` stores `"full_coverage": true` on `aptitude`. The phase is still `idle`. Repeat the blocked `mock-start`. Exit code is 2 and stderr contains `round1 nodes not solid`.
 - **Miss clears the skip.** Write `{"kind":"mark","problem_id":"U01-D07","source":"typed","extract":{"final_answer":"1"}}` to `$IB_DATA_DIR/turn.json`. Run `scripts/control-integration-bee turn apply --file "$IB_DATA_DIR/turn.json" --format json >"$IB_EVIDENCE/turn-skip-miss.json"`. Exit code is 1. `$IB_DATA_DIR/skill-ticks.json` has `"status": "learning"` for `basic-integration`.
-- **Samples.** Use a new `IB_DATA_DIR`. Write `{"kind":"mark","problem_id":"SAMPLE-Q03","source":"photo","extract":{"final_answer":"pi/4"}}` to `$IB_DATA_DIR/turn.json`. Run `scripts/control-integration-bee turn apply --file "$IB_DATA_DIR/turn.json" --format json >"$IB_EVIDENCE/turn-sample-q03.json"`. Exit code is 0. Stdout contains `"correct": true`. Write `{"kind":"mark","problem_id":"SAMPLE-Q01","source":"typed","extract":{"final_answer":"log(6)"}}` and run it to `$IB_EVIDENCE/turn-sample-q01.json`. Exit code is 0. Stdout contains `"correct": true`. Write `{"kind":"mark","problem_id":"SAMPLE-Q17","source":"photo","extract":{"final_answer":"E*x+C"}}` and run it to `$IB_EVIDENCE/turn-sample-q17.json`. Exit code is 0. Stdout contains `"correct": true`. Write `{"kind":"mark","problem_id":"SAMPLE-Q17","source":"typed","extract":{"final_answer":"log(Abs(log(x)))+C"}}` and run it to `$IB_EVIDENCE/turn-sample-q17-old.json`. Exit code is 1. Stdout contains `"correct": false`. Write `{"kind":"mark","problem_id":"SAMPLE-Q15","source":"typed","extract":{"final_answer":"log(x + 1)/3 - (log(x**2 - x + 1) + 2*sqrt(3)*atan((2*x - 1)/sqrt(3)))/6"}}` and run it to `$IB_EVIDENCE/turn-sample-q15.json`. Exit code is 1. Stdout contains `"correct": false`. Write `{"kind":"mark","problem_id":"SAMPLE-Q05","source":"photo","extract":{"final_answer":"pi*log(2)/8"},"verdict":"correct"}` and run it to `$IB_EVIDENCE/turn-sample-q05.json`. Exit code is 0. Stdout contains `"correct": true`. Write `{"kind":"mark","problem_id":"SAMPLE-Q09","source":"typed","extract":{"final_answer":"1/2 - zeta(3)/3"}}` and run it to `$IB_EVIDENCE/turn-sample-q09.txt` with stderr in `$IB_EVIDENCE/turn-sample-q09.err`. Exit code is 2. Stderr contains `manual problem needs verdict`. `progress show` does not contain `SAMPLE-Q09`.
+- **Samples and answered Yang examples.** Use a new `IB_DATA_DIR`. For each row below, write `{"kind":"mark","problem_id":"<id>","source":"typed","extract":{"final_answer":"<answer>"}}` to `$IB_DATA_DIR/turn.json` and run `scripts/control-integration-bee turn apply --file "$IB_DATA_DIR/turn.json" --format json`. Save stdout, stderr, and the exit code under a distinct `$IB_EVIDENCE/turn-<id>-<case>` stem. Do not supply `verdict`. Exit 0 means `"correct": true`; exit 1 means `"correct": false`. `progress show` includes the recorded attempts. Manual pack coverage remains in **Catalog mark** above.
+
+  | ID | Answer | Exit |
+  |---|---|---:|
+  | `SAMPLE-Q03` | `pi/4` | 0 |
+  | `SAMPLE-Q01` | `log(6)` | 0 |
+  | `SAMPLE-Q17` | `E*x+C` | 0 |
+  | `SAMPLE-Q17` | `log(Abs(log(x)))+C` | 1 |
+  | `SAMPLE-Q15` | `log(x+1)/3-(log(x**2-x+1)+2*sqrt(3)*atan((2*x-1)/sqrt(3)))/6` | 1 |
+  | `SAMPLE-Q05` | `pi*log(2)/8` | 0 |
+  | `SAMPLE-Q05` | `pi*log(2)/4` | 1 |
+  | `SAMPLE-Q08` | `gamma(s)*zeta(s)` | 0 |
+  | `SAMPLE-Q08` | `gamma(1+sigma+I*tau)*zeta(1+sigma+I*tau)` | 0 |
+  | `SAMPLE-Q08` | `gamma(s)*zeta(s)+1` | 1 |
+  | `SAMPLE-Q09` | `1/2-zeta(3)/3` | 0 |
+  | `SAMPLE-Q19` | `(sin(acos(x**2))-acos(x**2))/2+C` | 0 |
+  | `SAMPLE-Q19` | `(sin(acos(x**2))+acos(x**2))/2+C` | 1 |
+  | `SAMPLE-Q19` | `(sqrt(1-x**4)-acos(x**2))/2+Abs(x)-x` | 1 |
+  | `SAMPLE-Q19` | `(sqrt(1-x**4)-acos(x**2))/2+Piecewise((0,x<0),(1,True))` | 1 |
+  | `YANG-1.3-Ex01` | `8/3` | 0 |
+  | `YANG-1.3-Ex01` | `8` | 1 |
+  | `YANG-1.3-Ex03` | `2*atan(3)` | 0 |
+  | `YANG-1.3-Ex03` | `atan(3)` | 1 |
+
 - **Second probe.** `verify/turn_contract_check.py` declines `basic-integration`, opens `U01-D01` on `basic-u-substitution`, and confirms that later offer. The feature drive above confirms the first offer instead. A miss on the later drill also writes `learning`.
 - **Floor miss.** Use a new `IB_DATA_DIR`. Write `{"kind":"mark","problem_id":"U01-D07","source":"typed","extract":{"final_answer":"1","gap":"floor","method_note":"split the interval"}}` to `$IB_DATA_DIR/turn.json`. Run `scripts/control-integration-bee turn apply --file "$IB_DATA_DIR/turn.json" --format json >"$IB_EVIDENCE/turn-gap-floor.json"`. Exit code is 1. Stdout contains `docs/techniques/floor.md` and does not contain `beyond-yang.md`. The attempt note is `final answer differed`, the attempt `gap` is `floor`, and `split the interval` is not stored. Hash the six note files named by `docs/techniques/beyond-yang.md` before and after. The hashes match.
 - **Unknown gap.** Write `{"kind":"mark","problem_id":"U01-D08","source":"typed","extract":{"final_answer":"1","gap":"batis"}}` to `$IB_DATA_DIR/turn.json`. Run `scripts/control-integration-bee turn apply --file "$IB_DATA_DIR/turn.json" --format json >"$IB_EVIDENCE/turn-gap-unknown.txt" 2>"$IB_EVIDENCE/turn-gap-unknown.err"`. Exit code is 2. Stderr contains `unknown gap`. `progress show` does not contain `U01-D08`.
