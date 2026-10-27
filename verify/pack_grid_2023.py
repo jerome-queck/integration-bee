@@ -1,8 +1,9 @@
-"""Source-faithful checks for the 2023 Round 2 crossnumber.
+"""Source-bound checks for the 2023 Round 2 crossnumber.
 
-The printed Down 7 lacks continuity at zero.  Its check deliberately fails:
-the integral cannot determine an isolated point value without that assumption.
-The source readings and reductions are recorded in solutions/pack/.
+Down 7 is certified under the explicit grading clarification below; the
+printed integral alone does not determine an isolated point value.  The
+literal clue remains unchanged, and the counterexample and conditional proof
+are recorded in solutions/pack/R2-2023-Crossnumber-Down-1.md.
 """
 
 import sympy as s
@@ -50,6 +51,9 @@ CLUES = {
     "D13": "One more than a factorial. Down 13,14,15 together contain exactly one of each digit 1 through 9.",
     "D14": "Digit product 108 and digit sum 16. Down 13,14,15 together contain exactly one of each digit 1 through 9.",
     "D15": "Digits alternate between even and odd. Down 13,14,15 together contain exactly one of each digit 1 through 9.",
+}
+CLARIFICATIONS = {
+    "D7": "For grading Down 7, f is absolutely integrable on [-1,1] and continuous at 0.",
 }
 
 
@@ -150,6 +154,37 @@ def _fredholm(answer):
     return _eq(polynomial.subs(x, 11) - total, answer)
 
 
+def _cauchy_point_value(answer):
+    """Certify D7 under CLARIFICATIONS, including the vanishing remainder."""
+    n, delta, epsilon, norm = s.symbols("n delta epsilon norm", positive=True)
+    x = s.Symbol("x", real=True)
+    excess = s.Symbol("excess", nonnegative=True)
+    kernel = n / (25 * n**2 + x**2)
+    primitive = s.atan(x / (5 * n)) / 5
+    if kernel.is_positive is not True or not _eq(s.diff(primitive, x), kernel):
+        return False
+    mass = primitive.subs(x, 1) - primitive.subs(x, -1)
+    full_mass = s.limit(primitive, x, s.oo) - s.limit(primitive, x, -s.oo)
+    if not (_eq(full_mass, s.pi / 5)
+            and _eq(s.limit(mass, n, 0, dir="+"), full_mass)):
+        return False
+
+    # Continuity at zero gives |f(x)-f(0)| < epsilon for |x| < delta <= 1.
+    # Positivity bounds its weighted integral there by epsilon*full_mass.
+    # On |x| >= delta, write x**2 = delta**2 + excess.  Check the exact
+    # inequality kernel <= n/delta**2, not just its limit at one point.
+    tail_gap = s.factor(n / delta**2 - kernel.subs(x**2, delta**2 + excess))
+    if tail_gap.is_nonnegative is not True:
+        return False
+    # Absolute integrability gives a finite positive bound norm on
+    # integral_-1^1 |f(x)-f(0)| dx.  Thus the entire error is at most
+    # epsilon*pi/5 + n*norm/delta**2; first n -> 0+, then epsilon -> 0+.
+    error_bound = epsilon * full_mass + n * norm / delta**2
+    error_limit = s.limit(s.limit(error_bound, n, 0, dir="+"),
+                          epsilon, 0, dir="+")
+    return _eq(error_limit, 0) and _eq(full_mass * answer, 50 * s.pi)
+
+
 def _sine_by_parts(answer):
     x = s.Symbol("x", real=True)
     f = s.Function("f")(x)
@@ -188,7 +223,7 @@ def checks(across, down):
         "D2": lambda: _log_moment(d[2], a[1]),
         "D4": lambda: _fredholm(d[4]),
         "D6": lambda: d[6] == s.prod(smallest()),
-        "D7": lambda: False,  # No source assumption links the integral to f(0).
+        "D7": lambda: _cauchy_point_value(d[7]),
         "D10": lambda: _sine_by_parts(d[10]),
         "D11": lambda: _alphabet_integral(d[11]),
         "D13": lambda: _nine_digits(d, (13, 14, 15)) and d[13] - 1 in {int(s.factorial(k)) for k in range(1, 10)},

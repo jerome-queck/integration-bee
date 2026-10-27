@@ -1,32 +1,54 @@
 # R2-2023-Crossnumber-Down-1
 
-## Status: source hold (print-vs-math)
+## Status: resolved by grading clarification
 
-- verify: manual
+- verify: sympy; kind: grid
 - conflict: Down 7's integral limit does not determine \(f(0)\) without an additional hypothesis such as continuity at zero.
-- derived / problem reading: Changing \(f(0)\) alone preserves every printed integral, so \(f(0)\) is undetermined.
+- derived / problem reading: Under the published grading clarification that \(f\) is absolutely integrable on \([-1,1]\) and continuous at zero, the integral limit is \((\pi/5)f(0)\), uniquely giving \(250\). Without that clarification the point value is undetermined.
 - printed mark: Down 7: \(250\); the complete marked Down map is retained below.
-- erratum: none documented in the cited repository sources as of 2026-10-27.
+- erratum: none claimed; Jerome's t636u override and Handoff N explicitly authorize this published regularity clarification.
 - registry: docs/decisions/0016-pack-source-holds.md
 
-## Sources and manual status
+## Sources and certified map
 
 The numbered lattice and Down clues were read visually from
-`sources/past/r2/2023/Crossnumber_2023_R2_UK_University_Integration_Bee.pdf`,
-p.3. The completed grid is in
-`sources/past/r2/2023/Mark_Scheme_2023_R2_UK_University_Integration_Bee.pdf`,
-p.3. Its map is
+[the Crossnumber problem, p.3](https://github.com/jerome-queck/integration-bee/blob/db203fa3e4b9a96456993b85c49449ece4148cea/sources/past/r2/2023/Crossnumber_2023_R2_UK_University_Integration_Bee.pdf).
+The completed grid is in
+[the Mark Scheme, p.3](https://github.com/jerome-queck/integration-bee/blob/db203fa3e4b9a96456993b85c49449ece4148cea/sources/past/r2/2023/Mark_Scheme_2023_R2_UK_University_Integration_Bee.pdf).
+Its unchanged Down map is
 
 `{1:115, 2:14183, 4:376, 6:4320, 7:250, 10:69134, 11:27, 13:721, 14:394, 15:856}`.
 
-**This row stays manual.** Down 7's printed hypothesis does not determine
-`f(0)`. The literal statement is a limit of integrals equal to `50*pi`;
-it gives no continuity assumption at zero. The problem's cover contains
-only its title and sponsor, and the two clue pages supply no general
-regularity assumption. Its intended answer 250 follows under continuity,
-but adding that hypothesis would change the source.
+## Grading clarification
 
-## Down 7: exact obstruction
+Handoff N explicitly authorizes a regularity clarification for grading
+Down 7. The certificate adopts:
+
+> For grading Down 7, f is absolutely integrable on [-1,1] and continuous at 0.
+
+Continuity is needed only at the requested point, not everywhere on the
+interval. Absolute integrability is sufficient for the tail estimate below;
+ordinary Riemann integrability on the compact interval also suffices.
+These are stated hypotheses of the certified reading, not an organizer
+erratum or a claim that the original PDF already contains them. The literal
+clue transcript is retained separately from the explicit clarification in
+the grid manifest and learner-facing prompt.
+
+Under this reading, Down 7 has the unique value 250. All ten Down checks
+and the unchanged lattice are certified by the grid gate, so this row is
+`kind: grid`, `verify: sympy`. Its answer is the entire map above.
+
+## Down 7: what the printed hypothesis alone establishes
+
+The literal statement on problem p.3 asks for `f(0)` when
+
+\[
+\lim_{n\to0^+}\int_{-1}^{1}\frac{n f(x)}{25n^2+x^2}\,dx=50\pi.
+\]
+
+It gives no continuity assumption at zero. The problem's cover and two
+clue pages supply no general regularity assumption. Thus the marked answer
+is not uniquely implied by the unclarified problem.
 
 For any real number `c`, set `f(x)=250` for `x!=0` and `f(0)=c`.
 This is Riemann-integrable on `[-1,1]`. Changing one point does not alter
@@ -37,11 +59,63 @@ any integral, and for `n>0`,
 
 Thus every `c` satisfies the printed integral limit. In particular,
 the source hypotheses hold with `f(0)=0` as well as with the completed
-grid's 250. There is no disagreement about the mark-grid digits; the
-unresolved issue is the missing hypothesis. If `f` is continuous at zero,
-the Cauchy approximate identity gives `(pi/5)f(0)=50*pi`, and then
-`f(0)=250`. The implemented `D7` check deliberately returns false instead
-of silently imposing continuity.
+grid's 250. This counterexample remains valid for the printed statement;
+it is excluded by the explicitly adopted continuity hypothesis unless
+`c=250`. No mark-grid digit has been inferred from a point-value theorem
+without its required hypothesis.
+
+## Down 7: proof under the clarification
+
+Write `c=f(0)` and `K_n(x)=n/(25*n^2+x^2)` for `n>0`. The primitive
+`atan(x/(5*n))/5` is checked by symbolic differentiation. Consequently,
+
+\[
+\int_{-1}^{1} K_n(x)\,dx
+=\frac25\arctan\!\left(\frac1{5n}\right)\longrightarrow\frac\pi5,
+\qquad
+\int_{-\infty}^{\infty}K_n(x)\,dx=\frac\pi5.
+\]
+
+It remains to justify replacing `f(x)` by `c` in the limit. For any
+`epsilon>0`, continuity at zero supplies `0<delta<=1` with
+`|f(x)-c|<epsilon` when `|x|<delta`. The positive kernel therefore gives
+
+\[
+\int_{|x|<\delta} K_n(x)|f(x)-c|\,dx
+\leq\epsilon\frac\pi5.
+\]
+
+On the remaining part of `[-1,1]`, `K_n(x)<=n/delta^2`. This follows
+from the exact nonnegative difference, with `x^2=delta^2+u`, `u>=0`:
+
+\[
+\frac n{\delta^2}-\frac n{25n^2+\delta^2+u}
+=\frac{n(25n^2+u)}{\delta^2(25n^2+\delta^2+u)}\geq0.
+\]
+
+Absolute integrability gives a finite bound
+`M >= integral_-1^1 |f(x)-c| dx`. Hence
+
+\[
+\left|\int_{-1}^{1}K_n(x)(f(x)-c)\,dx\right|
+\leq\epsilon\frac\pi5+\frac{nM}{\delta^2}.
+\]
+
+First let `n->0+` with the chosen `delta` fixed, then let `epsilon->0+`.
+The remainder tends to zero, establishing the approximate-identity limit
+
+\[
+\lim_{n\to0^+}\int_{-1}^{1}K_n(x)f(x)\,dx
+=\frac\pi5 f(0)=50\pi,
+\qquad f(0)=250.
+\]
+
+`verify/pack_grid_2023.py::_cauchy_point_value` checks the primitive,
+kernel positivity, exact full mass and compact-interval mass limit,
+nonnegative tail-bound difference, iterated remainder-bound limit, and
+the final scalar equation. It is not an equality check against an
+unexplained stored 250. Wrong point values fail this certificate even
+before the independent lattice check.
 
 ## Other Down derivations
 
@@ -77,9 +151,8 @@ of silently imposing continuity.
 15. The digits of 856 alternate even, odd, even.
 
 The entries in Down 13,14,15 concatenate to `721394856`, which contains
-every digit 1 through 9 exactly once. The shared grid contract checks
-the crossings, but cannot turn the deficient Down 7 hypothesis into a
-point-value theorem. All other Down checks pass independently.
+every digit 1 through 9 exactly once. The shared grid contract checks all
+crossings; each Down clue also has its own independent certificate.
 
 ## Handoff J source recheck (2026-10-27)
 
@@ -107,31 +180,8 @@ unpublished clarification exists.
 The counterexample above was rechecked symbolically: for positive `n`,
 the integral is exactly `100*atan(1/(5*n))`, and its right-hand limit at
 zero is `50*pi`. Any finite change to `f(0)` preserves each integral.
-Thus neither ordinary Riemann integrability nor the syllabus's convergence
-convention supplies the missing point-value information. The row remains
-manual; no answer, sibling-map constraint, or certificate was changed.
-
-### Escalation: R2-2023-Crossnumber-Down-1
-
-- Obstacle: Down 7 asks for `f(0)` from an integral limit unchanged by
-  altering `f` at zero. The marked 250 follows if continuity at zero is
-  assumed, but the complete printed problem, mark scheme, and checked
-  official supplementary material do not state that assumption. A source
-  correction or an applicable official regularity convention is still
-  needed before this clue can be certified.
-- PDF problem: [Crossnumber, pp.1-3; Down 7 on p.3](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2023/Crossnumber_2023_R2_UK_University_Integration_Bee.pdf)
-- PDF mark: [Mark Scheme, pp.1-4; completed grid on p.3](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2023/Mark_Scheme_2023_R2_UK_University_Integration_Bee.pdf)
-- What a follow-up agent should try next:
-
-  ```text
-  Revisit R2-2023-Crossnumber-Down-1, specifically Down 7.
-  Seek an official 2023/24 event instruction or dated organizer erratum.
-  It must state continuity at zero, or another sufficient hypothesis,
-  and explicitly apply to this paper; retain its URL and exact page.
-  Recheck f(x)=250 for x!=0 with arbitrary finite f(0) against that wording.
-  If authority resolves it, derive 250 and recheck every Down clue/crossing.
-  Otherwise retain manual status and record precisely what remains missing.
-  Do not silently add continuity and do not mark impossible.
-  ```
-
-- Do not mark impossible.
+Thus neither ordinary Riemann integrability alone nor the syllabus's
+convergence convention supplies the missing point-value information.
+Handoff J retained manual status on that basis. Handoff N resolves the
+hold through the explicit grading clarification and conditional proof
+above; the historical source search is not treated as an organizer erratum.

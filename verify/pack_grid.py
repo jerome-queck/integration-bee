@@ -6,6 +6,8 @@ source PDFs. Its answer is a nonempty map from clue numbers to integer entries.
 The mark grid fixes the intended solution; the year modules independently
 check its mathematical and digit conditions. Each selected clue is a separate
 pack_gate job, with the same timeout as an ordinary integral certificate.
+Any grading clarification is bound separately from the literal source clues
+and shown in the selected problem's prompt.
 """
 
 from __future__ import annotations
@@ -125,17 +127,31 @@ def manifest(puzzle: str, direction: str) -> dict:
     clues = getattr(module, "CLUES_SG", module.CLUES) if puzzle == "2025-SG" else module.CLUES
     if set(clues) != set(module.STARTS) or any(not isinstance(value, str) or not value for value in clues.values()):
         raise ValueError("incomplete grid clue transcript")
-    return {
+    clarifications = getattr(module, "CLARIFICATIONS", {})
+    if not set(clarifications) <= set(clues) or any(
+        not isinstance(value, str) or not value for value in clarifications.values()
+    ):
+        raise ValueError("invalid grid grading clarification")
+    selected = list(_keys(source, module, direction))
+    prefix = "A" if direction == "across" else "D"
+    selected_clarifications = {f"{prefix}{key}": clarifications[f"{prefix}{key}"]
+                               for key in selected if f"{prefix}{key}" in clarifications}
+    description = {
         "contract": "crossnumber-v1",
         "puzzle": puzzle,
         "direction": direction,
-        "selection": list(_keys(source, module, direction)),
+        "selection": selected,
         "clues": clues,
         "lattice": [re.sub(r"[0-9]", ".", line) for line in module.GRID],
         "starts": {k: list(v) for k, v in module.STARTS.items()},
         "problem_pdf": source.across_pdf if direction == "across" else source.down_pdf,
         "mark_pdf": source.mark_pdf,
     }
+    # Keep already-certified siblings byte-for-byte stable when their selected
+    # direction needs no clarification (notably 2023 Across).
+    if selected_clarifications:
+        description["clarifications"] = selected_clarifications
+    return description
 
 
 def problem_text(puzzle: str, direction: str) -> str:
@@ -239,7 +255,14 @@ def latex_fields(problem: str, answer: str) -> tuple[str, str]:
 
 def prompt_text(description: dict) -> str:
     prefix = "A" if description["direction"] == "across" else "D"
-    return "\n".join(f"{prefix}{key}. {description['clues'][f'{prefix}{key}']}" for key in description["selection"])
+    lines = []
+    for key in description["selection"]:
+        label = f"{prefix}{key}"
+        lines.append(f"{label}. {description['clues'][label]}")
+        clarification = description.get("clarifications", {}).get(label)
+        if clarification:
+            lines.append(f"Grading clarification for {label}: {clarification}")
+    return "\n".join(lines)
 
 
 def row_problem(row: dict) -> str | None:
