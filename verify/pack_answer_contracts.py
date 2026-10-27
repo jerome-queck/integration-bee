@@ -16,6 +16,7 @@ import sympy as sp
 import pack_handoff_f_domain
 import pack_handoff_f_expressions
 import pack_handoff_f_integrals
+import pack_handoff_m
 
 
 KINDS = frozenset({
@@ -136,6 +137,8 @@ def answer_matches(kind, expr, symbol, limits, candidate):
         expected = pack_handoff_f_domain.answer_value(kind, expr, symbol, limits)
     else:
         expected = pack_handoff_f_expressions.answer_value(kind, expr, symbol, limits)
+        if expected is None:
+            expected = pack_handoff_m.answer_value(kind, expr, symbol, limits)
     if expected is None:
         return False
     if kind in {"comparison", "prime_factors"}:
@@ -152,6 +155,8 @@ def answer_matches(kind, expr, symbol, limits, candidate):
 
 
 def open_expression(expr, symbol):
+    if pack_handoff_m.open_expression("expression", expr, symbol):
+        return True
     if pack_handoff_f_integrals.open_integrand(expr, symbol):
         return True
     if pack_handoff_f_domain.open_expression(expr, symbol):
@@ -161,9 +166,10 @@ def open_expression(expr, symbol):
 
 
 def transcripts():
-    """Return the ten readings as (kind, text, bounds, answer text, variable)."""
+    """Return typed readings as (kind, text, bounds, answer text, variable)."""
     result = {}
-    for module in (pack_handoff_f_integrals, pack_handoff_f_expressions, pack_handoff_f_domain):
+    for module in (pack_handoff_f_integrals, pack_handoff_f_expressions,
+                   pack_handoff_f_domain, pack_handoff_m):
         for ident, (kind, expr, limits, answer, variable) in module.transcripts().items():
             text = expr if isinstance(expr, str) else sp.srepr(expr)
             final = answer if isinstance(answer, str) else sp.srepr(answer)

@@ -155,7 +155,12 @@ compare by sign, and a complete real-domain answer keeps both the convergent
 and divergent branches of its parameter integral. The explicit
 discrete_multiplicative kind separately proves the forward quotient in the two
 2025 product-inverse problems; its nonzero constant is multiplicative, while
-ordinary indefinite integrals keep additive constants. Answers must be closed,
+ordinary indefinite integrals keep additive constants. Handoff M certifies
+three explicitly clarified Relay readings: a sqrt(n)-truncated cosine limit
+by dominated convergence, a minimum-u logarithmic pass-on retaining its
+complete integral, and the positive branch of a Volterra equation on both
+sides of zero. The source conflicts remain documented in their notes.
+Answers must be closed,
 except the truncated exponential and finite-polynomial antiderivatives, which
 keep their finite sums, and the literal sophomore's-dream sum, checked by its
 nonnegative exponential series and exact gamma moments. Numeric agreement is
@@ -183,6 +188,7 @@ import pack_handoff_e_series
 import pack_handoff_e_tournament
 import pack_handoff_f_expressions
 import pack_handoff_f_integrals
+import pack_handoff_m
 import pack_hard_catalan
 import pack_hard_floor
 import pack_hard_series
@@ -218,6 +224,7 @@ def namespace(variable: str) -> dict:
     ns["ContinuedFraction"] = pack_hard_catalan.ContinuedFraction
     ns["IndexedMaximum"] = pack_hard_floor.IndexedMaximum
     ns["RootCount"] = pack_handoff_f_expressions.RootCount
+    ns["MinimalLogPassOn"] = pack_handoff_m.MinimalLogPassOn
     ns["i"] = sp.I
     ns[variable] = sp.symbols(variable, real=True)
     ns["C"] = sp.Symbol("C")
@@ -6038,6 +6045,7 @@ def _worker(payload, queue) -> None:
                 pack_handoff_d_2024_2025.definite_value,
                 pack_handoff_e_tournament.definite_value,
                 pack_handoff_f_integrals.definite_value,
+                pack_handoff_m.definite_value,
                 _stable_fourier_line,
                 _wave_hard_fourier_values,
                 pack_certificates.sphere_integral_value,
@@ -6242,6 +6250,7 @@ def canon_integrand(text: str, variable: str) -> str | None:
         or pack_handoff_d_2024_2025.open_integrand(expr, symbol)
         or _handoff_e_octahedron_shape(expr, symbol)
         or pack_handoff_e_tournament.open_integrand(expr, symbol)
+        or pack_handoff_m.open_integrand(expr, symbol)
         or pack_answer_contracts.open_expression(expr, symbol)
         or _hard_classical_telescope_shape(expr, symbol)
         or pack_hard_catalan.open_integrand(expr, symbol)

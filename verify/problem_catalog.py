@@ -21,8 +21,8 @@ SYMPY_VARIABLES = frozenset({"x", "t", "X", "e"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
 EXPECTED_COUNT = 946
-EXPECTED_MANUAL = 11
-EXPECTED_SYMPY = 665
+EXPECTED_MANUAL = 8
+EXPECTED_SYMPY = 668
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
@@ -33,7 +33,6 @@ PINNED_CITE = {
 # Source-checked inputs whose printed answers still conflict with the problem.
 # Transcribing the question does not authorize a symbolic answer or grading.
 MANUAL_INPUT_KINDS = {
-    "R2-2023-Relay-Q19": "expression",
     "R3-2024-Tournament-Q04-v11": "definite",
     "R3-2024-Tournament-Q04-v12": "definite",
 }
@@ -147,7 +146,7 @@ def _blank(value) -> bool:
 
 
 def manual_input_problem(row: dict) -> str | None:
-    """Validate the three display-only transcriptions without proving a final."""
+    """Validate the remaining display-only transcriptions without proving a final."""
     ident = row.get("id")
     kind = MANUAL_INPUT_KINDS.get(ident)
     if kind is None or row.get("source") != "resource_pack" or row.get("verify") != "manual":

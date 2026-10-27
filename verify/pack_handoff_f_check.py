@@ -37,8 +37,6 @@ KINDS = {
 }
 
 DEFERRED = (
-    "R2-2021-Relay-D03",
-    "R2-2023-Relay-Q20",
     "R3-2024-Tournament-Q04-v10",
     "R3-2024-Tournament-Q04-v11",
     "R3-2024-Tournament-Q04-v12",
@@ -67,7 +65,7 @@ def _stored_and_recovered(rows):
         "n", integer=True, positive=True
     )
     readings = pack_answer_contracts.transcripts()
-    _require(set(readings) == set(KINDS), "exactly the ten F promotion transcripts")
+    _require(set(KINDS) <= set(readings), "all ten F promotion transcripts remain present")
     parsed = {}
     for ident, expected_kind in KINDS.items():
         row = rows[ident]
