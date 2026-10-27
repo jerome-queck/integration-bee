@@ -186,7 +186,7 @@ The companion and maintainer use this readiness checklist:
 - `scripts/control-integration-bee doctor` reports `READY integration-bee`.
 - `make check` passes on the proposed revision; `doctor` alone is not the proof gate.
 - Every Resource pack row is `verify: sympy` with a cited answer. Pack manuals are 0 and unchecked pack rows are 0.
-- The registry records the twelve resolved holds. 270 Yang practice rows remain `unchecked` and out of scope.
+- The registry records the twelve resolved holds. 270 Yang practice rows remain `unchecked`. They are out-of-scope practice.
 - Teaching deferred is 0. The seven syllabus nodes are ready and stay unticked until learner evidence.
 
 ## Learner
