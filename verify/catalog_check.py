@@ -25,11 +25,12 @@ def mutate(rows: list[dict], name: str) -> None:
                 return
         raise SystemExit("no unproved row")
     if name == "missing-cite":
+        # Handoff O cleared remaining manuals; any cited answer still proves cite/answer coupling.
         for row in rows:
-            if row.get("verify") == "manual":
+            if row.get("answer_plain") and row.get("answer_source_pdf"):
                 row["answer_source_pdf"] = None
                 return
-        raise SystemExit("no manual row")
+        raise SystemExit("no cited answer")
     if name == "yang-invented":
         for row in rows:
             if row.get("id") == "YANG-1.1-P01":
