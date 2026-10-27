@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import copy
 import sys
 
 import sympy as sp
@@ -330,10 +331,10 @@ def check_handoff_d(rows):
         "R2-2025-SG-Relay-Q16": "1999",
         "R2-2025-UK-Relay-Q20": "1999",
     }
-    # F now proves the nine answer-schema deferrals. Source ambiguities and
-    # the duplicate still stay manual; F checks its new contracts below.
+    # F proves the nine answer-schema deferrals; I proves the Group Q01 alias.
+    # The two remaining source conflicts still stay manual.
     deferred = (
-        "R2-2021-Relay-D03", "R2-2023-Group-Q01-v2", "R2-2023-Relay-Q20",
+        "R2-2021-Relay-D03", "R2-2023-Relay-Q20",
     )
     required_shapes = {
         "R2-2022-Relay-Q10": (sp.Integral,),
@@ -364,7 +365,7 @@ def check_handoff_d(rows):
     require(len(selected) == 24 and all(row["verify"] == "sympy" for row in selected),
             "Handoff D 24 scalar rows")
     require(all(rows[ident]["verify"] == "manual" for ident in deferred),
-            "Handoff D source deferrals and duplicate remain manual")
+            "Handoff D source deferrals remain manual")
     require(pack_gate.reprove_rows(selected) is None, "Handoff D stored-row reproof")
     parsed = {}
     for row in selected:
@@ -492,6 +493,104 @@ def check_handoff_h_ceiling(rows):
                 "UK Group Q10 rejects changed source shape or bounds")
 
 
+def check_handoff_i(rows):
+    """Prove the Group alias and keep transcribed source conflicts manual."""
+    def same_recovery(before, after):
+        if len(before) != len(after):
+            return False
+        for stored, recovered in zip(before, after):
+            # Cached equal Symbols can reorder srepr's assumption keywords.
+            # Exact parsed equality preserves every operator, bound and
+            # assumption; all other catalog fields must be byte-for-byte equal.
+            if pack_gate._parse(stored["sympy_expr"], stored["variable"]) != pack_gate._parse(
+                recovered["sympy_expr"], recovered["variable"]
+            ):
+                return False
+            if dict(stored, sympy_expr=recovered["sympy_expr"]) != recovered:
+                return False
+        return True
+
+    group_ids = ("R2-2023-Group-Q01", "R2-2023-Group-Q01-v2")
+    x = sp.Symbol("x", real=True)
+    group_expr = sp.cos(sp.cos(x)**2)**2 + sp.sin(sp.sin(x)**2)**2
+    for ident in group_ids:
+        row = rows[ident]
+        require(row["verify"] == "sympy" and row["answer_sympy"] == "pi",
+                ident + " source-consistent final")
+        require(pack_gate._parse(row["sympy_expr"], "x") == group_expr
+                and row["limits"] == ["0", "pi"], ident + " printed problem")
+        require(pack_gate.reprove_rows([row]) is None, ident + " stored reproof")
+        require(turn_contract.answer_matches(row, "pi"), ident + " learner final")
+        for wrong in ("0", "1", "2", "pi/2"):
+            require(not pack_gate.proven(row["kind"], row["sympy_expr"], row["limits"], wrong, "x"),
+                    ident + " wrong answer " + wrong)
+            require(not turn_contract.answer_matches(row, wrong), ident + " learner wrong answer " + wrong)
+
+    m, n, k = sp.symbols("m n k", integer=True)
+    tournament = (sp.sin((2**m + 2025*2**n)*x) / sp.sin(2**m*x)
+                  * sp.Product(sp.cos(2**(m-k)*x), (k, 1, m-n)))
+    for ident in ("R3-2024-Tournament-Q04-v11", "R3-2024-Tournament-Q04-v12"):
+        row = rows[ident]
+        require(pack_gate._parse(row["sympy_expr"], "x") == tournament,
+                ident + " printed product and integer parameters")
+        require(tuple(pack_gate._parse(part, "x") for part in row["limits"]) == (0, sp.pi/2**n),
+                ident + " original bounds")
+        require("m > n" in row["integrand_plain"], ident + " printed parameter ordering")
+    n = sp.Symbol("n", integer=True, positive=True)
+    relay = rows["R2-2023-Relay-Q19"]
+    original = sp.Limit(sp.Integral(sp.cos(x/sp.sqrt(n))**n, (x, 0, n)), n, sp.oo)
+    require(pack_gate._parse(relay["sympy_expr"], "x") == original and relay["limits"] == [],
+            "Relay Q19 retains the outer limit and upper bound n")
+
+    manual_rows = [rows[ident] for ident in problem_catalog.MANUAL_INPUT_KINDS]
+    for row in manual_rows:
+        ident = row["id"]
+        require(problem_catalog.manual_input_problem(row) is None, ident + " valid manual input")
+        require(sp.latex(pack_gate._parse(row["sympy_expr"], row["variable"])) == row["integrand_latex"],
+                ident + " display agrees with transcribed input")
+        require("source discrepancy" in row["notes"], ident + " conflict remains visible")
+        require(problem_catalog.prompt_view(row)["integrand_plain"] != row["extraction"]["raw_snippet"],
+                ident + " prompt replaces the lossy extract")
+        marked, error = turn_contract.grade_problem(ident, row["answer_plain"], None, [], [], [row])
+        require(marked is None and error == "manual problem needs verdict",
+                ident + " never grades automatically")
+        for verdict in ("correct", "incorrect"):
+            marked, error = turn_contract.grade_problem(ident, "not a symbolic answer", verdict, [], [], [row])
+            require(error is None and marked["manual"] and marked["correct"] == (verdict == "correct"),
+                    ident + " preserves explicit manual verdict")
+            require(marked["display"] == row["answer_plain"], ident + " retains printed answer")
+        for field, value in (("answer_sympy", "1"), ("answer_latex", "1"),
+                             ("kind", "unknown"), ("sympy_expr", ""),
+                             ("limits", None), ("variable", "unknown")):
+            mutated = dict(row, **{field: value})
+            require(problem_catalog.manual_input_problem(mutated) is not None,
+                    ident + " rejects invalid manual " + field)
+            marked, error = turn_contract.grade_problem(ident, "1", "correct", [], [], [mutated])
+            require(marked is None and error == "catalog problem is not sympy-checked",
+                    ident + " invalid transcription cannot bypass the manual guard")
+
+    unrelated = dict(manual_rows[0], id="R1-2022-Oxford-Q01")
+    require(problem_catalog.manual_input_problem(unrelated) is not None,
+            "manual input exception is restricted to the three source transcriptions")
+    require(problem_catalog.catalog_problem(list(rows.values())) is None, "Handoff I counts and schema")
+    sys.path.insert(0, str(problem_catalog.ROOT / "scripts"))
+    import recover_pack_math
+
+    selected = [rows[ident] for ident in group_ids] + manual_rows
+    recovered, gated = recover_pack_math.recover(copy.deepcopy(selected))
+    require(same_recovery(selected, recovered) and set(gated) == set(group_ids),
+            "recovery re-proves both twins and preserves all manual source fields")
+    cleared = copy.deepcopy(manual_rows)
+    for row in cleared:
+        for field in ("sympy_expr", "variable", "integrand_latex", "limits"):
+            row.pop(field)
+        row["kind"] = "unknown"
+        row["integrand_plain"] = row["extraction"]["raw_snippet"]
+    regenerated, gated = recover_pack_math.recover(cleared)
+    require(same_recovery(manual_rows, regenerated) and gated == [],
+            "source transcripts restore the display fields without promoting manual answers")
+
+
 def main():
     rows = {row["id"]: row for row in problem_catalog.load_records()}
     selected = [rows[ident] for ident in IDS]
@@ -510,10 +609,11 @@ def main():
     pack_handoff_f_check.check(rows)
     pack_grid_check.check_all(list(rows.values()))
     check_handoff_h_ceiling(rows)
+    check_handoff_i(rows)
     print(
         "PASS pack certificates (symbolic families, literal operators, "
         "24 Handoff D rows, 10 Handoff F contracts, Handoff G grids, "
-        "Handoff H ceiling, mutations, source discrepancies)"
+        "Handoff H ceiling, Handoff I alias and manual inputs, mutations, source discrepancies)"
     )
     return 0
 

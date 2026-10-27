@@ -21,14 +21,21 @@ SYMPY_VARIABLES = frozenset({"x", "t", "X", "e"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
 EXPECTED_COUNT = 946
-EXPECTED_MANUAL = 15
-EXPECTED_SYMPY = 661
+EXPECTED_MANUAL = 14
+EXPECTED_SYMPY = 662
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
     "id": "R1-2024-Q01",
     "answer_has": "sin(1)",
     "mark_scheme_suffix": "Mark_Scheme_2024_Round_1_UK_University_Integration_Bee.pdf",
+}
+# Source-checked inputs whose printed answers still conflict with the problem.
+# Transcribing the question does not authorize a symbolic answer or grading.
+MANUAL_INPUT_KINDS = {
+    "R2-2023-Relay-Q19": "expression",
+    "R3-2024-Tournament-Q04-v11": "definite",
+    "R3-2024-Tournament-Q04-v12": "definite",
 }
 
 
@@ -137,6 +144,30 @@ def matching(rows: list[dict], spec: dict) -> list[dict]:
 
 def _blank(value) -> bool:
     return value is None or value == ""
+
+
+def manual_input_problem(row: dict) -> str | None:
+    """Validate the three display-only transcriptions without proving a final."""
+    ident = row.get("id")
+    kind = MANUAL_INPUT_KINDS.get(ident)
+    if kind is None or row.get("source") != "resource_pack" or row.get("verify") != "manual":
+        return f"{ident} unrecognized manual input"
+    if row.get("kind") != kind or row.get("variable") not in SYMPY_VARIABLES:
+        return f"{ident} manual input kind or variable"
+    for key in ("sympy_expr", "integrand_latex"):
+        if not isinstance(row.get(key), str) or not row[key].strip():
+            return f"{ident} missing manual {key}"
+    limits = row.get("limits")
+    if kind == "expression":
+        if limits != []:
+            return f"{ident} expression has outer limits"
+    elif not isinstance(limits, list) or len(limits) != 2 or any(
+        not isinstance(item, str) or not item.strip() for item in limits
+    ):
+        return f"{ident} manual definite limits"
+    if "answer_sympy" in row or row.get("answer_latex") is not None or row.get("worked_solution_latex") is not None:
+        return f"{ident} invented manual answer"
+    return None
 
 
 def _sympy_shape(row: dict) -> str | None:
@@ -299,10 +330,14 @@ def catalog_problem(rows: list[dict]) -> str | None:
                 return shape
             sympy_n += 1
         else:
-            if "answer_sympy" in row or "sympy_expr" in row or "variable" in row:
+            if row.get("id") in MANUAL_INPUT_KINDS:
+                shape = manual_input_problem(row)
+                if shape:
+                    return shape
+            elif "sympy_expr" in row or "variable" in row or row.get("integrand_latex") is not None:
+                return f"{row.get('id')} invented manual input"
+            if "answer_sympy" in row:
                 return f"{row.get('id')} invented answer_sympy"
-            if row.get("integrand_latex") is not None:
-                return f"{row.get('id')} invented integrand_latex"
             if row.get("answer_latex") is not None or row.get("worked_solution_latex") is not None:
                 return f"{row.get('id')} invented latex answer"
             if has_answer and row.get("verify") != "manual":

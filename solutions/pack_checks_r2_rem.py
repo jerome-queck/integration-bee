@@ -37,6 +37,7 @@ R2_REM_PACK_IDS = (
     "R2-2022-Relay-Q18",
     "R2-2022-Relay-Q19",
     "R2-2023-Group-Q01",
+    "R2-2023-Group-Q01-v2",
     "R2-2023-Group-Q02",
     "R2-2023-Group-Q04",
     "R2-2023-Group-Q08",
@@ -334,6 +335,11 @@ def check_r2_2023_group_q01() -> None:
     _eq(sp.integrate(1, (x, 0, sp.pi)), sp.pi)
 
 
+def check_r2_2023_group_q01_v2() -> None:
+    # The id-dedup alias is the same Q1 on Group Round 2023 p.2.
+    check_r2_2023_group_q01()
+
+
 def check_r2_2023_group_q02() -> None:
     w = sp.symbols("w", positive=True)
     n = sp.symbols("n", integer=True, nonnegative=True)
@@ -590,6 +596,7 @@ R2_REM_CHECKS = (
     check_r2_2022_relay_q18,
     check_r2_2022_relay_q19,
     check_r2_2023_group_q01,
+    check_r2_2023_group_q01_v2,
     check_r2_2023_group_q02,
     check_r2_2023_group_q04,
     check_r2_2023_group_q08,

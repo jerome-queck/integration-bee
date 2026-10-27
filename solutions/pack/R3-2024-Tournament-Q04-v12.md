@@ -1,13 +1,13 @@
 # R3-2024-Tournament-Q04-v12
 
-- Problem: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (Battle 4, Fight 2, problem 4, answer slide 171)
+- Problem: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (Battle 4, Fight 2, problem 4, slide 169; answer-value alias on slide 171)
 - Printed answer: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (slide 171)
 - Worked source: `sources/past/r3/2024/Tournament_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (page 15, section 4.2, problem 1)
-- Verification: **manual**. The original integral and the printed answer disagree.
+- Status: **manual**; answer-slide alias of `R3-2024-Tournament-Q04-v10`; source conflict; fields encoded for display. The original integral and the printed answer disagree.
 
 ## Problem
 
-The catalog text of this row is the line printed on slide 171, not the integral. Slide 171 is the answer reveal for Battle 4, Fight 2, problem 4:
+The original extract for this row was the answer value printed on slide 171. This is an answer-slide alias of the preceding problem, not a second integral. The catalog now transcribes the integral from slide 169 for display and retains the original extract as provenance. Slide 171 is the answer reveal for the same Battle 4, Fight 2, problem 4:
 
 For integers \(m>n\),
 
@@ -16,6 +16,8 @@ For integers \(m>n\),
 \]
 
 The integral itself is catalogued as `R3-2024-Tournament-Q04-v10`.
+
+The encoded inputs preserve the product, both bounds, and the condition that \(m,n\) are integers with \(m>n\). They do not promote this row to `sympy` or encode the printed mark as a proved answer. The printed answer remains \(\pi/2^{m-2n}\) pending an authoritative correction.
 
 Slide 171 prints \(\pi/2^{m-2n}\), and the solutions PDF prints the same exponent. That exponent is what the calculation produces if \(dx=dy/2^{n}\) is replaced by \(dx=2^{n}\,dy\). The value of the integral is \(\pi/2^{m}\).
 

@@ -559,7 +559,10 @@ def grade_problem(
                 },
                 "manual": False,
             }, None
-        if catalog_row.get("answer_sympy") or catalog_row.get("integrand_latex"):
+        if catalog_row.get("answer_sympy") or (
+            catalog_row.get("integrand_latex")
+            and problem_catalog.manual_input_problem(catalog_row) is not None
+        ):
             return None, "catalog problem is not sympy-checked"
         if catalog_row.get("verify") != "manual" or not catalog_row.get("answer_plain"):
             return None, "unchecked catalog problem has no printed answer"
