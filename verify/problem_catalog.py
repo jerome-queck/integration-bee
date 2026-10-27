@@ -21,8 +21,8 @@ SYMPY_VARIABLES = frozenset({"x", "t", "X", "e"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
 YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
 EXPECTED_COUNT = 946
-EXPECTED_MANUAL = 5
-EXPECTED_SYMPY = 671
+EXPECTED_MANUAL = 2
+EXPECTED_SYMPY = 674
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
@@ -33,8 +33,6 @@ PINNED_CITE = {
 # Source-checked inputs whose printed answers still conflict with the problem.
 # Transcribing the question does not authorize a symbolic answer or grading.
 MANUAL_INPUT_KINDS = {
-    "R3-2024-Tournament-Q04-v11": "definite",
-    "R3-2024-Tournament-Q04-v12": "definite",
 }
 
 

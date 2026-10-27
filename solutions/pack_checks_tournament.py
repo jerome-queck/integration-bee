@@ -344,24 +344,51 @@ def check_r3_2024_tournament_q03_v10() -> None:
 
 def check_r3_2024_tournament_q04_v10() -> None:
     x = sp.symbols("x", real=True)
-    for m, n in ((3, 1), (4, 2), (5, 2)):
+    two = sp.Integer(2)
+    for m, n in ((2, 1), (3, 1), (4, 2), (0, -1), (-1, -2), (1, 0)):
         prod = 1
         for k in range(1, m - n + 1):
-            prod *= sp.cos(2 ** (m - k) * x)
-        left = sp.sin(2**m * x)
-        right = 2 ** (m - n) * sp.sin(2**n * x) * prod
-        _eq(sp.expand_trig(left - right), 0)
-        _eq(sp.Integer(1) / 2 ** (m - n) / 2**n, 1 / 2**m)
-        if sp.Integer(1) / 2 ** (m - 2 * n) == 1 / 2**m:
-            raise AssertionError("printed exponent agrees")
+            prod *= sp.cos(two ** (m - k) * x)
+        left = sp.sin(two**m * x)
+        right = two ** (m - n) * sp.sin(two**n * x) * prod
+        _eq(sp.trigsimp(left - right, method="fu"), 0)
+        factor = two ** (-m)
+        _eq(1 / two ** (m - n) / two**n, factor)
+        printed = two ** (-m + 2*n)
+        if (factor == printed) != (n == 0):
+            raise AssertionError("printed factor must agree exactly when n=0")
+
     y = sp.symbols("y", real=True)
+    scale = sp.Symbol("_scale", positive=True)
+    partial = sp.sin(scale*y) / (scale*sp.sin(y))
+    _eq(partial.subs(scale, 1), 1)
+    _eq(sp.trigsimp(partial.subs(scale, 2*scale) - partial*sp.cos(scale*y)), 0)
+    # This base and step prove the product identity for every number of
+    # doublings; the six concrete checks above also cover negative exponents.
+    d = sp.Symbol("_d", integer=True, positive=True)
+    degree = two ** (d-1) + 1012
+    if degree.is_integer is not True or degree.is_positive is not True:
+        raise AssertionError("positive integer Dirichlet degree")
+    _eq(2*degree + 1, two**d + 2025)
+
+    j = sp.Symbol("_j", integer=True, positive=True)
+    step = (sp.sin((2*j+1)*y) - sp.sin((2*j-1)*y)
+            - 2*sp.sin(y)*sp.cos(2*j*y))
+    _eq(sp.trigsimp(step, method="fu"), 0)
+    _eq(sp.integrate(sp.cos(2*j*y), (y, 0, sp.pi)), 0)
+    _eq(sp.integrate(1, (y, 0, sp.pi)), sp.pi)
+    # Starting at sin(y)/sin(y)=1, the checked step gives the finite
+    # cosine polynomial and its integral for every positive odd frequency.
+    kernel = sp.sin((2*j+1)*y) / sp.sin(y)
+    _eq(sp.limit(kernel, y, 0, dir="+"), 2*j+1)
+    _eq(kernel.subs(y, sp.pi-y), kernel)
+    # Reflection supplies the same finite limit at pi. The polynomial also
+    # removes every zero introduced by the original product denominator.
     for odd in (1, 5, 9):
         k = (odd - 1) // 2
         kernel = 1 + 2 * sum(sp.cos(2 * j * y) for j in range(1, k + 1))
         _eq(sp.expand_trig(sp.sin(odd * y) - kernel * sp.sin(y)), 0)
         _eq(sp.integrate(kernel, (y, 0, sp.pi)), sp.pi)
-    if 2025 % 2 != 1:
-        raise AssertionError("2025")
 
 
 def check_r3_2024_tournament_q04_v5() -> None:

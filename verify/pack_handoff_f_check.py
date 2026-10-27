@@ -37,9 +37,6 @@ KINDS = {
 }
 
 DEFERRED = (
-    "R3-2024-Tournament-Q04-v10",
-    "R3-2024-Tournament-Q04-v11",
-    "R3-2024-Tournament-Q04-v12",
 )
 
 
