@@ -184,6 +184,8 @@ Set `IB_DATA_DIR` or pass `--data-dir` so two runs do not share tracker files. `
 ## Decisions
 
 One-way choices are in `docs/decisions/`.
+
+Before editing pack manuals, read the [source holds registry](docs/decisions/0016-pack-source-holds.md); preserve cited marks and keep source conflicts manual unless a cited authoritative erratum resolves them.
 """
 
 

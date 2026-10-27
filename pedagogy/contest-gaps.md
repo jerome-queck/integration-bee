@@ -82,6 +82,10 @@ File: `docs/techniques/formats.md`. Session: `pedagogy/round2-coach.md` for grou
 5. Do not invent a contest answer, and do not open a past-paper file as the lesson. A solutions note, when one exists, is opened only after an answer, and the rule is `pedagogy/README.md`. A paper shape, before any of that, opens `pedagogy/past-paper-routing.md`.
 6. Speed. Four stored drills, scored by the group row in `docs/techniques/formats.md`. This minute adds no rule. `U27-D01` stores the antiderivative \(\sin x/x\). `U28-D07` stores \(1\). `U29-D04` stores \(1/6\). `U31-D07` stores \(\pi/8\). A correct line scores 6. A blank or a wrong line scores 0. Four correct lines score 24. The faded dose shows those four stored values and asks for the score lines. The bare dose sets the four drills and hides the values. A crossnumber square takes the digit 1 from `U28-D07` once. It does not take the antiderivative of `U27-D01`. A relay covers the next of these four until the current one is answered or skipped. A first correct attempt scores 3 and a later one scores 1. The bonus stays in the formats note.
 
+## Other syllabus names
+
+The five formerly open syllabus nodes now have recognition notes: [vector calculus](../docs/techniques/concepts/vector-calc.md), [Beta](../docs/techniques/concepts/beta.md), [zeta](../docs/techniques/concepts/zeta.md), [Euler–Mascheroni](../docs/techniques/concepts/euler-mascheroni.md), and [Catalan](../docs/techniques/concepts/catalan.md). Use them when a learner asks about the name or pattern. They are `deferred-noted` in the concept map, carry no readiness credit, and stay unticked. They do not add a seventh `extract.gap` value or a Round 1 requirement. Keep \(\zeta(s)\), \(\gamma\), or \(G\) named unless a cited identity justifies the particular alternate form.
+
 ## What the session does not do
 
-The session does not edit the note and does not add a drill id. Do not tick `floor` or `dutis`: those catalog ids have no unit. A later commit is what adds an example, and only to the file the mark named.
+The session does not edit the note and does not add a drill id. Do not tick `floor`, `dutis`, or the five recognition nodes: those catalog ids have no unit. A later commit is what adds an example, and only to the file the mark named.

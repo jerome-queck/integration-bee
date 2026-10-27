@@ -1,6 +1,15 @@
 # R2-2021-Crossnumber-Down-1
 
-## Status: ambiguous original clues held
+## Status: source hold (print-vs-math)
+
+- verify: manual
+- conflict: D3 needs extra modulus parentheses to produce the mark, and D4's printed digit-sum equality differs from the congruence satisfied by the marked palindrome.
+- derived / problem reading: D3 gives \(36\) under the literal grouping; D4's marked palindrome has digit sum \(26\), not either root residue \(4\) or \(8\).
+- printed mark: D3: \(28\); D4: \(7134317\); the complete marked Down map is retained below.
+- erratum: none documented in the cited repository sources as of 2026-10-27.
+- registry: docs/decisions/0016-pack-source-holds.md
+
+## Source reading
 
 The original Down clues are in `sources/past/r2/2021/Crossnumber_2021_R2_UK_University_Integration_Bee_Round_Two.pdf`, PDF p.3, with Across clues and the same lattice on p.2. The completed grid was read visually from `sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf`, PDF p.3.
 

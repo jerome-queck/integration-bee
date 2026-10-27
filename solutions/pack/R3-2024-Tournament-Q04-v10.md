@@ -1,5 +1,14 @@
 # R3-2024-Tournament-Q04-v10
 
+## Status: source hold (print-vs-math)
+
+- verify: manual
+- conflict: The substitution \(y=2^nx\) gives \(\pi/2^m\), while the answer slide and worked solution print \(\pi/2^{m-2n}\).
+- derived / problem reading: \(\pi/2^m\) for the integral on slide 169; the two formulas agree only when \(n=0\).
+- printed mark: \(\pi/2^{m-2n}\) on slide 171 and solutions p.15.
+- erratum: none documented in the cited repository sources as of 2026-10-27.
+- registry: docs/decisions/0016-pack-source-holds.md
+
 - Problem: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (Battle 4, Fight 2, problem 4, slide 169)
 - Printed answer: `sources/past/r3/2024/Tournament_slides_2024_Round_3_UK_University_Integration_Bee.pdf` (slide 171)
 - Worked source: `sources/past/r3/2024/Tournament_Solutions_2024_Round_3_UK_University_Integration_Bee_(2).pdf` (page 15, section 4.2, problem 1)

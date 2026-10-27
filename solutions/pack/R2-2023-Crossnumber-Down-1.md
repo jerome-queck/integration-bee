@@ -1,5 +1,14 @@
 # R2-2023-Crossnumber-Down-1
 
+## Status: source hold (print-vs-math)
+
+- verify: manual
+- conflict: Down 7's integral limit does not determine \(f(0)\) without an additional hypothesis such as continuity at zero.
+- derived / problem reading: Changing \(f(0)\) alone preserves every printed integral, so \(f(0)\) is undetermined.
+- printed mark: Down 7: \(250\); the complete marked Down map is retained below.
+- erratum: none documented in the cited repository sources as of 2026-10-27.
+- registry: docs/decisions/0016-pack-source-holds.md
+
 ## Sources and manual status
 
 The numbered lattice and Down clues were read visually from
