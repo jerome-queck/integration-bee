@@ -17,7 +17,7 @@ from pathlib import Path
 try:
     import sympy as sp
 except ImportError:
-    sys.stderr.write("FAIL: sympy missing. Use /workspace/integration-bee/.venv\n")
+    sys.stderr.write("FAIL: sympy missing. python3 -m pip install sympy\n")
     sys.exit(2)
 
 VERIFY = Path(__file__).resolve().parent

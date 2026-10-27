@@ -31,4 +31,4 @@ Preconditions:
 - `drills` is the combined length of `verify/drills_unit*.json`. The line is `drills=300`. That feed includes unit 11 floor drills `U11-D09` through `U11-D12` and DUTIS drills `U11-D13` through `U11-D15`.
 - Doctor reads `IB_DATA_DIR` only as a label. `doctor --data-dir` does not change that label. With the variable unset, the printed label is the absolute path of `trackers/live`. Doctor still creates no files.
 - `--format json` prints the same fields and omits the `READY integration-bee` line.
-- If SymPy cannot be imported, the math checker import prints `FAIL: sympy missing. Use /workspace/integration-bee/.venv` and the process exits 2 before doctor prints a report.
+- If SymPy cannot be imported, the CLI fails during module import before doctor prints a report. The standalone math checker exits 2 and prints `FAIL: sympy missing. python3 -m pip install sympy`. Use the configured Python environment from setup.
