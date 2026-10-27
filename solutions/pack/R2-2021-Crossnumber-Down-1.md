@@ -139,3 +139,49 @@ so (C=117), and (f(6)=12\cdot36-117=315). SymPy checks the polynomial integral e
 ## Certificate outcome
 
 Eight Down checks pass; D3 and D4 remain false under their literal readings. The preserved mark map is useful evidence, but it does not erase those two differences. The common map contract separately rejects missing keys, scalar answers, digit mutations, and inconsistent crossings. Neither this note nor the helper claims a fully proved Down row.
+
+## Handoff J typography recheck
+
+Rechecked on 2026-10-27 by rendering problem pp.2-3 and mark p.3. In D3,
+`9 DOWN` is visibly the exponent of 7, while `mod 7 DOWN + 1` is on the
+baseline, with no parentheses around `7 DOWN + 1`. This rules out an OCR
+loss of printed parentheses; it does not resolve the author's intended
+operator grouping. D4 visibly says that the digit sum "is x mod 9".
+There is no printed congruence sign or instruction to reduce the digit
+sum modulo 9 first. Consequently D4 is an independent blocker even if
+an authoritative convention were to settle D3.
+
+The [official contest homepage](https://integration.soc.srcf.net/) and
+[2021 competition account](https://integration.soc.srcf.net/pastcomp.html)
+provide no convention or correction for these two clues. Targeted searches
+for the 2021 crossnumber, errata, and the modular wording located no public
+clarification. This bounded search does not establish that none exists.
+The original digits and both failed literal checks are retained.
+
+The current [official resource pack](https://integration.soc.srcf.net/Resource%20pack.zip)
+contains the same four `Round 2/2021/` PDFs as the repository, verified
+byte-for-byte, and no additional correction sheet in that directory.
+
+### Escalation: R2-2021-Crossnumber-Down-1
+
+- Obstacle: D3's unparenthesized modulus admits the known reading yielding
+  36 rather than marked 28. Obtaining 28 requires putting `D7 + 1` inside
+  the modulus. Independently, D4's marked palindrome has digit sum 26,
+  whereas the quadratic roots have residues 4 and 8; only a congruence
+  interpretation yields agreement. The visual recheck found no missing
+  punctuation or explicit convention that resolves both readings.
+- PDF problem: [p.3 at 6ac8f7d1552e32b6007bed7e8206ab3c284ab10b](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2021/Crossnumber_2021_R2_UK_University_Integration_Bee_Round_Two.pdf#page=3)
+- PDF mark: [p.3 at 6ac8f7d1552e32b6007bed7e8206ab3c284ab10b](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf#page=3)
+- What a follow-up agent should try next:
+
+  ```text
+  Inspect original 2021 Down clues 3 and 4 together with the marked lattice.
+  Seek an official correction or a published contest notation convention.
+  For D3, establish whether the modulus is D7 or the complete expression D7 + 1.
+  For D4, establish whether the digit-sum condition is equality or congruence.
+  Require authority for both readings; resolving D3 alone does not certify this row.
+  Preserve 28 and 7134317 as the printed marks until a source resolves the wording.
+  Recheck every Down clue and the sibling Across crossings before any status flip.
+  ```
+
+- Do not mark impossible.

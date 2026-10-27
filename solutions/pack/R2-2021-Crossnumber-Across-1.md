@@ -91,3 +91,54 @@ The three smallest entries in the full grid are (12,14,20), giving A11 (=46). Th
 ## Certificate outcome
 
 The nine mathematical Across checks return true; the historical A8 check is deliberately false pending clarification of the source wording. A complete map is still required by the grid contract, and it checks every crossing against the printed sibling map. This transcript never upgrades a grid-equality check into a claim that the publication-date conflict has been resolved.
+
+## Handoff J source recheck
+
+Rechecked on 2026-10-27. Visual inspection of the original problem p.2
+confirms that A8 explicitly asks when the integral was **first** published;
+the completed grid on mark p.3 still gives 1868.
+
+The new check goes beyond catalog metadata. In the
+[ETH Library scan](https://www.e-rara.ch/zut/download/pdf/13665454), PDF p.2
+is the original title page: it prints 1867 and identifies the work as taken
+from volume 13 of the Göttingen proceedings. PDF p.4 contains Dedekind's
+editorial notice dated July 1867. Both pages were rendered and read visually.
+The [Göttingen archive record for Cod. Ms. B. Riemann 28 k](https://kalliope-verbund.info/de/ead?ead.id=DE-611-HS-3206244)
+independently describes a printed 1867 offprint from that volume. Thus an
+earlier issue cannot be dismissed merely because it has a separate title
+page. These observations do not establish an exact distribution date, but
+they do prevent certifying 1868 as an unambiguous first-publication year.
+
+The [official contest homepage](https://integration.soc.srcf.net/) and
+[2021 competition account](https://integration.soc.srcf.net/pastcomp.html),
+together with targeted searches for a 2021 crossnumber correction or
+erratum, supplied no clarification of A8. This is a bounded negative search,
+not a claim that no correction exists. The Across map remains manual and
+the coupled Down holds remain separate obligations.
+
+The current [official resource pack](https://integration.soc.srcf.net/Resource%20pack.zip)
+was also checked: all four PDFs in `Round 2/2021/` byte-match the committed
+copies, including the crossnumber and mark scheme. That directory contains
+no additional correction sheet.
+
+### Escalation: R2-2021-Crossnumber-Across-1
+
+- Obstacle: The marked 1868 has a journal-volume basis, but the clue's word
+  "first" remains in conflict with the original 1867 offprint title and
+  its archived publication record. No located contest correction resolves
+  that conflict; substituting 1867 would also change the supplied lattice.
+- PDF problem: [p.2 at 6ac8f7d1552e32b6007bed7e8206ab3c284ab10b](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2021/Crossnumber_2021_R2_UK_University_Integration_Bee_Round_Two.pdf#page=2)
+- PDF mark: [p.3 at 6ac8f7d1552e32b6007bed7e8206ab3c284ab10b](https://github.com/jerome-queck/integration-bee/blob/6ac8f7d1552e32b6007bed7e8206ab3c284ab10b/sources/past/r2/2021/Mark_Scheme_2021_R2_UK_University_Integration_Bee.pdf#page=3)
+- What a follow-up agent should try next:
+
+  ```text
+  Re-open the original 2021 A8 clue and completed crossnumber lattice.
+  Seek an official contest correction defining the intended publication event.
+  Compare the ETH scan's original title (PDF p.2) and Dedekind notice (p.4).
+  Check the Göttingen offprint record Cod. Ms. B. Riemann 28 k.
+  Distinguish a volume's cover year from evidence of first public distribution.
+  If authority resolves the clue, recheck all Across clues and Down crossings.
+  Otherwise retain the mark digits and manual status, with the unresolved source reading.
+  ```
+
+- Do not mark impossible.
