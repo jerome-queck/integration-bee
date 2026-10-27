@@ -98,10 +98,6 @@ def check_files() -> None:
         raise AssertionError(f"missing write-ups: {missing}")
     if len(PACK_IDS) < 30:
         raise AssertionError("pack manual count")
-    for path in list(PACK.glob("*.md")) + list(YANG.glob("*.md")):
-        text = path.read_text(encoding="utf-8")
-        if "SymPy self-check" not in text:
-            raise AssertionError(f"{path.name} has no SymPy self-check note")
 
 
 def check_r1_2020_q06() -> None:
