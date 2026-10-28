@@ -127,6 +127,7 @@ Regenerate this file with `python3 scripts/generate_agents_md.py` after you add 
 | Unit notes use the shared templates | `scripts/check_templates.py` |
 | A unit sample compiles outside the repo root | `scripts/compile-tex.sh` |
 | Drill answers match SymPy, and a wrong answer fails | `verify/run.sh` |
+| Pack records and worked notes do not claim a problem is impossible | `verify/never_impossible_check.py` |
 | Past papers do not precede concept units | `verify/unit_order_check.py` |
 | Tracker and readiness invariants hold | `verify/invariants.py` |
 | All-rounds indexes match, and the reference PDFs match | `verify/all_rounds_check.py` |
