@@ -93,6 +93,15 @@ echo "== problem catalog =="
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail yang-invented || fail=1
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail dropped-record || fail=1
 
+echo "== never-impossible =="
+"$PY" "$ROOT/verify/never_impossible_check.py" || fail=1
+"$PY" "$ROOT/verify/never_impossible_check.py" --expect-fail notes-impossible || fail=1
+"$PY" "$ROOT/verify/never_impossible_check.py" --expect-fail notes-no-closed-form || fail=1
+"$PY" "$ROOT/verify/never_impossible_check.py" --expect-fail notes-unprovable || fail=1
+"$PY" "$ROOT/verify/never_impossible_check.py" --expect-fail notes-unproveable || fail=1
+"$PY" "$ROOT/verify/never_impossible_check.py" --expect-fail pack-note || fail=1
+"$PY" "$ROOT/verify/never_impossible_check.py" --expect-fail sample-note || fail=1
+
 echo "== pack proof certificates =="
 "$PY" "$ROOT/verify/pack_certificates_check.py" || fail=1
 "$PY" "$ROOT/verify/pack_multiplicative_check.py" || fail=1
