@@ -49,6 +49,44 @@ YANG_WITH_ANSWER = frozenset({
     "YANG-1.3-Ex01",
     "YANG-1.3-Ex02",
     "YANG-1.3-Ex03",
+    "YANG-1.4-P01",
+    "YANG-1.4-P02",
+    "YANG-1.4-P03",
+    "YANG-1.4-P04",
+    "YANG-1.4-P05",
+    "YANG-1.4-P06",
+    "YANG-1.4-P07",
+    "YANG-1.4-P08",
+    "YANG-1.4-P09",
+    "YANG-1.4-P10",
+    "YANG-1.4-P11",
+    "YANG-1.4-P12",
+    "YANG-1.4-P13",
+    "YANG-1.4-P14",
+    "YANG-1.4-P15",
+    "YANG-1.4-P16",
+    "YANG-1.4-P17",
+    "YANG-1.4-P18",
+    "YANG-1.5-P01",
+    "YANG-1.5-P02",
+    "YANG-1.5-P03",
+    "YANG-1.5-P04",
+    "YANG-1.5-P05",
+    "YANG-1.5-P06",
+    "YANG-1.5-P07",
+    "YANG-1.5-P08",
+    "YANG-1.5-P09",
+    "YANG-1.5-P10",
+    "YANG-1.5-P11",
+    "YANG-1.5-P12",
+    "YANG-1.5-P13",
+    "YANG-1.5-P14",
+    "YANG-1.5-P15",
+    "YANG-1.5-P16",
+    "YANG-1.5-P17",
+    "YANG-1.5-P18",
+    "YANG-1.5-P19",
+    "YANG-1.5-P20",
     "YANG-1.6-P01",
     "YANG-1.6-P02",
     "YANG-1.6-P03",
@@ -112,8 +150,8 @@ YANG_WITH_ANSWER = frozenset({
 })
 EXPECTED_COUNT = 946
 EXPECTED_MANUAL = 0
-# 674 resource-pack rows, plus 89 proved Yang rows (L1's 29, L3's 30, and L6's 30).
-EXPECTED_SYMPY = 763
+# 674 resource-pack rows, plus 127 proved Yang rows (L1's 29, L2's 38, L3's 30, and L6's 30).
+EXPECTED_SYMPY = 801
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {

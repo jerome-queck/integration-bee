@@ -72,14 +72,14 @@ Allowed writer: a repo agent. The study turn says the note is missing and does n
 
 ## D — Yang practice rows that are unchecked
 
-Trigger: a Yang row with `verify: unchecked`. After lanes L1, L3, and L6, 183 rows remain unchecked. `YANG_WITH_ANSWER` lists the proved Yang ids: the §1.1 textbook list, the §1.2 list, `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, `YANG-1.3-Ex03`, the §1.6 and §1.7 lists, the §2.3 list `YANG-2.3-P01`–`P18`, and the §2.4 list `YANG-2.4-P01`–`P12`.
+Trigger: a Yang row with `verify: unchecked`. After lanes L1, L2, L3, and L6, 145 rows remain unchecked. `YANG_WITH_ANSWER` lists the proved Yang ids: the §1.1 textbook list, the §1.2 list, `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, `YANG-1.3-Ex03`, the §1.4 and §1.5 practice lists, the §1.6 and §1.7 lists, the §2.3 list `YANG-2.3-P01`–`P18`, and the §2.4 list `YANG-2.4-P01`–`P12`.
 
 The live turn does not fill the row. A fill is its own pull request for one id, and only when you are changing the catalog on purpose:
 
 - `problems/records.jsonl` for that id: `answer_plain` and `answer_source_pdf` together, or both empty. A `sympy` row also needs `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable`, `kind`, and `limits`. `worked_solution_latex` stays null.
 - `verify/problem_catalog.py`: add the id to `YANG_WITH_ANSWER`. Set `EXPECTED_SYMPY` or `EXPECTED_MANUAL` to the new totals. `catalog_problem` rejects any other answered Yang id, any sympy Yang id outside that set, and a count mismatch.
 - `solutions/yang/<id>.md` with the printed guide page. Copy a final the guide prints. A derived final is recorded in `docs/decisions/0010-sympy-pack-rows.md` and `docs/decisions/0016-pack-source-holds.md`. Rows the gate does not prove stay unanswered.
-- A proof `verify/pack_gate.py` accepts. Example 1 uses ordinary definite integration. Example 3 uses `verify/yang_certificates.py`, which matches only that integrand and `[0, 6]`. `YANG-2.4-P12` uses the same module for `sec(x)^6 exp(-tan x)` on `[0, π/2]`. `scripts/recover_pack_math.py` does not gate Yang.
+- A proof `verify/pack_gate.py` accepts. Example 1 uses ordinary definite integration. Example 3 uses `verify/yang_certificates.py` for that integrand on `[0, 6]`. §1.4 item 3 uses the same module for `(2^x+3^x)/5^x` on `[0, ∞)`. `YANG-2.4-P12` uses it for `sec(x)^6 exp(-tan x)` on `[0, π/2]`. Other shapes return None. `scripts/recover_pack_math.py` does not gate Yang.
 - `solutions/self_check.py` when that note's identity should be re-run there.
 
 Do not edit a Yang row outside the batch you are proving. Do not set `answer_plain` alone. An unchecked row whose gate does not accept a final stays unchecked.
@@ -137,7 +137,7 @@ Learner stickies are not capture. Writing `stickies.json` by hand does not recor
 
 Set these together: `verify` `sympy`, `answer_plain`, `answer_source_pdf`, `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable` (one of `x`, `t`, `X`, `e`, or `grid` for a grid), `kind`, `limits` (`[]` when the kind is not bounded, otherwise two strings). Leave `worked_solution_latex` null. Keep `worked_solution_plain` empty unless `worked_solution_origin` is `pdf_copy`, and then store an extract, not a new derivation.
 
-`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 763, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows after lanes L1, L3, and L6. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
+`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 801, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows after lanes L1, L2, L3, and L6. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
 
 ## Checks before the pull request
 

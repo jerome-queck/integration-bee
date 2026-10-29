@@ -40,4 +40,4 @@ Preconditions:
 - A select with no filter, or with a filter that matches many ids, exits 2. An unknown id on show or select exits 1.
 - These commands do not write learner state. A mark still goes through `turn apply`.
 - A pack row with `verify` `sympy` was proved from the committed PDF. `problems list` still omits `answer_sympy`. `problems show` prints it. A `manual` row is a cited answer that has not been proved. Do not treat its `answer_plain` as a SymPy expression.
-- Yang practice with `verify` `unchecked` has no printed answer. Do not fill one in.
+- Yang practice with `verify` `unchecked` has no proved final. Do not fill one the gate has not accepted. A proved Yang row is `verify: sympy` and `problems show` prints `answer_sympy`.

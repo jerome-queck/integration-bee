@@ -1,9 +1,10 @@
 """Exact certificates for Yang rows the ordinary integrator does not close.
 
 Example 3 is the shifted-parity integrand on [0, 6]. Example 1 is a polynomial
-and uses pack_gate's ordinary definite integration. Section 2.4 item 12 is
-sec(x)^6 exp(-tan x) on [0, pi/2]; the tangent substitution reduces it to a
-Gamma integral. Every other shape returns None.
+and uses pack_gate's ordinary definite integration. Section 1.4 item 3 is
+(2^x + 3^x)/5^x on [0, ∞). Section 2.4 item 12 is sec(x)^6 exp(-tan x)
+on [0, pi/2]; the tangent substitution reduces it to a Gamma integral.
+Every other shape returns None.
 """
 
 from __future__ import annotations
@@ -48,8 +49,52 @@ def _sec_tan_sixth(integrand, symbol, lo, hi):
     return value
 
 
+def _two_five_power_ray(integrand, symbol, lo, hi):
+    """Return ∫_0^∞ (2^x + 3^x)/5^x dx, or None on a shape miss.
+
+    For a positive base, a^x = exp(x log a). The printed quotient is the sum
+    of exp(-x log(5/2)) and exp(-x log(5/3)). Each coefficient is positive,
+    so the antiderivative vanishes at infinity and equals 1/c at the origin.
+    """
+    if symbol.is_real is not True or lo != 0 or hi != sp.oo:
+        return None
+    target = (2**symbol + 3**symbol) / 5**symbol
+    if integrand != target:
+        return None
+    rewritten = (sp.exp(symbol * sp.log(2)) + sp.exp(symbol * sp.log(3))) * sp.exp(-symbol * sp.log(5))
+    if sp.simplify(integrand - rewritten) != 0:
+        return None
+    terms = (
+        (sp.Rational(5, 2), sp.exp(-symbol * sp.log(sp.Rational(5, 2)))),
+        (sp.Rational(5, 3), sp.exp(-symbol * sp.log(sp.Rational(5, 3)))),
+    )
+    if sp.simplify(rewritten - terms[0][1] - terms[1][1]) != 0:
+        return None
+    total = 0
+    for base, term in terms:
+        coefficient = sp.log(base)
+        if coefficient.is_positive is not True:
+            return None
+        primitive = -sp.exp(-coefficient * symbol) / coefficient
+        if sp.simplify(sp.diff(primitive, symbol) - term) != 0:
+            return None
+        if sp.limit(primitive, symbol, sp.oo) != 0:
+            return None
+        piece = -primitive.subs(symbol, 0)
+        if sp.simplify(piece - 1 / coefficient) != 0:
+            return None
+        total += piece
+    expected = 1 / sp.log(sp.Rational(5, 2)) + 1 / sp.log(sp.Rational(5, 3))
+    if sp.simplify(total - expected) != 0:
+        return None
+    return expected
+
+
 def definite_value(integrand, symbol, lo, hi):
     """Return a checked Yang value, or None on a shape miss."""
+    powers = _two_five_power_ray(integrand, symbol, lo, hi)
+    if powers is not None:
+        return powers
     sec_tan = _sec_tan_sixth(integrand, symbol, lo, hi)
     if sec_tan is not None:
         return sec_tan
