@@ -1,7 +1,9 @@
-"""Exact shifted-parity certificate for the answered Yang symmetry example.
+"""Exact certificates for Yang rows the ordinary integrator does not close.
 
-The matcher is restricted to Example 3's printed integrand and endpoints.
-Example 1 is a polynomial and uses pack_gate's ordinary definite integration.
+Example 3 is the shifted-parity integrand on [0, 6]. Example 1 is a polynomial
+and uses pack_gate's ordinary definite integration. Section 2.4 item 12 is
+sec(x)^6 exp(-tan x) on [0, pi/2]; the tangent substitution reduces it to a
+Gamma integral. Every other shape returns None.
 """
 
 from __future__ import annotations
@@ -9,8 +11,48 @@ from __future__ import annotations
 import sympy as sp
 
 
+def _sec_tan_sixth(integrand, symbol, lo, hi):
+    """Return ∫_0^{π/2} sec(x)^6 exp(-tan x) dx, or None on a shape miss.
+
+    On [0, π/2), tan is a bijection onto [0, ∞) and its derivative is sec^2.
+    sec^6 = (1+tan^2)^2 sec^2, so the integrand dx is (1+u^2)^2 e^{-u} du.
+    """
+    if symbol.is_real is not True or lo != 0 or hi != sp.pi / 2:
+        return None
+    target = sp.exp(-sp.tan(symbol)) * sp.sec(symbol) ** 6
+    if integrand != target:
+        return None
+    sec2 = sp.sec(symbol) ** 2
+    trig = 1 + sp.tan(symbol) ** 2
+    if sp.simplify(sec2 - trig) != 0:
+        return None
+    if sp.simplify(sp.diff(sp.tan(symbol), symbol) - sec2) != 0:
+        return None
+    if sp.tan(symbol).subs(symbol, 0) != 0:
+        return None
+    if sp.limit(sp.tan(symbol), symbol, sp.pi / 2, dir="-") != sp.oo:
+        return None
+    # One factor of sec^2 is the measure du. The remaining power is (1+u^2)^2.
+    if sp.simplify(sp.sec(symbol) ** 6 - trig ** 2 * sec2) != 0:
+        return None
+    u = sp.Dummy("u", positive=True)
+    reduced = (1 + u ** 2) ** 2 * sp.exp(-u)
+    polynomial = sp.expand((1 + u ** 2) ** 2)
+    if polynomial != 1 + 2 * u ** 2 + u ** 4:
+        return None
+    if sp.expand(reduced) != sp.expand(polynomial * sp.exp(-u)):
+        return None
+    value = sp.integrate(reduced, (u, 0, sp.oo))
+    if not getattr(value, "is_number", False) or value.has(sp.Integral):
+        return None
+    return value
+
+
 def definite_value(integrand, symbol, lo, hi):
-    """Return Yang 1.3 Example 3's checked value, or None on a shape miss."""
+    """Return a checked Yang value, or None on a shape miss."""
+    sec_tan = _sec_tan_sixth(integrand, symbol, lo, hi)
+    if sec_tan is not None:
+        return sec_tan
     if (lo, hi) != (0, 6) or symbol.is_real is not True:
         return None
     denominator = symbol**2 - 6 * symbol + 10

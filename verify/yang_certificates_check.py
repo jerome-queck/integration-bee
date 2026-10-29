@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reprove the two answered Yang rows and reject their extraction errors."""
+"""Reprove answered Yang rows and reject nearby wrong values."""
 
 from __future__ import annotations
 
@@ -58,7 +58,25 @@ def check(rows):
                                            complex_variable, 0, 6) is None,
             "Yang requires real substitution variable")
 
+    sec = sp.exp(-sp.tan(x)) * sp.sec(x) ** 6
+    sec_row = rows["YANG-2.4-P12"]
+    require(sec_row["verify"] == "sympy" and sec_row["kind"] == "definite", "YANG-2.4-P12 status")
+    require(sec_row["limits"] == ["0", "pi/2"] and sec_row["variable"] == "x", "YANG-2.4-P12 endpoints")
+    require(pack_gate._parse(sec_row["sympy_expr"], "x") == sec, "YANG-2.4-P12 integrand")
+    require(pack_gate._parse(sec_row["answer_sympy"], "x") == 29, "YANG-2.4-P12 value")
+    require(yang_certificates.definite_value(sec, x, sp.S(0), sp.pi / 2) == 29, "sec-tan certificate")
+    require(pack_gate.proven("definite", sec_row["sympy_expr"], sec_row["limits"], "29", "x"),
+            "YANG-2.4-P12 proof")
+    for wrong in ("0", "28", "30", "24"):
+        require(not pack_gate.proven("definite", sec_row["sympy_expr"], sec_row["limits"], wrong, "x"),
+                "YANG-2.4-P12 rejects " + wrong)
+    require(yang_certificates.definite_value(sp.sec(x) ** 5 * sp.exp(-sp.tan(x)), x, 0, sp.pi / 2) is None,
+            "sec-tan rejects a lower power")
+    require(yang_certificates.definite_value(sec, x, 0, sp.pi) is None, "sec-tan rejects other limits")
+    require(yang_certificates._sec_tan_sixth(sec, complex_variable, 0, sp.pi / 2) is None,
+            "sec-tan requires a real variable")
+
 
 if __name__ == "__main__":
     check({row["id"]: row for row in problem_catalog.load_records()})
-    print("PASS Yang answered rows, exact parity certificate, and wrong answers")
+    print("PASS Yang answered rows, parity and sec-tan certificates, and wrong answers")
