@@ -28,7 +28,7 @@ make check
 
 Concept units `01-foundations-substitution` through `36-unique-tricks` (36 directories) have machine drills in `verify/drills_unit*.json` (300 drills).
 
-`problems/records.jsonl` holds 966 contest, Yang, and sample problems. `problems list` hides answers. `problems show` prints a stored cite.
+`problems/records.jsonl` holds 969 contest, Yang, and sample problems. `problems list` hides answers. `problems show` prints a stored cite.
 
 ## Harness
 

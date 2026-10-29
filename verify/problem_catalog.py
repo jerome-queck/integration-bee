@@ -98,6 +98,7 @@ YANG_WITH_ANSWER = frozenset({
     "YANG-1.2-P18",
     "YANG-1.2-P19",
     "YANG-1.2-P20",
+    "YANG-1.20-P01",
     "YANG-1.20-P02",
     "YANG-1.20-P03",
     "YANG-1.20-P04",
@@ -192,6 +193,11 @@ YANG_WITH_ANSWER = frozenset({
     "YANG-1.8-P15",
     "YANG-1.8-P16",
     "YANG-1.8-P17",
+    "YANG-1.9-P01a",
+    "YANG-1.9-P01b",
+    "YANG-1.9-P01c",
+    "YANG-1.9-P04a",
+    "YANG-1.9-P04b",
     "YANG-2.3-P01",
     "YANG-2.3-P02",
     "YANG-2.3-P03",
@@ -289,12 +295,18 @@ YANG_WITH_ANSWER = frozenset({
     "YANG-6.1-P04",
     "YANG-6.7-P03",
 })
-EXPECTED_COUNT = 946
+EXPECTED_COUNT = 948
 EXPECTED_MANUAL = 0
-# 674 resource-pack rows, plus 268 proved Yang rows (L1's 29, L2's 38, L3's 30, L4's 37, L6's 30, L7's 34, L8's 32, and L5's 38).
-EXPECTED_SYMPY = 942
+# 674 resource-pack rows, plus 274 proved Yang rows.
+# L5 left 942. The §1.9 split adds five proved examples in place of two
+# bundled rows, and YANG-1.20-P01 adds one proved row. YANG-1.14-P10 is a
+# reference formula in REFERENCE_IDS, omitted from pack_rows.
+EXPECTED_SYMPY = 948
 EXPECTED_PDF_COPY = 195
-EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
+EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 274}
+# Printed guide identities that are not integrals. They stay in the JSONL
+# and are omitted from pack_rows, the same exclusion samples use.
+REFERENCE_IDS = frozenset({"YANG-1.14-P10"})
 PINNED_CITE = {
     "id": "R1-2024-Q01",
     "answer_has": "sin(1)",
@@ -483,6 +495,45 @@ def _is_sample(row: dict) -> bool:
     return row.get("round") == SAMPLE_ROUND or row.get("source") == SAMPLE_SOURCE or ident.startswith("SAMPLE-")
 
 
+def _is_reference(row: dict) -> bool:
+    """A printed formula that is not an integral. Excluded from pack counts."""
+    return row.get("id") in REFERENCE_IDS
+
+
+def _reference_catalog(rows: list[dict]) -> str | None:
+    """Keep the formula row out of the pack without storing an integrand."""
+    if [row.get("id") for row in rows] != ["YANG-1.14-P10"]:
+        return "reference ids"
+    row = rows[0]
+    ident = row["id"]
+    if row.get("source") != "yang_book" or row.get("round") != "yang":
+        return f"{ident} reference source"
+    if row.get("section") != "1.14" or row.get("kind") != "reference":
+        return f"{ident} reference kind"
+    if row.get("verify") != "unchecked":
+        return f"{ident} reference is not an unchecked formula"
+    if not _blank(row.get("answer_plain")) or not _blank(row.get("answer_source_pdf")):
+        return f"{ident} reference invented an answer"
+    if "answer_sympy" in row or "sympy_expr" in row or "variable" in row:
+        return f"{ident} reference invented an integral"
+    if row.get("integrand_latex") is not None or row.get("answer_latex") is not None:
+        return f"{ident} reference invented latex"
+    if row.get("worked_solution_latex") is not None:
+        return f"{ident} reference worked latex"
+    if row.get("worked_solution_origin") != "missing" or not _blank(row.get("worked_solution_plain")):
+        return f"{ident} reference worked field"
+    plain = str(row.get("integrand_plain") or "")
+    folded = plain.lower().replace(" ", "")
+    if "1/n" not in folded or "pi" not in folded:
+        return f"{ident} reference formula"
+    if any(token in plain for token in ("dx", "\\int", "∫", "Geometric", "Z ")):
+        return f"{ident} reference bundled an integral"
+    notes = str(row.get("notes") or "")
+    if "not an integral" not in notes or "excluded" not in notes or "formula" not in notes.lower():
+        return f"{ident} reference reason"
+    return None
+
+
 def _sample_sympy_shape(row: dict) -> str | None:
     ident = row.get("id")
     if row.get("source") != SAMPLE_SOURCE or row.get("round") != SAMPLE_ROUND:
@@ -573,10 +624,14 @@ def catalog_problem(rows: list[dict]) -> str | None:
     if ids != sorted(ids):
         return "catalog not sorted by id"
     samples = [row for row in rows if _is_sample(row)]
-    pack_rows = [row for row in rows if not _is_sample(row)]
+    references = [row for row in rows if _is_reference(row)]
+    pack_rows = [row for row in rows if not _is_sample(row) and not _is_reference(row)]
     sample_err = _sample_catalog(samples)
     if sample_err:
         return sample_err
+    reference_err = _reference_catalog(references)
+    if reference_err:
+        return reference_err
     if len(pack_rows) != EXPECTED_COUNT:
         return f"catalog count {len(pack_rows)}"
     rows = pack_rows
