@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reprove answered Yang rows and reject nearby wrong values."""
+"""Reprove answered Yang rows and reject their extraction errors."""
 
 from __future__ import annotations
 
@@ -59,38 +59,64 @@ def check(rows):
             "Yang requires real substitution variable")
     _check_section_26(rows, x)
 
-
-def _check_section_26(rows, x):
-    specs = (
-        ("YANG-2.6-P10", "indefinite", []),
-        ("YANG-2.6-P12", "indefinite", []),
-        ("YANG-2.6-P14", "definite", ["0", "pi/4"]),
+    symbol = pack_gate.namespace("x")["x"]
+    certificate_ids = (
+        "YANG-1.12-P03",
+        "YANG-1.12-P05",
+        "YANG-1.12-P06",
+        "YANG-1.12-P08",
+        "YANG-1.12-P09",
+        "YANG-1.12-P10",
+        "YANG-1.15-P17",
+        "YANG-1.17-P01",
+        "YANG-1.18-P02",
+        "YANG-1.20-P02",
+        "YANG-1.20-P03",
+        "YANG-1.20-P05",
+        "YANG-1.20-P07",
     )
-    for ident, kind, limits in specs:
+    for ident in certificate_ids:
         row = rows[ident]
-        require(row["verify"] == "sympy" and row["kind"] == kind, ident + " status")
-        require(row["limits"] == limits, ident + " endpoints")
-        pair = None if kind == "indefinite" else limits
-        require(pack_gate.proven(kind, row["sympy_expr"], pair, row["answer_sympy"], "x"),
+        integrand = pack_gate._parse(row["sympy_expr"], "x")
+        lo = pack_gate._parse(row["limits"][0], "x")
+        hi = pack_gate._parse(row["limits"][1], "x")
+        answer = pack_gate._parse(row["answer_sympy"], "x")
+        require(yang_certificates.definite_value(integrand, symbol, lo, hi) == answer,
+                ident + " certificate")
+        require(yang_certificates.definite_value(2 * integrand, symbol, lo, hi) is None,
+                ident + " rejects a scaled integrand")
+
+    sine = rows["YANG-1.12-P05"]
+    require(pack_gate.proven("definite", sine["sympy_expr"], sine["limits"], "8", "x"),
+            "absolute sine on four periods is 8")
+    require(not pack_gate.proven("definite", sine["sympy_expr"], sine["limits"], "4", "x"),
+            "absolute sine rejects the integrator value 4")
+    antiderivative = sp.integrate(sp.Abs(sp.sin(symbol)), symbol)
+    slope = sp.diff(antiderivative, symbol)
+    # The integrator stops after one kink: its derivative is -sin for every x <= 0.
+    # On [-2π, -π], sin is nonnegative, so |sin| = sin and the formula is the wrong sign.
+    require(slope.args[0][0] == -sp.sin(symbol) and slope.args[0][1] == (symbol <= 0),
+            "integrator derivative is -sin for x <= 0")
+    gap = sp.simplify(slope.subs(symbol, -3 * sp.pi / 2) - sp.Abs(sp.sin(-3 * sp.pi / 2)))
+    require(gap == -2, "integrator derivative misses |sin| by -2 at -3π/2")
+    require(sp.integrate(sp.Abs(sp.sin(symbol)), (symbol, -2 * sp.pi, -sp.pi)) == -2,
+            "integrator value on [-2π, -π]")
+    require(yang_certificates.definite_value(sp.Abs(sp.sin(symbol)), symbol, -2 * sp.pi, 2 * sp.pi) == 8,
+            "certificate keeps 8")
+
+    for ident in ("YANG-1.15-P10", "YANG-1.15-P11"):
+        row = rows[ident]
+        integrand = pack_gate._parse(row["sympy_expr"], "x")
+        answer = pack_gate._parse(row["answer_sympy"], "x")
+        require(row["kind"] == "indefinite" and row["limits"] == [], ident + " kind")
+        require(yang_certificates.indefinite_ok(answer, integrand, symbol) is True, ident + " pieces")
+        require(yang_certificates.indefinite_ok(sp.Integer(0), integrand, symbol) is False,
+                ident + " rejects a constant")
+        require(yang_certificates.indefinite_ok(answer, 2 * integrand, symbol) is None,
+                ident + " rejects a scaled integrand")
+        require(pack_gate.proven("indefinite", row["sympy_expr"], None, row["answer_sympy"], "x"),
                 ident + " proof")
-        require(not pack_gate.proven(kind, row["sympy_expr"], pair, "0", "x"),
-                ident + " rejects 0")
-    nested = pack_gate._parse(rows["YANG-2.6-P10"]["sympy_expr"], "x")
-    radical = pack_gate._parse(rows["YANG-2.6-P12"]["sympy_expr"], "x")
-    quarter = pack_gate._parse(rows["YANG-2.6-P14"]["sympy_expr"], "x")
-    require(yang_certificates.indefinite_ok(sp.Integer(0), nested, x) is False,
-            "nested radical rejects a zero final")
-    require(yang_certificates.indefinite_ok(sp.sec(x), 2 * nested, x) is None,
-            "nested radical rejects a scaled integrand")
-    require(yang_certificates.indefinite_ok(sp.Integer(0), radical, x) is False,
-            "elliptic radical rejects a zero final")
-    require(yang_certificates.indefinite_ok(sp.sec(x), radical + 1, x) is None,
-            "elliptic radical rejects an extra summand")
-    require(yang_certificates.definite_value(quarter, x, 0, sp.pi / 2) is None,
-            "log-cosine quarter rejects a longer interval")
-    require(yang_certificates.definite_value(2 * quarter, x, 0, sp.pi / 4) is None,
-            "log-cosine quarter rejects a scaled integrand")
-    complex_variable = sp.Symbol("z")
+
     sec = sp.exp(-sp.tan(x)) * sp.sec(x) ** 6
     sec_row = rows["YANG-2.4-P12"]
     require(sec_row["verify"] == "sympy" and sec_row["kind"] == "definite", "YANG-2.4-P12 status")
@@ -132,6 +158,39 @@ def _check_section_26(rows, x):
             "power ray requires a real variable")
 
 
+
+def _check_section_26(rows, x):
+    specs = (
+        ("YANG-2.6-P10", "indefinite", []),
+        ("YANG-2.6-P12", "indefinite", []),
+        ("YANG-2.6-P14", "definite", ["0", "pi/4"]),
+    )
+    for ident, kind, limits in specs:
+        row = rows[ident]
+        require(row["verify"] == "sympy" and row["kind"] == kind, ident + " status")
+        require(row["limits"] == limits, ident + " endpoints")
+        pair = None if kind == "indefinite" else limits
+        require(pack_gate.proven(kind, row["sympy_expr"], pair, row["answer_sympy"], "x"),
+                ident + " proof")
+        require(not pack_gate.proven(kind, row["sympy_expr"], pair, "0", "x"),
+                ident + " rejects 0")
+    nested = pack_gate._parse(rows["YANG-2.6-P10"]["sympy_expr"], "x")
+    radical = pack_gate._parse(rows["YANG-2.6-P12"]["sympy_expr"], "x")
+    quarter = pack_gate._parse(rows["YANG-2.6-P14"]["sympy_expr"], "x")
+    require(yang_certificates.indefinite_ok(sp.Integer(0), nested, x) is False,
+            "nested radical rejects a zero final")
+    require(yang_certificates.indefinite_ok(sp.sec(x), 2 * nested, x) is None,
+            "nested radical rejects a scaled integrand")
+    require(yang_certificates.indefinite_ok(sp.Integer(0), radical, x) is False,
+            "elliptic radical rejects a zero final")
+    require(yang_certificates.indefinite_ok(sp.sec(x), radical + 1, x) is None,
+            "elliptic radical rejects an extra summand")
+    require(yang_certificates.definite_value(quarter, x, 0, sp.pi / 2) is None,
+            "log-cosine quarter rejects a longer interval")
+    require(yang_certificates.definite_value(2 * quarter, x, 0, sp.pi / 4) is None,
+            "log-cosine quarter rejects a scaled integrand")
+
+
 if __name__ == "__main__":
     check({row["id"]: row for row in problem_catalog.load_records()})
-    print("PASS Yang answered rows, parity, sec-tan, and §1.4 power-ray certificates, and wrong answers")
+    print("PASS Yang answered rows, parity, sec-tan, §1.4 power-ray, and §2.6 certificates, and wrong answers")

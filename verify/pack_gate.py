@@ -997,6 +997,11 @@ def _alternating_radical(answer, integrand, symbol) -> bool | None:
 
 def _antiderivative(answer, integrand, variable: str) -> bool:
     symbol = namespace(variable)[variable]
+    # Sign-split Yang antiderivatives match the printed integrand only where it
+    # is defined. A global simplify of the difference is the wrong test for them.
+    split = yang_certificates.indefinite_ok(answer, integrand, symbol)
+    if split is not None:
+        return bool(split)
     factorial = _factorial_exponent(answer, integrand, symbol)
     if factorial is not None:
         return factorial
