@@ -66,10 +66,10 @@ def check(rows):
         "YANG-1.12-P06",
         "YANG-1.12-P08",
         "YANG-1.12-P09",
+        "YANG-1.12-P10",
         "YANG-1.15-P17",
         "YANG-1.17-P01",
         "YANG-1.18-P02",
-        "YANG-1.20-P01",
         "YANG-1.20-P02",
         "YANG-1.20-P03",
         "YANG-1.20-P05",
@@ -91,6 +91,31 @@ def check(rows):
             "absolute sine on four periods is 8")
     require(not pack_gate.proven("definite", sine["sympy_expr"], sine["limits"], "4", "x"),
             "absolute sine rejects the integrator value 4")
+    antiderivative = sp.integrate(sp.Abs(sp.sin(symbol)), symbol)
+    slope = sp.diff(antiderivative, symbol)
+    # The integrator stops after one kink: its derivative is -sin for every x <= 0.
+    # On [-2π, -π], sin is nonnegative, so |sin| = sin and the formula is the wrong sign.
+    require(slope.args[0][0] == -sp.sin(symbol) and slope.args[0][1] == (symbol <= 0),
+            "integrator derivative is -sin for x <= 0")
+    gap = sp.simplify(slope.subs(symbol, -3 * sp.pi / 2) - sp.Abs(sp.sin(-3 * sp.pi / 2)))
+    require(gap == -2, "integrator derivative misses |sin| by -2 at -3π/2")
+    require(sp.integrate(sp.Abs(sp.sin(symbol)), (symbol, -2 * sp.pi, -sp.pi)) == -2,
+            "integrator value on [-2π, -π]")
+    require(yang_certificates.definite_value(sp.Abs(sp.sin(symbol)), symbol, -2 * sp.pi, 2 * sp.pi) == 8,
+            "certificate keeps 8")
+
+    for ident in ("YANG-1.15-P10", "YANG-1.15-P11"):
+        row = rows[ident]
+        integrand = pack_gate._parse(row["sympy_expr"], "x")
+        answer = pack_gate._parse(row["answer_sympy"], "x")
+        require(row["kind"] == "indefinite" and row["limits"] == [], ident + " kind")
+        require(yang_certificates.indefinite_ok(answer, integrand, symbol) is True, ident + " pieces")
+        require(yang_certificates.indefinite_ok(sp.Integer(0), integrand, symbol) is False,
+                ident + " rejects a constant")
+        require(yang_certificates.indefinite_ok(answer, 2 * integrand, symbol) is None,
+                ident + " rejects a scaled integrand")
+        require(pack_gate.proven("indefinite", row["sympy_expr"], None, row["answer_sympy"], "x"),
+                ident + " proof")
 
     sec = sp.exp(-sp.tan(x)) * sp.sec(x) ** 6
     sec_row = rows["YANG-2.4-P12"]

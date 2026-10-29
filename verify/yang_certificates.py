@@ -151,6 +151,12 @@ def _abs_sine_periods(integrand, symbol, lo, hi):
         if sp.cos(index * sp.pi) != sign or sp.cos((index + 1) * sp.pi) != -sign:
             return None
         # |sin(kπ + t)| = sin t on [0, π], and sign * sin(kπ + t) = sin t.
+        if sp.Abs(sign) != 1:
+            return None
+        # |sign * s| = s when s >= 0, so |sin(kπ + t)| = sin t on [0, π].
+        nonnegative = sp.Dummy("s", nonnegative=True)
+        if sp.Abs(sign * nonnegative) != nonnegative:
+            return None
         signed = sign * sp.sin(symbol)
         piece = _ftc(-sign * sp.cos(symbol), symbol, index * sp.pi, (index + 1) * sp.pi, signed)
         if piece != 2:
@@ -305,27 +311,132 @@ def _king_log_half(integrand, symbol, lo, hi):
     return sp.Rational(1, 2)
 
 
-def _sqrt_log_ray(integrand, symbol, lo, hi):
-    """∫_0^∞ ln(√x + 1) / (x √x) dx diverges. The substituted antiderivative tends to -∞ at 0."""
-    target = sp.log(sp.sqrt(symbol) + 1) / (symbol * sp.sqrt(symbol))
-    if lo != 0 or hi != sp.oo or integrand != target:
+def _abs_circle_split(integrand, symbol, lo, hi):
+    """∫_{-2}^{2} dx / (√|1-x²| + 1), split at |x|=1.
+
+    The integrand is even. On [0, 1] the sine substitution reduces it to
+    1 - (1/2) sec²(θ/2). On [1, 2] the hyperbolic substitution reduces it to
+    sinh(u)/(1+sinh(u)).
+    """
+    target = 1 / (sp.sqrt(sp.Abs(1 - symbol**2)) + 1)
+    if (lo, hi) != (-2, 2) or integrand != target:
         return None
-    parameter = sp.Dummy("t", positive=True)
-    jacobian = sp.diff(parameter**2, parameter)
-    if jacobian != 2 * parameter or _affine_sign(parameter, parameter, 0, 1) != 1:
+    if not _zero(target.subs(symbol, -symbol) - target) or sp.diff(-symbol, symbol) != -1:
         return None
-    substituted = sp.simplify(target.subs(symbol, parameter**2) * jacobian)
-    reduced = 2 * sp.log(1 + parameter) / parameter**2
-    if not _zero(substituted - reduced):
+    # x = -t reverses [-2, 0] onto [0, 2] and the minus sign cancels, so the
+    # two halves are equal. The positive half splits at x = 1.
+    if sp.expand((1 - symbol) * (1 + symbol) - (1 - symbol**2)) != 0:
         return None
-    primitive = 2 * (-sp.log(1 + parameter) / parameter + sp.log(parameter) - sp.log(1 + parameter))
-    if not _zero(sp.diff(primitive, parameter) - reduced):
+    if sp.expand((symbol - 1) * (symbol + 1) - (symbol**2 - 1)) != 0:
         return None
-    if sp.limit(primitive, parameter, sp.oo) != 0:
+    if _affine_sign(1 - symbol, symbol, 0, 1) != 1 or _affine_sign(1 + symbol, symbol, 0, 1) != 1:
         return None
-    if sp.limit(primitive, parameter, 0, dir="+") != -sp.oo:
+    if _affine_sign(symbol - 1, symbol, 1, 2) != 1 or _affine_sign(symbol + 1, symbol, 1, 2) != 1:
         return None
-    return sp.oo
+
+    theta = sp.Dummy("theta", real=True)
+    if sp.calculus.util.minimum(sp.sin(theta), theta, sp.Interval(0, sp.pi / 2)) != 0:
+        return None
+    if not _zero(sp.cos(theta) - sp.sin(sp.pi / 2 - theta)):
+        return None
+    # cos(θ) = sin(π/2 - θ), and π/2 - θ stays in [0, π/2], so cos is nonnegative there.
+    if not _zero(sp.cos(theta) ** 2 - (1 - sp.sin(theta) ** 2)):
+        return None
+    nonnegative = sp.Dummy("s", nonnegative=True)
+    if sp.sqrt(nonnegative**2) != nonnegative:
+        return None
+    reduced = sp.cos(theta) / (1 + sp.cos(theta))
+    if not _zero(sp.expand_trig(1 + sp.cos(theta) - 2 * sp.cos(theta / 2) ** 2)):
+        return None
+    claim = 1 - sp.Rational(1, 2) / sp.cos(theta / 2) ** 2
+    if not _zero(sp.together(reduced - claim)):
+        return None
+    primitive = theta - sp.tan(theta / 2)
+    if not _zero(sp.diff(primitive, theta) - claim):
+        return None
+    if primitive.subs(theta, 0) != 0 or sp.tan(sp.pi / 4) != 1:
+        return None
+    inner = sp.simplify(primitive.subs(theta, sp.pi / 2) - primitive.subs(theta, 0))
+    if not _zero(inner - (sp.pi / 2 - 1)):
+        return None
+
+    parameter = sp.Dummy("u", real=True, nonnegative=True)
+    if parameter.is_nonnegative is not True or sp.sinh(parameter).is_nonnegative is not True:
+        return None
+    if not _zero(sp.cosh(parameter) ** 2 - sp.sinh(parameter) ** 2 - 1):
+        return None
+    if sp.sqrt(sp.sinh(parameter) ** 2) != sp.sinh(parameter):
+        return None
+    if sp.diff(sp.cosh(parameter), parameter) != sp.sinh(parameter):
+        return None
+    reduced_outer = sp.sinh(parameter) / (1 + sp.sinh(parameter))
+    half = sp.sqrt(2) / 2
+    slope = sp.tanh(parameter / 2)
+    primitive_outer = (
+        parameter
+        - half * sp.log(slope + sp.sqrt(2) - 1)
+        + half * sp.log(sp.sqrt(2) + 1 - slope)
+    )
+    if not _zero(sp.diff(primitive_outer, parameter) - reduced_outer):
+        return None
+
+    upper = sp.log(2 + sp.sqrt(3))
+    if upper.is_positive is not True:
+        return None
+    hyperbolic = (sp.exp(upper) + sp.exp(-upper)) / 2
+    if sp.cosh(upper).rewrite(sp.exp) != hyperbolic or not _zero(hyperbolic - 2):
+        return None
+    if not _zero(sp.acosh(sp.cosh(upper)) - upper):
+        return None
+    # cosh(upper) = 2 and upper > 0, so acosh(2) = upper.
+    angle = upper / 2
+    if angle.is_positive is not True:
+        return None
+    if sp.cosh(2 * angle).rewrite(sp.exp) != hyperbolic:
+        return None
+    if not _zero((2 * sp.cosh(angle) ** 2 - 1).rewrite(sp.exp) - hyperbolic):
+        return None
+    if not _zero(sp.cosh(angle).rewrite(sp.exp) ** 2 - (hyperbolic + 1) / 2):
+        return None
+    if not _zero((hyperbolic + 1) / 2 - sp.Rational(3, 2)):
+        return None
+    if not _zero(sp.sinh(angle).rewrite(sp.exp) ** 2 - (sp.cosh(angle).rewrite(sp.exp) ** 2 - 1)):
+        return None
+    if not _zero(sp.sinh(angle).rewrite(sp.exp) ** 2 - sp.Rational(1, 2)):
+        return None
+    if sp.sinh(angle).rewrite(sp.exp) != (sp.exp(angle) - sp.exp(-angle)) / 2:
+        return None
+    if sp.exp(upper) != 2 + sp.sqrt(3) or not (2 + sp.sqrt(3) > 1):
+        return None
+    # exp(upper) > 1 and angle > 0, so sinh(angle) > 0 and cosh(angle) > 0.
+    # Their ratio is the positive square root of (1/2) / (3/2).
+    ratio = sp.sqrt(sp.Rational(1, 2)) / sp.sqrt(sp.Rational(3, 2))
+    if not _zero(ratio - 1 / sp.sqrt(3)):
+        return None
+    if sp.tanh(0) != 0:
+        return None
+    end = 1 / sp.sqrt(3)
+    if (sp.sqrt(2) - 1).is_positive is not True or (sp.sqrt(2) + 1).is_positive is not True:
+        return None
+    if (end + sp.sqrt(2) - 1).is_positive is not True or (sp.sqrt(2) + 1 - end).is_positive is not True:
+        return None
+
+    def _at(height, tangent):
+        return (
+            height
+            - half * sp.log(tangent + sp.sqrt(2) - 1)
+            + half * sp.log(sp.sqrt(2) + 1 - tangent)
+        )
+
+    outer = sp.expand_log(_at(upper, end) - _at(0, 0), force=True)
+    wanted = upper - sp.log(sp.sqrt(2) + sp.sqrt(3)) / sp.sqrt(2)
+    if not _zero(sp.expand_log(outer - wanted, force=True)):
+        return None
+    clean = sp.pi - 2 + 2 * upper - sp.sqrt(2) * sp.log(sp.sqrt(2) + sp.sqrt(3))
+    total = sp.simplify(2 * ((sp.pi / 2 - 1) + wanted))
+    if not _zero(total - clean):
+        return None
+    return clean
 
 
 def _gaussian_polynomial_tail(integrand, symbol, lo, hi):
@@ -497,15 +608,6 @@ def _matches(answer, wanted) -> bool:
     return answer == wanted or _exact(answer - wanted)
 
 
-def indefinite_ok(answer, integrand, symbol):
-    """Return True for a checked §2.6 antiderivative, False on a bad final, None on a miss."""
-    for checker in (_nested_sec_square, _linear_trig_radical):
-        verdict = checker(answer, integrand, symbol)
-        if verdict is not None:
-            return verdict
-    return None
-
-
 def _nested_sec_square(answer, integrand, symbol):
     """∫ sec(x)^2 sqrt(tan(x) sqrt(tan(x) sqrt(tan(x) sin(x)))) dx.
 
@@ -651,12 +753,84 @@ _DEFINITE = (
     _sec_radical_quarter,
     _inverse_log_pair,
     _king_log_half,
-    _sqrt_log_ray,
+    _abs_circle_split,
     _gaussian_polynomial_tail,
     _quartic_trig_period,
     _atan_log_line,
     _log_cubic_unit,
 )
+
+
+def _csc_radical(answer, integrand, symbol):
+    """∫ √(csc x - sin x) dx on sin x > 0, split by the sign of cos x.
+
+    csc x - sin x = cos²x / sin x. On sin x > 0 the square root is |cos x|/√(sin x).
+    The pieces meet at cos x = 0.
+    """
+    target = sp.sqrt(sp.csc(symbol) - sp.sin(symbol))
+    if integrand != target:
+        return None
+    if not _zero(sp.together(sp.csc(symbol) - sp.sin(symbol) - sp.cos(symbol) ** 2 / sp.sin(symbol))):
+        return False
+    if not _zero(sp.together(target**2 - sp.cos(symbol) ** 2 / sp.sin(symbol))):
+        return False
+    positive_piece = 2 * sp.sqrt(sp.sin(symbol))
+    negative_piece = 4 - positive_piece
+    wanted = sp.Piecewise((positive_piece, sp.cos(symbol) >= 0), (negative_piece, True))
+    if answer != wanted:
+        return False
+    cosine_slope = sp.cos(symbol) / sp.sqrt(sp.sin(symbol))
+    if not _zero(sp.diff(positive_piece, symbol) - cosine_slope):
+        return False
+    if not _zero(sp.diff(negative_piece, symbol) + cosine_slope):
+        return False
+    # Both pieces equal 2 at x = π/2, where cos x = 0 and sin x = 1.
+    if positive_piece.subs(symbol, sp.pi / 2) != 2 or negative_piece.subs(symbol, sp.pi / 2) != 2:
+        return False
+    return True
+
+
+def _sec_tan_radical(answer, integrand, symbol):
+    """∫ √(2 tan²x + 2 sec x tan x + 1) dx = ∫ |sec x + tan x| dx off cos x = 0.
+
+    The radicand is (sec x + tan x)². The numerator 1 + sin x is a square, so
+    sec x + tan x has the sign of cos x. Each piece is differentiated on its side.
+    """
+    radicand = 2 * sp.tan(symbol) ** 2 + 2 * sp.sec(symbol) * sp.tan(symbol) + 1
+    target = sp.sqrt(radicand)
+    if integrand != target:
+        return None
+    base = sp.sec(symbol) + sp.tan(symbol)
+    if not _zero(sp.expand(base**2 - radicand)):
+        return False
+    if not _zero(sp.together((1 + sp.sin(symbol)) / sp.cos(symbol) - base)):
+        return False
+    half_sum = sp.sin(symbol / 2) + sp.cos(symbol / 2)
+    if not _zero(sp.expand(half_sum**2 - (1 + sp.sin(symbol)))):
+        return False
+    positive_piece = sp.log(sp.sec(symbol)) + sp.log(base)
+    negative_piece = -sp.log(-sp.sec(symbol)) - sp.log(-base)
+    wanted = sp.Piecewise((positive_piece, sp.cos(symbol) > 0), (negative_piece, True))
+    if answer != wanted:
+        return False
+    if not _zero(sp.simplify(sp.diff(positive_piece, symbol) - (1 + sp.sin(symbol)) / sp.cos(symbol))):
+        return False
+    if not _zero(sp.simplify(sp.diff(negative_piece, symbol) + (1 + sp.sin(symbol)) / sp.cos(symbol))):
+        return False
+    return True
+
+
+def indefinite_ok(answer, integrand, symbol):
+    """Return True for a checked Yang antiderivative, False on a bad final, None on a miss.
+
+    Lane L5 covers the sign-split radicals. Lane L7 covers the §2.6 nested
+    radical and the elliptic antiderivative. A miss leaves the ordinary derivative check.
+    """
+    for builder in (_csc_radical, _sec_tan_radical, _nested_sec_square, _linear_trig_radical):
+        verdict = builder(answer, integrand, symbol)
+        if verdict is not None:
+            return verdict
+    return None
 
 
 def definite_value(integrand, symbol, lo, hi):
