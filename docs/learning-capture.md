@@ -72,7 +72,7 @@ Allowed writer: a repo agent. The study turn says the note is missing and does n
 
 ## D — Yang practice rows that are unchecked
 
-Trigger: a Yang row with `verify: unchecked`. After lane L1, 243 rows remain unchecked. `YANG_WITH_ANSWER` lists the proved Yang ids: the §1.1 textbook list, the §1.2 list, and `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, and `YANG-1.3-Ex03`.
+Trigger: a Yang row with `verify: unchecked`. After lanes L1 and L3, 213 rows remain unchecked. `YANG_WITH_ANSWER` lists the proved Yang ids: the §1.1 textbook list, the §1.2 list, `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, `YANG-1.3-Ex03`, and the §1.6 and §1.7 lists.
 
 The live turn does not fill the row. A fill is its own pull request for one id, and only when you are changing the catalog on purpose:
 
@@ -137,7 +137,7 @@ Learner stickies are not capture. Writing `stickies.json` by hand does not recor
 
 Set these together: `verify` `sympy`, `answer_plain`, `answer_source_pdf`, `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable` (one of `x`, `t`, `X`, `e`, or `grid` for a grid), `kind`, `limits` (`[]` when the kind is not bounded, otherwise two strings). Leave `worked_solution_latex` null. Keep `worked_solution_plain` empty unless `worked_solution_origin` is `pdf_copy`, and then store an extract, not a new derivation.
 
-`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 703, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
+`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 733, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows after lanes L1 and L3. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
 
 ## Checks before the pull request
 
