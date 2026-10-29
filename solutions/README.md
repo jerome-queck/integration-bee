@@ -1,8 +1,8 @@
 # Worked solutions
 
-These notes record printed finals and worked readings. They do not change `problems/records.jsonl` or any verify flag. At tip `770c6e4` every resource-pack catalog row is `verify: sympy` (674 SymPy / 0 manual / 0 unchecked). The index below lists 81 of those notes. `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, and `YANG-1.3-Ex03` are `verify: sympy`. Lane L1 also proves `YANG-1.1-P01`–`P06` and `YANG-1.2-P01`–`P20`. Lane L2 proves `YANG-1.4-P01`–`P18` and `YANG-1.5-P01`–`P20`. Lane L3 proves `YANG-1.6-P01`–`P20` and `YANG-1.7-P01`–`P10`. Lane L6 proves `YANG-2.3-P01`–`P18` and `YANG-2.4-P01`–`P12`. Lane L7 proves `YANG-2.5-P01`–`P18` and `YANG-2.6-P01`–`P16`. 111 other Yang rows stay `unchecked`.
+These notes record printed finals and worked readings. They do not change `problems/records.jsonl` or any verify flag. At tip `770c6e4` every resource-pack catalog row is `verify: sympy` (674 SymPy / 0 manual / 0 unchecked). The index below lists 81 of those notes. `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, and `YANG-1.3-Ex03` are `verify: sympy`. Lane L1 also proves `YANG-1.1-P01`–`P06` and `YANG-1.2-P01`–`P20`. Lane L2 proves `YANG-1.4-P01`–`P18` and `YANG-1.5-P01`–`P20`. Lane L3 proves `YANG-1.6-P01`–`P20` and `YANG-1.7-P01`–`P10`. Lane L6 proves `YANG-2.3-P01`–`P18` and `YANG-2.4-P01`–`P12`. Lane L7 proves `YANG-2.5-P01`–`P18` and `YANG-2.6-P01`–`P16`. Lane L4 proves `YANG-1.8-P01`–`P17` and `YANG-1.11-P01`–`P20`. 74 other Yang rows stay `unchecked`.
 
-Each pack final is the value printed in the cited answers PDF or solutions PDF. Where a worked PDF and an answers PDF print equivalent antiderivatives, the note records both and the constant relating them. Yang notes copy only finals that the guide prints. Other Yang rows are left without a final.
+Each pack final is the value printed in the cited answers PDF or solutions PDF. Where a worked PDF and an answers PDF print equivalent antiderivatives, the note records both and the constant relating them. Yang notes for `YANG-1.3-Ex01` and `YANG-1.3-Ex03` copy finals the guide prints. Lane L4 adds derived notes for the proved §1.8 and §1.11 practice rows. Those list items print no final. The catalog grade is the pack-gate value. Other Yang rows are left without a final.
 
 Re-run the machine notes with:
 
@@ -105,6 +105,8 @@ python3 solutions/self_check.py
 | YANG-1.3-Ex01 | \(8/3\) | [yang/YANG-1.3-Ex01.md](yang/YANG-1.3-Ex01.md) |
 | YANG-1.3-Ex02 | \(2\) | [yang/YANG-1.3-Ex02.md](yang/YANG-1.3-Ex02.md) |
 | YANG-1.3-Ex03 | \(2\tan^{-1}(3)\) | [yang/YANG-1.3-Ex03.md](yang/YANG-1.3-Ex03.md) |
+
+Lane L4 derived notes are `solutions/yang/YANG-1.8-P01.md` through `YANG-1.8-P17.md` and `solutions/yang/YANG-1.11-P01.md` through `YANG-1.11-P20.md`. Each header says the printed answer is absent.
 
 ## Sample
 
