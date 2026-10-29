@@ -1,7 +1,7 @@
 # YANG-1.3-Ex02
 
 - Guide: `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`, §1.3 Symmetry, Example 2
-- The catalog row is `verify: unchecked` and stores no `answer_plain`. The guide prints the final in the sentence "The left term is an odd function, so the answer is just 2." This note copies that printed final. It does not invent one, and it does not change the catalog flag.
+- The guide prints the final in the sentence "The left term is an odd function, so the answer is just 2." The catalog stores that printed value with `verify: sympy`. `verify/pack_gate.py` replaces the integrand by its even part on `[-1, 1]`, which simplifies to the constant `1` and integrates to `2`.
 
 ## Problem
 
@@ -29,4 +29,4 @@ The first summand is an odd function of \(x\), because \(\arcsin\) and \(\arctan
 
 ## SymPy self-check
 
-`solutions/self_check.py` runs `check_yang_1_3_ex02`. SymPy simplifies the odd summand plus its reflection to \(0\), simplifies the full integrand plus its reflection to \(2\), and integrates the constant \(1\) from \(-1\) to \(1\) to \(2\).
+`solutions/self_check.py` runs `check_yang_1_3_ex02`. SymPy simplifies the odd summand plus its reflection to \(0\), simplifies the full integrand plus its reflection to \(2\), and integrates the constant \(1\) from \(-1\) to \(1\) to \(2\). The catalog proof is the same even-part reduction inside `verify/pack_gate.py`, on `sympy_expr` `x*(asin(x)/atan(x) + 1/x)`, limits `[-1, 1]`, and `answer_sympy` `2`.

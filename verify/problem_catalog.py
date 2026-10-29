@@ -19,10 +19,41 @@ SAMPLE_SOLUTIONS_PDF = "sources/UK_University_integration_bee_sample_problems_so
 VERIFIES = frozenset({"manual", "unchecked", "sympy"})
 SYMPY_VARIABLES = frozenset({"x", "t", "X", "e"})
 ORIGINS = frozenset({"missing", "pdf_copy"})
-YANG_WITH_ANSWER = frozenset({"YANG-1.3-Ex01", "YANG-1.3-Ex03"})
+YANG_WITH_ANSWER = frozenset({
+    "YANG-1.1-P01",
+    "YANG-1.1-P02",
+    "YANG-1.1-P03",
+    "YANG-1.1-P04",
+    "YANG-1.1-P05",
+    "YANG-1.1-P06",
+    "YANG-1.2-P01",
+    "YANG-1.2-P02",
+    "YANG-1.2-P03",
+    "YANG-1.2-P04",
+    "YANG-1.2-P05",
+    "YANG-1.2-P06",
+    "YANG-1.2-P07",
+    "YANG-1.2-P08",
+    "YANG-1.2-P09",
+    "YANG-1.2-P10",
+    "YANG-1.2-P11",
+    "YANG-1.2-P12",
+    "YANG-1.2-P13",
+    "YANG-1.2-P14",
+    "YANG-1.2-P15",
+    "YANG-1.2-P16",
+    "YANG-1.2-P17",
+    "YANG-1.2-P18",
+    "YANG-1.2-P19",
+    "YANG-1.2-P20",
+    "YANG-1.3-Ex01",
+    "YANG-1.3-Ex02",
+    "YANG-1.3-Ex03",
+})
 EXPECTED_COUNT = 946
 EXPECTED_MANUAL = 0
-EXPECTED_SYMPY = 676
+# 674 resource-pack rows, plus 29 proved Yang rows.
+EXPECTED_SYMPY = 703
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
@@ -34,6 +65,17 @@ PINNED_CITE = {
 # Transcribing the question does not authorize a symbolic answer or grading.
 MANUAL_INPUT_KINDS = {
 }
+
+
+def first_unchecked_yang(rows: list[dict] | None = None) -> str:
+    """First Yang row that still has no proved final. Stable under id order."""
+    data = rows if rows is not None else load_records()
+    for row in data:
+        if row.get("source") == "yang_book" and row.get("verify") == "unchecked":
+            ident = row.get("id")
+            if isinstance(ident, str) and ident:
+                return ident
+    raise ValueError("no unchecked yang row")
 
 
 def load_records(path: Path | None = None) -> list[dict]:

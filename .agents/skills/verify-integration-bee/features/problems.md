@@ -6,7 +6,7 @@ The contest catalog lists resource-pack and Yang integrals. List and select hide
 
 - `problems-round` lists Round 1 ids and hides answers.
 - `problems-show` returns `R1-2024-Q01` with the mark-scheme cite.
-- `problems-select` returns unanswered Yang practice `YANG-1.1-P01` with the integrand and without an answer.
+- `problems-select` returns proved Yang practice `YANG-1.1-P01` with the integrand and without the answer text. It also returns the first `verify: unchecked` Yang row with no answer.
 - `problems-ambiguous` refuses a select that matches more than one id.
 - `problems-sample` lists `SAMPLE-Q01` through `SAMPLE-Q20` and hides answers.
 
@@ -24,7 +24,8 @@ Preconditions:
 - **Round list.** Run `scripts/control-integration-bee problems list --round r1 --format json >"$IB_EVIDENCE/problems-round.json"`. Exit code is 0. Stdout contains `R1-2024-Q01` and `"count": 280`. Stdout does not contain `answer_plain` or `answer_sympy`.
 - **Show one.** Run `scripts/control-integration-bee problems show --id R1-2024-Q01 --format json >"$IB_EVIDENCE/problems-show.json"`. Exit code is 0. Stdout contains `sin(1)`, `"verify": "sympy"`, and `Mark_Scheme_2024_Round_1_UK_University_Integration_Bee.pdf`.
 - **Show a proved row.** Run `scripts/control-integration-bee problems show --id R1-2020-Q08 --format json >"$IB_EVIDENCE/problems-show-sympy.json"`. Exit code is 0. Stdout contains `"verify": "sympy"`, `answer_sympy`, and `Virtual_integration_competition_answers.pdf`.
-- **Select one.** Run `scripts/control-integration-bee problems select --id YANG-1.1-P01 --format json >"$IB_EVIDENCE/problems-select.json"`. Exit code is 0. Stdout contains `unchecked` and `integrand_plain`. Stdout does not contain `answer_plain`.
+- **Select one proved Yang row.** Run `scripts/control-integration-bee problems select --id YANG-1.1-P01 --format json >"$IB_EVIDENCE/problems-select.json"`. Exit code is 0. Stdout contains `"verify": "sympy"` and `integrand_plain`. Stdout does not contain `answer_plain`.
+- **Select one unanswered Yang row.** Choose the first `problems/records.jsonl` row with `source` `yang_book` and `verify` `unchecked`. Run `scripts/control-integration-bee problems select --id <that id> --format json >"$IB_EVIDENCE/problems-select-unchecked.json"`. Exit code is 0. Stdout contains `unchecked` and `integrand_plain`. Stdout does not contain `answer_plain`.
 - **Ambiguous select.** Run `scripts/control-integration-bee problems select --round r1 --format json >"$IB_EVIDENCE/problems-ambiguous.txt" 2>"$IB_EVIDENCE/problems-ambiguous.err"`. Exit code is 2. Stderr contains `matched`.
 - **Sample list.** Run `scripts/control-integration-bee problems list --round sample --format json >"$IB_EVIDENCE/problems-sample.json"`. Exit code is 0. Stdout contains `SAMPLE-Q01`, `SAMPLE-Q20`, and `"count": 20`. Stdout does not contain `answer_plain` or `answer_sympy`.
 - **Sample table.** Run `scripts/control-integration-bee problems list --round sample --limit 1 >"$IB_EVIDENCE/problems-sample-table.txt" 2>"$IB_EVIDENCE/problems-sample-table.err"`. Exit code is 0. The first line is `count=20 shown=1`. The next line is `id	round	year	problem_id	verify	kind	source	has_answer`. Stdout contains `SAMPLE-Q01` and `uk_sample`. Stdout does not contain `answer_plain`.

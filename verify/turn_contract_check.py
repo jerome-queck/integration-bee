@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "verify"))
 
 import model  # noqa: E402
+import problem_catalog  # noqa: E402
 import turn_contract  # noqa: E402
 
 CLI = ROOT / "scripts" / "control-integration-bee"
@@ -725,7 +726,17 @@ def main() -> int:
                 marked.returncode == (0 if correct else 1) and load(marked)["mark"]["correct"] is correct,
                 f"{problem_id} grades {final} with its integration variable",
             )
-        invented = apply(
+        graded = apply(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": "YANG-1.1-P01",
+                "source": "typed",
+                "extract": {"final_answer": "5*x**3/3 - 4*x**2 + 5*x"},
+            },
+        )
+        check(graded.returncode == 0 and load(graded)["mark"]["correct"] is True, "YANG-1.1-P01 grades the proved antiderivative")
+        rejected = apply(
             data,
             {
                 "kind": "mark",
@@ -735,8 +746,20 @@ def main() -> int:
                 "extract": {"final_answer": "x"},
             },
         )
+        check(rejected.returncode == 1 and load(rejected)["mark"]["correct"] is False, "YANG-1.1-P01 rejects a wrong antiderivative")
+        unchecked_yang = problem_catalog.first_unchecked_yang()
+        invented = apply(
+            data,
+            {
+                "kind": "mark",
+                "problem_id": unchecked_yang,
+                "source": "typed",
+                "verdict": "correct",
+                "extract": {"final_answer": "x"},
+            },
+        )
         check(invented.returncode == 2 and "no printed answer" in invented.stderr, "unanswered yang practice is not graded")
-        check("YANG-1.1-P01" not in run(data, ["progress", "show", "--format", "json"]).stdout, "yang practice leaves no attempt")
+        check(unchecked_yang not in run(data, ["progress", "show", "--format", "json"]).stdout, "yang practice leaves no attempt")
 
         projection = json.loads((data / "progress.local.json").read_text())
         check(projection["session"]["phase"] == "mock_open", "projection stores the session")
