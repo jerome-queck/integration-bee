@@ -147,11 +147,45 @@ YANG_WITH_ANSWER = frozenset({
     "YANG-2.4-P10",
     "YANG-2.4-P11",
     "YANG-2.4-P12",
+    "YANG-2.5-P01",
+    "YANG-2.5-P02",
+    "YANG-2.5-P03",
+    "YANG-2.5-P04",
+    "YANG-2.5-P05",
+    "YANG-2.5-P06",
+    "YANG-2.5-P07",
+    "YANG-2.5-P08",
+    "YANG-2.5-P09",
+    "YANG-2.5-P10",
+    "YANG-2.5-P11",
+    "YANG-2.5-P12",
+    "YANG-2.5-P13",
+    "YANG-2.5-P14",
+    "YANG-2.5-P15",
+    "YANG-2.5-P16",
+    "YANG-2.5-P17",
+    "YANG-2.5-P18",
+    "YANG-2.6-P01",
+    "YANG-2.6-P02",
+    "YANG-2.6-P03",
+    "YANG-2.6-P04",
+    "YANG-2.6-P05",
+    "YANG-2.6-P06",
+    "YANG-2.6-P07",
+    "YANG-2.6-P08",
+    "YANG-2.6-P09",
+    "YANG-2.6-P10",
+    "YANG-2.6-P11",
+    "YANG-2.6-P12",
+    "YANG-2.6-P13",
+    "YANG-2.6-P14",
+    "YANG-2.6-P15",
+    "YANG-2.6-P16",
 })
 EXPECTED_COUNT = 946
 EXPECTED_MANUAL = 0
-# 674 resource-pack rows, plus 127 proved Yang rows (L1's 29, L2's 38, L3's 30, and L6's 30).
-EXPECTED_SYMPY = 801
+# 674 resource-pack rows, plus 161 proved Yang rows (L1's 29, L2's 38, L3's 30, L6's 30, and L7's 34).
+EXPECTED_SYMPY = 835
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {
