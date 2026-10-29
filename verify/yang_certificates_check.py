@@ -57,7 +57,40 @@ def check(rows):
     require(yang_certificates.definite_value(expression.subs(x, complex_variable),
                                            complex_variable, 0, 6) is None,
             "Yang requires real substitution variable")
+    _check_section_26(rows, x)
 
+
+def _check_section_26(rows, x):
+    specs = (
+        ("YANG-2.6-P10", "indefinite", []),
+        ("YANG-2.6-P12", "indefinite", []),
+        ("YANG-2.6-P14", "definite", ["0", "pi/4"]),
+    )
+    for ident, kind, limits in specs:
+        row = rows[ident]
+        require(row["verify"] == "sympy" and row["kind"] == kind, ident + " status")
+        require(row["limits"] == limits, ident + " endpoints")
+        pair = None if kind == "indefinite" else limits
+        require(pack_gate.proven(kind, row["sympy_expr"], pair, row["answer_sympy"], "x"),
+                ident + " proof")
+        require(not pack_gate.proven(kind, row["sympy_expr"], pair, "0", "x"),
+                ident + " rejects 0")
+    nested = pack_gate._parse(rows["YANG-2.6-P10"]["sympy_expr"], "x")
+    radical = pack_gate._parse(rows["YANG-2.6-P12"]["sympy_expr"], "x")
+    quarter = pack_gate._parse(rows["YANG-2.6-P14"]["sympy_expr"], "x")
+    require(yang_certificates.indefinite_ok(sp.Integer(0), nested, x) is False,
+            "nested radical rejects a zero final")
+    require(yang_certificates.indefinite_ok(sp.sec(x), 2 * nested, x) is None,
+            "nested radical rejects a scaled integrand")
+    require(yang_certificates.indefinite_ok(sp.Integer(0), radical, x) is False,
+            "elliptic radical rejects a zero final")
+    require(yang_certificates.indefinite_ok(sp.sec(x), radical + 1, x) is None,
+            "elliptic radical rejects an extra summand")
+    require(yang_certificates.definite_value(quarter, x, 0, sp.pi / 2) is None,
+            "log-cosine quarter rejects a longer interval")
+    require(yang_certificates.definite_value(2 * quarter, x, 0, sp.pi / 4) is None,
+            "log-cosine quarter rejects a scaled integrand")
+    complex_variable = sp.Symbol("z")
     sec = sp.exp(-sp.tan(x)) * sp.sec(x) ** 6
     sec_row = rows["YANG-2.4-P12"]
     require(sec_row["verify"] == "sympy" and sec_row["kind"] == "definite", "YANG-2.4-P12 status")

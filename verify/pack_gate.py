@@ -6022,6 +6022,10 @@ def _worker(payload, queue) -> None:
             if sample is not None:
                 queue.put(("ok", sample))
                 return
+            yang = yang_certificates.indefinite_ok(answer, integrand, symbol)
+            if yang is not None:
+                queue.put(("ok", yang))
+                return
         # These checked forms retain the original finite sums or inner
         # integral. The ordinary closed-integrand guard still rejects a miss.
         if kind == "definite":

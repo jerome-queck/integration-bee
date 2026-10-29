@@ -4,7 +4,10 @@ Example 3 is the shifted-parity integrand on [0, 6]. Example 1 is a polynomial
 and uses pack_gate's ordinary definite integration. Section 1.4 item 3 is
 (2^x + 3^x)/5^x on [0, ∞). Section 2.4 item 12 is sec(x)^6 exp(-tan x)
 on [0, pi/2]; the tangent substitution reduces it to a Gamma integral.
-Every other shape returns None.
+Three §2.6 practice rows use the same module: a nested radical
+under sec(x)^2, an elliptic antiderivative of 1/sqrt(3 sin x + cos x), and
+the improper integral of log(2 cos(x)^2 - 1) cos(x) on [0, π/4]. Every other
+shape returns None.
 """
 
 from __future__ import annotations
@@ -98,6 +101,9 @@ def definite_value(integrand, symbol, lo, hi):
     sec_tan = _sec_tan_sixth(integrand, symbol, lo, hi)
     if sec_tan is not None:
         return sec_tan
+    quarter = _log_cosine_quarter(integrand, symbol, lo, hi)
+    if quarter is not None:
+        return quarter
     if (lo, hi) != (0, 6) or symbol.is_real is not True:
         return None
     denominator = symbol**2 - 6 * symbol + 10
@@ -129,3 +135,153 @@ def definite_value(integrand, symbol, lo, hi):
     if sp.cancel(sp.diff(primitive, u) - even) != 0:
         return None
     return primitive.subs(u, upper) - primitive.subs(u, lower)
+
+
+def _exact(expression) -> bool:
+    return expression == 0 or sp.simplify(expression) == 0
+
+
+def _matches(answer, wanted) -> bool:
+    return answer == wanted or _exact(answer - wanted)
+
+
+def indefinite_ok(answer, integrand, symbol):
+    """Return True for a checked §2.6 antiderivative, False on a bad final, None on a miss."""
+    for checker in (_nested_sec_square, _linear_trig_radical):
+        verdict = checker(answer, integrand, symbol)
+        if verdict is not None:
+            return verdict
+    return None
+
+
+def _nested_sec_square(answer, integrand, symbol):
+    """∫ sec(x)^2 sqrt(tan(x) sqrt(tan(x) sqrt(tan(x) sin(x)))) dx.
+
+    The printed nest and tan(x)^(7/8) sin(x)^(1/8) have the same eighth power.
+    For positive factors the principal nest equals that power. Where sine and
+    cosine are positive, the derivative of (8/15) sec(x)^(15/8) and the
+    denested integrand both reduce to sin/cos^(23/8).
+    """
+    if symbol.is_real is not True:
+        return None
+    nest = sp.sqrt(
+        sp.tan(symbol) * sp.sqrt(sp.tan(symbol) * sp.sqrt(sp.tan(symbol) * sp.sin(symbol)))
+    )
+    if integrand != sp.sec(symbol)**2 * nest:
+        return None
+    wanted = sp.Rational(8, 15) * sp.sec(symbol)**sp.Rational(15, 8)
+    if not _matches(answer, wanted):
+        return False
+    if not _exact(nest**8 - sp.tan(symbol)**7 * sp.sin(symbol)):
+        return False
+    factor_t, factor_s = sp.symbols("yang_t yang_s", positive=True)
+    positive_power = factor_t**sp.Rational(7, 8) * factor_s**sp.Rational(1, 8)
+    # Positive bases denest the printed association to the principal power.
+    if nest.subs({sp.tan(symbol): factor_t, sp.sin(symbol): factor_s}) != positive_power:
+        return False
+    slope = sp.tan(symbol) * sp.sec(symbol)**sp.Rational(15, 8)
+    if sp.diff(wanted, symbol) != slope:
+        return False
+    sine, cosine = sp.symbols("yang_sin yang_cos", positive=True)
+    replaced_slope = slope.subs({sp.tan(symbol): sine / cosine, sp.sec(symbol): 1 / cosine})
+    denested = (
+        sp.sec(symbol)**2
+        * sp.tan(symbol)**sp.Rational(7, 8)
+        * sp.sin(symbol)**sp.Rational(1, 8)
+    )
+    replaced_denested = denested.subs({
+        sp.tan(symbol): sine / cosine,
+        sp.sec(symbol): 1 / cosine,
+        sp.sin(symbol): sine,
+    })
+    if sp.expand_power_exp(replaced_slope) != sp.expand_power_exp(replaced_denested):
+        return False
+    return True
+
+
+def _linear_trig_radical(answer, integrand, symbol):
+    """∫ dx/sqrt(3 sin x + cos x), via a phase shift and the Weierstrass pullback.
+
+    3 sin x + cos x = sqrt(10) sin(x + arctan(1/3)). t = tan(θ/2) and s = sqrt(t)
+    pull 1/sqrt(sin θ) back to 2 sqrt(2) / sqrt(1+s^4). The s-derivative of
+    sqrt(2) elliptic_f(2 atan(s), 1/2) is that pullback, and multiplying by
+    10^(-1/4) restores the phase-shifted factor.
+    """
+    if symbol.is_real is not True:
+        return None
+    if integrand != 1 / sp.sqrt(3 * sp.sin(symbol) + sp.cos(symbol)):
+        return None
+    alpha = sp.atan(sp.Rational(1, 3))
+    amplitude = sp.sqrt(10)
+    hole = sp.symbols("s", positive=True)
+    primitive = sp.sqrt(2) * sp.elliptic_f(2 * sp.atan(hole), sp.Rational(1, 2))
+    wanted = amplitude**(-sp.Rational(1, 2)) * primitive.subs(
+        hole, sp.sqrt(sp.tan((symbol + alpha) / 2))
+    )
+    if not _matches(answer, wanted):
+        return False
+    if not _exact(amplitude * sp.sin(symbol + alpha) - (3 * sp.sin(symbol) + sp.cos(symbol))):
+        return False
+    if not _exact(sp.cos(alpha) - 3 / amplitude) or not _exact(sp.sin(alpha) - 1 / amplitude):
+        return False
+    if not _exact(amplitude**(-sp.Rational(1, 2)) - sp.Integer(10)**(-sp.Rational(1, 4))):
+        return False
+    theta = sp.symbols("theta", real=True)
+    tangent = sp.tan(theta / 2)
+    if not _exact(sp.sin(theta) - 2 * tangent / (1 + tangent**2)):
+        return False
+    if not _exact(sp.diff(tangent, theta) - (1 + tangent**2) / 2):
+        return False
+    positive_t = sp.symbols("T", positive=True)
+    jacobian = (2 / (1 + positive_t**2)) / sp.sqrt(2 * positive_t / (1 + positive_t**2))
+    pulled = sp.sqrt(2) / (sp.sqrt(positive_t) * sp.sqrt(1 + positive_t**2))
+    if not _exact(jacobian - pulled):
+        return False
+    if not _exact(pulled.subs(positive_t, hole**2) * (2 * hole) - 2 * sp.sqrt(2) / sp.sqrt(1 + hole**4)):
+        return False
+    ds_dtheta = ((1 + hole**4) / 2) / (2 * hole)
+    sine_in_s = 2 * hole**2 / (1 + hole**4)
+    if not _exact(sp.diff(primitive, hole) * ds_dtheta - 1 / sp.sqrt(sine_in_s)):
+        return False
+    scaled = amplitude**(-sp.Rational(1, 2)) * primitive
+    if not _exact(
+        sp.diff(scaled, hole) * ds_dtheta
+        - amplitude**(-sp.Rational(1, 2)) / sp.sqrt(sine_in_s)
+    ):
+        return False
+    if not _exact(
+        1 / sp.sqrt(amplitude * sp.sin(theta))
+        - amplitude**(-sp.Rational(1, 2)) / sp.sqrt(sp.sin(theta))
+    ):
+        return False
+    return True
+
+
+def _log_cosine_quarter(integrand, symbol, lo, hi):
+    """∫_0^{π/4} log(2 cos(x)^2 - 1) cos(x) dx = sqrt(2) (log 2 - 1).
+
+    2 cos(x)^2 - 1 = 1 - 2 sin(x)^2. F(u) = u log(1-2u^2) - 2u
+    + log((1+sqrt(2) u)/(1-sqrt(2) u))/sqrt(2) differentiates to the
+    substituted integrand, F(0) = 0, and the limit at x = π/4 from the
+    left is the value.
+    """
+    if symbol.is_real is not True or lo != 0 or hi != sp.pi / 4:
+        return None
+    if integrand != sp.log(2 * sp.cos(symbol)**2 - 1) * sp.cos(symbol):
+        return None
+    u = sp.Dummy("u", real=True)
+    antiderivative = (
+        u * sp.log(1 - 2 * u**2)
+        - 2 * u
+        + sp.sqrt(2)**(-1) * sp.log((1 + sp.sqrt(2) * u) / (1 - sp.sqrt(2) * u))
+    )
+    composed = sp.diff(antiderivative.subs(u, sp.sin(symbol)), symbol)
+    if not _exact(composed - integrand):
+        return None
+    if not _exact(antiderivative.subs(u, 0)):
+        return None
+    value = sp.sqrt(2) * (sp.log(2) - 1)
+    limit = sp.limit(antiderivative.subs(u, sp.sin(symbol)), symbol, sp.pi / 4, dir="-")
+    if not _exact(limit - value):
+        return None
+    return value
