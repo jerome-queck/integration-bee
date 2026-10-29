@@ -4,7 +4,7 @@ Concept units before past papers. Each unit directory:
 
 ```
 meta.yaml          # id, tags, yang:*, past_paper flag
-teaching.tex       # canonical teaching (→ PDF; templates/ later)
+teaching.tex       # canonical teaching (PDF via templates/)
 drills.tex
 solutions.tex
 drills.md          # thin CLI table: ids, tags, sympy answers
