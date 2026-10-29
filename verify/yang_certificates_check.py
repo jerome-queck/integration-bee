@@ -76,7 +76,29 @@ def check(rows):
     require(yang_certificates._sec_tan_sixth(sec, complex_variable, 0, sp.pi / 2) is None,
             "sec-tan requires a real variable")
 
+    power = (2**x + 3**x) / 5**x
+    power_value = 1 / sp.log(sp.Rational(5, 2)) + 1 / sp.log(sp.Rational(5, 3))
+    power_row = rows["YANG-1.4-P03"]
+    require(power_row["verify"] == "sympy" and power_row["kind"] == "definite", "YANG-1.4-P03 status")
+    require(power_row["limits"] == ["0", "oo"] and power_row["variable"] == "x", "YANG-1.4-P03 endpoints")
+    require(pack_gate._parse(power_row["sympy_expr"], "x") == power, "YANG-1.4-P03 integrand")
+    require(sp.simplify(pack_gate._parse(power_row["answer_sympy"], "x") - power_value) == 0,
+            "YANG-1.4-P03 value")
+    require(yang_certificates.definite_value(power, x, sp.S(0), sp.oo) == power_value,
+            "two-five power certificate")
+    require(pack_gate.proven("definite", power_row["sympy_expr"], power_row["limits"],
+                             power_row["answer_sympy"], "x"),
+            "YANG-1.4-P03 proof")
+    for wrong in ("0", "1", "2", "log(5/2) + log(5/3)"):
+        require(not pack_gate.proven("definite", power_row["sympy_expr"], power_row["limits"], wrong, "x"),
+                "YANG-1.4-P03 rejects " + wrong)
+    require(yang_certificates.definite_value((3**x + 4**x) / 5**x, x, 0, sp.oo) is None,
+            "power ray rejects other bases")
+    require(yang_certificates.definite_value(power, x, 0, 1) is None, "power ray rejects other limits")
+    require(yang_certificates._two_five_power_ray(power, complex_variable, 0, sp.oo) is None,
+            "power ray requires a real variable")
+
 
 if __name__ == "__main__":
     check({row["id"]: row for row in problem_catalog.load_records()})
-    print("PASS Yang answered rows, parity and sec-tan certificates, and wrong answers")
+    print("PASS Yang answered rows, parity, sec-tan, and §1.4 power-ray certificates, and wrong answers")
