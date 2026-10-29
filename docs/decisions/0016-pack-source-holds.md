@@ -10,6 +10,8 @@ At tip `770c6e4` the resource pack is **674 SymPy / 0 manual / 0 unchecked**, wi
 
 Lane L1 proves 27 further Yang rows and leaves every other Yang row `unchecked`. The proved ids are `YANG-1.1-P01`–`P06`, `YANG-1.2-P01`–`P20`, and `YANG-1.3-Ex02`. `EXPECTED_SYMPY=703` is the 674 pack rows plus these 29 Yang rows (`YANG-1.3-Ex01` and `YANG-1.3-Ex03` were already proved). The §1.1 and §1.2 lists print no final; each stored antiderivative is the one `pack_gate.fields_from_parts` accepted. Example 2's guide prints 2, and the even part on \([-1, 1]\) evaluates to that printed value. 243 Yang rows remain `unchecked`. This registry does not invent a final the gate did not prove.
 
+Lane L3 of receipt ibe-yang-sympy-fill-2026-10-29, rebased onto Lane L1, certifies the thirty printed indefinite integrals in Yang §1.6 and §1.7. Each stored answer is an antiderivative whose derivative simplifies identically to the printed integrand. `EXPECTED_SYMPY=733` is L1's 703 plus these thirty rows. Yang practice still `unchecked` is **213**. `YANG-1.6-P19` is included: the certified quotient agrees with \(2(x+1)e^{x/2}\) only on \(x>-3\). Recount after rebasing onto a later tip before copying this number.
+
 ## Purpose
 
 At the audit baseline, twelve resource-pack catalog rows remained `verify: manual` because the printed problem, assumptions, or mark needed clarification. K recorded these as source holds, not claims that a problem is impossible or has no closed form. Some notes prove the value of the printed integral; others exhibit two admissible answers. L–Q certify all twelve of those rows under t636u and keep their conflicting marks or prior diagnoses as source evidence.
@@ -112,10 +114,12 @@ All twelve audited holds are resolved by L–Q. Keep this template for any futur
 | After L+M+N | 671 | 3: Q Tournament | 2 | 671 | 5 |
 | After L–Q | 674 | 0 pack manuals | 2 | 674 | 2 |
 | Tip `770c6e4`, after Handoff O | 674 | 0 | 0 (`YANG-1.3-Ex01` and `YANG-1.3-Ex03` are `sympy`) | 676 | 0 |
+| Lane L1 | 674 | 0 | 0 (29 Yang rows are `sympy`) | 703 | 0 |
+| Lane L3 on L1 | 674 | 0 | 0 (L1's 29 plus thirty §1.6–§1.7 rows are `sympy`) | 733 | 0 |
 
-Rows above the tip are dated snapshots. At tip `770c6e4`, `YANG-1.3-Ex01` and `YANG-1.3-Ex03` are `verify: sympy` and count inside `EXPECTED_SYMPY=676`. The other 270 Yang practice rows remain `unchecked` at that tip. Lane L1 later proves 27 of them, so the live pair is `EXPECTED_SYMPY=703` / `EXPECTED_MANUAL=0`, and 243 Yang rows stay `unchecked`. This registry does not invent a final the gate did not prove. The sample catalog has 20 rows, all `sympy`, and those rows stay outside the EXPECTED pair. The complete JSONL has 966 rows.
+Rows above the Lane L3 row are dated snapshots. At tip `770c6e4`, `YANG-1.3-Ex01` and `YANG-1.3-Ex03` are `verify: sympy` and count inside `EXPECTED_SYMPY=676`. Lane L1 later proves 27 more, and Lane L3 proves the thirty §1.6 and §1.7 rows. The live pair is `EXPECTED_SYMPY=733` / `EXPECTED_MANUAL=0`, and 213 Yang rows stay `unchecked`. This registry does not invent a final the gate did not prove. The sample catalog has 20 rows, all `sympy`, and those rows stay outside the EXPECTED pair. The complete JSONL has 966 rows.
 
-All 674 resource-pack rows have a nonempty `answer_plain` and `answer_source_pdf`, and all 674 are `verify: sympy`. After lane L1, 243 Yang rows stay `unchecked`. Do not change EXPECTED ahead of the catalog. Recount after rebasing onto the latest tip; additional encodes must be reflected in the actual catalog rather than inferred from a historical row of this table.
+All 674 resource-pack rows have a nonempty `answer_plain` and `answer_source_pdf`, and all 674 are `verify: sympy`. After lanes L1 and L3, 213 Yang rows stay `unchecked`. Do not change EXPECTED ahead of the catalog. Recount after rebasing onto the latest tip; additional encodes must be reflected in the actual catalog rather than inferred from a historical row of this table.
 
 ## Worked-note coverage: retire the “19 skips” count
 
@@ -139,7 +143,7 @@ The learner talks to the [companion](../../.agents/skills/integration-bee-compan
 - Run `scripts/control-integration-bee doctor` and require `READY integration-bee`.
 - Run `make check` on the PR head. It includes catalog and certificate checks, manual/symbolic turn fixtures, readiness invariants, TeX compilation, and formal checks. Record the actual result and any omitted gate in the PR's `## Pre-review self-check`.
 - Confirm every resource-pack row is `verify: sympy` with a cited grading answer. Pack manuals are 0 and unchecked pack rows are 0. Grade `sympy` from `extract.final_answer`. A later `manual` row still needs an explicit companion verdict. Open this registry for a new hold.
-- Confirm all twelve L–Q notes say `Status: resolved` and `verify: sympy`. Pack manuals are 0. `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, and `YANG-1.3-Ex03` are `verify: sympy`, as are `YANG-1.1-P01`–`P06` and `YANG-1.2-P01`–`P20`. The other 243 Yang rows stay `unchecked` until a gate accepts a final.
+- Confirm all twelve L–Q notes say `Status: resolved` and `verify: sympy`. Pack manuals are 0. `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, and `YANG-1.3-Ex03` are `verify: sympy`, as are `YANG-1.1-P01`–`P06`, `YANG-1.2-P01`–`P20`, `YANG-1.6-P01`–`P20`, and `YANG-1.7-P01`–`P10`. The other 213 Yang rows stay `unchecked` until a gate accepts a final.
 - Confirm teaching deferred is 0 in the [concept map](../../pedagogy/concept-map.md): 63 ready concept nodes and 9 indexes. `floor`, `dutis`, `vector-calc`, `beta`, `zeta`, `euler-mascheroni`, and `catalan` are ready. They stay unticked until a learner has evidence and are not Round 1 requirements. Units 01–36 and their 300 drills remain the teaching path.
 
 The PR body carries the run-specific READY line and check summary. The owner re-runs pstack and `make check` before deciding whether to merge. K's documentation PR did not merge I's encodes or J's bulk OCR; later handoffs landed on their own. The release condition at tip `770c6e4` is the checklist above.
