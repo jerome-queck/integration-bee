@@ -28,14 +28,22 @@ def wired(line: str, expected: str) -> bool:
     return nxt == "" or not nxt.isalnum()
 
 
+MARKERS = ("TODO", "FIXME", "TBD")
+
 fail = 0
 for unit in sorted((ROOT / "units").glob("[0-9][0-9]-*")):
     for name, expected in EXPECT.items():
         path = unit / name
-        line = first_code_line(path.read_text())
+        text = path.read_text()
+        line = first_code_line(text)
         if not wired(line, expected):
             print(f"FAIL {path.relative_to(ROOT)} starts with {line!r}")
             fail = 1
+        for token in MARKERS:
+            if token in text:
+                print(f"FAIL {path.relative_to(ROOT)} contains {token}")
+                fail = 1
+                break
 sim = (ROOT / "templates" / "round1-sim.tex").read_text()
 if "\\input{ib-common.tex}" not in sim or "30 problems" not in sim:
     print("FAIL templates/round1-sim.tex")
