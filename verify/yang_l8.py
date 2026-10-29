@@ -25,6 +25,9 @@ def definite_value(integrand, symbol, lo, hi):
         _exponential_arctangent,
         _triple_angle_arctangent,
         _composed_exponential_fraction,
+        _nested_exponential_speed,
+        _log_sqrt_linear_over_power,
+        _conjugate_square_roots,
     ):
         value = checker(integrand, symbol, lo, hi)
         if value is not None:
@@ -370,3 +373,146 @@ def _composed_exponential_fraction(integrand, x, lo, hi):
     if length != sp.Rational(1, 2):
         return None
     return length / 2
+
+
+def _nested_exponential_speed(integrand, x, lo, hi):
+    """∫_0^{(ln 4)^2} sqrt(exp(sqrt(exp(sqrt(x)))+sqrt(x))/x) dx = 8(e-sqrt(e)).
+
+    The printed radical covers the fraction. The exponent is
+    sqrt(e^{sqrt(x)})+sqrt(x). t=sqrt(x) and u=exp(t/2) leave 4∫_1^2 exp(u/2) du.
+    """
+    target = sp.sqrt(sp.exp(sp.sqrt(sp.exp(sp.sqrt(x))) + sp.sqrt(x)) / x)
+    if integrand != target or lo != 0 or hi != sp.log(4) ** 2:
+        return None
+    t = sp.Dummy("t", positive=True)
+    if not _is_zero(sp.diff(t**2, t) - 2 * t):
+        return None
+    if not _is_zero(sp.sqrt(sp.log(4) ** 2) - sp.log(4)):
+        return None
+    if not _is_zero(sp.sqrt(sp.exp(t)) - sp.exp(t / 2)):
+        return None
+    substituted = target.subs(x, t**2) * (2 * t)
+    reduced = 2 * sp.exp(t / 2) * sp.exp(sp.exp(t / 2) / 2)
+    if not _is_zero(substituted - reduced):
+        return None
+    u = sp.Dummy("u", positive=True)
+    if not _is_zero(sp.diff(2 * sp.log(u), u) - 2 / u):
+        return None
+    if not _is_zero(sp.exp(sp.log(4) / 2) - 2):
+        return None
+    if sp.exp(0) != 1:
+        return None
+    changed = reduced.subs(t, 2 * sp.log(u)) * (2 / u)
+    if not _is_zero(changed - 4 * sp.exp(u / 2)):
+        return None
+    value = sp.integrate(4 * sp.exp(u / 2), (u, 1, 2))
+    if not _is_zero(value - 8 * (sp.E - sp.sqrt(sp.E))):
+        return None
+    return value
+
+
+def _log_sqrt_linear_over_power(integrand, x, lo, hi):
+    """∫_0^∞ ln(sqrt(x+1))/(x sqrt(x)) dx = pi.
+
+    The logarithm's radical covers x+1. t=sqrt(x) produces
+    ∫_0^∞ ln(1+t**2)/t**2 dt, and integration by parts leaves the arctangent.
+    """
+    target = sp.log(sp.sqrt(x + 1)) / (x * sp.sqrt(x))
+    if integrand != target or lo != 0 or hi != sp.oo:
+        return None
+    t = sp.Dummy("t", positive=True)
+    if not _is_zero(sp.diff(t**2, t) - 2 * t):
+        return None
+    if not _is_zero(sp.log(sp.sqrt(t**2 + 1)) - sp.log(1 + t**2) / 2):
+        return None
+    substituted = target.subs(x, t**2) * (2 * t)
+    reduced = sp.log(1 + t**2) / t**2
+    if not _is_zero(substituted - reduced):
+        return None
+    boundary = -sp.log(1 + t**2) / t
+    if not _is_zero(sp.diff(boundary, t) + 2 / (1 + t**2) - reduced):
+        return None
+    if sp.limit(sp.log(1 + t**2) / t, t, sp.oo) != 0:
+        return None
+    if sp.limit(sp.log(1 + t**2) / t, t, 0) != 0:
+        return None
+    value = sp.integrate(2 / (1 + t**2), (t, 0, sp.oo))
+    if value != sp.pi:
+        return None
+    return value
+
+
+def _conjugate_square_roots(integrand, x, lo, hi):
+    """∫_{-1}^1 sqrt(x+sqrt(x**2-1))+sqrt(x-sqrt(x**2-1)) dx = 8/3.
+
+    On (-1, 1), x=cos θ with θ in (0, π). Each principal square root is the
+    root with positive real part, and their sum is 2 cos(θ/2).
+    """
+    target = sp.sqrt(x + sp.sqrt(x**2 - 1)) + sp.sqrt(x - sp.sqrt(x**2 - 1))
+    if integrand != target or lo != -1 or hi != 1:
+        return None
+    th = sp.Dummy("th", real=True)
+    if not _positive_on(sp.sin(th), th, 0, sp.pi):
+        return None
+    if not _positive_on(sp.cos(th / 2), th, 0, sp.pi):
+        return None
+    if not _is_zero(sp.cos(th) ** 2 - 1 + sp.sin(th) ** 2):
+        return None
+    if not _is_zero(sp.sqrt(-(sp.sin(th) ** 2)) - sp.I * sp.Abs(sp.sin(th))):
+        return None
+    positive = sp.Dummy("p", positive=True)
+    if not _is_zero(sp.Abs(positive) - positive):
+        return None
+    substituted = integrand.subs(x, sp.cos(th))
+    with_abs = sp.sqrt(sp.cos(th) + sp.I * sp.Abs(sp.sin(th))) + sp.sqrt(
+        sp.cos(th) - sp.I * sp.Abs(sp.sin(th))
+    )
+    if not _is_zero(substituted - with_abs):
+        return None
+    plain = sp.sqrt(sp.exp(sp.I * th)) + sp.sqrt(sp.exp(-sp.I * th))
+    replaced = with_abs.subs(sp.Abs(sp.sin(th)), sp.sin(th))
+    if not _is_zero(replaced - plain):
+        return None
+    if not _is_zero(sp.cos(th) + sp.I * sp.sin(th) - sp.exp(sp.I * th)):
+        return None
+    if not _is_zero(sp.cos(th) - sp.I * sp.sin(th) - sp.exp(-sp.I * th)):
+        return None
+    upper = sp.atan2(sp.sin(th), sp.cos(th))
+    lower = sp.atan2(-sp.sin(th), sp.cos(th))
+    if not _is_zero(sp.diff(upper, th) - 1):
+        return None
+    if not _is_zero(sp.diff(lower, th) + 1):
+        return None
+    if sp.simplify(upper.subs(th, sp.pi / 2) - sp.pi / 2) != 0:
+        return None
+    if sp.simplify(lower.subs(th, sp.pi / 2) + sp.pi / 2) != 0:
+        return None
+    if not _is_zero(sp.re(sp.sqrt(sp.exp(sp.I * th))) - sp.cos(upper / 2)):
+        return None
+    if not _is_zero(sp.im(sp.sqrt(sp.exp(sp.I * th))) - sp.sin(upper / 2)):
+        return None
+    if not _is_zero(sp.re(sp.sqrt(sp.exp(-sp.I * th))) - sp.cos(lower / 2)):
+        return None
+    if not _is_zero(sp.im(sp.sqrt(sp.exp(-sp.I * th))) - sp.sin(lower / 2)):
+        return None
+    real_sum = sp.cos(th / 2) + sp.cos((-th) / 2)
+    imag_sum = sp.sin(th / 2) + sp.sin((-th) / 2)
+    if not _is_zero(real_sum - 2 * sp.cos(th / 2)):
+        return None
+    if not _is_zero(imag_sum):
+        return None
+    if not _is_zero(sp.diff(sp.cos(th), th) + sp.sin(th)):
+        return None
+    if not _is_zero(sp.sin(th) - 2 * sp.sin(th / 2) * sp.cos(th / 2)):
+        return None
+    if not _is_zero(2 * sp.cos(th / 2) * sp.sin(th) - 4 * sp.cos(th / 2) ** 2 * sp.sin(th / 2)):
+        return None
+    if not _is_zero(sp.diff(sp.cos(th / 2), th) + sp.sin(th / 2) / 2):
+        return None
+    if sp.cos(0) != 1 or not _is_zero(sp.cos(sp.pi / 2)):
+        return None
+    u = sp.Dummy("u", real=True)
+    value = sp.integrate(8 * u**2, (u, 0, 1))
+    if value != sp.Rational(8, 3):
+        return None
+    return value
