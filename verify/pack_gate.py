@@ -199,6 +199,7 @@ import pack_wave5l
 import pack_wave5n
 import sample_certificates
 import yang_certificates
+import yang_l8
 
 PROOF_TIMEOUT = 20.0
 
@@ -6045,6 +6046,7 @@ def _worker(payload, queue) -> None:
             for builder in (
                 sample_certificates.definite_value,
                 yang_certificates.definite_value,
+                yang_l8.definite_value,
                 _laplace_log_cosine,
                 pack_hard_catalan.definite_value,
                 pack_hard_floor.definite_value,
