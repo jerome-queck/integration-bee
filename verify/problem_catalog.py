@@ -46,6 +46,35 @@ YANG_WITH_ANSWER = frozenset({
     "YANG-1.11-P18",
     "YANG-1.11-P19",
     "YANG-1.11-P20",
+    "YANG-1.12-P01",
+    "YANG-1.12-P02",
+    "YANG-1.12-P03",
+    "YANG-1.12-P04",
+    "YANG-1.12-P05",
+    "YANG-1.12-P06",
+    "YANG-1.12-P07",
+    "YANG-1.12-P08",
+    "YANG-1.12-P09",
+    "YANG-1.15-P01",
+    "YANG-1.15-P02",
+    "YANG-1.15-P03",
+    "YANG-1.15-P04",
+    "YANG-1.15-P05",
+    "YANG-1.15-P06",
+    "YANG-1.15-P07",
+    "YANG-1.15-P08",
+    "YANG-1.15-P09",
+    "YANG-1.15-P12",
+    "YANG-1.15-P13",
+    "YANG-1.15-P14",
+    "YANG-1.15-P15",
+    "YANG-1.15-P16",
+    "YANG-1.15-P17",
+    "YANG-1.15-P18",
+    "YANG-1.15-P19",
+    "YANG-1.15-P20",
+    "YANG-1.17-P01",
+    "YANG-1.18-P02",
     "YANG-1.2-P01",
     "YANG-1.2-P02",
     "YANG-1.2-P03",
@@ -66,6 +95,13 @@ YANG_WITH_ANSWER = frozenset({
     "YANG-1.2-P18",
     "YANG-1.2-P19",
     "YANG-1.2-P20",
+    "YANG-1.20-P01",
+    "YANG-1.20-P02",
+    "YANG-1.20-P03",
+    "YANG-1.20-P04",
+    "YANG-1.20-P05",
+    "YANG-1.20-P06",
+    "YANG-1.20-P07",
     "YANG-1.3-Ex01",
     "YANG-1.3-Ex02",
     "YANG-1.3-Ex03",
@@ -253,8 +289,8 @@ YANG_WITH_ANSWER = frozenset({
 })
 EXPECTED_COUNT = 946
 EXPECTED_MANUAL = 0
-# 674 resource-pack rows, plus 230 proved Yang rows (L1's 29, L2's 38, L3's 30, L4's 37, L6's 30, L7's 34, and L8's 32).
-EXPECTED_SYMPY = 904
+# 674 resource-pack rows, plus 266 proved Yang rows (L1's 29, L2's 38, L3's 30, L4's 37, L6's 30, L7's 34, L8's 32, and L5's 36).
+EXPECTED_SYMPY = 940
 EXPECTED_PDF_COPY = 195
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 272}
 PINNED_CITE = {

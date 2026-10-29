@@ -72,7 +72,7 @@ Allowed writer: a repo agent. The study turn says the note is missing and does n
 
 ## D — Yang practice rows that are unchecked
 
-Trigger: a Yang row with `verify: unchecked`. After lanes L1, L2, L3, L4, L6, and L7, 74 rows remain unchecked. `YANG_WITH_ANSWER` lists the proved Yang ids: the §1.1 textbook list, the §1.2 list, `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, `YANG-1.3-Ex03`, the §1.4 and §1.5 practice lists, the §1.6 and §1.7 lists, the Lane L4 §1.8 and §1.11 practice lists, the §2.3 list `YANG-2.3-P01`–`P18`, the §2.4 list `YANG-2.4-P01`–`P12`, and the §2.5 and §2.6 rows the gate accepted.
+Trigger: a Yang row with `verify: unchecked`. After lanes L1, L2, L3, L4, L5, L6, L7, and L8, 6 rows remain unchecked. `YANG_WITH_ANSWER` lists the proved Yang ids: the §1.1 textbook list, the §1.2 list, `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, `YANG-1.3-Ex03`, the §1.4 and §1.5 practice lists, the §1.6 and §1.7 lists, the Lane L4 §1.8 and §1.11 practice lists, the §2.3 list `YANG-2.3-P01`–`P18`, the §2.4 list `YANG-2.4-P01`–`P12`, the §2.5 and §2.6 rows the gate accepted, the Lane L8 rows in sections 2.7, 3.4, 3.8, 4.4, 4.6, 6.1, and 6.7, and the Lane L5 rows in §§1.12, 1.15, 1.17, 1.18, and 1.20.
 
 The live turn does not fill the row. A fill is its own pull request for one id, and only when you are changing the catalog on purpose:
 
@@ -137,7 +137,7 @@ Learner stickies are not capture. Writing `stickies.json` by hand does not recor
 
 Set these together: `verify` `sympy`, `answer_plain`, `answer_source_pdf`, `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable` (one of `x`, `t`, `X`, `e`, or `grid` for a grid), `kind`, `limits` (`[]` when the kind is not bounded, otherwise two strings). Leave `worked_solution_latex` null. Keep `worked_solution_plain` empty unless `worked_solution_origin` is `pdf_copy`, and then store an extract, not a new derivation.
 
-`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 904, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows after lanes L1, L2, L3, L4, L6, L7, and L8. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
+`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 940, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows after lanes L1, L2, L3, L4, L5, L6, L7, and L8. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
 
 ## Checks before the pull request
 
