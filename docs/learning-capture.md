@@ -137,7 +137,7 @@ Learner stickies are not capture. Writing `stickies.json` by hand does not recor
 
 Set these together: `verify` `sympy`, `answer_plain`, `answer_source_pdf`, `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable` (one of `x`, `t`, `X`, `e`, or `grid` for a grid), `kind`, `limits` (`[]` when the kind is not bounded, otherwise two strings). Leave `worked_solution_latex` null. Keep `worked_solution_plain` empty unless `worked_solution_origin` is `pdf_copy`, and then store an extract, not a new derivation.
 
-`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 872, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows after lanes L1, L2, L3, L4, L6, and L7. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
+`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 904, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows after lanes L1, L2, L3, L4, L6, L7, and L8. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
 
 ## Checks before the pull request
 
