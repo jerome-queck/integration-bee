@@ -1,6 +1,6 @@
 # Worked solutions
 
-These notes record printed finals and worked readings. They do not change `problems/records.jsonl` or any verify flag. At tip `770c6e4` every resource-pack catalog row is `verify: sympy` (674 SymPy / 0 manual / 0 unchecked). The index below lists 81 of those notes. `YANG-1.3-Ex01` and `YANG-1.3-Ex03` are `verify: sympy`. `YANG-1.3-Ex02` copies a printed final and stays `verify: unchecked`. It is one of the 270 unchecked Yang practice rows. Those rows are out-of-scope practice.
+These notes record printed finals and worked readings. They do not change `problems/records.jsonl` or any verify flag. At tip `770c6e4` every resource-pack catalog row is `verify: sympy` (674 SymPy / 0 manual / 0 unchecked). The index below lists 81 of those notes. `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, and `YANG-1.3-Ex03` are `verify: sympy`. Lane L1 also proves `YANG-1.1-P01`–`P06` and `YANG-1.2-P01`–`P20`. 243 other Yang rows stay `unchecked`.
 
 Each pack final is the value printed in the cited answers PDF or solutions PDF. Where a worked PDF and an answers PDF print equivalent antiderivatives, the note records both and the constant relating them. Yang notes copy only finals that the guide prints. Other Yang rows are left without a final.
 

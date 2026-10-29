@@ -32,13 +32,14 @@ def mutate(rows: list[dict], name: str) -> None:
                 return
         raise SystemExit("no cited answer")
     if name == "yang-invented":
+        ident = problem_catalog.first_unchecked_yang(rows)
         for row in rows:
-            if row.get("id") == "YANG-1.1-P01":
+            if row.get("id") == ident:
                 row["answer_plain"] = "x"
                 row["answer_source_pdf"] = row["pdf_path"]
                 row["verify"] = "manual"
                 return
-        raise SystemExit("missing YANG-1.1-P01")
+        raise SystemExit(f"missing {ident}")
     if name == "dropped-record":
         rows.pop()
         return
@@ -89,7 +90,13 @@ def drive() -> int:
                 and all(resolved_doc[field] == "1" for field in ("answer_plain", "answer_sympy", "answer_latex")),
                 f"{problem_id} shows the proved value 1 for the printed limits",
             )
-        selected = run_cli(data, ["problems", "select", "--id", "YANG-1.1-P01", "--format", "json"])
+        proved = run_cli(data, ["problems", "select", "--id", "YANG-1.1-P01", "--format", "json"])
+        check(proved.returncode == 0, "select proved yang exit")
+        proved_doc = json.loads(proved.stdout)
+        check(proved_doc["verify"] == "sympy" and proved_doc["has_answer"] is True, "YANG-1.1-P01 is proved")
+        check("answer_plain" not in proved.stdout and proved_doc.get("integrand_plain"), "select hides the proved answer")
+        unchecked_id = problem_catalog.first_unchecked_yang()
+        selected = run_cli(data, ["problems", "select", "--id", unchecked_id, "--format", "json"])
         check(selected.returncode == 0, "select exit")
         select_doc = json.loads(selected.stdout)
         check(select_doc["verify"] == "unchecked" and select_doc["has_answer"] is False, "yang practice stays unanswered")

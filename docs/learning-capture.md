@@ -72,19 +72,19 @@ Allowed writer: a repo agent. The study turn says the note is missing and does n
 
 ## D — Yang practice rows that are unchecked
 
-Trigger: a Yang row with `verify: unchecked`. At this tip that is 270 rows. `YANG-1.3-Ex01` and `YANG-1.3-Ex03` are the only Yang rows with `answer_plain`.
+Trigger: a Yang row with `verify: unchecked`. After lane L1, 243 rows remain unchecked. `YANG_WITH_ANSWER` lists the proved Yang ids: the §1.1 textbook list, the §1.2 list, and `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, and `YANG-1.3-Ex03`.
 
 The live turn does not fill the row. A fill is its own pull request for one id, and only when you are changing the catalog on purpose:
 
 - `problems/records.jsonl` for that id: `answer_plain` and `answer_source_pdf` together, or both empty. A `sympy` row also needs `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable`, `kind`, and `limits`. `worked_solution_latex` stays null.
 - `verify/problem_catalog.py`: add the id to `YANG_WITH_ANSWER`. Set `EXPECTED_SYMPY` or `EXPECTED_MANUAL` to the new totals. `catalog_problem` rejects any other answered Yang id, any sympy Yang id outside that set, and a count mismatch.
-- `solutions/yang/<id>.md` with the printed guide page. Copy a final the guide prints. A derived final needs an ADR in `docs/decisions/` because `docs/decisions/0007-problem-catalog.md` and `docs/decisions/0010-sympy-pack-rows.md` leave the other Yang rows unanswered.
+- `solutions/yang/<id>.md` with the printed guide page. Copy a final the guide prints. A derived final is recorded in `docs/decisions/0010-sympy-pack-rows.md` and `docs/decisions/0016-pack-source-holds.md`. Rows the gate does not prove stay unanswered.
 - A proof `verify/pack_gate.py` accepts. Example 1 uses ordinary definite integration. Example 3 uses `verify/yang_certificates.py`, which matches only that integrand and `[0, 6]`. `scripts/recover_pack_math.py` does not gate Yang.
 - `solutions/self_check.py` when that note's identity should be re-run there.
 
-Do not mass-edit the 270 rows. Do not set `answer_plain` alone. An unchecked row whose guide prints no final stays unchecked.
+Do not edit a Yang row outside the batch you are proving. Do not set `answer_plain` alone. An unchecked row whose gate does not accept a final stays unchecked.
 
-`YANG-1.3-Ex02` is a known split. The guide sentence prints 2. `solutions/yang/YANG-1.3-Ex02.md` copies that 2 and leaves the catalog flag alone. The row is `verify: unchecked`, `answer_plain` null, `worked_solution_origin: pdf_copy`. Leave that split for a dedicated promotion. Do not half-update it while teaching.
+`YANG-1.3-Ex02` is `verify: sympy`. The guide prints 2, and the even-part reduction in `verify/pack_gate.py` accepts that value. `worked_solution_origin` stays `pdf_copy` because the row still stores the printed extract.
 
 Allowed writer: a repo agent, in a pull request that moves the gate constants with the row. The companion is not that writer.
 
@@ -137,7 +137,7 @@ Learner stickies are not capture. Writing `stickies.json` by hand does not recor
 
 Set these together: `verify` `sympy`, `answer_plain`, `answer_source_pdf`, `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable` (one of `x`, `t`, `X`, `e`, or `grid` for a grid), `kind`, `limits` (`[]` when the kind is not bounded, otherwise two strings). Leave `worked_solution_latex` null. Keep `worked_solution_plain` empty unless `worked_solution_origin` is `pdf_copy`, and then store an extract, not a new derivation.
 
-`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 676, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
+`verify/problem_catalog.py` holds `EXPECTED_COUNT` 946, `EXPECTED_SYMPY` 703, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for non-sample rows. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
 
 ## Checks before the pull request
 
