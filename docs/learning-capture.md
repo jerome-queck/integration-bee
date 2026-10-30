@@ -64,7 +64,7 @@ Required update, in one pull request:
 3. Sections `Problem`, `Solution`, `Final answer`, and `SymPy self-check` when SymPy closes the identity. Point at the certificate module the check actually runs.
 4. Catalog fields only as the gate allows. See the field recipe below.
 
-A derived argument stays in the markdown note. It does not go in `worked_solution_plain`. Origins are only `missing` and `pdf_copy`. `worked_solution_latex` stays null. Sample rows must keep `worked_solution_origin` `missing`, an empty `worked_solution_plain`, and a `notes` string that contains `solutions/sample/<id>.md`.
+Origins are only `missing` and `pdf_copy`. A Yang row may store a derived worked solution in `worked_solution_plain` and `worked_solution_latex` together. `worked_solution_origin` stays `missing` for that pair, so the pdf_copy count does not change. A `pdf_copy` row still stores an extract in `worked_solution_plain` and keeps `worked_solution_latex` null. Sample rows must keep `worked_solution_origin` `missing`, an empty `worked_solution_plain`, and a `notes` string that contains `solutions/sample/<id>.md`.
 
 `solutions/README.md` still says these notes do not change `problems/records.jsonl` and still indexes an older manual-pack list. That page is a historical index. This file is the capture procedure. `solutions/self_check.py` re-proves the ids it lists and does not read the catalog.
 

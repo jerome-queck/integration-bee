@@ -29,3 +29,5 @@ Stored `answer_sympy`: `pi`.
 ## SymPy self-check
 
 `verify/pack_gate.py` proves `sqrt(4 - x**2)*(x**3*cos(x/2) + 1/2)` against `pi` (definite). The check is an exact closed evaluation. Numeric agreement is not the proof.
+
+`verify/yang_worked_check.py` rechecks the worked solution stored on this row. Each indefinite antiderivative is differentiated, and each definite intermediate is an exact identity.
