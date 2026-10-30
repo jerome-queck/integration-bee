@@ -588,6 +588,61 @@ SPECS: dict[str, dict] = {
             ("ends", "x**3/3 + x", "0", "1", "2", "8/3"),
         ],
     },
+    "YANG-1.3-Ex02": {
+        "final": "2",
+        "lines": [
+            (
+                "x*(asin(x)/atan(x) + 1/x) equals x*asin(x)/atan(x) + 1.",
+                r"\(x\left(\frac{\sin^{-1}x}{\tan^{-1}x}+\frac{1}{x}\right)\) equals \(\frac{x\sin^{-1}x}{\tan^{-1}x}+1\).",
+            ),
+            (
+                "asin(x) and atan(x) are both odd, so x*asin(x)/atan(x) is odd and its integral on [-1, 1] is 0.",
+                r"\(\sin^{-1}x\) and \(\tan^{-1}x\) are both odd, so \(x\sin^{-1}x/\tan^{-1}x\) is odd and its integral on \([-1,1]\) is \(0\).",
+            ),
+            (
+                "The constant 1 has antiderivative x, and from -1 to 1 that gives 2.",
+                r"The constant \(1\) has antiderivative \(x\), and from \(-1\) to \(1\) that gives \(2\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "x*(asin(x)/atan(x) + 1/x)", "x*asin(x)/atan(x) + 1"),
+            ("odd", "x*asin(x)/atan(x)"),
+            ("diff_of", "x", "1"),
+            ("ends", "x", "-1", "1", "1", "2"),
+        ],
+    },
+    "YANG-1.3-Ex03": {
+        "final": "2*atan(3)",
+        "lines": [
+            (
+                "Shift by u = x - 3. x**2 - 6*x + 10 equals (x - 3)**2 + 1, and (x - 2)*(x - 3)*(x - 4) + 1 equals (x - 3)*((x - 3)**2 - 1) + 1.",
+                r"Shift by \(u=x-3\). \(x^{2}-6x+10\) equals \((x-3)^{2}+1\), and \((x-2)(x-3)(x-4)+1\) equals \((x-3)((x-3)^{2}-1)+1\).",
+            ),
+            (
+                "Division gives ((x - 3)*((x - 3)**2 - 1) + 1)/((x - 3)**2 + 1) = (x - 3) - 2*(x - 3)/((x - 3)**2 + 1) + 1/((x - 3)**2 + 1).",
+                r"Division gives \(\frac{(x-3)((x-3)^{2}-1)+1}{(x-3)^{2}+1}=(x-3)-\frac{2(x-3)}{(x-3)^{2}+1}+\frac{1}{(x-3)^{2}+1}\).",
+            ),
+            (
+                "The function x - 2*x/(x**2 + 1) is odd, so (x - 3) - 2*(x - 3)/((x - 3)**2 + 1) is odd about x = 3 and integrates to 0 on [0, 6]. Its antiderivative (x - 3)**2/2 - log((x - 3)**2 + 1) takes the same value at 0 and 6.",
+                r"The function \(x-2x/(x^{2}+1)\) is odd, so \((x-3)-2(x-3)/((x-3)^{2}+1)\) is odd about \(x=3\) and integrates to \(0\) on \([0,6]\). Its antiderivative \((x-3)^{2}/2-\log((x-3)^{2}+1)\) takes the same value at \(0\) and \(6\).",
+            ),
+            (
+                "The term 1/((x - 3)**2 + 1) has antiderivative atan(x - 3). The full antiderivative is (x - 3)**2/2 - log((x - 3)**2 + 1) + atan(x - 3), and from 0 to 6 it gives atan(3) - atan(-3) = 2*atan(3).",
+                r"The term \(1/((x-3)^{2}+1)\) has antiderivative \(\tan^{-1}(x-3)\). The full antiderivative is \((x-3)^{2}/2-\log((x-3)^{2}+1)+\tan^{-1}(x-3)\), and from \(0\) to \(6\) it gives \(\tan^{-1}3-\tan^{-1}(-3)=2\tan^{-1}3\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "x**2 - 6*x + 10", "(x - 3)**2 + 1"),
+            ("eq", "(x - 2)*(x - 3)*(x - 4) + 1", "(x - 3)*((x - 3)**2 - 1) + 1"),
+            ("eq", "((x - 3)*((x - 3)**2 - 1) + 1)/((x - 3)**2 + 1)", "(x - 3) - 2*(x - 3)/((x - 3)**2 + 1) + 1/((x - 3)**2 + 1)"),
+            ("odd", "x - 2*x/(x**2 + 1)"),
+            ("diff_of", "(x - 3)**2/2 - log((x - 3)**2 + 1)", "(x - 3) - 2*(x - 3)/((x - 3)**2 + 1)"),
+            ("ends", "(x - 3)**2/2 - log((x - 3)**2 + 1)", "0", "6", "1", "0"),
+            ("diff_of", "atan(x - 3)", "1/((x - 3)**2 + 1)"),
+            ("diff", "(x - 3)**2/2 - log((x - 3)**2 + 1) + atan(x - 3)"),
+            ("ends", "(x - 3)**2/2 - log((x - 3)**2 + 1) + atan(x - 3)", "0", "6", "1", "2*atan(3)"),
+        ],
+    },
     "YANG-1.4-P01": {
         "final": "log(exp(x) + 2024)",
         "lines": [
@@ -6609,6 +6664,64 @@ def _s27_entry(argv: list[str]) -> int:
 
 LANE_MAINS.append(_s27_entry)
 
+
+# ---- final: the one reference row, and the no-empty-Yang gate ----
+REFERENCE_ID = "YANG-1.14-P10"
+REFERENCE_PLAIN = (
+    "1. This row is the printed series identity, not an integral. The p-series sum 1/n**2 with p = 2 > 1 converges.\n"
+    "2. Euler's evaluation of the Basel problem gives summation(1/n**2, (n, 1, oo)) = pi**2/6.\n"
+    "3. SymPy confirms summation(1/n**2, (n, 1, oo)) == pi**2/6.\n"
+    "The identity is sum_{n=1}^{oo} 1/n**2 = pi**2/6."
+)
+REFERENCE_LATEX = (
+    "1. This row is the printed series identity, not an integral. The \\(p\\)-series \\(\\sum 1/n^{2}\\) with \\(p=2>1\\) converges.\n"
+    "2. Euler's evaluation of the Basel problem gives \\(\\sum_{n=1}^{\\infty}\\frac{1}{n^{2}}=\\frac{\\pi^{2}}{6}\\).\n"
+    "3. SymPy confirms \\(\\sum_{n=1}^{\\infty}\\frac{1}{n^{2}}=\\frac{\\pi^{2}}{6}\\).\n"
+    "The identity is \\(\\sum_{n=1}^{\\infty}\\frac{1}{n^{2}}=\\frac{\\pi^{2}}{6}\\)."
+)
+
+
+def _final_empty_yang(rows: list[dict]) -> list[str]:
+    empty = []
+    for row in rows:
+        if row.get("source") != "yang_book":
+            continue
+        plain = row.get("worked_solution_plain")
+        latex = row.get("worked_solution_latex")
+        if not (isinstance(plain, str) and plain.strip() and isinstance(latex, str) and latex.strip()):
+            empty.append(row["id"])
+    return empty
+
+
+def _final_main(argv: list[str]) -> int:
+    rows = load_rows()
+    n = sp.Symbol("n", integer=True, positive=True)
+    if sp.summation(1 / n**2, (n, 1, sp.oo)) != sp.pi**2 / 6:
+        print("FAIL YANG-1.14-P10 Basel sum", file=sys.stderr)
+        return 1
+    by_id = {row["id"]: row for row in rows}
+    ref = by_id.get(REFERENCE_ID)
+    if ref is None:
+        print("FAIL missing YANG-1.14-P10", file=sys.stderr)
+        return 1
+    if "--write" in argv:
+        ref["worked_solution_plain"] = REFERENCE_PLAIN
+        ref["worked_solution_latex"] = REFERENCE_LATEX
+        body = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows)
+        RECORDS.write_text(body, encoding="utf-8")
+    elif ref.get("worked_solution_plain") != REFERENCE_PLAIN or ref.get("worked_solution_latex") != REFERENCE_LATEX:
+        print("FAIL YANG-1.14-P10 text drifted", file=sys.stderr)
+        return 1
+    empty = _final_empty_yang(load_rows())
+    if empty:
+        print(f"FAIL Yang rows without both worked solutions: {empty}", file=sys.stderr)
+        return 1
+    yang = sum(1 for row in rows if row.get("source") == "yang_book")
+    print(f"PASS every Yang row has both worked solutions ({yang} rows)")
+    return 0
+
+
+LANE_MAINS.append(_final_main)
 
 
 def main(argv: list[str]) -> int:

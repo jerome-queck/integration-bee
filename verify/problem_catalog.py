@@ -302,7 +302,7 @@ EXPECTED_MANUAL = 0
 # bundled rows, and YANG-1.20-P01 adds one proved row. YANG-1.14-P10 is a
 # reference formula in REFERENCE_IDS, omitted from pack_rows.
 EXPECTED_SYMPY = 948
-EXPECTED_PDF_COPY = 195
+EXPECTED_PDF_COPY = 193
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 274}
 # Printed guide identities that are not integrals. They stay in the JSONL
 # and are omitted from pack_rows, the same exclusion samples use.
@@ -535,9 +535,7 @@ def _reference_catalog(rows: list[dict]) -> str | None:
         return f"{ident} reference invented an integral"
     if row.get("integrand_latex") is not None or row.get("answer_latex") is not None:
         return f"{ident} reference invented latex"
-    if row.get("worked_solution_latex") is not None:
-        return f"{ident} reference worked latex"
-    if row.get("worked_solution_origin") != "missing" or not _blank(row.get("worked_solution_plain")):
+    if not _derived_worked(row):
         return f"{ident} reference worked field"
     plain = str(row.get("integrand_plain") or "")
     folded = plain.lower().replace(" ", "")
