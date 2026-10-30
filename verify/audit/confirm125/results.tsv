@@ -1,0 +1,126 @@
+id	status	value	answer	rel_err	tol	params	secs	method
+R1-2020-Q16	CONFIRMED	2.43598307896425842646581738881	2.43598307896425842646581738881	1.34e-41	1.0e-25	{"k": "7/10"}	0.0	tanh-sinh quad k=0.7
+R1-2020-Q23	CONFIRMED	0.322467033424113218236207583323	0.322467033424113218236207583323	0.0	1.0e-25	{}	0.9	t=1/x, sum over unit intervals of n*u/(n+u)^3
+R1-2020-Q25	CONFIRMED	3.02354306885557391688170632699	3.02354306885557391688170632699	0.0	1.0e-25	{"a": "3", "b": "2"}	0.0	quad a=3.0,b=2.0
+R1-2021-Q16	CONFIRMED	0.919873127493040280346104860136	0.919873127493040280346104860136	0.0	1.0e-25	{}	1.0	t=tan x, sum_n int {t}/(t(1+t^2))
+R1-2021-Q25	CONFIRMED	2.46740110027233965470862274997	2.46740110027233965470862274997	4.47e-42	1.0e-25	{}	0.1	x=e^tan(th): int_(-pi/2)^(pi/2) atan(e^tan th) dth; quad (direct quad has slow log^2 tails)
+R1-2021-Q31	CONFIRMED	0.355065933151773563527584833354	0.355065933151773563527584833354	0.0	1.0e-25	{}	0.0	sum over intervals 1/(n+1)*(1/n-1/(n+1))
+R1-2022-Oxford-Q08	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	0.1	quad of 120-term truncated product (tail error < 1e-70)
+R1-2022-Q07	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	0.1	quad of 120-term truncated product (tail error < 1e-70)
+R1-2022-Q05	CONFIRMED	0.422784335098467139393487909918	0.422784335098467139393487909918	0.0	1.0e-25	{}	0.6	sum_n int {t}/t^2 over [n,n+1]
+R1-2022-Q12	CONFIRMED	0.626657068657750125603941321203	0.626657068657750125603941321203	0.0	1.0e-25	{}	0.5	quadosc with zeros
+R1-2022-Q16	CONFIRMED	0.422784335098467139393487909918	0.422784335098467139393487909918	0.0	1.0e-25	{}	0.6	sum_n int {t}/t^2 over [n,n+1]
+R1-2023-Q05	CONFIRMED	-2.00429562094580405290273419786e-48	0.0	2.0e-48	1.0e-25	{}	0.0	int cos(pi x) over all 4 indicator cases (0/1 limits); max |value| shown
+R1-2023-Q09	CONFIRMED	0.693147180559945309417232121458	0.693147180559945309417232121458	0.0	1.0e-25	{}	0.4	sum_n int (-u)^n du
+R1-2023-Q23	CONFIRMED	0.523598775598298873077107230547	0.523598775598298873077107230547	0.0	1.0e-25	{}	1.4	t=1/x; [0,1] quad + product-to-sum quadosc tails
+R1-2023-Q30	CONFIRMED	3.14159265358979323846264338328	3.14159265358979323846264338328	0.0	1.0e-25	{}	27.6	t=1/x, sum over unit intervals
+R1-2024-Q07	CONFIRMED	0.811742425283353643637002772406	0.811742425283353643637002772406	6.34e-42	1.0e-25	{}	0.7	t=x^(-1/3): 3*sum n*int (n+u)^-5
+R1-2024-Q08	CONFIRMED	1.57079632679489661923132169164	1.57079632679489661923132169164	8.04e-44	1.0e-25	{}	0.1	x=e^tan(th): int_(-pi/2)^(pi/2) 1/(1+e^-tan th) dth; quad
+R1-2024-Q13	CONFIRMED	1.57079632679489661923132169164	1.57079632679489661923132169164	8.93e-42	1.0e-25	{}	0.7	split; sin(1/x) part via x->1/x; quadosc both
+R1-2024-Q21	CONFIRMED	0.0	0.0	0.0	1.0e-25	{}	0.1	limit check: log prod_(k<=K) F_k/x grows quadratically (K=1000,2000,4000 -> 232429.0,946070.0,3.81699e+6 at x=2024, worst point) so integrand -> 0 for every x in [1,2024]
+R1-2024-Q23	CONFIRMED	0.549306144334054845697622618461	0.549306144334054845697622618461	0.0	1.0e-25	{}	0.6	quad [0,1] + product-to-sum quadosc tails
+R1-2024-Q24	CONFIRMED	2.46740110027233965470862274997	2.46740110027233965470862274997	0.0	1.0e-25	{}	0.0	telescoped product identity checked; odd part integrates to 0; quad -ln(1-x)/x
+R1-2024-Q29	CONFIRMED	4.00922381852845143302502853186e+609	4.00922381852845143302502853186e+609	0.0	1.0e-25	{}	24.0	pointwise limit (2^x-1)/ln2 checked at n=1e6; exact sympy integral, compared at 2000 digits
+R1-2025-Online-Q08	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	0.0	nested form == e^-x at x=0.5,3,10 (400 levels); quad
+R1-2025-Online-Q12	CONFIRMED	0.306852819439958429144063558628	0.306852819440054690582767878542	7.37e-14	1.0e-9	{}	16.5	direct nested-abs, even n=100..1600, Neville in 1/n [extrap_err~1.1e-11; |val-ans| within it: True]
+R1-2025-Online-Q13	CONFIRMED	1.33333333333333333333333333333	1.33333333333333333333333333333	0.0	1.0e-25	{}	0.0	ceil=1 a.e. (r^2<=L1^2<=1); exact volume 8*int_simplex
+R1-2025-Online-Q28	CONFIRMED	7.92005432694585478030490750217	7.92005432694585478030490750217	0.0	1.0e-25	{}	0.0	piecewise mrt verified vs polyroots at 5 a-values; quad with breakpoints
+R2-2021-Group-Q02	CONFIRMED	-0.693147180559945309417232121458	-0.693147180559945309417232121458	0.0	1.0e-25	{}	0.0	sum over unit intervals
+R2-2021-Group-Q06	CONFIRMED	0.52491106224933884416493541635	0.52491106224933884416493541635	0.0	1.0e-25	{"a": "27/10", "b": "13/10"}	0.7	a=2.7,b=1.3; quad + quadosc tails
+R2-2021-Relay-A02	CONFIRMED	2.82842712474619009760337744842	2.82842712474619009760337744842	1.2e-41	1.0e-25	{}	0.0	inner quad; pass b = pi/value
+R2-2021-Relay-A03	CONFIRMED	3.14159265358979323846264338328	3.14159265358979323846264338328	0.0	1.0e-25	{}	0.0	inner quad (b=2sqrt2); pass 4x
+R2-2021-Relay-B03	CONFIRMED	-inf	-inf	0	1.0e-25	{}	0.0	limit check: value = (pi/4)ln b + const, strictly decreasing linearly in ln b (b=1e-10,1e-20,1e-40)
+R2-2021-Relay-C01	CONFIRMED	-2.29588740394978028900143854926e-41	0.0	2.3e-41	1.0e-25	{}	0.0	inner quad (sympy-encoded arccot branch); pass v^2-2
+R2-2021-Relay-C02	CONFIRMED	2.0	2.0	0.0	1.0e-25	{}	0.0	inner over [0,0]; pass 2-v
+R2-2021-Group-Q10	CONFIRMED	0.626657068657750125603941321203	0.626657068657750125603941321203	0.0	1.0e-25	{}	0.3	quadosc with zeros
+R2-2021-Relay-C03	CONFIRMED	2.0	2.0	0.0	1.0e-25	{}	0.0	inner quad -1.5707963267948966192; pass floor|v|+1
+R2-2021-Relay-D03	CONFIRMED	1.61803398874989484820458683437	1.61803398874989484820458683437	0.0	1.0e-25	{}	0.0	inner quad == (ln27-2)/4 to 28 digits; minimal u=2 -> (r+sqrt(r+s))/u
+R2-2022-Group-Q05	CONFIRMED	-0.451582705289454864726195229895	-0.451582705289454864726195229895	0.0	1.0e-25	{}	0.0	alternating sum over unit intervals
+R2-2022-Relay-Q10	CONFIRMED	0.484567710981547689018557117166	0.484567710981547689018557117166	0.0	1.0e-25	{"a": "27/10"}	0.0	a=2.7; E1 via mpmath; quad
+R2-2022-Relay-Q11	CONFIRMED	0.693147180559945309417232121458	0.693147180559945309417232121458	6.78e-42	1.0e-25	{"n": "2", "x": "27/10"}	0.0	n=2; x=2^-16..2^-19, Neville extrapolation in x^2
+R2-2022-Relay-Q20	CONFIRMED	0.999999999999999994445742266437	1.0	2.78e-18	1.0e-8	{"A": "13/10"}	0.2	(1/A)int_1^A A^(1/x) with A=e^L, L=400..12800, Neville in 1/L
+R2-2022-Relay-Q14	CONFIRMED	-0.693147180559945309417232121458	-0.693147180559945309417232121458	0.0	1.0e-25	{}	0.8	t=1/x; per unit interval
+R2-2023-Group-Q07	CONFIRMED	0.666666666666666666666666666667	0.666666666666666666666666666667	0.0	1.0e-25	{}	0.1	bit identity checked at 200 points; exact dyadic sum
+R2-2023-Group-Q09	CONFIRMED	4.0	4.0	0.0	1.0e-25	{"n": "2"}	3.6	n=2; quad + quadosc tails
+R2-2023-Relay-Q02	CONFIRMED	3.13103071237015366213858300997	3.14159265358979323846264338328	0.00255	0.01	{}	1.6	sup_n sin(2^n x)=1 for a.e. x (binary-normal x have dense 2^n x mod 2pi); midpoint M=4000 of max_(k<=48) gives 3.1310307
+R2-2023-Relay-Q05	CONFIRMED	16.9999999999999999999999999988	17.0	6.58e-29	1.0e-25	{}	0.3	Laplace: ln I_n = n ln17 - ln n + c, c=-0.632522558744 stable; I^(1/n)->17
+R2-2023-Relay-Q07	CONFIRMED	1.57079632679489661923132169164	1.57079632679489661923132169164	0.0	1.0e-25	{}	0.1	Riemann sum of 2sqrt(1-t^2) (n=20000 gives 1.57084611891) -> integral by quad
+R2-2023-Relay-Q13	CONFIRMED	0.693147180559945309417232121458	0.693147180559945309417232121458	6.78e-42	1.0e-25	{"h": "13/10", "n": "3"}	0.0	n=3; h=2^-16..2^-19, Neville in h^2 [extrap_err~1.7e-32; |val-ans| within it: True]
+R2-2023-Relay-Q10	CONFIRMED	3.01732289614168764325046682944	3.01732289614168764325046682944	1.6e-40	1.0e-25	{"r": "13/10"}	0.0	r=1.3; quad with breakpoints
+R2-2023-Relay-Q17	CONFIRMED	-0.57079632679489661923132169164	-0.57079632679489661923132169164	0.0	1.0e-25	{}	1.3	t=1/x; floor(cos)=-1 exactly where cos<0, else 0 a.e.; exact interval sum; brute quad on t in [1,40] agrees to 1e-20
+R2-2024-Group-Q07	CONFIRMED	2.69907078454188691350045374313	2.69907078454188691350045374313	0.0	1.0e-25	{}	10.3	series e^{cos x}sin(sin x)=sum sin(nx)/n! (checked to 1e-45) and int sin x sin nx/x^2 = pi/2 (quadosc, n=1,2,3,5, to 1e-35) give pi(e-1)/2 exactly
+R2-2024-Relay-Q02	CONFIRMED	0.693147180559945309417232121458	0.693147180559945309417232121458	0.0	1.0e-25	{}	0.2	exact inner int_0^1 t^x dx=(t-1)/ln t; Riemann sum n=20000 0.693170044173 -> integral by quad
+R2-2024-Relay-Q03	CONFIRMED	0.5	0.5	0.0	1.0e-25	{}	0.0	sigma is a permutation (cycles match statement); exact digit average
+R2-2024-Group-Q03	CONFIRMED	3.14159265358979323846264338328	3.14159265358979323846264338328	0.0	1.0e-25	{}	1.3	antiderivative arg(cos x + i x) (derivative checked to 1e-30); quad on [-X,X] matches 2 atan2(X,cos X) to 1e-35 at 60 dps; tails exact; total = pi
+R2-2024-Relay-Q04	CONFIRMED	0.261134861559541410877885338225	0.261134861559541410877885338225	0.0	1.0e-25	{}	0.6	CF x^2/(2*3-x^2+2*3x^2/(4*5-x^2+...)) evaluated 400 levels backward; quad
+R2-2024-Relay-Q06	CONFIRMED	1.99999999999998881287065851468	2.0	3.73e-15	1.0e-9	{}	0.1	n*int for n=1000..16000, Neville in 1/n [extrap_err~9.8e-13; |val-ans| within it: True]
+R2-2024-Relay-Q08	CONFIRMED	1.11072073453959156175397024752	1.11072073453959156175397024752	3.12e-42	1.0e-25	{}	3.1	telescoping verified numerically (1e5 terms at x=0.4); u=sqrt(pi/4-x) quad at 60 dps, removable 0/0 at u=0 set to its limit 1
+R2-2024-Relay-Q09	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	3.9	frac ratio=1 checked; product telescopes to 1-x^(2^(N+1)) so I_N=1-1/(2^(N+1)+1), matched by quad for N=5,20,60 to <1e-30; limit N->inf is 1 exactly
+R2-2025-SG-Group-Q05	CONFIRMED	0.355065933151773563527584833354	0.355065933151773563527584833354	0.0	1.0e-25	{}	17.0	geometric sum over floor(x) then exact interval sum in m=floor(2/u); direct nsum cross-check 1e-6
+R2-2025-SG-Group-Q11	CONFIRMED	20.0	20.0	0.0	1.0e-25	{}	2.1	inner quad 20.00009997918947576726644; floor
+R2-2025-SG-Group-Q12	CONFIRMED	-0.306852819440054690582767878542	-0.306852819440054690582767878542	0.0	1.0e-25	{}	3.6	per-term quad (== (-1)^n/(n+1) checked) + alternating nsum
+R2-2025-SG-Group-Q13	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	0.1	inner quad 0.5172567094250656379892229; ceil
+R2-2025-SG-Group-Q15	CONFIRMED	0.57079632679489661923132169164	0.57079632679489661923132169164	0.0	1.0e-25	{}	0.0	f_n(0) == arcsin Taylor coeffs (n=1..11); quad arcsin
+R2-2025-SG-Relay-Q03	CONFIRMED	144308.210526315789473684210526	144308.210526315789473684210526	0.0	1.0e-25	{"m": "2", "n": "2"}	918.2	direct quad at (m,n)=(1,1),(2,2),(1,2),(3,1) matches formula to 1e-12 rel; value is formula at param point
+R2-2025-SG-Relay-Q04	CONFIRMED	0.78539816339744830961566084582	0.78539816339744830961566084582	6.43e-42	1.0e-25	{}	0.7	iterated: inner = C sin x^2 + S cos x^2 (quadosc C,S), outer again quadosc
+R2-2025-SG-Relay-Q07	CONFIRMED	0.755331503791448776818301381431	0.755331503791448776818301381431	0.0	1.0e-25	{}	0.1	Fourier-series formula verified numerically for (a,c)=(1,3),(2,3),(1,5); applied with c=2026
+R2-2025-SG-Relay-Q14	CONFIRMED	0.5	0.5	0.0	1.0e-25	{}	0.5	geometric sum in floor(x); exact double sum; per-k quad cross-check
+R2-2025-SG-Relay-Q15	CONFIRMED	0.636619772367581427185455550062	0.63661977236758134307553505349	5.14e-17	1.0e-12	{}	0.3	Riemann sum (smooth), Richardson in 1/n
+R2-2025-SG-Relay-Q16	CONFIRMED	1999.0	1999.0	0.0	1.0e-25	{}	0.0	floor(log_x 2025) interval sum 1999.1115657464932246 (quad agrees); floor
+R2-2025-SG-Relay-Q19	CONFIRMED	1.24999999999999998123872343953	1.25	8.34e-18	1.0e-12	{}	0.0	n*int for n=1e4..8e4, Richardson in 1/n [extrap_err~8.1e-14; |val-ans| within it: True]
+R2-2025-UK-Group-Q04	CONFIRMED	0.355065933151773563527584833354	0.355065933151773563527584833354	0.0	1.0e-25	{}	17.6	geometric sum over floor(x) then exact interval sum in m=floor(2/u); direct nsum cross-check 1e-6
+R2-2025-UK-Group-Q09	CONFIRMED	-0.306852819440054690582767878542	-0.306852819440054690582767878542	0.0	1.0e-25	{}	3.6	per-term quad (== (-1)^n/(n+1) checked) + alternating nsum
+R2-2025-UK-Group-Q10	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	0.1	inner quad 0.5172567094250656379892229; ceil
+R2-2025-UK-Relay-Q03	CONFIRMED	144308.210526315789473684210526	144308.210526315789473684210526	0.0	1.0e-25	{"m": "2", "n": "2"}	722.3	direct quad at (m,n)=(1,1),(2,2),(1,2),(3,1) matches formula to 1e-12 rel; value is formula at param point
+R2-2025-UK-Relay-Q04	CONFIRMED	0.78539816339744830961566084582	0.78539816339744830961566084582	6.43e-42	1.0e-25	{}	0.5	iterated: inner = C sin x^2 + S cos x^2 (quadosc C,S), outer again quadosc
+R2-2025-UK-Relay-Q19	CONFIRMED	1.24999999999999998123872343953	1.25	8.34e-18	1.0e-12	{}	0.0	n*int for n=1e4..8e4, Richardson in 1/n [extrap_err~8.1e-14; |val-ans| within it: True]
+R2-2025-UK-Relay-Q20	CONFIRMED	1999.0	1999.0	0.0	1.0e-25	{}	0.0	floor(log_x 2025) interval sum 1999.1115657464932246 (quad agrees); floor
+R3-2024-Chainlink-G1-Q06	CONFIRMED	0.0	0.0	0.0	1.0e-25	{}	0.0	measure(no 9 in first K digits) = 0.9^K -> 0; integrand is that indicator
+R3-2024-Chainlink-G1-Q08	CONFIRMED	1.6094379124336781345375138564	1.60943791243410037460075933323	1.62e-13	1.0e-10	{}	0.1	(n+1)*int for n=2000..16000, Richardson [extrap_err~1.2e-10; |val-ans| within it: True]
+R3-2024-Chainlink-G2-Q08	CONFIRMED	716.92433600199087409805183779	716.924336001990833417518916185	5.67e-17	1.0e-10	{}	1.1	u=x^2025; I(n)=n^-al*int g[zeta(1-al,v)-zeta(1-al,n+v)] (Hurwitz, verified vs direct sum at n=60) = L + n^-al*Z + O(1/n), n^-al->0 so lim = L; I(n)-n^-al*Z at n=1e3,1e6,1e12: 716.924376684696, 716.924336042671, 716.924336001991
+R3-2024-Chainlink-G4-Q03	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	0.0	alternating sum over unit intervals
+R3-2024-Chainlink-G4-Q07	CONFIRMED	0.25	0.25	0.0	1.0e-25	{}	0.0	composition closed form checked n=1..6; n=200 (error 2^-202)
+R3-2024-Dichotomy-S1-Q04a	CONFIRMED	68.4070979849182521347290762457	68.4070979849182521347290762457	0.0	1.0e-25	{}	9.9	nested radical sqrt(x^2 sqrt(2^-x sqrt(x^4 sqrt(4^-x ...)))) evaluated directly (depth 150) inside quad
+R3-2024-Dichotomy-S2-Q07a	CONFIRMED	+inf	+inf	0	1.0e-25	{"n": "2"}	0.2	limit check: 7.4351698, 20.673994, 208.3663, 26736.35 at n=1e2,1e4,1e8,1e16 (grows ~ n^(1-2/e))
+R3-2024-Dichotomy-S2-Q07b	CONFIRMED	4.00000000330069795992853686931	4.0	6.6e-10	1.0e-6	{"n": "2"}	0.1	n=m^2 (m=1e3..1.6e4), Neville in 1/m; last raw 3.999874931
+R3-2024-Tournament-Q03-v10	CONFIRMED	0.499999999999999999942293209741	0.5	3.85e-20	1.0e-12	{}	0.1	n*int tan^n directly, Neville in 1/n [extrap_err~2.4e-15; |val-ans| within it: True]
+R3-2024-Tournament-Q03-v11	CONFIRMED	0.499999999999999999942293209741	0.5	3.85e-20	1.0e-12	{}	0.1	n*int tan^n directly, Neville in 1/n [extrap_err~2.4e-15; |val-ans| within it: True]
+R3-2024-Tournament-Q03-v12	CONFIRMED	0.499999999999999999942293209741	0.5	3.85e-20	1.0e-12	{}	0.1	n*int tan^n directly, Neville in 1/n [extrap_err~2.4e-15; |val-ans| within it: True]
+R3-2024-Tournament-Q04-v10	CONFIRMED	1.57079632679489661923132169164	1.57079632679489661923132169164	0.0	1.0e-25	{"d": "2", "m": "1"}	7.1	direct quad of the given integrand for (m,n)=(2,0),(3,1),(4,1),(3,0) matches pi/2^m to 1e-12; answer at param point
+R3-2024-Tournament-Q04-v11	CONFIRMED	1.57079632679489661923132169164	1.57079632679489661923132169164	0.0	1.0e-25	{"d": "2", "m": "1"}	7.2	direct quad of the given integrand for (m,n)=(2,0),(3,1),(4,1),(3,0) matches pi/2^m to 1e-12; answer at param point
+R3-2024-Tournament-Q04-v12	CONFIRMED	1.57079632679489661923132169164	1.57079632679489661923132169164	0.0	1.0e-25	{"d": "2", "m": "1"}	6.7	direct quad of the given integrand for (m,n)=(2,0),(3,1),(4,1),(3,0) matches pi/2^m to 1e-12; answer at param point
+R2-2024-Relay-Q17	CONFIRMED	0.509584255933572646766756349344	0.509584255933572646766756349344	0.0	1.0e-25	{}	0.7	sum over unit intervals
+R2-2024-Relay-Q10	CONFIRMED	-8.23762109577392094016884030141	-8.23762109577392094016884030141	2.2e-36	1.0e-25	{"alpha": "1/2", "theta": "27/10"}	2.4	real part (imag odd->0); (alpha,theta)=(0.5,2.7),(0.7,-1.3) match closed form; value at (0.5,2.7)
+R2-2025-SG-Relay-Q05	CONFIRMED	0.411233516712056609118103791662	0.411233516712056609118103791662	0.0	1.0e-25	{}	0.0	floor(x+floor x)=2n on [n,n+1); sum
+R2-2025-SG-Group-Q07	CONFIRMED	3.14159265358979323846264338328	3.14159265358979323846264338328	0.0	1.0e-25	{}	41.6	45 dps, no Glasser: t=tan(x/2+pi/4) per period + exact Poisson sum over periods gives I = pi + J, J = int (K(a(t))-1)/(1+t^2) dt by quadosc = 0 (<1e-45); Fourier modes n=1,2,3,6 each 0 to <3e-48 (residue: only pole t=-i); cross-check: direct periodic sum + Neville agrees to 4e-11, Poisson cell form to 3.6e-13
+R2-2025-UK-Group-Q06	CONFIRMED	3.14159265358979323846264338328	3.14159265358979323846264338328	0.0	1.0e-25	{}	27.8	45 dps, no Glasser: t=tan(x/2+pi/4) per period + exact Poisson sum over periods gives I = pi + J, J = int (K(a(t))-1)/(1+t^2) dt by quadosc = 0 (<1e-45); Fourier modes n=1,2,3,6 each 0 to <3e-48 (residue: only pole t=-i); cross-check: direct periodic sum + Neville agrees to 4e-11, Poisson cell form to 3.6e-13
+R2-2025-SG-Relay-Q21	CONFIRMED	1.77245385090551602729816748334	1.77245385090551602729816748334	0.0	1.0e-25	{}	0.0	quad on [-7,7] (tails < e^-270)
+R2-2025-UK-Relay-Q17	CONFIRMED	0.411233516712056609118103791662	0.411233516712056609118103791662	0.0	1.0e-25	{}	0.0	floor(x+floor x)=2n on [n,n+1); sum
+R3-2024-Chainlink-G2-Q03	CONFIRMED	1.57079632679489661923132169164	1.57079632679489661923132169164	0.0	1.0e-25	{}	0.3	t=tan x -> sin t/t; quadosc
+R3-2024-Chainlink-G5-Q04	CONFIRMED	-1.22214973174975929707892725673	-1.22214973174975929707892725673	0.0	1.0e-25	{}	1.0	t=1/x, sum over unit intervals
+R2-2025-UK-Relay-Q13	CONFIRMED	1.77245385090551602729816748334	1.77245385090551602729816748334	0.0	1.0e-25	{}	0.0	quad on [-7,7] (tails < e^-270)
+R3-2024-Dichotomy-S2-Q06a	CONFIRMED	-1.08879304515180106525034444912	-1.08879304515180106525034444912	4.76e-33	1.0e-20	{}	4.6	60 dps: quad [0,1] + split tails (int_1^inf ln x/x^2 = 1)
+R3-2024-Dichotomy-S2-Q06b	CONFIRMED	-1.26767028008036516787570386802e-34	0.0	1.27e-34	1.0e-20	{}	3.2	60 dps: quad [0,1] + split tails
+R3-2024-Dichotomy-S3-Q05b	CONFIRMED	1.77245385090551602729816748334	1.77245385090551602729816748334	0.0	1.0e-25	{}	0.6	complete square; Fresnel integrals by quadosc
+R3-2024-Tournament-Q01	CONFIRMED	0.5	0.5	0.0	1.0e-25	{}	0.0	sum over unit intervals
+R3-2024-Tournament-Q01-v2	CONFIRMED	0.5	0.5	0.0	1.0e-25	{}	0.0	sum over unit intervals
+R3-2024-Tournament-Q01-v3	CONFIRMED	0.5	0.5	0.0	1.0e-25	{}	0.0	sum over unit intervals
+R3-2024-Tournament-Q02-v3	CONFIRMED	2.46740110027233965470862274997	2.46740110027233965470862274997	4.47e-42	1.0e-25	{}	0.0	x=e^tan(th): int_(-pi/2)^(pi/2) atan(e^tan th) dth; quad (direct quad has slow log^2 tails)
+R3-2024-Tournament-Q02-v4	CONFIRMED	2.46740110027233965470862274997	2.46740110027233965470862274997	4.47e-42	1.0e-25	{}	0.0	x=e^tan(th): int_(-pi/2)^(pi/2) atan(e^tan th) dth; quad (direct quad has slow log^2 tails)
+R3-2024-Tournament-Q02-v5	CONFIRMED	2.46740110027233965470862274997	2.46740110027233965470862274997	4.47e-42	1.0e-25	{}	0.0	x=e^tan(th): int_(-pi/2)^(pi/2) atan(e^tan th) dth; quad (direct quad has slow log^2 tails)
+R3-2024-Chainlink-G5-Q07	CONFIRMED	530.143760293277608990571070928	530.143760293277608990571070928	0.0	1.0e-25	{}	0.0	period-1 integrand (checked on [1,2]); 2025*quad over one period
+R3-2024-Tournament-Q04-v7	CONFIRMED	0.721347520444481703679962340501	0.721347520444481703679962340501	0.0	1.0e-25	{}	0.0	t=2^x; sum_n 2^n/(3^(2^n)+1)/ln2 (terms beyond n=11 < 1e-900)
+R3-2024-Tournament-Q04-v8	CONFIRMED	0.721347520444481703679962340501	0.721347520444481703679962340501	0.0	1.0e-25	{}	0.0	t=2^x; sum_n 2^n/(3^(2^n)+1)/ln2 (terms beyond n=11 < 1e-900)
+R3-2024-Tournament-Q06-v10	CONFIRMED	0.0349065850398865915384738153698	0.0349065850398865915384738153698	0.0	1.0e-25	{}	3.2	quad [-1,1]; tails split sin^2=(1-cos2x)/2: plain quad + quadosc
+R3-2024-Tournament-Q06-v11	CONFIRMED	0.0349065850398865915384738153698	0.0349065850398865915384738153698	0.0	1.0e-25	{}	2.2	quad [-1,1]; tails split sin^2=(1-cos2x)/2: plain quad + quadosc
+R3-2024-Tournament-Q06-v4	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	0.0	iterates of 2x/(1+x^2) -> sign(x) (checked); quad sign
+R3-2024-Tournament-Q06-v5	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	0.0	iterates of 2x/(1+x^2) -> sign(x) (checked); quad sign
+R3-2024-Tournament-Q06-v9	CONFIRMED	0.0349065850398865915384738153698	0.0349065850398865915384738153698	0.0	1.0e-25	{}	2.1	quad [-1,1]; tails split sin^2=(1-cos2x)/2: plain quad + quadosc
+R3-2024-Tournament-Q07-v7	CONFIRMED	-0.83059901675444486106705485927	-0.83059901675444486106705485927	0.0	1.0e-25	{}	0.8	[1,inf) quadosc on exact zeros; (0,1] via x=1/t, same zeros
+R3-2024-Tournament-Q07-v8	CONFIRMED	-0.83059901675444486106705485927	-0.83059901675444486106705485927	0.0	1.0e-25	{}	0.7	[1,inf) quadosc on exact zeros; (0,1] via x=1/t, same zeros
+R3-2024-Tournament-Q07-v9	CONFIRMED	-0.83059901675444486106705485927	-0.83059901675444486106705485927	0.0	1.0e-25	{}	0.7	[1,inf) quadosc on exact zeros; (0,1] via x=1/t, same zeros
+SAMPLE-Q09	CONFIRMED	0.0993143656134685715334206128295	0.0993143656134685715334206128295	0.0	1.0e-25	{}	0.7	sum over unit intervals
+YANG-1.20-P05	CONFIRMED	2.46740110027233965470862274997	2.46740110027233965470862274997	4.47e-42	1.0e-25	{}	0.0	x=e^tan(th): int_(-pi/2)^(pi/2) atan(e^tan th) dth; quad (direct quad has slow log^2 tails)
+R3-2024-Tournament-Q04-v9	CONFIRMED	0.721347520444481703679962340501	0.721347520444481703679962340501	0.0	1.0e-25	{}	0.0	t=2^x; sum_n 2^n/(3^(2^n)+1)/ln2 (terms beyond n=11 < 1e-900)
+YANG-3.4-P06	CONFIRMED	-0.265642177445618077657618106732	-0.265642177445618077657618106732	9.07e-42	1.0e-25	{}	0.0	quad split at x=1/sqrt3 jump
+YANG-2.4-P09	CONFIRMED	2.0	2.0	0.0	1.0e-25	{}	0.0	quad on [-80,6] (tails < e^-200); u=e^x gives Gamma(3)
