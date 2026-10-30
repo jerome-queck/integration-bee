@@ -2767,21 +2767,21 @@ _add(
 
 _add(
     "YANG-2.3-P06",
-    "3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112",
+    "(2*x - 1)*(48*x**2 - 6*x - 9)/(112*Abs(2*x - 1)**(2/3))",
     [
         (
-            "Forced substitution u = 2*x - 1, so x = (u + 1)/2 and dx = du/2. The antiderivative in u is 3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16.",
-            r"Forced substitution \(u=2x-1\), so \(x=(u+1)/2\) and \(dx=du/2\). The antiderivative in \(u\) is \(\frac{3}{28}(2x-1)^{7/3}+\frac{3}{16}(2x-1)^{4/3}\).",
+            "Read (2*x - 1)**(1/3) as the real cube root, which is (2*x - 1)/Abs(2*x - 1)**(2/3) for x != 1/2. Forced substitution u = 2*x - 1, so x = (u + 1)/2 and dx = du/2. For x > 1/2 the antiderivative in u is 3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16.",
+            r"Read \((2x-1)^{1/3}\) as the real cube root, which is \((2x-1)/|2x-1|^{2/3}\) for \(x\neq 1/2\). Forced substitution \(u=2x-1\), so \(x=(u+1)/2\) and \(dx=du/2\). For \(x>1/2\) the antiderivative in \(u\) is \(\frac{3}{28}(2x-1)^{7/3}+\frac{3}{16}(2x-1)^{4/3}\).",
         ),
         (
-            "Factor u**(1/3). That equals 3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112.",
-            r"Factor \(u^{1/3}\). That equals \(\frac{3x^{2}(2x-1)^{1/3}}{7}-\frac{3x(2x-1)^{1/3}}{56}-\frac{9(2x-1)^{1/3}}{112}\).",
+            "Factor the cube root: 3*x**2/7 - 3*x/56 - 9/112 equals (48*x**2 - 6*x - 9)/112. With the real cube root the antiderivative is (2*x - 1)*(48*x**2 - 6*x - 9)/(112*Abs(2*x - 1)**(2/3)), on both sides of 1/2.",
+            r"Factor the cube root: \(\frac{3x^{2}}{7}-\frac{3x}{56}-\frac{9}{112}=\frac{48x^{2}-6x-9}{112}\). With the real cube root the antiderivative is \(\frac{(2x-1)(48x^{2}-6x-9)}{112|2x-1|^{2/3}}\), on both sides of \(1/2\).",
         ),
     ],
     [
         ("diff", "3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16"),
-        ("eq", "3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16", "3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112"),
-        ("diff", "3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112"),
+        ("eq", "3*x**2/7 - 3*x/56 - 9/112", "(48*x**2 - 6*x - 9)/112"),
+        ("diff", "(2*x - 1)*(48*x**2 - 6*x - 9)/(112*Abs(2*x - 1)**(2/3))"),
     ],
 )
 
@@ -2919,20 +2919,20 @@ _add(
 
 _add(
     "YANG-2.3-P13",
-    "3*(x + 1)**(2/3)/2 + 3*(x + 1)**(1/3) + 3*log((x + 1)**(1/3) - 1)",
+    "3*Abs(x + 1)**(2/3)/2 + 3*sign(x + 1)*Abs(x + 1)**(1/3) + 3*log(Abs(sign(x + 1)*Abs(x + 1)**(1/3) - 1))",
     [
         (
-            "Forced substitution u = (x + 1)**(1/3), so dx = 3*u**2*du. Division gives (x+1)**(2/3)/((x+1)**(1/3)-1) = (x+1)**(1/3) + 1 + 1/((x+1)**(1/3)-1).",
-            r"Forced substitution \(u=(x+1)^{1/3}\), so \(dx=3u^{2}\,du\). Division gives \(u^{2}/(u-1)=u+1+1/(u-1)\).",
+            "Read (x + 1)**(1/3) as the real cube root u = sign(x + 1)*Abs(x + 1)**(1/3), so u**2 = Abs(x + 1)**(2/3) and dx = 3*u**2*du. Division gives u**2/(u - 1) = u + 1 + 1/(u - 1); for x > -1 that reads (x+1)**(2/3)/((x+1)**(1/3)-1) = (x+1)**(1/3) + 1 + 1/((x+1)**(1/3)-1).",
+            r"Read \((x+1)^{1/3}\) as the real cube root \(u=\operatorname{sgn}(x+1)|x+1|^{1/3}\), so \(u^{2}=|x+1|^{2/3}\) and \(dx=3u^{2}\,du\). Division gives \(u^{2}/(u-1)=u+1+1/(u-1)\).",
         ),
         (
-            "Integrate termwise. The antiderivative is 3*(x + 1)**(2/3)/2 + 3*(x + 1)**(1/3) + 3*log((x + 1)**(1/3) - 1).",
-            r"Integrate termwise. The antiderivative is \(\frac{3}{2}(x+1)^{2/3}+3(x+1)^{1/3}+3\log((x+1)^{1/3}-1)\).",
+            "Integrate termwise. The antiderivative is 3*Abs(x + 1)**(2/3)/2 + 3*sign(x + 1)*Abs(x + 1)**(1/3) + 3*log(Abs(sign(x + 1)*Abs(x + 1)**(1/3) - 1)), valid for every x except x = 0.",
+            r"Integrate termwise. The antiderivative is \(\frac{3}{2}|x+1|^{2/3}+3u+3\log|u-1|\) with \(u=\operatorname{sgn}(x+1)|x+1|^{1/3}\), valid for every \(x\neq 0\).",
         ),
     ],
     [
         ("eq", "(x+1)**(2/3)/((x+1)**(1/3)-1)", "(x+1)**(1/3) + 1 + 1/((x+1)**(1/3)-1)"),
-        ("diff", "3*(x + 1)**(2/3)/2 + 3*(x + 1)**(1/3) + 3*log((x + 1)**(1/3) - 1)"),
+        ("diff", "3*Abs(x + 1)**(2/3)/2 + 3*sign(x + 1)*Abs(x + 1)**(1/3) + 3*log(Abs(sign(x + 1)*Abs(x + 1)**(1/3) - 1))"),
     ],
 )
 
@@ -6748,10 +6748,6 @@ LANE_MAINS.append(_final_main)
 REAL_POINTS = ("-7.3", "-3.1", "-1.7", "-0.6", "0.4", "1.3", "2.9", "6.1")
 REAL_STEP = "1e-12"
 REAL_TOL = "1e-6"
-# Rows that still fail, each awaiting an approved answer change. Odd cube roots
-# of a negative base: the stored answers use principal roots. This set must equal
-# the failing set exactly, so a fix or a new failure both stop the gate.
-REAL_KNOWN_PARTIAL = frozenset({"YANG-2.3-P06", "YANG-2.3-P13"})
 
 
 def _real_roots(expr):
@@ -6805,15 +6801,12 @@ def _real_main(argv: list[str]) -> int:
             bad = real_domain_failures(row)
             if bad:
                 failing[row["id"]] = bad
-    for ident in sorted(set(failing) - REAL_KNOWN_PARTIAL):
+    for ident in sorted(failing):
         print(f"FAIL {ident} answer is wrong on part of the real domain, at x = {failing[ident]}", file=sys.stderr)
-    stale = sorted(REAL_KNOWN_PARTIAL - set(failing))
-    if stale:
-        print(f"FAIL REAL_KNOWN_PARTIAL lists rows that now pass: {stale}", file=sys.stderr)
-    if set(failing) != REAL_KNOWN_PARTIAL:
+    if failing:
         return 1
     count = sum(1 for row in rows if row.get("source") == "yang_book" and row.get("kind") == "indefinite")
-    print(f"PASS real-domain derivative check ({count} indefinite rows, known partial {sorted(REAL_KNOWN_PARTIAL)})")
+    print(f"PASS real-domain derivative check ({count} indefinite rows)")
     return 0
 
 
