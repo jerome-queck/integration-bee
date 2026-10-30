@@ -1,0 +1,2 @@
+R2-2024-Relay-Q08	CONFIRMED	1.11072073453959156175397024752	1.11072073453959156175397024752	3.12e-42	1.0e-25	{}	3.1	telescoping verified numerically (1e5 terms at x=0.4); u=sqrt(pi/4-x) quad at 60 dps, removable 0/0 at u=0 set to its limit 1
+R2-2024-Relay-Q09	CONFIRMED	1.0	1.0	0.0	1.0e-25	{}	3.9	frac ratio=1 checked; product telescopes to 1-x^(2^(N+1)) so I_N=1-1/(2^(N+1)+1), matched by quad for N=5,20,60 to <1e-30; limit N->inf is 1 exactly

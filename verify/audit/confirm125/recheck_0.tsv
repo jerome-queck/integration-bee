@@ -1,0 +1,14 @@
+R1-2021-Q25	CONFIRMED	2.46740110027233965470862274997	2.46740110027233965470862274997	4.47e-42	1.0e-25	{}	0.1	x=e^tan(th): int_(-pi/2)^(pi/2) atan(e^tan th) dth; quad (direct quad has slow log^2 tails)
+R1-2025-Online-Q12	CONFIRMED	0.306852819439958429144063558628	0.306852819440054690582767878542	7.37e-14	1.0e-9	{}	16.5	direct nested-abs, even n=100..1600, Neville in 1/n [extrap_err~1.1e-11; |val-ans| within it: True]
+R2-2023-Relay-Q17	CONFIRMED	-0.57079632679489661923132169164	-0.57079632679489661923132169164	0.0	1.0e-25	{}	1.3	t=1/x; floor(cos)=-1 exactly where cos<0, else 0 a.e.; exact interval sum; brute quad on t in [1,40] agrees to 1e-20
+R2-2024-Relay-Q06	CONFIRMED	1.99999999999998881287065851468	2.0	3.73e-15	1.0e-9	{}	0.1	n*int for n=1000..16000, Neville in 1/n [extrap_err~9.8e-13; |val-ans| within it: True]
+R2-2024-Relay-Q09	MISMATCH	0.999999999999999999566319131006	1.0	2.17e-19	1.0e-25	{}	3.6	frac(sinh^2)/frac(cosh^2)=1 (cosh^2=sinh^2+1, checked); product N=60 at 60 dps; quad with breakpoints toward 1
+R2-2025-SG-Group-Q07	CONFIRMED	3.14159265358979323846264338328	3.14159265358979323846264338328	0.0	1.0e-25	{}	41.4	integrand=1/(1+h^2), h=x+tan(x/2+pi/4) is x - sum 2/(x-b_k) (Glasser); verified sum of 1/h'(roots of h=u) = 1 to 6.8e-13 for u=0.3,2,-5 (|k|<=3000 + tail), so integral = int du/(1+u^2) = pi
+R2-2025-SG-Relay-Q21	CONFIRMED	1.77245385090551602729816748334	1.77245385090551602729816748334	0.0	1.0e-25	{}	0.0	quad on [-7,7] (tails < e^-270)
+R2-2025-UK-Relay-Q13	CONFIRMED	1.77245385090551602729816748334	1.77245385090551602729816748334	0.0	1.0e-25	{}	0.0	quad on [-7,7] (tails < e^-270)
+R3-2024-Chainlink-G1-Q08	CONFIRMED	1.6094379124336781345375138564	1.60943791243410037460075933323	1.62e-13	1.0e-10	{}	0.1	(n+1)*int for n=2000..16000, Richardson [extrap_err~1.2e-10; |val-ans| within it: True]
+R3-2024-Dichotomy-S1-Q04a	CONFIRMED	68.4070979849182521347290762457	68.4070979849182521347290762457	0.0	1.0e-25	{}	9.9	nested radical sqrt(x^2 sqrt(2^-x sqrt(x^4 sqrt(4^-x ...)))) evaluated directly (depth 150) inside quad
+R3-2024-Dichotomy-S2-Q06b	CONFIRMED	-1.26767028008036516787570386802e-34	0.0	1.27e-34	1.0e-20	{}	3.2	60 dps: quad [0,1] + split tails
+R3-2024-Tournament-Q03-v11	CONFIRMED	0.499999999999999999942293209741	0.5	3.85e-20	1.0e-12	{}	0.1	n*int tan^n directly, Neville in 1/n [extrap_err~2.4e-15; |val-ans| within it: True]
+R3-2024-Tournament-Q06-v10	CONFIRMED	0.0349065850398865915384738153698	0.0349065850398865915384738153698	0.0	1.0e-25	{}	3.2	quad [-1,1]; tails split sin^2=(1-cos2x)/2: plain quad + quadosc
+R3-2024-Tournament-Q06-v9	CONFIRMED	0.0349065850398865915384738153698	0.0349065850398865915384738153698	0.0	1.0e-25	{}	2.1	quad [-1,1]; tails split sin^2=(1-cos2x)/2: plain quad + quadosc
