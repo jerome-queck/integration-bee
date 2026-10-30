@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Exact step checks for Yang worked solutions.
 
-Sections 1.1 through 1.5, 1.6, 1.7, 1.8, 1.9, 1.11, 1.12, 2.5, and 2.6. Differentiation uses the same zero test
-as verify/pack_gate.py. A wrong antiderivative must fail. Run from the repository root:
+Sections 1.1 through 1.9, 1.11, 1.12, 1.15, 1.17, 1.18, 1.20, 2.3 through 2.6, and 2.7 through 6.7. Differentiation uses the same zero test
+as verify/pack_gate.py. Definite steps check each algebraic identity and an exact evaluation of the closed form.
+A wrong antiderivative must fail. Run from the repository root:
 
     python3 verify/yang_worked_check.py
     python3 verify/yang_worked_check.py --write
@@ -20,14 +21,17 @@ import pack_gate
 
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
-SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.5", "2.6"})
+SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.3", "2.4", "2.5", "2.6"})
 
 # final is the stored answer_sympy. lines are (plain, latex) without numbers.
 # steps are ("diff", antiderivative), ("diff_of", antiderivative, piece),
 # ("dvar", variable, antiderivative, piece), ("eq", left, right),
 # ("odd", expression), ("ends", antiderivative, lo, hi, factor, expected),
-# ("branch", antiderivative), ("limit", expr, point, dir, expected),
-# ("at", expr, point, expected), ("nested", ...), or ("elliptic", ...).
+# ("branch", antiderivative), ("limit", expr, point, expected) or with a direction,
+# ("at", expr, point, expected), ("ends", ...) at infinite bounds, ("area", ...),
+# ("sqrt_branch", ...), ("sides", ...), ("pieces", ...), ("reflect", ...),
+# ("flat", ...), ("zero_quot", ...), ("mirror", ...), ("half", ...), ("sum", ...),
+# ("min", ...), ("nested", ...), or ("elliptic", ...).
 SPECS: dict[str, dict] = {
     "YANG-1.1-P01": {
         "final": "5*x**3/3 - 4*x**2 + 5*x",
@@ -2021,6 +2025,1213 @@ def _add(ident: str, final: str, lines: list, steps: list) -> None:
 
 
 _add(
+    'YANG-1.15-P01',
+    'pi/4',
+    [('The half-angle identity writes sin(x)**2 as (1 - cos(2*x))/2.',
+  'The half-angle identity writes \\(\\sin^{2}x\\) as \\((1-\\cos 2x)/2\\).'),
+ ('The antiderivative of (1 - cos(2*x))/2 is x/2 - sin(2*x)/4.',
+  'The antiderivative of \\((1-\\cos 2x)/2\\) is \\(x/2-\\sin(2x)/4\\).'),
+ ('From 0 to pi/2 that primitive equals pi/4.',
+  'From \\(0\\) to \\(\\pi/2\\) that primitive equals \\(\\pi/4\\).')],
+    [('eq', 'sin(x)**2', '(1 - cos(2*x))/2'),
+ ('diff_of', 'x/2 - sin(2*x)/4', '(1 - cos(2*x))/2'),
+ ('ends', 'x/2 - sin(2*x)/4', '0', 'pi/2', '1', 'pi/4')],
+)
+
+_add(
+    'YANG-1.15-P02',
+    '2 + 3*pi/4',
+    [('Expand (cos(x) + 1)**2 as 1 + 2*cos(x) + cos(x)**2.',
+  'Expand \\((\\cos x+1)^{2}\\) as \\(1+2\\cos x+\\cos^{2}x\\).'),
+ ('Write cos(x)**2 as (1 + cos(2*x))/2.', 'Write \\(\\cos^{2}x\\) as \\((1+\\cos 2x)/2\\).'),
+ ('Then 1 + 2*cos(x) + (1 + cos(2*x))/2 equals 3/2 + 2*cos(x) + cos(2*x)/2.',
+  'Then \\(1+2\\cos x+(1+\\cos 2x)/2\\) equals \\(3/2+2\\cos x+\\cos(2x)/2\\).'),
+ ('The antiderivative is 3*x/2 + 2*sin(x) + sin(2*x)/4, and from 0 to pi/2 it equals 2 + 3*pi/4.',
+  'The antiderivative is \\(3x/2+2\\sin x+\\sin(2x)/4\\), and from \\(0\\) to \\(\\pi/2\\) it '
+  'equals \\(2+3\\pi/4\\).')],
+    [('eq', '(cos(x) + 1)**2', '1 + 2*cos(x) + cos(x)**2'),
+ ('eq', 'cos(x)**2', '(1 + cos(2*x))/2'),
+ ('eq', '1 + 2*cos(x) + (1 + cos(2*x))/2', '3/2 + 2*cos(x) + cos(2*x)/2'),
+ ('diff_of', '3*x/2 + 2*sin(x) + sin(2*x)/4', '3/2 + 2*cos(x) + cos(2*x)/2'),
+ ('ends', '3*x/2 + 2*sin(x) + sin(2*x)/4', '0', 'pi/2', '1', '2 + 3*pi/4')],
+)
+
+_add(
+    'YANG-1.15-P03',
+    'tan(x)**5/5 + 2*tan(x)**3/3 + tan(x)',
+    [('sec(x)**6 equals (1 + tan(x)**2)**2*sec(x)**2.',
+  '\\(\\sec^{6}x\\) equals \\((1+\\tan^{2}x)^{2}\\sec^{2}x\\).'),
+ ('The derivative of tan(x) is sec(x)**2, so the substitution u = tan(x) integrates the powers of '
+  'u.',
+  'The derivative of \\(\\tan x\\) is \\(\\sec^{2}x\\), so the substitution \\(u=\\tan x\\) '
+  'integrates the powers of \\(u\\).'),
+ ('The antiderivative is tan(x)**5/5 + 2*tan(x)**3/3 + tan(x).',
+  'The antiderivative is \\(\\tan^{5}(x)/5+2\\tan^{3}(x)/3+\\tan x\\).')],
+    [('eq', 'sec(x)**6', '(1 + tan(x)**2)**2*sec(x)**2'),
+ ('diff_of', 'tan(x)', 'sec(x)**2'),
+ ('diff', 'tan(x)**5/5 + 2*tan(x)**3/3 + tan(x)')],
+)
+
+_add(
+    'YANG-1.15-P04',
+    'cos(x)/2 - cos(5*x)/10',
+    [('The product identity writes sin(2*x)*cos(3*x) as (sin(5*x) - sin(x))/2.',
+  'The product identity writes \\(\\sin(2x)\\cos(3x)\\) as \\((\\sin 5x-\\sin x)/2\\).'),
+ ('The antiderivative is cos(x)/2 - cos(5*x)/10.',
+  'The antiderivative is \\(\\cos(x)/2-\\cos(5x)/10\\).')],
+    [('eq', 'sin(2*x)*cos(3*x)', '(sin(5*x) - sin(x))/2'), ('diff', 'cos(x)/2 - cos(5*x)/10')],
+)
+
+_add(
+    'YANG-1.15-P05',
+    'sin(2*x)/4 + sin(12*x)/24',
+    [('cos(5*x)*cos(7*x) equals (cos(12*x) + cos(2*x))/2.',
+  '\\(\\cos(5x)\\cos(7x)\\) equals \\((\\cos 12x+\\cos 2x)/2\\).'),
+ ('The antiderivative is sin(2*x)/4 + sin(12*x)/24.',
+  'The antiderivative is \\(\\sin(2x)/4+\\sin(12x)/24\\).')],
+    [('eq', 'cos(5*x)*cos(7*x)', '(cos(12*x) + cos(2*x))/2'), ('diff', 'sin(2*x)/4 + sin(12*x)/24')],
+)
+
+_add(
+    'YANG-1.15-P06',
+    'tan(x)**5/5',
+    [('tan(x)**6 + tan(x)**4 equals tan(x)**4*sec(x)**2.',
+  '\\(\\tan^{6}x+\\tan^{4}x\\) equals \\(\\tan^{4}x\\sec^{2}x\\).'),
+ ('The derivative of tan(x) is sec(x)**2. The substitution u = tan(x) gives tan(x)**5/5.',
+  'The derivative of \\(\\tan x\\) is \\(\\sec^{2}x\\). The substitution \\(u=\\tan x\\) gives '
+  '\\(\\tan^{5}x/5\\).')],
+    [('eq', 'tan(x)**6 + tan(x)**4', 'tan(x)**4*sec(x)**2'),
+ ('diff_of', 'tan(x)', 'sec(x)**2'),
+ ('diff', 'tan(x)**5/5')],
+)
+
+_add(
+    'YANG-1.15-P07',
+    'tan(x) - sec(x)',
+    [('Multiply by 1 - sin(x). Then (1 - sin(x))/cos(x)**2 equals 1/(1 + sin(x)).',
+  'Multiply by \\(1-\\sin x\\). Then \\((1-\\sin x)/\\cos^{2}x\\) equals \\(1/(1+\\sin x)\\).'),
+ ('(1 - sin(x))/cos(x)**2 equals sec(x)**2 - sec(x)*tan(x).',
+  '\\((1-\\sin x)/\\cos^{2}x\\) equals \\(\\sec^{2}x-\\sec x\\tan x\\).'),
+ ('The antiderivative is tan(x) - sec(x).', 'The antiderivative is \\(\\tan x-\\sec x\\).')],
+    [('eq', '(1 - sin(x))/cos(x)**2', '1/(1 + sin(x))'),
+ ('eq', '(1 - sin(x))/cos(x)**2', 'sec(x)**2 - sec(x)*tan(x)'),
+ ('diff', 'tan(x) - sec(x)')],
+)
+
+_add(
+    'YANG-1.15-P08',
+    '2*sqrt(2)*sin(x/2)',
+    [('1 + cos(x) equals 2*cos(x/2)**2, so (sqrt(2)*cos(x/2))**2 equals 1 + cos(x).',
+  '\\(1+\\cos x\\) equals \\(2\\cos^{2}(x/2)\\), so \\((\\sqrt{2}\\cos(x/2))^{2}\\) equals '
+  '\\(1+\\cos x\\).'),
+ ('The derivative of 2*sqrt(2)*sin(x/2) is sqrt(2)*cos(x/2).',
+  'The derivative of \\(2\\sqrt{2}\\sin(x/2)\\) is \\(\\sqrt{2}\\cos(x/2)\\).'),
+ ('That derivative and sqrt(1 + cos(x)) have the same square, and they agree at 0.',
+  'That derivative and \\(\\sqrt{1+\\cos x}\\) have the same square, and they agree at \\(0\\).')],
+    [('eq', '1 + cos(x)', '2*cos(x/2)**2'),
+ ('eq', '(sqrt(2)*cos(x/2))**2', '1 + cos(x)'),
+ ('diff_of', '2*sqrt(2)*sin(x/2)', 'sqrt(2)*cos(x/2)'),
+ ('sqrt_branch', '2*sqrt(2)*sin(x/2)', '0')],
+)
+
+_add(
+    'YANG-1.15-P09',
+    'sin(2*x)/2',
+    [('The difference of squares -sin(x)**4 + cos(x)**4 equals cos(2*x).',
+  'The difference of squares \\(-\\sin^{4}x+\\cos^{4}x\\) equals \\(\\cos 2x\\).'),
+ ('The antiderivative is sin(2*x)/2.', 'The antiderivative is \\(\\sin(2x)/2\\).')],
+    [('eq', '-sin(x)**4 + cos(x)**4', 'cos(2*x)'), ('diff', 'sin(2*x)/2')],
+)
+
+_add(
+    'YANG-1.15-P10',
+    'Piecewise((2*sqrt(sin(x)), cos(x) >= 0), (4 - 2*sqrt(sin(x)), True))',
+    [('csc(x) - sin(x) equals cos(x)**2/sin(x), and sqrt(-sin(x) + csc(x))**2 equals cos(x)**2/sin(x).',
+  '\\(\\csc x-\\sin x\\) equals \\(\\cos^{2}x/\\sin x\\), and the square of \\(\\sqrt{\\csc '
+  'x-\\sin x}\\) equals \\(\\cos^{2}x/\\sin x\\).'),
+ ('At pi/6 the integrand equals cos(x)/sqrt(sin(x)). At 2*pi/3 it equals -cos(x)/sqrt(sin(x)).',
+  'At \\(\\pi/6\\) the integrand equals \\(\\cos x/\\sqrt{\\sin x}\\). At \\(2\\pi/3\\) it equals '
+  '\\(-\\cos x/\\sqrt{\\sin x}\\).'),
+ ('Where cos(x) >= 0, the derivative of 2*sqrt(sin(x)) is cos(x)/sqrt(sin(x)).',
+  'Where \\(\\cos x\\ge 0\\), the derivative of \\(2\\sqrt{\\sin x}\\) is \\(\\cos x/\\sqrt{\\sin '
+  'x}\\).'),
+ ('On the other side, the derivative of 4 - 2*sqrt(sin(x)) is -cos(x)/sqrt(sin(x)).',
+  'On the other side, the derivative of \\(4-2\\sqrt{\\sin x}\\) is \\(-\\cos x/\\sqrt{\\sin '
+  'x}\\).'),
+ ('2*sqrt(sin(pi/2)) and (4 - 2*sqrt(sin(pi/2))) both equal 2, so the pieces meet at cos(x) = 0.',
+  '\\(2\\sqrt{\\sin(\\pi/2)}\\) and \\(4-2\\sqrt{\\sin(\\pi/2)}\\) both equal \\(2\\), so the '
+  'pieces meet at \\(\\cos x=0\\).')],
+    [('eq', 'csc(x) - sin(x)', 'cos(x)**2/sin(x)'),
+ ('eq', 'sqrt(-sin(x) + csc(x))**2', 'cos(x)**2/sin(x)'),
+ ('sides', 'cos(x)/sqrt(sin(x))', 'pi/6', '-cos(x)/sqrt(sin(x))', '2*pi/3'),
+ ('diff_of', '2*sqrt(sin(x))', 'cos(x)/sqrt(sin(x))'),
+ ('diff_of', '4 - 2*sqrt(sin(x))', '-cos(x)/sqrt(sin(x))'),
+ ('eq', '2*sqrt(sin(pi/2))', '2'),
+ ('eq', '(4 - 2*sqrt(sin(pi/2)))', '2'),
+ ('pieces', 'cos(x) >= 0')],
+)
+
+_add(
+    'YANG-1.15-P11',
+    'Piecewise((log(tan(x) + sec(x)) + log(sec(x)), cos(x) > 0), (-log(-tan(x) - sec(x)) - log(-sec(x)), True))',
+    [('2*tan(x)**2 + 2*tan(x)*sec(x) + 1 equals (sec(x) + tan(x))**2.',
+  '\\(2\\tan^{2}x+2\\tan x\\sec x+1\\) equals \\((\\sec x+\\tan x)^{2}\\).'),
+ ('(sin(x/2) + cos(x/2))**2 equals 1 + sin(x), and (1 + sin(x))/cos(x) equals sec(x) + tan(x).',
+  '\\((\\sin(x/2)+\\cos(x/2))^{2}\\) equals \\(1+\\sin x\\), and \\((1+\\sin x)/\\cos x\\) equals '
+  '\\(\\sec x+\\tan x\\).'),
+ ('At pi/6 the integrand equals sec(x) + tan(x). At 2*pi/3 it equals -(sec(x) + tan(x)). The '
+  'condition is cos(x) > 0.',
+  'At \\(\\pi/6\\) the integrand equals \\(\\sec x+\\tan x\\). At \\(2\\pi/3\\) it equals '
+  '\\(-(\\sec x+\\tan x)\\). The condition is \\(\\cos x>0\\).'),
+ ('Where cos(x) > 0, log(tan(x) + sec(x)) + log(sec(x)) differentiates to sec(x) + tan(x).',
+  'Where \\(\\cos x>0\\), \\(\\log(\\tan x+\\sec x)+\\log(\\sec x)\\) differentiates to \\(\\sec '
+  'x+\\tan x\\).'),
+ ('On the other side, -log(-tan(x) - sec(x)) - log(-sec(x)) differentiates to -(sec(x) + tan(x)).',
+  'On the other side, \\(-\\log(-\\tan x-\\sec x)-\\log(-\\sec x)\\) differentiates to \\(-(\\sec '
+  'x+\\tan x)\\).')],
+    [('eq', '2*tan(x)**2 + 2*tan(x)*sec(x) + 1', '(sec(x) + tan(x))**2'),
+ ('eq', '(sin(x/2) + cos(x/2))**2', '1 + sin(x)'),
+ ('eq', '(1 + sin(x))/cos(x)', 'sec(x) + tan(x)'),
+ ('sides', 'sec(x) + tan(x)', 'pi/6', '-(sec(x) + tan(x))', '2*pi/3'),
+ ('diff_of', 'log(tan(x) + sec(x)) + log(sec(x))', 'sec(x) + tan(x)'),
+ ('diff_of', '-log(-tan(x) - sec(x)) - log(-sec(x))', '-(sec(x) + tan(x))'),
+ ('pieces', 'cos(x) > 0')],
+)
+
+_add(
+    'YANG-1.15-P12',
+    '2*cos(sin(x))',
+    [('sin(x - sin(x)) - sin(x + sin(x)) equals -2*cos(x)*sin(sin(x)).',
+  '\\(\\sin(x-\\sin x)-\\sin(x+\\sin x)\\) equals \\(-2\\cos x\\sin(\\sin x)\\).'),
+ ('The antiderivative is 2*cos(sin(x)).', 'The antiderivative is \\(2\\cos(\\sin x)\\).')],
+    [('eq', 'sin(x - sin(x)) - sin(x + sin(x))', '-2*cos(x)*sin(sin(x))'), ('diff', '2*cos(sin(x))')],
+)
+
+_add(
+    'YANG-1.15-P13',
+    'tan(x) - cot(x)',
+    [('1/(sin(x)**2*cos(x)**2) equals sec(x)**2 + csc(x)**2.',
+  '\\(1/(\\sin^{2}x\\cos^{2}x)\\) equals \\(\\sec^{2}x+\\csc^{2}x\\).'),
+ ('The antiderivative is tan(x) - cot(x).', 'The antiderivative is \\(\\tan x-\\cot x\\).')],
+    [('eq', '1/(sin(x)**2*cos(x)**2)', 'sec(x)**2 + csc(x)**2'), ('diff', 'tan(x) - cot(x)')],
+)
+
+_add(
+    'YANG-1.15-P14',
+    '-x + 2*tan(x) + 2*sec(x)',
+    [('(sec(x) - tan(x))*(sec(x) + tan(x)) equals 1, so (-tan(x) + sec(x))**(-2) equals (sec(x) + '
+  'tan(x))**2.',
+  '\\((\\sec x-\\tan x)(\\sec x+\\tan x)\\) equals \\(1\\), so \\((\\sec x-\\tan x)^{-2}\\) equals '
+  '\\((\\sec x+\\tan x)^{2}\\).'),
+ ('(sec(x) + tan(x))**2 equals 2*sec(x)**2 + 2*sec(x)*tan(x) - 1.',
+  '\\((\\sec x+\\tan x)^{2}\\) equals \\(2\\sec^{2}x+2\\sec x\\tan x-1\\).'),
+ ('The antiderivative is -x + 2*tan(x) + 2*sec(x).',
+  'The antiderivative is \\(-x+2\\tan x+2\\sec x\\).')],
+    [('eq', '(sec(x) - tan(x))*(sec(x) + tan(x))', '1'),
+ ('eq', '(-tan(x) + sec(x))**(-2)', '(sec(x) + tan(x))**2'),
+ ('eq', '(sec(x) + tan(x))**2', '2*sec(x)**2 + 2*sec(x)*tan(x) - 1'),
+ ('diff', '-x + 2*tan(x) + 2*sec(x)')],
+)
+
+_add(
+    'YANG-1.15-P15',
+    'x/2 + log(tan(2*x) + sec(2*x))/4',
+    [('2*cos(x)**2 - 1 equals cos(2*x), so cos(x)**2/(2*cos(x)**2 - 1) equals 1/2 + sec(2*x)/2.',
+  '\\(2\\cos^{2}x-1\\) equals \\(\\cos 2x\\), so \\(\\cos^{2}x/(2\\cos^{2}x-1)\\) equals '
+  '\\(1/2+\\sec(2x)/2\\).'),
+ ('The antiderivative is x/2 + log(tan(2*x) + sec(2*x))/4.',
+  'The antiderivative is \\(x/2+\\log(\\tan 2x+\\sec 2x)/4\\).')],
+    [('eq', '2*cos(x)**2 - 1', 'cos(2*x)'),
+ ('eq', 'cos(x)**2/(2*cos(x)**2 - 1)', '1/2 + sec(2*x)/2'),
+ ('diff', 'x/2 + log(tan(2*x) + sec(2*x))/4')],
+)
+
+_add(
+    'YANG-1.15-P16',
+    'x - tan(x)/2',
+    [('tan(x)/tan(2*x) equals (1 - tan(x)**2)/2, which equals 1 - sec(x)**2/2.',
+  '\\(\\tan x/\\tan 2x\\) equals \\((1-\\tan^{2}x)/2\\), which equals \\(1-\\sec^{2}x/2\\).'),
+ ('The antiderivative is x - tan(x)/2.', 'The antiderivative is \\(x-\\tan(x)/2\\).')],
+    [('eq', 'tan(x)/tan(2*x)', '(1 - tan(x)**2)/2'),
+ ('eq', '(1 - tan(x)**2)/2', '1 - sec(x)**2/2'),
+ ('diff', 'x - tan(x)/2')],
+)
+
+_add(
+    'YANG-1.15-P17',
+    'sqrt(2)*log(3)/2',
+    [('1/(1 - sin(x)) + 1/(1 + sin(x)) equals 2/cos(x)**2, and sqrt(1/(1 - sin(x)) + 1/(1 + '
+  'sin(x)))**2 equals 2/cos(x)**2.',
+  '\\(1/(1-\\sin x)+1/(1+\\sin x)\\) equals \\(2/\\cos^{2}x\\), so the square of the integrand '
+  'equals \\(2/\\cos^{2}x\\).'),
+ ('sqrt(2/cos(x)**2) equals sqrt(2)/cos(x). On [0, pi/6] the minimum of cos(x) is sqrt(3)/2.',
+  '\\(\\sqrt{2/\\cos^{2}x}\\) equals \\(\\sqrt{2}/\\cos x\\). On \\([0,\\pi/6]\\) the minimum of '
+  '\\(\\cos x\\) is \\(\\sqrt{3}/2\\).'),
+ ('The antiderivative sqrt(2)*log(sec(x) + tan(x)) from 0 to pi/6 equals sqrt(2)*log(3)/2.',
+  'The antiderivative \\(\\sqrt{2}\\log(\\sec x+\\tan x)\\) from \\(0\\) to \\(\\pi/6\\) equals '
+  '\\(\\sqrt{2}\\log(3)/2\\).')],
+    [('eq', '1/(1 - sin(x)) + 1/(1 + sin(x))', '2/cos(x)**2'),
+ ('eq', 'sqrt(1/(1 - sin(x)) + 1/(1 + sin(x)))**2', '2/cos(x)**2'),
+ ('eq', 'sqrt(2/cos(x)**2)', 'sqrt(2)/cos(x)'),
+ ('min', 'cos(x)', '0', 'pi/6', 'sqrt(3)/2'),
+ ('diff_of', 'sqrt(2)*log(sec(x) + tan(x))', 'sqrt(2)/cos(x)'),
+ ('ends', 'sqrt(2)*log(sec(x) + tan(x))', '0', 'pi/6', '1', 'sqrt(2)*log(3)/2')],
+)
+
+_add(
+    'YANG-1.15-P18',
+    'log(cos(x)) + tan(x)**2/2',
+    [('tan(x)**3 equals sec(x)**2*tan(x) - tan(x).',
+  '\\(\\tan^{3}x\\) equals \\(\\sec^{2}x\\tan x-\\tan x\\).'),
+ ('The antiderivative is log(cos(x)) + tan(x)**2/2.',
+  'The antiderivative is \\(\\log(\\cos x)+\\tan^{2}(x)/2\\).')],
+    [('eq', 'tan(x)**3', 'sec(x)**2*tan(x) - tan(x)'), ('diff', 'log(cos(x)) + tan(x)**2/2')],
+)
+
+_add(
+    'YANG-1.15-P19',
+    'log(4*sin(x) - cos(x))',
+    [('(4*cot(x) + 1)/(4 - cot(x)) equals (sin(x) + 4*cos(x))/(4*sin(x) - cos(x)).',
+  '\\((4\\cot x+1)/(4-\\cot x)\\) equals \\((\\sin x+4\\cos x)/(4\\sin x-\\cos x)\\).'),
+ ('The derivative of 4*sin(x) - cos(x) is 4*cos(x) + sin(x), which is the numerator.',
+  'The derivative of \\(4\\sin x-\\cos x\\) is \\(4\\cos x+\\sin x\\), which is the numerator.'),
+ ('The antiderivative is log(4*sin(x) - cos(x)).',
+  'The antiderivative is \\(\\log(4\\sin x-\\cos x)\\).')],
+    [('eq', '(4*cot(x) + 1)/(4 - cot(x))', '(sin(x) + 4*cos(x))/(4*sin(x) - cos(x))'),
+ ('diff_of', '4*sin(x) - cos(x)', '4*cos(x) + sin(x)'),
+ ('diff', 'log(4*sin(x) - cos(x))')],
+)
+
+_add(
+    'YANG-1.15-P20',
+    'atan(2*sin(x)**2 - 1)/2',
+    [('sin(x)**4 + cos(x)**4 equals 2*sin(x)**4 - 2*sin(x)**2 + 1, so sin(x)*cos(x)/(sin(x)**4 + '
+  'cos(x)**4) equals sin(x)*cos(x)/(2*sin(x)**4 - 2*sin(x)**2 + 1).',
+  '\\(\\sin^{4}x+\\cos^{4}x\\) equals \\(2\\sin^{4}x-2\\sin^{2}x+1\\), so \\(\\sin x\\cos '
+  'x/(\\sin^{4}x+\\cos^{4}x)\\) equals \\(\\sin x\\cos x/(2\\sin^{4}x-2\\sin^{2}x+1)\\).'),
+ ('With u = sin(x)**2, the derivative of sin(x)**2 is 2*sin(x)*cos(x).',
+  'With \\(u=\\sin^{2}x\\), the derivative of \\(\\sin^{2}x\\) is \\(2\\sin x\\cos x\\).'),
+ ('2*sin(x)**4 - 2*sin(x)**2 + 1 equals (1/2)*((2*sin(x)**2 - 1)**2 + 1).',
+  '\\(2\\sin^{4}x-2\\sin^{2}x+1\\) equals \\(\\frac12((2\\sin^{2}x-1)^{2}+1)\\).'),
+ ('The antiderivative is atan(2*sin(x)**2 - 1)/2.',
+  'The antiderivative is \\(\\arctan(2\\sin^{2}x-1)/2\\).')],
+    [('eq', 'sin(x)**4 + cos(x)**4', '2*sin(x)**4 - 2*sin(x)**2 + 1'),
+ ('eq', 'sin(x)*cos(x)/(sin(x)**4 + cos(x)**4)', 'sin(x)*cos(x)/(2*sin(x)**4 - 2*sin(x)**2 + 1)'),
+ ('diff_of', 'sin(x)**2', '2*sin(x)*cos(x)'),
+ ('eq', '2*sin(x)**4 - 2*sin(x)**2 + 1', '(1/2)*((2*sin(x)**2 - 1)**2 + 1)'),
+ ('diff', 'atan(2*sin(x)**2 - 1)/2')],
+)
+
+_add(
+    'YANG-1.17-P01',
+    '2*log(2)**2',
+    [
+        (
+            "The guide sets u = x*log(2)**2 on the first term. log(2)**2 * 2**(sqrt(x/log(2)**2)) * (1/log(2)**2) equals exp(sqrt(x)). The new bounds are 0*log(2)**2 and 1*log(2)**2, and 1*log(2)**2 equals log(2)**2.",
+            r"The guide sets \(u=x\log(2)^{2}\) on the first term. \(\log(2)^{2}\,2^{\sqrt{x/\log(2)^{2}}}\,(1/\log(2)^{2})\) equals \(e^{\sqrt{x}}\). The new bounds are \(0\cdot\log(2)^{2}\) and \(1\cdot\log(2)^{2}\), and \(1\cdot\log(2)^{2}\) equals \(\log(2)^{2}\).",
+        ),
+        (
+            "exp(sqrt(x)) equals (exp(sqrt(x)) - 1) + 1. The inverse of log(1 + x)**2 is exp(sqrt(x)) - 1. exp(sqrt(log(1 + x)**2)) - 1 equals x, and log(1 + (exp(sqrt(x)) - 1))**2 equals x. log(1 + 0)**2 equals 0, and exp(sqrt(log(2)**2)) - 1 equals 1.",
+            r"\(e^{\sqrt{x}}\) equals \((e^{\sqrt{x}}-1)+1\). The inverse of \(\log(1+x)^{2}\) is \(e^{\sqrt{x}}-1\). \(e^{\sqrt{\log(1+x)^{2}}}-1\) equals \(x\), and \(\log(1+(e^{\sqrt{x}}-1))^{2}\) equals \(x\). \(\log(1+0)^{2}\) equals \(0\), and \(e^{\sqrt{\log(2)^{2}}}-1\) equals \(1\).",
+        ),
+        (
+            "The derivative of log(1 + x)**2 is 2*log(1 + x)/(1 + x). The derivative of exp(sqrt(x)) - 1 is exp(sqrt(x))/(2*sqrt(x)). Then log(1 + x)**2 * (exp(sqrt(log(1 + x)**2))/(2*sqrt(log(1 + x)**2))) * (2*log(1 + x)/(1 + x)) equals log(1 + x)**2, so the two integrals have the same derivative and the same lower limit.",
+            r"The derivative of \(\log(1+x)^{2}\) is \(2\log(1+x)/(1+x)\). The derivative of \(e^{\sqrt{x}}-1\) is \(e^{\sqrt{x}}/(2\sqrt{x})\). Then \(\log(1+x)^{2}\cdot(e^{\sqrt{\log(1+x)^{2}}}/(2\sqrt{\log(1+x)^{2}}))\cdot(2\log(1+x)/(1+x))\) equals \(\log(1+x)^{2}\), so the two integrals have the same derivative and the same lower limit.",
+        ),
+        (
+            "The derivative of x*(exp(sqrt(x)) - 1) is (exp(sqrt(x)) - 1) + x*exp(sqrt(x))/(2*sqrt(x)). From 0 to log(2)**2 that primitive equals log(2)**2. That is the inverse-function sum in the guide.",
+            r"The derivative of \(x(e^{\sqrt{x}}-1)\) is \((e^{\sqrt{x}}-1)+xe^{\sqrt{x}}/(2\sqrt{x})\). From \(0\) to \(\log(2)^{2}\) that primitive equals \(\log(2)^{2}\). That is the inverse-function sum in the guide.",
+        ),
+        (
+            "The antiderivative of 1 is x. From 0 to log(2)**2 it equals log(2)**2. The guide adds that width. log(2)**2 + log(2)**2 equals 2*log(2)**2.",
+            r"The antiderivative of \(1\) is \(x\). From \(0\) to \(\log(2)^{2}\) it equals \(\log(2)^{2}\). The guide adds that width. \(\log(2)^{2}+\log(2)^{2}\) equals \(2\log(2)^{2}\).",
+        ),
+    ],
+    [
+        ("eq", "log(2)**2 * 2**(sqrt(x/log(2)**2)) * (1/log(2)**2)", "exp(sqrt(x))"),
+        ("eq", "0*log(2)**2", "0"),
+        ("eq", "1*log(2)**2", "log(2)**2"),
+        ("eq", "exp(sqrt(x))", "(exp(sqrt(x)) - 1) + 1"),
+        ("eq", "exp(sqrt(log(1 + x)**2)) - 1", "x"),
+        ("eq", "log(1 + (exp(sqrt(x)) - 1))**2", "x"),
+        ("eq", "log(1 + 0)**2", "0"),
+        ("eq", "exp(sqrt(log(2)**2)) - 1", "1"),
+        ("diff_of", "log(1 + x)**2", "2*log(1 + x)/(1 + x)"),
+        ("diff_of", "exp(sqrt(x)) - 1", "exp(sqrt(x))/(2*sqrt(x))"),
+        (
+            "eq",
+            "log(1 + x)**2 * (exp(sqrt(log(1 + x)**2))/(2*sqrt(log(1 + x)**2))) * (2*log(1 + x)/(1 + x))",
+            "log(1 + x)**2",
+        ),
+        (
+            "diff_of",
+            "x*(exp(sqrt(x)) - 1)",
+            "(exp(sqrt(x)) - 1) + x*exp(sqrt(x))/(2*sqrt(x))",
+        ),
+        ("ends", "x*(exp(sqrt(x)) - 1)", "0", "log(2)**2", "1", "log(2)**2"),
+        ("diff_of", "x", "1"),
+        ("ends", "x", "0", "log(2)**2", "1", "log(2)**2"),
+        ("sum", "log(2)**2 + log(2)**2", "2*log(2)**2"),
+    ],
+)
+
+_add(
+    'YANG-1.18-P02',
+    '1/2',
+    [('On [0, 1], (1 + x)*(2 - x) equals 2 + x - x**2, and log((1 + x)*(2 - x)) equals log(1 + x) + '
+  'log(2 - x).',
+  'On \\([0,1]\\), \\((1+x)(2-x)\\) equals \\(2+x-x^{2}\\), and \\(\\log((1+x)(2-x))\\) equals '
+  '\\(\\log(1+x)+\\log(2-x)\\).'),
+ ('log(-x**2 + x + 2) equals log((1 + x)*(2 - x)), so log(x + 1)/log(-x**2 + x + 2) equals log(x + 1)/log((1 + x)*(2 - x)), which equals log(1 + x)/(log(1 + x) + log(2 - x)).',
+  '\\(\\log(-x^{2}+x+2)\\) equals \\(\\log((1+x)(2-x))\\), so \\(\\log(x+1)/\\log(-x^{2}+x+2)\\) equals \\(\\log(x+1)/\\log((1+x)(2-x))\\), which equals \\(\\log(1+x)/(\\log(1+x)+\\log(2-x))\\).'),
+ ('The guide reflects by 1 - x. The two integrands add to 1, the endpoints swap, and the value is '
+  '1/2.',
+  'The guide reflects by \\(1-x\\). The two integrands add to \\(1\\), the endpoints swap, and the '
+  'value is \\(1/2\\).')],
+    [('eq', '(1 + x)*(2 - x)', '2 + x - x**2'),
+ ('eq', 'log((1 + x)*(2 - x))', 'log(1 + x) + log(2 - x)'),
+ ('eq', 'log(-x**2 + x + 2)', 'log((1 + x)*(2 - x))'),
+ ('eq', 'log(x + 1)/log(-x**2 + x + 2)', 'log(x + 1)/log((1 + x)*(2 - x))'),
+ ('eq', 'log(x + 1)/log((1 + x)*(2 - x))', 'log(1 + x)/(log(1 + x) + log(2 - x))'),
+ ('reflect', '1 - x', 'log(1 + x)/(log(1 + x) + log(2 - x))', '0', '1', '1/2')],
+)
+
+_add(
+    'YANG-1.20-P01',
+    'pi',
+    [('For x > 0, log(sqrt(x + 1)) equals log(x + 1)/2, so log(sqrt(x + 1))/x**(3/2) equals log(x + '
+  '1)/(2*x**(3/2)).',
+  'For \\(x>0\\), \\(\\log\\sqrt{x+1}\\) equals \\(\\log(x+1)/2\\), so '
+  '\\(\\log\\sqrt{x+1}/x^{3/2}\\) equals \\(\\log(x+1)/(2x^{3/2})\\).'),
+ ('Substitute x**2. It sends 0 to 0 and oo to oo, and log(x**2 + 1)/(2*(x**2)**(3/2))*2*x equals '
+  'log(x**2 + 1)/x**2.',
+  'Substitute \\(x^{2}\\). It sends \\(0\\) to \\(0\\) and \\(\\infty\\) to \\(\\infty\\), and '
+  '\\(\\log(x^{2}+1)/(2(x^{2})^{3/2})\\cdot 2x\\) equals \\(\\log(x^{2}+1)/x^{2}\\).'),
+ ('The antiderivative of log(x**2 + 1)/x**2 is -log(x**2 + 1)/x + 2*atan(x).',
+  'The antiderivative of \\(\\log(x^{2}+1)/x^{2}\\) is \\(-\\log(x^{2}+1)/x+2\\arctan x\\).'),
+ ('That primitive tends to 0 at 0+ and to pi at oo, so the integral equals pi.',
+  'That primitive tends to \\(0\\) at \\(0+\\) and to \\(\\pi\\) at \\(\\infty\\), so the integral '
+  'equals \\(\\pi\\).')],
+    [('eq', 'log(sqrt(x + 1))', 'log(x + 1)/2'),
+ ('eq', 'log(sqrt(x + 1))/x**(3/2)', 'log(x + 1)/(2*x**(3/2))'),
+ ('at', 'x**2', '0', '0'),
+ ('limit', 'x**2', 'oo', 'oo'),
+ ('eq', 'log(x**2 + 1)/(2*(x**2)**(3/2))*2*x', 'log(x**2 + 1)/x**2'),
+ ('diff_of', '-log(x**2 + 1)/x + 2*atan(x)', 'log(x**2 + 1)/x**2'),
+ ('limit', '-log(x**2 + 1)/x + 2*atan(x)', '0+', '0'),
+ ('limit', '-log(x**2 + 1)/x + 2*atan(x)', 'oo', 'pi'),
+ ('ends', '-log(x**2 + 1)/x + 2*atan(x)', '0+', 'oo', '1', 'pi')],
+)
+
+_add(
+    'YANG-1.20-P02',
+    'exp(-1)',
+    [('(-2*x**6 + 5*x**4)*exp(-x**2) is the derivative of x**5*exp(-x**2).',
+  '\\((-2x^{6}+5x^{4})e^{-x^{2}}\\) is the derivative of \\(x^{5}e^{-x^{2}}\\).'),
+ ('x**5*exp(-x**2) tends to 0 at oo, and at -1 it equals -exp(-1).',
+  '\\(x^{5}e^{-x^{2}}\\) tends to \\(0\\) at \\(\\infty\\), and at \\(-1\\) it equals '
+  '\\(-e^{-1}\\).'),
+ ('The tail from -1 to oo equals exp(-1).',
+  'The tail from \\(-1\\) to \\(\\infty\\) equals \\(e^{-1}\\).')],
+    [('diff_of', 'x**5*exp(-x**2)', '(-2*x**6 + 5*x**4)*exp(-x**2)'),
+ ('limit', 'x**5*exp(-x**2)', 'oo', '0'),
+ ('ends', 'x**5*exp(-x**2)', '-1', 'oo', '1', 'exp(-1)')],
+)
+
+_add(
+    'YANG-1.20-P03',
+    '2*sqrt(2)*pi',
+    [('sin(x)**4 + cos(x)**4 equals (3 + cos(4*x))/4, so 1/(sin(x)**4 + cos(x)**4) equals 4/(3 + '
+  'cos(4*x)).',
+  '\\(\\sin^{4}x+\\cos^{4}x\\) equals \\((3+\\cos 4x)/4\\), so \\(1/(\\sin^{4}x+\\cos^{4}x)\\) '
+  'equals \\(4/(3+\\cos 4x)\\).'),
+ ('The substitution u = 4*x gives 4/(3 + cos(4*(x/4)))*(1/4), which equals 1/(3 + cos(x)).',
+  'The substitution \\(u=4x\\) gives \\(4/(3+\\cos(4(x/4)))\\cdot(1/4)\\), which equals '
+  '\\(1/(3+\\cos x)\\).'),
+ ('cos(x + 2*pi) equals cos(x), and 1/(3 + cos(x + 2*pi)) equals 1/(3 + cos(x)). The '
+  'antiderivative of 1/(3 + cos(x)) is atan(tan(x/2)/sqrt(2))/sqrt(2).',
+  '\\(\\cos(x+2\\pi)\\) equals \\(\\cos x\\), and \\(1/(3+\\cos(x+2\\pi))\\) equals '
+  '\\(1/(3+\\cos x)\\). The antiderivative of \\(1/(3+\\cos x)\\) is '
+  '\\(\\arctan(\\tan(x/2)/\\sqrt{2})/\\sqrt{2}\\).'),
+ ('From 0 it is 0, and at pi from the left it is sqrt(2)*pi/4. At pi from the right it is '
+  '-sqrt(2)*pi/4, and at 2*pi from the left it is 0. (sqrt(2)*pi/4 - 0) + (0 - '
+  '(-sqrt(2)*pi/4)) equals sqrt(2)*pi/2. Four periods give 4*(sqrt(2)*pi/2), which equals '
+  '2*sqrt(2)*pi.',
+  'From \\(0\\) it is \\(0\\), and at \\(\\pi\\) from the left it is \\(\\sqrt{2}\\pi/4\\). At '
+  '\\(\\pi\\) from the right it is \\(-\\sqrt{2}\\pi/4\\), and at \\(2\\pi\\) from the left it is '
+  '\\(0\\). \\((\\sqrt{2}\\pi/4-0)+(0-(-\\sqrt{2}\\pi/4))\\) equals \\(\\sqrt{2}\\pi/2\\). Four '
+  'periods give \\(4\\cdot(\\sqrt{2}\\pi/2)\\), which equals \\(2\\sqrt{2}\\pi\\).')],
+    [('eq', 'sin(x)**4 + cos(x)**4', '(3 + cos(4*x))/4'),
+ ('eq', '1/(sin(x)**4 + cos(x)**4)', '4/(3 + cos(4*x))'),
+ ('eq', '4/(3 + cos(4*(x/4)))*(1/4)', '1/(3 + cos(x))'),
+ ('eq', 'cos(x + 2*pi)', 'cos(x)'),
+ ('eq', '1/(3 + cos(x + 2*pi))', '1/(3 + cos(x))'),
+ ('diff_of', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', '1/(3 + cos(x))'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', '0', '+', '0'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', 'pi', '-', 'sqrt(2)*pi/4'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', 'pi', '+', '-sqrt(2)*pi/4'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', '2*pi', '-', '0'),
+ ('sum', '(sqrt(2)*pi/4 - 0) + (0 - (-sqrt(2)*pi/4))', 'sqrt(2)*pi/2'),
+ ('sum', '4*(sqrt(2)*pi/2)', '2*sqrt(2)*pi')],
+)
+
+_add(
+    'YANG-1.20-P04',
+    '1/4',
+    [('Set u = exp(x*log(x)). Its derivative is exp(x*log(x))*(log(x) + 1).',
+  'Set \\(u=e^{x\\log x}\\). Its derivative is \\(e^{x\\log x}(\\log x+1)\\).'),
+ ('x**(1 - 2*x)*(log(x) + 1)*log(x) equals log(exp(x*log(x)))*exp(x*log(x))*(log(x) + '
+  '1)/exp(x*log(x))**3, which is log(u) times du/u**3.',
+  '\\(x^{1-2x}(\\log x+1)\\log x\\) equals \\(\\log(e^{x\\log x})\\,e^{x\\log x}(\\log '
+  'x+1)/e^{3x\\log x}\\), which is \\(\\log u\\) times \\(du/u^{3}\\).'),
+ ('The antiderivative of log(x)/x**3 is -(2*log(x) + 1)/(4*x**2). Composed with u it is '
+  '-(2*x*log(x) + 1)/(4*exp(2*x*log(x))).',
+  'The antiderivative of \\(\\log x/x^{3}\\) is \\(-(2\\log x+1)/(4x^{2})\\). Composed with '
+  '\\(u\\) it is \\(-(2x\\log x+1)/(4e^{2x\\log x})\\).'),
+ ('That primitive tends to -1/4 at 0+ and to 0 at oo, so the integral equals 1/4.',
+  'That primitive tends to \\(-1/4\\) at \\(0+\\) and to \\(0\\) at \\(\\infty\\), so the integral '
+  'equals \\(1/4\\).')],
+    [('diff_of', 'exp(x*log(x))', 'exp(x*log(x))*(log(x) + 1)'),
+ ('eq',
+  'x**(1 - 2*x)*(log(x) + 1)*log(x)',
+  'log(exp(x*log(x)))*exp(x*log(x))*(log(x) + 1)/exp(x*log(x))**3'),
+ ('diff_of', '-(2*log(x) + 1)/(4*x**2)', 'log(x)/x**3'),
+ ('diff_of', '-(2*x*log(x) + 1)/(4*exp(2*x*log(x)))', 'x**(1 - 2*x)*(log(x) + 1)*log(x)'),
+ ('limit', '-(2*x*log(x) + 1)/(4*exp(2*x*log(x)))', '0+', '-1/4'),
+ ('limit', '-(2*x*log(x) + 1)/(4*exp(2*x*log(x)))', 'oo', '0'),
+ ('ends', '-(2*x*log(x) + 1)/(4*exp(2*x*log(x)))', '0+', 'oo', '1', '1/4')],
+)
+
+_add(
+    'YANG-1.20-P05',
+    'pi**2/4',
+    [('After the substitution x = e^t, the weight atan(exp(x))/(exp(x)*(log(exp(x))**2 + 1))*exp(x) '
+  'equals atan(exp(x))/(x**2 + 1).',
+  'After the substitution \\(x=e^{t}\\), the weight '
+  '\\(\\arctan(e^{x})/(e^{x}(\\log(e^{x})^{2}+1))\\cdot e^{x}\\) equals '
+  '\\(\\arctan(e^{x})/(x^{2}+1)\\).'),
+ ('exp(-x) equals 1/exp(x). The derivative of atan(exp(x)) + atan(exp(-x)) - pi/2 is 0, and the '
+  'value at 0 is 0, so the sum is pi/2.',
+  '\\(e^{-x}\\) equals \\(1/e^{x}\\). The derivative of '
+  '\\(\\arctan(e^{x})+\\arctan(e^{-x})-\\pi/2\\) is \\(0\\), and the value at \\(0\\) is \\(0\\), '
+  'so the sum is \\(\\pi/2\\).'),
+ ('atan(exp(x))/(x**2 + 1) + atan(exp(-x))/(x**2 + 1) equals (atan(exp(x)) + atan(exp(-x)))/(x**2 '
+  '+ 1).',
+  '\\(\\arctan(e^{x})/(x^{2}+1)+\\arctan(e^{-x})/(x^{2}+1)\\) equals '
+  '\\((\\arctan(e^{x})+\\arctan(e^{-x}))/(x^{2}+1)\\).'),
+ ('The numerator atan(exp(x)) + atan(exp(-x)) - pi/2 over the denominator x**2 + 1 is 0, so the '
+  'reflected sum is (pi/2)/(x**2 + 1).',
+  'The numerator \\(\\arctan(e^{x})+\\arctan(e^{-x})-\\pi/2\\) over the denominator \\(x^{2}+1\\) '
+  'is \\(0\\), so the reflected sum is \\((\\pi/2)/(x^{2}+1)\\).'),
+ (
+            "The map -x swaps -oo and oo. The antiderivative of (pi/2)/(x**2 + 1) is (pi/2)*atan(x). From -oo to oo it equals pi**2/2, and (pi**2/2)/2 equals pi**2/4.",
+            r"The map \(-x\) swaps \(-\infty\) and \(\infty\). The antiderivative of \((\pi/2)/(x^{2}+1)\) is \((\pi/2)\arctan x\). From \(-\infty\) to \(\infty\) it equals \(\pi^{2}/2\), and \((\pi^{2}/2)/2\) equals \(\pi^{2}/4\).",
+        ),
+    ],
+    [
+        ("eq", "atan(exp(x))/(exp(x)*(log(exp(x))**2 + 1))*exp(x)", "atan(exp(x))/(x**2 + 1)"),
+        ("eq", "exp(-x)", "1/exp(x)"),
+        ("flat", "atan(exp(x)) + atan(exp(-x)) - pi/2", "0", "0"),
+        (
+            "eq",
+            "atan(exp(x))/(x**2 + 1) + atan(exp(-x))/(x**2 + 1)",
+            "(atan(exp(x)) + atan(exp(-x)))/(x**2 + 1)",
+        ),
+        ("zero_quot", "atan(exp(x)) + atan(exp(-x)) - pi/2", "x**2 + 1"),
+        ("mirror", "-x", "-oo", "oo"),
+        ("diff_of", "(pi/2)*atan(x)", "(pi/2)/(x**2 + 1)"),
+        ("ends", "(pi/2)*atan(x)", "-oo", "oo", "1", "pi**2/2"),
+        ("sum", "(pi**2/2)/2", "pi**2/4"),
+    ],
+)
+
+_add(
+    'YANG-1.20-P06',
+    '24*x/25 + 7*log(4*sin(x) + 3*cos(x))/25',
+    [('The derivative of 4*sin(x) + 3*cos(x) is 4*cos(x) - 3*sin(x).',
+  'The derivative of \\(4\\sin x+3\\cos x\\) is \\(4\\cos x-3\\sin x\\).'),
+ ('(7/25)*(4*cos(x) - 3*sin(x)) + (24/25)*(4*sin(x) + 3*cos(x)) equals 3*sin(x) + 4*cos(x).',
+  '\\((7/25)(4\\cos x-3\\sin x)+(24/25)(4\\sin x+3\\cos x)\\) equals \\(3\\sin x+4\\cos x\\).'),
+ ('The antiderivative is 24*x/25 + 7*log(4*sin(x) + 3*cos(x))/25.',
+  'The antiderivative is \\(24x/25+7\\log(4\\sin x+3\\cos x)/25\\).')],
+    [('diff_of', '4*sin(x) + 3*cos(x)', '4*cos(x) - 3*sin(x)'),
+ ('eq', '(7/25)*(4*cos(x) - 3*sin(x)) + (24/25)*(4*sin(x) + 3*cos(x))', '3*sin(x) + 4*cos(x)'),
+ ('diff', '24*x/25 + 7*log(4*sin(x) + 3*cos(x))/25')],
+)
+
+_add(
+    'YANG-1.20-P07',
+    'pi**2/9',
+    [('(1 - x)*(1 + x + x**2) equals 1 - x**3. log(1 + x + x**2) equals log((1 - x**3)/(1 - x)), and log((1 - x**3)/(1 - x)) equals log(1 - x**3) - log(1 - x).',
+  '\\((1-x)(1+x+x^{2})\\) equals \\(1-x^{3}\\). \\(\\log(1+x+x^{2})\\) equals \\(\\log((1-x^{3})/(1-x))\\), and \\(\\log((1-x^{3})/(1-x))\\) equals \\(\\log(1-x^{3})-\\log(1-x)\\).'),
+ ('log(1 + x + x**2)/x equals log((1 - x**3)/(1 - x))/x, which equals (log(1 - x**3) - log(1 - x))/x.',
+  '\\(\\log(1+x+x^{2})/x\\) equals \\(\\log((1-x^{3})/(1-x))/x\\), which equals \\((\\log(1-x^{3})-\\log(1-x))/x\\).'),
+ ('polylog(1, x) equals -log(1 - x), and polylog(1, x**3) equals -log(1 - x**3). The '
+  'antiderivative of (log(1 - x**3) - log(1 - x))/x is polylog(2, x) - polylog(2, x**3)/3.',
+  '\\(\\operatorname{Li}_{1}(x)\\) equals \\(-\\log(1-x)\\), and \\(\\operatorname{Li}_{1}(x^{3})\\) '
+  'equals \\(-\\log(1-x^{3})\\). The antiderivative of \\((\\log(1-x^{3})-\\log(1-x))/x\\) is '
+  '\\(\\operatorname{Li}_{2}(x)-\\operatorname{Li}_{2}(x^{3})/3\\).'),
+ ('From 0 to 1 that primitive equals pi**2/9.',
+  'From \\(0\\) to \\(1\\) that primitive equals \\(\\pi^{2}/9\\).')],
+    [('eq', '(1 - x)*(1 + x + x**2)', '1 - x**3'),
+ ('eq', 'log(1 + x + x**2)', 'log((1 - x**3)/(1 - x))'),
+ ('eq', 'log((1 - x**3)/(1 - x))', 'log(1 - x**3) - log(1 - x)'),
+ ('eq', 'log(1 + x + x**2)/x', 'log((1 - x**3)/(1 - x))/x'),
+ ('eq', 'log((1 - x**3)/(1 - x))/x', '(log(1 - x**3) - log(1 - x))/x'),
+ ('eq', 'polylog(1, x)', '-log(1 - x)'),
+ ('eq', 'polylog(1, x**3)', '-log(1 - x**3)'),
+ ('diff_of', 'polylog(2, x) - polylog(2, x**3)/3', '(log(1 - x**3) - log(1 - x))/x'),
+ ('ends', 'polylog(2, x) - polylog(2, x**3)/3', '0', '1', '1', 'pi**2/9')],
+)
+
+_add(
+    "YANG-2.3-P01",
+    "2*sqrt(x)*exp(sqrt(x)) - 2*exp(sqrt(x))",
+    [
+        (
+            "Forced substitution u = sqrt(x). The derivative of sqrt(x) is 1/(2*sqrt(x)), and 2*sqrt(x)*(1/(2*sqrt(x))) equals 1, so dx = 2*sqrt(x)*du.",
+            r"Forced substitution \(u=\sqrt{x}\). The derivative of \(\sqrt{x}\) is \(1/(2\sqrt{x})\), and \(2\sqrt{x}\cdot(1/(2\sqrt{x}))\) equals \(1\), so \(dx=2\sqrt{x}\,du\).",
+        ),
+        (
+            "The integrand becomes 2*u*exp(u). Integration by parts gives 2*exp(sqrt(x))*(sqrt(x) - 1).",
+            r"The integrand becomes \(2ue^{u}\). Integration by parts gives \(2e^{\sqrt{x}}(\sqrt{x}-1)\).",
+        ),
+        (
+            "That equals 2*sqrt(x)*exp(sqrt(x)) - 2*exp(sqrt(x)).",
+            r"That equals \(2\sqrt{x}e^{\sqrt{x}}-2e^{\sqrt{x}}\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(x)", "1/(2*sqrt(x))"),
+        ("eq", "2*sqrt(x)*(1/(2*sqrt(x)))", "1"),
+        ("eq", "2*exp(sqrt(x))*(sqrt(x) - 1)", "2*sqrt(x)*exp(sqrt(x)) - 2*exp(sqrt(x))"),
+        ("diff", "2*exp(sqrt(x))*(sqrt(x) - 1)"),
+        ("diff", "2*sqrt(x)*exp(sqrt(x)) - 2*exp(sqrt(x))"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P02",
+    "x*sin(log(x))/2 - x*cos(log(x))/2",
+    [
+        (
+            "Forced substitution u = log(x). The derivative of log(x) is 1/x, and exp(log(x)) equals x, so dx = x*du.",
+            r"Forced substitution \(u=\log x\). The derivative of \(\log x\) is \(1/x\), and \(e^{\log x}=x\), so \(dx=x\,du\).",
+        ),
+        (
+            "The integrand becomes x*sin(u) in u, that is exp(u)*sin(u). Two integrations by parts give x*(sin(log(x)) - cos(log(x)))/2.",
+            r"The integrand becomes \(e^{u}\sin u\). Two integrations by parts give \(x(\sin(\log x)-\cos(\log x))/2\).",
+        ),
+        (
+            "That equals x*sin(log(x))/2 - x*cos(log(x))/2.",
+            r"That equals \(\frac{x\sin(\log x)}{2}-\frac{x\cos(\log x)}{2}\).",
+        ),
+    ],
+    [
+        ("diff_of", "log(x)", "1/x"),
+        ("eq", "exp(log(x))", "x"),
+        ("eq", "x*(sin(log(x)) - cos(log(x)))/2", "x*sin(log(x))/2 - x*cos(log(x))/2"),
+        ("diff", "x*(sin(log(x)) - cos(log(x)))/2"),
+        ("diff", "x*sin(log(x))/2 - x*cos(log(x))/2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P03",
+    "4097/45",
+    [
+        (
+            "Forced substitution u = sqrt(x). The derivative of sqrt(x) is 1/(2*sqrt(x)), so dx = 2*u*du.",
+            r"Forced substitution \(u=\sqrt{x}\). The derivative of \(\sqrt{x}\) is \(1/(2\sqrt{x})\), so \(dx=2u\,du\).",
+        ),
+        (
+            "Let t = 1 + u. The antiderivative is 2*((sqrt(x)+1)**10/10 - (sqrt(x)+1)**9/9).",
+            r"Let \(t=1+u\). The antiderivative is \(2(( \sqrt{x}+1)^{10}/10-(\sqrt{x}+1)^{9}/9)\).",
+        ),
+        (
+            "The endpoints u = 0 and u = 1 give 2*(2**10/10 - 2**9/9 - 1/10 + 1/9), which equals 4097/45.",
+            r"The endpoints \(u=0\) and \(u=1\) give \(2(2^{10}/10-2^{9}/9-1/10+1/9)\), which equals \(4097/45\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(x)", "1/(2*sqrt(x))"),
+        ("diff", "2*((sqrt(x)+1)**10/10 - (sqrt(x)+1)**9/9)"),
+        ("eq", "2*(2**10/10 - 2**9/9 - 1/10 + 1/9)", "4097/45"),
+        ("ends", "2*((sqrt(x)+1)**10/10 - (sqrt(x)+1)**9/9)", "0", "1", "1", "4097/45"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P04",
+    "4*sqrt(x)*sqrt(sqrt(x) + 1)/3 - 8*sqrt(sqrt(x) + 1)/3",
+    [
+        (
+            "Forced substitution u = sqrt(sqrt(x) + 1), after t = sqrt(x). Then 4*(sqrt(sqrt(x)+1))**3/3 - 4*sqrt(sqrt(x)+1) is an antiderivative.",
+            r"Forced substitution \(u=\sqrt{\sqrt{x}+1}\), after \(t=\sqrt{x}\). Then \(\frac{4}{3}(\sqrt{\sqrt{x}+1})^{3}-4\sqrt{\sqrt{x}+1}\) is an antiderivative.",
+        ),
+        (
+            "Expand u**3 = (sqrt(x) + 1)*u. That form equals 4*sqrt(x)*sqrt(sqrt(x) + 1)/3 - 8*sqrt(sqrt(x) + 1)/3.",
+            r"Expand \(u^{3}=(\sqrt{x}+1)u\). That form equals \(\frac{4\sqrt{x}\sqrt{\sqrt{x}+1}}{3}-\frac{8\sqrt{\sqrt{x}+1}}{3}\).",
+        ),
+    ],
+    [
+        ("diff", "4*(sqrt(sqrt(x)+1))**3/3 - 4*sqrt(sqrt(x)+1)"),
+        ("eq", "4*(sqrt(sqrt(x)+1))**3/3 - 4*sqrt(sqrt(x)+1)", "4*sqrt(x)*sqrt(sqrt(x) + 1)/3 - 8*sqrt(sqrt(x) + 1)/3"),
+        ("diff", "4*sqrt(x)*sqrt(sqrt(x) + 1)/3 - 8*sqrt(sqrt(x) + 1)/3"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P05",
+    "x*asin(x)**2 - 2*x + 2*sqrt(1 - x**2)*asin(x)",
+    [
+        (
+            "Integration by parts on asin(x)**2, then t = asin(x). The combined antiderivative is x*asin(x)**2 - 2*(-asin(x)*sqrt(1-x**2) + x).",
+            r"Integration by parts on \((\arcsin x)^{2}\), then \(t=\arcsin x\). The combined antiderivative is \(x(\arcsin x)^{2}-2(-\arcsin x\sqrt{1-x^{2}}+x)\).",
+        ),
+        (
+            "That equals x*asin(x)**2 - 2*x + 2*sqrt(1 - x**2)*asin(x).",
+            r"That equals \(x(\arcsin x)^{2}-2x+2\sqrt{1-x^{2}}\arcsin x\).",
+        ),
+    ],
+    [
+        ("eq", "x*asin(x)**2 - 2*(-asin(x)*sqrt(1-x**2) + x)", "x*asin(x)**2 - 2*x + 2*sqrt(1 - x**2)*asin(x)"),
+        ("diff", "x*asin(x)**2 - 2*x + 2*sqrt(1 - x**2)*asin(x)"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P06",
+    "3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112",
+    [
+        (
+            "Forced substitution u = 2*x - 1, so x = (u + 1)/2 and dx = du/2. The antiderivative in u is 3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16.",
+            r"Forced substitution \(u=2x-1\), so \(x=(u+1)/2\) and \(dx=du/2\). The antiderivative in \(u\) is \(\frac{3}{28}(2x-1)^{7/3}+\frac{3}{16}(2x-1)^{4/3}\).",
+        ),
+        (
+            "Factor u**(1/3). That equals 3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112.",
+            r"Factor \(u^{1/3}\). That equals \(\frac{3x^{2}(2x-1)^{1/3}}{7}-\frac{3x(2x-1)^{1/3}}{56}-\frac{9(2x-1)^{1/3}}{112}\).",
+        ),
+    ],
+    [
+        ("diff", "3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16"),
+        ("eq", "3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16", "3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112"),
+        ("diff", "3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P07",
+    "4*sqrt(2)/3 + 8/3",
+    [
+        (
+            "Forced substitution t = sqrt(1 + x), then u = sqrt(1 + t). The antiderivative is 4*((sqrt(1+sqrt(1+x)))**3/3 - sqrt(1+sqrt(1+x))).",
+            r"Forced substitution \(t=\sqrt{1+x}\), then \(u=\sqrt{1+t}\). The antiderivative is \(4((\sqrt{1+\sqrt{1+x}})^{3}/3-\sqrt{1+\sqrt{1+x}})\).",
+        ),
+        (
+            "On [0, 8], u runs from sqrt(2) to 2. The evaluation equals 4*sqrt(2)/3 + 8/3.",
+            r"On \([0,8]\), \(u\) runs from \(\sqrt{2}\) to \(2\). The evaluation equals \(\frac{4\sqrt{2}}{3}+\frac{8}{3}\).",
+        ),
+    ],
+    [
+        ("diff", "4*((sqrt(1+sqrt(1+x)))**3/3 - sqrt(1+sqrt(1+x)))"),
+        ("ends", "4*((sqrt(1+sqrt(1+x)))**3/3 - sqrt(1+sqrt(1+x)))", "0", "8", "1", "4*sqrt(2)/3 + 8/3"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P08",
+    "-sqrt(x) + x*atan(sqrt(x)) + atan(sqrt(x))",
+    [
+        (
+            "Forced substitution u = sqrt(x), so the integral is 2*u*atan(u). Integration by parts gives sqrt(x)**2*atan(sqrt(x)) - sqrt(x) + atan(sqrt(x)).",
+            r"Forced substitution \(u=\sqrt{x}\), so the integral is \(2u\arctan u\). Integration by parts gives \(x\arctan\sqrt{x}-\sqrt{x}+\arctan\sqrt{x}\).",
+        ),
+        (
+            "That equals -sqrt(x) + x*atan(sqrt(x)) + atan(sqrt(x)).",
+            r"That equals \(-\sqrt{x}+x\arctan\sqrt{x}+\arctan\sqrt{x}\).",
+        ),
+    ],
+    [
+        ("eq", "sqrt(x)**2*atan(sqrt(x)) - sqrt(x) + atan(sqrt(x))", "-sqrt(x) + x*atan(sqrt(x)) + atan(sqrt(x))"),
+        ("diff", "sqrt(x)**2*atan(sqrt(x)) - sqrt(x) + atan(sqrt(x))"),
+        ("diff", "-sqrt(x) + x*atan(sqrt(x)) + atan(sqrt(x))"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P09",
+    "x*log(x)**3 - 3*x*log(x)**2 + 6*x*log(x) - 6*x",
+    [
+        (
+            "The derivative of x*log(x)**3 is log(x)**3 + 3*log(x)**2. Repeat the reduction twice.",
+            r"The derivative of \(x(\log x)^{3}\) is \((\log x)^{3}+3(\log x)^{2}\). Repeat the reduction twice.",
+        ),
+        (
+            "The nested form x*log(x)**3 - 3*(x*log(x)**2 - 2*(x*log(x) - x)) equals x*log(x)**3 - 3*x*log(x)**2 + 6*x*log(x) - 6*x.",
+            r"The nested form \(x(\log x)^{3}-3(x(\log x)^{2}-2(x\log x-x))\) equals \(x(\log x)^{3}-3x(\log x)^{2}+6x\log x-6x\).",
+        ),
+    ],
+    [
+        ("diff_of", "x*log(x)**3", "log(x)**3 + 3*log(x)**2"),
+        ("eq", "x*log(x)**3 - 3*(x*log(x)**2 - 2*(x*log(x) - x))", "x*log(x)**3 - 3*x*log(x)**2 + 6*x*log(x) - 6*x"),
+        ("diff", "x*log(x)**3 - 3*x*log(x)**2 + 6*x*log(x) - 6*x"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P10",
+    "2*log(sqrt(x) + 1) + 2/(sqrt(x) + 1)",
+    [
+        (
+            "Forced substitution u = sqrt(x). The derivative of sqrt(x) is 1/(2*sqrt(x)).",
+            r"Forced substitution \(u=\sqrt{x}\). The derivative of \(\sqrt{x}\) is \(1/(2\sqrt{x})\).",
+        ),
+        (
+            "Then 2*sqrt(x)/(sqrt(x)+1)**2 equals 2*(1/(sqrt(x)+1) - 1/(sqrt(x)+1)**2).",
+            r"Then \(2\sqrt{x}/(\sqrt{x}+1)^{2}\) equals \(2(1/(\sqrt{x}+1)-1/(\sqrt{x}+1)^{2})\).",
+        ),
+        (
+            "The antiderivative is 2*log(sqrt(x) + 1) + 2/(sqrt(x) + 1).",
+            r"The antiderivative is \(2\log(\sqrt{x}+1)+2/(\sqrt{x}+1)\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(x)", "1/(2*sqrt(x))"),
+        ("eq", "2*sqrt(x)/(sqrt(x)+1)**2", "2*(1/(sqrt(x)+1) - 1/(sqrt(x)+1)**2)"),
+        ("diff", "2*log(sqrt(x) + 1) + 2/(sqrt(x) + 1)"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P11",
+    "6 - 3*pi/2",
+    [
+        (
+            "Forced substitution t = sqrt(exp(x)-1). Then sqrt(exp(x)-1)**2 + 1 equals exp(x), and the integrand becomes 2*t**2/(t**2 + 9).",
+            r"Forced substitution \(t=\sqrt{e^{x}-1}\). Then \(t^{2}+1=e^{x}\), and the integrand becomes \(2t^{2}/(t^{2}+9)\).",
+        ),
+        (
+            "Write that as 2*(1 - 9/(t**2 + 9)). The antiderivative is 2*(sqrt(exp(x)-1) - 3*atan(sqrt(exp(x)-1)/3)).",
+            r"Write that as \(2(1-9/(t^{2}+9))\). The antiderivative is \(2(\sqrt{e^{x}-1}-3\arctan(\sqrt{e^{x}-1}/3))\).",
+        ),
+        (
+            "From 0 to log(10), t runs from 0 to 3. Then 2*(3 - 3*atan(1)) equals 6 - 3*pi/2.",
+            r"From \(0\) to \(\log 10\), \(t\) runs from \(0\) to \(3\). Then \(2(3-3\arctan 1)\) equals \(6-3\pi/2\).",
+        ),
+    ],
+    [
+        ("eq", "sqrt(exp(x)-1)**2 + 1", "exp(x)"),
+        ("eq", "2*(3 - 3*atan(1))", "6 - 3*pi/2"),
+        ("diff", "2*(sqrt(exp(x)-1) - 3*atan(sqrt(exp(x)-1)/3))"),
+        ("ends", "2*(sqrt(exp(x)-1) - 3*atan(sqrt(exp(x)-1)/3))", "0", "log(10)", "1", "6 - 3*pi/2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P12",
+    "2*atan(sqrt(2021**x - 1))/log(2021)",
+    [
+        (
+            "Forced substitution u = sqrt(2021**x - 1). Then sqrt(2021**x - 1)**2 + 1 equals 2021**x.",
+            r"Forced substitution \(u=\sqrt{2021^{x}-1}\). Then \(u^{2}+1=2021^{x}\).",
+        ),
+        (
+            "The derivative of log(2021**x) is log(2021), so dx = 2*u*du/(u**2 + 1)/log(2021). The integral in u is 2*atan(u)/log(2021).",
+            r"The derivative of \(\log(2021^{x})\) is \(\log 2021\), so \(dx=2u\,du/((u^{2}+1)\log 2021)\). The integral in \(u\) is \(2\arctan(u)/\log 2021\).",
+        ),
+        (
+            "The antiderivative is 2*atan(sqrt(2021**x - 1))/log(2021).",
+            r"The antiderivative is \(2\arctan(\sqrt{2021^{x}-1})/\log 2021\).",
+        ),
+    ],
+    [
+        ("eq", "sqrt(2021**x - 1)**2 + 1", "2021**x"),
+        ("diff_of", "log(2021**x)", "log(2021)"),
+        ("diff", "2*atan(sqrt(2021**x - 1))/log(2021)"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P13",
+    "3*(x + 1)**(2/3)/2 + 3*(x + 1)**(1/3) + 3*log((x + 1)**(1/3) - 1)",
+    [
+        (
+            "Forced substitution u = (x + 1)**(1/3), so dx = 3*u**2*du. Division gives (x+1)**(2/3)/((x+1)**(1/3)-1) = (x+1)**(1/3) + 1 + 1/((x+1)**(1/3)-1).",
+            r"Forced substitution \(u=(x+1)^{1/3}\), so \(dx=3u^{2}\,du\). Division gives \(u^{2}/(u-1)=u+1+1/(u-1)\).",
+        ),
+        (
+            "Integrate termwise. The antiderivative is 3*(x + 1)**(2/3)/2 + 3*(x + 1)**(1/3) + 3*log((x + 1)**(1/3) - 1).",
+            r"Integrate termwise. The antiderivative is \(\frac{3}{2}(x+1)^{2/3}+3(x+1)^{1/3}+3\log((x+1)^{1/3}-1)\).",
+        ),
+    ],
+    [
+        ("eq", "(x+1)**(2/3)/((x+1)**(1/3)-1)", "(x+1)**(1/3) + 1 + 1/((x+1)**(1/3)-1)"),
+        ("diff", "3*(x + 1)**(2/3)/2 + 3*(x + 1)**(1/3) + 3*log((x + 1)**(1/3) - 1)"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P14",
+    "log(x + 2*sqrt(x + 3)) - log(sqrt(x + 3) - 1)/2 + log(sqrt(x + 3) + 3)/2",
+    [
+        (
+            "Forced substitution t = sqrt(x + 3). Then x + 2*sqrt(x + 3) equals (sqrt(x + 3) + 3)*(sqrt(x + 3) - 1).",
+            r"Forced substitution \(t=\sqrt{x+3}\). Then \(x+2\sqrt{x+3}=(\sqrt{x+3}+3)(\sqrt{x+3}-1)\).",
+        ),
+        (
+            "Partial fractions give 2*sqrt(x+3)/((sqrt(x+3)+3)*(sqrt(x+3)-1)) = (3/2)/(sqrt(x+3)+3) + (1/2)/(sqrt(x+3)-1).",
+            r"Partial fractions give \(2t/((t+3)(t-1))=(3/2)/(t+3)+(1/2)/(t-1)\).",
+        ),
+        (
+            "The logarithmic form (3/2)*log(sqrt(x+3)+3) + (1/2)*log(sqrt(x+3)-1) differentiates to 1/(x + 2*sqrt(x + 3)), and so does log(x + 2*sqrt(x + 3)) - log(sqrt(x + 3) - 1)/2 + log(sqrt(x + 3) + 3)/2.",
+            r"Both \(\frac{3}{2}\log(t+3)+\frac{1}{2}\log(t-1)\) and \(\log(x+2\sqrt{x+3})-\frac{1}{2}\log(\sqrt{x+3}-1)+\frac{1}{2}\log(\sqrt{x+3}+3)\) differentiate to the integrand.",
+        ),
+    ],
+    [
+        ("eq", "x + 2*sqrt(x + 3)", "(sqrt(x + 3) + 3)*(sqrt(x + 3) - 1)"),
+        ("eq", "2*sqrt(x+3)/((sqrt(x+3)+3)*(sqrt(x+3)-1))", "(3/2)/(sqrt(x+3)+3) + (1/2)/(sqrt(x+3)-1)"),
+        ("diff_of", "(3/2)*log(sqrt(x+3)+3) + (1/2)*log(sqrt(x+3)-1)", "1/(x + 2*sqrt(x + 3))"),
+        ("diff", "log(x + 2*sqrt(x + 3)) - log(sqrt(x + 3) - 1)/2 + log(sqrt(x + 3) + 3)/2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P15",
+    "3**(sqrt(2*x + 1))*sqrt(2*x + 1)/log(3) - 3**(sqrt(2*x + 1))/log(3)**2",
+    [
+        (
+            "Forced substitution u = sqrt(2*x + 1). The derivative of sqrt(2*x + 1) is 1/sqrt(2*x + 1), so dx = u*du.",
+            r"Forced substitution \(u=\sqrt{2x+1}\). The derivative of \(\sqrt{2x+1}\) is \(1/\sqrt{2x+1}\), so \(dx=u\,du\).",
+        ),
+        (
+            "The integral becomes u*3**u. Integration by parts gives 3**(sqrt(2*x + 1))*sqrt(2*x + 1)/log(3) - 3**(sqrt(2*x + 1))/log(3)**2.",
+            r"The integral becomes \(u\cdot 3^{u}\). Integration by parts gives \(3^{\sqrt{2x+1}}\sqrt{2x+1}/\log 3-3^{\sqrt{2x+1}}/(\log 3)^{2}\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(2*x + 1)", "1/sqrt(2*x + 1)"),
+        ("diff", "3**(sqrt(2*x + 1))*sqrt(2*x + 1)/log(3) - 3**(sqrt(2*x + 1))/log(3)**2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P16",
+    "-log(2)**2/2",
+    [
+        (
+            "The factor exp(-x)/(1 - exp(-x)) equals 1/(exp(x) - 1), so log(1 - exp(-x))**2/2 is an antiderivative.",
+            r"The factor \(e^{-x}/(1-e^{-x})\) equals \(1/(e^{x}-1)\), so \((\log(1-e^{-x}))^{2}/2\) is an antiderivative.",
+        ),
+        (
+            "Evaluate from log(2) to oo. The limit at oo is 0, and the value at log(2) leaves -log(2)**2/2.",
+            r"Evaluate from \(\log 2\) to \(\infty\). The limit at infinity is \(0\), and the value at \(\log 2\) leaves \(-\frac{1}{2}(\log 2)^{2}\).",
+        ),
+    ],
+    [
+        ("eq", "exp(-x)/(1 - exp(-x))", "1/(exp(x) - 1)"),
+        ("diff", "log(1 - exp(-x))**2/2"),
+        ("ends", "log(1 - exp(-x))**2/2", "log(2)", "oo", "1", "-log(2)**2/2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P17",
+    "x**2*log(x)**5/2 - 5*x**2*log(x)**4/4 + 5*x**2*log(x)**3/2 - 15*x**2*log(x)**2/4 + 15*x**2*log(x)/4 - 15*x**2/8",
+    [
+        (
+            "Substitution u = log(x). Then exp(2*log(x)) equals x**2, and the integral becomes u**5*exp(2*u).",
+            r"Substitution \(u=\log x\). Then \(e^{2\log x}=x^{2}\), and the integral becomes \(u^{5}e^{2u}\).",
+        ),
+        (
+            "Five integrations by parts. The antiderivative is x**2*log(x)**5/2 - 5*x**2*log(x)**4/4 + 5*x**2*log(x)**3/2 - 15*x**2*log(x)**2/4 + 15*x**2*log(x)/4 - 15*x**2/8.",
+            r"Five integrations by parts. The antiderivative is \(\frac{x^{2}(\log x)^{5}}{2}-\frac{5x^{2}(\log x)^{4}}{4}+\frac{5x^{2}(\log x)^{3}}{2}-\frac{15x^{2}(\log x)^{2}}{4}+\frac{15x^{2}\log x}{4}-\frac{15x^{2}}{8}\).",
+        ),
+    ],
+    [
+        ("eq", "exp(2*log(x))", "x**2"),
+        ("diff", "x**2*log(x)**5/2 - 5*x**2*log(x)**4/4 + 5*x**2*log(x)**3/2 - 15*x**2*log(x)**2/4 + 15*x**2*log(x)/4 - 15*x**2/8"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P18",
+    "-4*sqrt(x)*sqrt(1 - sqrt(x))/15 + 4*x*sqrt(1 - sqrt(x))/5 - 8*sqrt(1 - sqrt(x))/15",
+    [
+        (
+            "Forced substitution t = 1 - sqrt(x), after u = sqrt(x). Then 4*(1 - sqrt(x))**(5/2)/5 - 4*(1 - sqrt(x))**(3/2)/3 is an antiderivative.",
+            r"Forced substitution \(t=1-\sqrt{x}\), after \(u=\sqrt{x}\). Then \(\frac{4}{5}(1-\sqrt{x})^{5/2}-\frac{4}{3}(1-\sqrt{x})^{3/2}\) is an antiderivative.",
+        ),
+        (
+            "Factor sqrt(1 - sqrt(x)). That equals -4*sqrt(x)*sqrt(1 - sqrt(x))/15 + 4*x*sqrt(1 - sqrt(x))/5 - 8*sqrt(1 - sqrt(x))/15.",
+            r"Factor \(\sqrt{1-\sqrt{x}}\). That equals \(-\frac{4\sqrt{x}\sqrt{1-\sqrt{x}}}{15}+\frac{4x\sqrt{1-\sqrt{x}}}{5}-\frac{8\sqrt{1-\sqrt{x}}}{15}\).",
+        ),
+    ],
+    [
+        ("diff", "4*(1 - sqrt(x))**(5/2)/5 - 4*(1 - sqrt(x))**(3/2)/3"),
+        ("eq", "4*(1 - sqrt(x))**(5/2)/5 - 4*(1 - sqrt(x))**(3/2)/3", "-4*sqrt(x)*sqrt(1 - sqrt(x))/15 + 4*x*sqrt(1 - sqrt(x))/5 - 8*sqrt(1 - sqrt(x))/15"),
+        ("diff", "-4*sqrt(x)*sqrt(1 - sqrt(x))/15 + 4*x*sqrt(1 - sqrt(x))/5 - 8*sqrt(1 - sqrt(x))/15"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P01",
+    "120",
+    [
+        (
+            "The guide's factorial integral says the integral of x**n*exp(-x) from 0 to oo is n!. Here n = 5, and 5*4*3*2*1 equals 120.",
+            r"The guide's factorial integral says \(\int_0^\infty x^{n}e^{-x}\,dx=n!\). Here \(n=5\), and \(5\cdot4\cdot3\cdot2\cdot1=120\).",
+        ),
+        (
+            "The antiderivative -exp(-x)*(x**5 + 5*x**4 + 20*x**3 + 60*x**2 + 120*x + 120), from 0 to oo, equals 120.",
+            r"The antiderivative \(-e^{-x}(x^{5}+5x^{4}+20x^{3}+60x^{2}+120x+120)\), from \(0\) to \(\infty\), equals \(120\).",
+        ),
+    ],
+    [
+        ("eq", "5*4*3*2*1", "120"),
+        ("diff", "-exp(-x)*(x**5 + 5*x**4 + 20*x**3 + 60*x**2 + 120*x + 120)"),
+        ("ends", "-exp(-x)*(x**5 + 5*x**4 + 20*x**3 + 60*x**2 + 120*x + 120)", "0", "oo", "1", "120"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P02",
+    "720",
+    [
+        (
+            "Substitution x = exp(-u) sends log(x)**6 on [0, 1] to u**6*exp(-u) on [0, oo]. The factorial integral gives 6*5*4*3*2*1, which equals 720.",
+            r"Substitution \(x=e^{-u}\) sends \((\log x)^{6}\) on \([0,1]\) to \(u^{6}e^{-u}\) on \([0,\infty)\). The factorial integral gives \(6!\), which equals \(720\).",
+        ),
+        (
+            "The antiderivative x*(log(x)**6 - 6*log(x)**5 + 30*log(x)**4 - 120*log(x)**3 + 360*log(x)**2 - 720*log(x) + 720), from 0 to 1, equals 720.",
+            r"The antiderivative \(x((\log x)^{6}-6(\log x)^{5}+30(\log x)^{4}-120(\log x)^{3}+360(\log x)^{2}-720\log x+720)\), from \(0\) to \(1\), equals \(720\).",
+        ),
+    ],
+    [
+        ("eq", "6*5*4*3*2*1", "720"),
+        ("diff", "x*(log(x)**6 - 6*log(x)**5 + 30*log(x)**4 - 120*log(x)**3 + 360*log(x)**2 - 720*log(x) + 720)"),
+        ("ends", "x*(log(x)**6 - 6*log(x)**5 + 30*log(x)**4 - 120*log(x)**3 + 360*log(x)**2 - 720*log(x) + 720)", "0", "1", "1", "720"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P03",
+    "19",
+    [
+        (
+            "Substitution t = -x. The polynomial (-x)**4 + (-x)**3 + (-x)**2 + (-x) equals x**4 - x**3 + x**2 - x.",
+            r"Substitution \(t=-x\). The polynomial \((-x)^{4}+(-x)^{3}+(-x)^{2}+(-x)\) equals \(x^{4}-x^{3}+x^{2}-x\).",
+        ),
+        (
+            "The factorial integral gives 4*3*2*1 - 3*2*1 + 2*1 - 1, and 24 - 6 + 2 - 1 equals 19.",
+            r"The factorial integral gives \(4!-3!+2!-1!\), and \(24-6+2-1=19\).",
+        ),
+        (
+            "The antiderivative (x**4 - 3*x**3 + 10*x**2 - 19*x + 19)*exp(x), from -oo to 0, equals 19.",
+            r"The antiderivative \((x^{4}-3x^{3}+10x^{2}-19x+19)e^{x}\), from \(-\infty\) to \(0\), equals \(19\).",
+        ),
+    ],
+    [
+        ("eq", "(-x)**4 + (-x)**3 + (-x)**2 + (-x)", "x**4 - x**3 + x**2 - x"),
+        ("eq", "4*3*2*1 - 3*2*1 + 2*1 - 1", "19"),
+        ("eq", "24 - 6 + 2 - 1", "19"),
+        ("diff", "(x**4 - 3*x**3 + 10*x**2 - 19*x + 19)*exp(x)"),
+        ("ends", "(x**4 - 3*x**3 + 10*x**2 - 19*x + 19)*exp(x)", "-oo", "0", "1", "19"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P04",
+    "1",
+    [
+        (
+            "Substitution u = x**2. Then (x**2)**2 equals x**4, and x**5*exp(-x**2) dx becomes u**2*exp(-u) du/2. So 2*1/2 equals 1.",
+            r"Substitution \(u=x^{2}\). Then \((x^{2})^{2}=x^{4}\), and \(x^{5}e^{-x^{2}}\,dx\) becomes \(u^{2}e^{-u}\,du/2\). So \(2!/2=1\).",
+        ),
+        (
+            "The antiderivative -exp(-x**2)*(x**4 + 2*x**2 + 2)/2, from 0 to oo, equals 1.",
+            r"The antiderivative \(-\frac{1}{2}e^{-x^{2}}(x^{4}+2x^{2}+2)\), from \(0\) to \(\infty\), equals \(1\).",
+        ),
+    ],
+    [
+        ("eq", "(x**2)**2", "x**4"),
+        ("eq", "2*1/2", "1"),
+        ("diff", "-exp(-x**2)*(x**4 + 2*x**2 + 2)/2"),
+        ("ends", "-exp(-x**2)*(x**4 + 2*x**2 + 2)/2", "0", "oo", "1", "1"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P05",
+    "65",
+    [
+        (
+            "Expand (x+1)**4 as x**4 + 4*x**3 + 6*x**2 + 4*x + 1. The factorial integral gives 24 + 4*6 + 6*2 + 4*1 + 1, which equals 65.",
+            r"Expand \((x+1)^{4}\) as \(x^{4}+4x^{3}+6x^{2}+4x+1\). The factorial integral gives \(24+4\cdot6+6\cdot2+4\cdot1+1\), which equals \(65\).",
+        ),
+        (
+            "The antiderivative (-x**4 - 8*x**3 - 30*x**2 - 64*x - 65)*exp(-x), from 0 to oo, equals 65.",
+            r"The antiderivative \((-x^{4}-8x^{3}-30x^{2}-64x-65)e^{-x}\), from \(0\) to \(\infty\), equals \(65\).",
+        ),
+    ],
+    [
+        ("eq", "(x+1)**4", "x**4 + 4*x**3 + 6*x**2 + 4*x + 1"),
+        ("eq", "24 + 4*6 + 6*2 + 4*1 + 1", "65"),
+        ("diff", "(-x**4 - 8*x**3 - 30*x**2 - 64*x - 65)*exp(-x)"),
+        ("ends", "(-x**4 - 8*x**3 - 30*x**2 - 64*x - 65)*exp(-x)", "0", "oo", "1", "65"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P06",
+    "4",
+    [
+        (
+            "Forced substitution u = sqrt(x). The derivative of sqrt(x) is 1/(2*sqrt(x)), and the integrand becomes 2*u**2*exp(-u). Then 2*2 equals 4.",
+            r"Forced substitution \(u=\sqrt{x}\). The derivative of \(\sqrt{x}\) is \(1/(2\sqrt{x})\), and the integrand becomes \(2u^{2}e^{-u}\). Then \(2\cdot2!=4\).",
+        ),
+        (
+            "The antiderivative -2*exp(-sqrt(x))*(x + 2*sqrt(x) + 2), from 0 to oo, equals 4.",
+            r"The antiderivative \(-2e^{-\sqrt{x}}(x+2\sqrt{x}+2)\), from \(0\) to \(\infty\), equals \(4\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(x)", "1/(2*sqrt(x))"),
+        ("eq", "2*2", "4"),
+        ("diff", "-2*exp(-sqrt(x))*(x + 2*sqrt(x) + 2)"),
+        ("ends", "-2*exp(-sqrt(x))*(x + 2*sqrt(x) + 2)", "0", "oo", "1", "4"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P07",
+    "3",
+    [
+        (
+            "Forced substitution u = x**(1/3). The derivative of x**(1/3) is 1/(3*x**(2/3)), so the integral becomes 3*u*exp(-u). Then 3*1 equals 3.",
+            r"Forced substitution \(u=x^{1/3}\). The derivative of \(x^{1/3}\) is \(1/(3x^{2/3})\), so the integral becomes \(3ue^{-u}\). Then \(3\cdot1!=3\).",
+        ),
+        (
+            "The antiderivative -3*exp(-x**(1/3))*(x**(1/3) + 1), from 0 to oo, equals 3.",
+            r"The antiderivative \(-3e^{-x^{1/3}}(x^{1/3}+1)\), from \(0\) to \(\infty\), equals \(3\).",
+        ),
+    ],
+    [
+        ("diff_of", "x**(1/3)", "1/(3*x**(2/3))"),
+        ("eq", "3*1", "3"),
+        ("diff", "-3*exp(-x**(1/3))*(x**(1/3) + 1)"),
+        ("ends", "-3*exp(-x**(1/3))*(x**(1/3) + 1)", "0", "oo", "1", "3"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P08",
+    "12",
+    [
+        (
+            "Forced substitution u = sqrt(x). The integrand becomes 2*u**3*exp(-u), and 2*6 equals 12.",
+            r"Forced substitution \(u=\sqrt{x}\). The integrand becomes \(2u^{3}e^{-u}\), and \(2\cdot3!=12\).",
+        ),
+        (
+            "The antiderivative -2*exp(-sqrt(x))*(sqrt(x)**3 + 3*x + 6*sqrt(x) + 6), from 0 to oo, equals 12.",
+            r"The antiderivative \(-2e^{-\sqrt{x}}(x^{3/2}+3x+6\sqrt{x}+6)\), from \(0\) to \(\infty\), equals \(12\).",
+        ),
+    ],
+    [
+        ("eq", "2*6", "12"),
+        ("diff", "-2*exp(-sqrt(x))*(sqrt(x)**3 + 3*x + 6*sqrt(x) + 6)"),
+        ("ends", "-2*exp(-sqrt(x))*(sqrt(x)**3 + 3*x + 6*sqrt(x) + 6)", "0", "oo", "1", "12"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P09",
+    "2",
+    [
+        (
+            "Substitution u = exp(x). Then exp(3*x - exp(x))/exp(x) equals exp(2*x - exp(x)), which is u**2*exp(-u). The factorial integral gives 2*1, which equals 2.",
+            r"Substitution \(u=e^{x}\). Then \(e^{3x-e^{x}}/e^{x}=e^{2x-e^{x}}\), which is \(u^{2}e^{-u}\). The factorial integral gives \(2!\), which equals \(2\).",
+        ),
+        (
+            "The antiderivative -exp(-exp(x))*(exp(2*x) + 2*exp(x) + 2), from -oo to oo, equals 2.",
+            r"The antiderivative \(-e^{-e^{x}}(e^{2x}+2e^{x}+2)\), from \(-\infty\) to \(\infty\), equals \(2\).",
+        ),
+    ],
+    [
+        ("eq", "exp(3*x - exp(x))/exp(x)", "exp(2*x - exp(x))"),
+        ("eq", "2*1", "2"),
+        ("diff", "-exp(-exp(x))*(exp(2*x) + 2*exp(x) + 2)"),
+        ("ends", "-exp(-exp(x))*(exp(2*x) + 2*exp(x) + 2)", "-oo", "oo", "1", "2"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P10",
+    "8/81",
+    [
+        (
+            "Substitution u = log(x) gives the integral of u**4*exp(-3*u) from 0 to oo, which is 4!/3**5. Then 24/3**5 equals 8/81.",
+            r"Substitution \(u=\log x\) gives \(\int_0^\infty u^{4}e^{-3u}\,du=4!/3^{5}\). Then \(24/3^{5}=8/81\).",
+        ),
+        (
+            "The antiderivative -log(x)**4/(3*x**3) - 4*log(x)**3/(9*x**3) - 4*log(x)**2/(9*x**3) - 8*log(x)/(27*x**3) - 8/(81*x**3), from 1 to oo, equals 8/81.",
+            r"The antiderivative \(-\frac{(\log x)^{4}}{3x^{3}}-\frac{4(\log x)^{3}}{9x^{3}}-\frac{4(\log x)^{2}}{9x^{3}}-\frac{8\log x}{27x^{3}}-\frac{8}{81x^{3}}\), from \(1\) to \(\infty\), equals \(8/81\).",
+        ),
+    ],
+    [
+        ("eq", "24/3**5", "8/81"),
+        ("diff", "-log(x)**4/(3*x**3) - 4*log(x)**3/(9*x**3) - 4*log(x)**2/(9*x**3) - 8*log(x)/(27*x**3) - 8/(81*x**3)"),
+        ("ends", "-log(x)**4/(3*x**3) - 4*log(x)**3/(9*x**3) - 4*log(x)**2/(9*x**3) - 8*log(x)/(27*x**3) - 8/(81*x**3)", "1", "oo", "1", "8/81"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P11",
+    "120",
+    [
+        (
+            "Substitution u = 1/x turns exp(-1/x)/x**7 into u**5*exp(-u). The factorial integral gives 5*4*3*2*1, which equals 120.",
+            r"Substitution \(u=1/x\) turns \(e^{-1/x}/x^{7}\) into \(u^{5}e^{-u}\). The factorial integral gives \(5!\), which equals \(120\).",
+        ),
+        (
+            "The antiderivative exp(-1/x)*(120 + 120/x + 60/x**2 + 20/x**3 + 5/x**4 + 1/x**5), from 0 to oo, equals 120.",
+            r"The antiderivative \(e^{-1/x}(120+120/x+60/x^{2}+20/x^{3}+5/x^{4}+1/x^{5})\), from \(0\) to \(\infty\), equals \(120\).",
+        ),
+    ],
+    [
+        ("eq", "5*4*3*2*1", "120"),
+        ("diff", "exp(-1/x)*(120 + 120/x + 60/x**2 + 20/x**3 + 5/x**4 + 1/x**5)"),
+        ("ends", "exp(-1/x)*(120 + 120/x + 60/x**2 + 20/x**3 + 5/x**4 + 1/x**5)", "0", "oo", "1", "120"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P12",
+    "29",
+    [
+        (
+            "Substitution u = tan(x). Then sec(x)**2 equals 1 + tan(x)**2, and (1 + tan(x)**2)**2*sec(x)**2 equals sec(x)**6.",
+            r"Substitution \(u=\tan x\). Then \(\sec^{2}x=1+\tan^{2}x\), and \((1+\tan^{2}x)^{2}\sec^{2}x=\sec^{6}x\).",
+        ),
+        (
+            "The integral becomes (1 + 2*u**2 + u**4)*exp(-u) on [0, oo]. The factorial integral gives 1 + 4 + 24, which equals 29.",
+            r"The integral becomes \((1+2u^{2}+u^{4})e^{-u}\) on \([0,\infty)\). The factorial integral gives \(0!+2\cdot2!+4!=1+4+24\), which equals \(29\).",
+        ),
+        (
+            "The antiderivative -exp(-tan(x))*(tan(x)**4 + 4*tan(x)**3 + 14*tan(x)**2 + 28*tan(x) + 29), from 0 to pi/2, equals 29.",
+            r"The antiderivative \(-e^{-\tan x}(\tan^{4}x+4\tan^{3}x+14\tan^{2}x+28\tan x+29)\), from \(0\) to \(\pi/2\), equals \(29\).",
+        ),
+    ],
+    [
+        ("eq", "sec(x)**2", "1 + tan(x)**2"),
+        ("eq", "(1 + tan(x)**2)**2*sec(x)**2", "sec(x)**6"),
+        ("eq", "1 + 4 + 24", "29"),
+        ("diff", "-exp(-tan(x))*(tan(x)**4 + 4*tan(x)**3 + 14*tan(x)**2 + 28*tan(x) + 29)"),
+        ("ends", "-exp(-tan(x))*(tan(x)**4 + 4*tan(x)**3 + 14*tan(x)**2 + 28*tan(x) + 29)", "0", "pi/2", "1", "29"),
+    ],
+)
+
+_add(
     "YANG-2.5-P01",
     "x**2*log(x + 1)/2 - x**2/4 + x/2 - log(x + 1)/2",
     [
@@ -2830,6 +4041,17 @@ _add(
 )
 
 
+# Sections 1.15, 1.17, 1.18, and 1.20 sit between 1.1 and 1.2 in records.jsonl.
+LANE_SECTIONS = frozenset({"1.15", "1.17", "1.18", "1.20"})
+LANE_SPECS: dict[str, dict] = {}
+for _ident in [
+    key
+    for key in SPECS
+    if key.startswith(("YANG-1.15-", "YANG-1.17-", "YANG-1.18-", "YANG-1.20-"))
+]:
+    LANE_SPECS[_ident] = SPECS.pop(_ident)
+
+
 def parse(text: str, variable: str = "x"):
     return pack_gate._parse(text, variable)
 
@@ -2838,12 +4060,22 @@ def fold(text: str) -> str:
     return "".join(str(text).split())
 
 
+def closed_zero(expr) -> bool:
+    if pack_gate._zero(expr):
+        return True
+    has = getattr(expr, "has", None)
+    if has is not None and has(sp.polylog):
+        return pack_gate._zero(sp.expand_func(expr))
+    return False
+
+
 def same(left, right) -> bool:
-    if pack_gate._zero(left - right):
+    delta = left - right
+    if closed_zero(delta):
         return True
     symbol = pack_gate.namespace("x")["x"]
     positive = sp.Symbol("x", positive=True)
-    return pack_gate._zero((left - right).subs(symbol, positive))
+    return closed_zero(delta.subs(symbol, positive))
 
 
 def diff_ok(antiderivative, integrand) -> bool:
@@ -2853,13 +4085,13 @@ def diff_ok(antiderivative, integrand) -> bool:
 
 def diff_expr(antiderivative, integrand, symbol) -> bool:
     delta = sp.diff(antiderivative, symbol) - integrand
-    if pack_gate._zero(delta):
+    if closed_zero(delta):
         return True
     dropped = pack_gate._drop_log_abs(antiderivative)
-    if dropped != antiderivative and pack_gate._zero(sp.diff(dropped, symbol) - integrand):
+    if dropped != antiderivative and closed_zero(sp.diff(dropped, symbol) - integrand):
         return True
     positive = sp.Symbol(symbol.name, positive=True)
-    return pack_gate._zero(delta.subs(symbol, positive))
+    return closed_zero(delta.subs(symbol, positive))
 
 
 def branch_ok(antiderivative, integrand) -> bool:
@@ -2970,7 +4202,52 @@ def run_elliptic(step) -> None:
         raise AssertionError("integrand scale")
 
 
-def run_step(ident: str, step: tuple, integrand) -> None:
+def _bad_value(value) -> bool:
+    if value in (sp.nan, sp.zoo, sp.oo, -sp.oo):
+        return True
+    has = getattr(value, "has", None)
+    if has is None:
+        return False
+    return bool(has(sp.nan, sp.zoo, sp.oo, -sp.oo))
+
+
+def _at(primitive, symbol, bound: str, side: str):
+    point = parse(bound)
+    if bound in {"oo", "-oo"}:
+        return sp.limit(primitive, symbol, point)
+    value = primitive.subs(symbol, point)
+    if not _bad_value(value):
+        return value
+    direction = "-" if side == "hi" else "+"
+    return sp.limit(primitive, symbol, point, dir=direction)
+
+
+def evaluate(expr, text: str):
+    symbol = pack_gate.namespace("x")["x"]
+    if text == "oo":
+        return sp.limit(expr, symbol, sp.oo)
+    if text == "-oo":
+        return sp.limit(expr, symbol, -sp.oo)
+    if text.endswith("+"):
+        return sp.limit(expr, symbol, parse(text[:-1]), dir="+")
+    return expr.subs(symbol, parse(text))
+
+
+def bound(text: str):
+    if text == "oo":
+        return sp.oo
+    if text == "-oo":
+        return -sp.oo
+    return parse(text)
+
+
+def _end(primitive, symbol, text: str, side: str):
+    if text.endswith("+"):
+        return evaluate(primitive, text)
+    return _at(primitive, symbol, text, side)
+
+
+def run_step(ident: str, step: tuple, integrand, row: dict | None = None, spec: dict | None = None) -> None:
     kind = step[0]
     if kind == "diff":
         if not diff_ok(parse(step[1]), integrand):
@@ -3000,7 +4277,7 @@ def run_step(ident: str, step: tuple, integrand) -> None:
         _, ant, lo, hi, factor, expected = step
         symbol = pack_gate.namespace("x")["x"]
         primitive = parse(ant)
-        got = parse(factor) * (primitive.subs(symbol, parse(hi)) - primitive.subs(symbol, parse(lo)))
+        got = parse(factor) * (_end(primitive, symbol, hi, "hi") - _end(primitive, symbol, lo, "lo"))
         if not same(sp.simplify(got), parse(expected)):
             raise AssertionError(f"{ident} endpoints {ant} on [{lo}, {hi}]")
         return
@@ -3015,10 +4292,23 @@ def run_step(ident: str, step: tuple, integrand) -> None:
             raise AssertionError(f"{ident} value at {step[2]}")
         return
     if kind == "limit":
-        symbol = pack_gate.namespace("x")["x"]
-        got = sp.limit(parse(step[1]), symbol, parse(step[2]), dir=step[3])
-        if not same(got, parse(step[4])):
-            raise AssertionError(f"{ident} limit {step[2]}")
+        if len(step) == 4:
+            got = evaluate(parse(step[1]), step[2])
+            expected = step[3]
+        else:
+            symbol = pack_gate.namespace("x")["x"]
+            got = sp.limit(parse(step[1]), symbol, parse(step[2]), dir=step[3])
+            expected = step[4]
+        if expected == "oo":
+            if got != sp.oo:
+                raise AssertionError(f"{ident} limit {step[2]} gave {got}")
+            return
+        if expected == "-oo":
+            if got != -sp.oo:
+                raise AssertionError(f"{ident} limit {step[2]} gave {got}")
+            return
+        if not same(got, parse(expected)):
+            raise AssertionError(f"{ident} limit {step[2]} gave {got}")
         return
     if kind == "nested":
         try:
@@ -3032,15 +4322,119 @@ def run_step(ident: str, step: tuple, integrand) -> None:
         except AssertionError as exc:
             raise AssertionError(f"{ident} {exc}") from exc
         return
+
+    if kind == "area":
+        _, expr, lo, hi, expected = step
+        symbol = pack_gate.namespace("x")["x"]
+        value = sp.integrate(parse(expr), (symbol, bound(lo), bound(hi)))
+        if not pack_gate._closed(value) or not same(value, parse(expected)):
+            raise AssertionError(f"{ident} area {expr} on [{lo}, {hi}] gave {value}")
+        return
+    if kind == "sqrt_branch":
+        symbol = pack_gate.namespace("x")["x"]
+        ant = parse(step[1])
+        deriv = sp.diff(ant, symbol)
+        if not same(deriv**2, integrand**2):
+            raise AssertionError(f"{ident} square branch {step[1]}")
+        point = parse(step[2])
+        if not same(deriv.subs(symbol, point), integrand.subs(symbol, point)):
+            raise AssertionError(f"{ident} sample {step[2]}")
+        return
+    if kind == "sides":
+        symbol = pack_gate.namespace("x")["x"]
+        pos, pos_at, neg, neg_at = (parse(step[1]), parse(step[2]), parse(step[3]), parse(step[4]))
+        if not same(pos**2, integrand**2) or not same(neg**2, integrand**2):
+            raise AssertionError(f"{ident} branch squares")
+        if not same(integrand.subs(symbol, pos_at), pos.subs(symbol, pos_at)):
+            raise AssertionError(f"{ident} positive sample {step[2]}")
+        if not same(integrand.subs(symbol, neg_at), neg.subs(symbol, neg_at)):
+            raise AssertionError(f"{ident} negative sample {step[4]}")
+        return
+    if kind == "pieces":
+        if row is None or spec is None:
+            raise AssertionError(f"{ident} pieces need the stored row")
+        answer = parse(row["answer_sympy"])
+        if not isinstance(answer, sp.Piecewise) or len(answer.args) != 2:
+            raise AssertionError(f"{ident} answer is not a two-piece formula")
+        if answer.args[0][1] != parse(step[1]):
+            raise AssertionError(f"{ident} piece condition {step[1]}")
+        for ant, _cond in answer.args:
+            matched = any(
+                item[0] == "diff_of" and same(parse(item[1]), ant) for item in spec["steps"]
+            )
+            if not matched:
+                raise AssertionError(f"{ident} piece {ant} is not differentiated")
+        return
+    if kind == "reflect":
+        symbol = pack_gate.namespace("x")["x"]
+        sub = parse(step[1])
+        expr = parse(step[2])
+        lo, hi, expected = step[3], step[4], step[5]
+        if not pack_gate._zero(sp.diff(sub, symbol) + 1):
+            raise AssertionError(f"{ident} reflection derivative")
+        if evaluate(sub, lo) != parse(hi) or evaluate(sub, hi) != parse(lo):
+            raise AssertionError(f"{ident} reflection endpoints")
+        total = expr + expr.subs(symbol, sub)
+        if not same(total, 1):
+            raise AssertionError(f"{ident} reflection sum")
+        if not same((parse(hi) - parse(lo)) / 2, parse(expected)):
+            raise AssertionError(f"{ident} reflection value")
+        return
+    if kind == "flat":
+        symbol = pack_gate.namespace("x")["x"]
+        expr = parse(step[1])
+        if not diff_ok(expr, parse("0")):
+            raise AssertionError(f"{ident} flat derivative")
+        if not same(expr.subs(symbol, parse(step[2])), parse(step[3])):
+            raise AssertionError(f"{ident} flat value")
+        return
+    if kind == "zero_quot":
+        symbol = pack_gate.namespace("x")["x"]
+        num = parse(step[1])
+        den = parse(step[2])
+        if not diff_ok(num, parse("0")) or not same(num.subs(symbol, 0), parse("0")):
+            raise AssertionError(f"{ident} numerator is not 0")
+        if same(den, parse("0")) or den.subs(symbol, 0) == 0:
+            raise AssertionError(f"{ident} denominator vanishes")
+        return
+    if kind == "mirror":
+        symbol = pack_gate.namespace("x")["x"]
+        sub = parse(step[1])
+        lo, hi = step[2], step[3]
+        if not pack_gate._zero(sp.diff(sub, symbol) + 1):
+            raise AssertionError(f"{ident} mirror derivative")
+        if evaluate(sub, lo) != bound(hi) or evaluate(sub, hi) != bound(lo):
+            raise AssertionError(f"{ident} mirror endpoints {evaluate(sub, lo)} {evaluate(sub, hi)}")
+        return
+    if kind == "half":
+        if spec is None:
+            raise AssertionError(f"{ident} half needs the spec")
+        if not same(parse(step[1]) / 2, parse(step[2])):
+            raise AssertionError(f"{ident} half {step[1]}")
+        if not any(item[0] == "area" and fold(item[-1]) == fold(step[1]) for item in spec["steps"]):
+            raise AssertionError(f"{ident} half has no matching area")
+        return
+    if kind == "sum":
+        if not same(parse(step[1]), parse(step[2])):
+            raise AssertionError(f"{ident} sum {step[1]} vs {step[2]}")
+        return
+    if kind == "min":
+        symbol = pack_gate.namespace("x")["x"]
+        got = sp.calculus.util.minimum(parse(step[1]), symbol, sp.Interval(parse(step[2]), parse(step[3])))
+        if not same(got, parse(step[4])):
+            raise AssertionError(f"{ident} minimum {got}")
+        return
     raise AssertionError(f"{ident} unknown step {kind}")
 
 
 def proves_final(spec: dict) -> bool:
     final = fold(spec["final"])
     for step in spec["steps"]:
-        if step[0] in {"diff", "branch"} and fold(step[1]) == final:
+        if step[0] in {"diff", "branch", "sqrt_branch"} and fold(step[1]) == final:
             return True
-        if step[0] in {"limit", "ends"} and fold(step[-1]) == final:
+        if step[0] == "pieces":
+            return True
+        if step[0] in {"limit", "ends", "area", "reflect", "half", "sum"} and fold(step[-1]) == final:
             return True
         if step[0] in {"nested", "elliptic"} and any(fold(token) == final for token in step[1:]):
             return True
@@ -3063,7 +4457,7 @@ def check_steps(row: dict, spec: dict) -> None:
     else:
         raise AssertionError(f"{ident} kind {row['kind']}")
     for step in spec["steps"]:
-        run_step(ident, step, integrand)
+        run_step(ident, step, integrand, row, spec)
     assert_shown(ident, spec)
     if not same(parse(spec["final"]), parse(row["answer_sympy"])):
         raise AssertionError(f"DISAGREE {ident}: simplified final does not match answer_sympy")
@@ -4334,7 +5728,887 @@ def _s111_main(argv: list[str]) -> int:
     return 0
 
 
+def _lane_rows(rows: list[dict]) -> list[dict]:
+    chosen = []
+    for row in rows:
+        if row.get("source") != "yang_book" or row.get("kind") == "reference":
+            continue
+        if row.get("section") not in LANE_SECTIONS:
+            continue
+        if row.get("worked_solution_origin") == "pdf_copy":
+            continue
+        chosen.append(row)
+    return chosen
+
+
+def _lane_write(rows: list[dict]) -> None:
+    by_id = {row["id"]: row for row in rows}
+    for ident, spec in LANE_SPECS.items():
+        plain, latex = compose(by_id[ident], spec)
+        by_id[ident]["worked_solution_plain"] = plain
+        by_id[ident]["worked_solution_latex"] = latex
+    body = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows)
+    RECORDS.write_text(body, encoding="utf-8")
+
+
+def _lane_main(argv: list[str]) -> int:
+    rows = load_rows()
+    chosen = _lane_rows(rows)
+    ids = [row["id"] for row in chosen]
+    if ids != list(LANE_SPECS):
+        missing = [ident for ident in ids if ident not in LANE_SPECS]
+        extra = [ident for ident in LANE_SPECS if ident not in ids]
+        print(f"FAIL section rows missing={missing} extra={extra}", file=sys.stderr)
+        return 1
+    try:
+        for row in chosen:
+            check_steps(row, LANE_SPECS[row["id"]])
+    except AssertionError as exc:
+        print(f"FAIL {exc}", file=sys.stderr)
+        return 1
+    if "--write" in argv:
+        _lane_write(rows)
+        print(f"WROTE {len(chosen)}")
+        return 0
+    try:
+        for row in chosen:
+            check_prose(row, LANE_SPECS[row["id"]])
+    except AssertionError as exc:
+        print(f"FAIL {exc}", file=sys.stderr)
+        return 1
+    print(f"PASS {len(chosen)} yang worked solutions")
+    return 0
+
+
+LANE_MAINS.append(_lane_main)
 LANE_MAINS.append(_s111_main)
+
+# ---- folded from yang_worked_steps.py ----
+# Section order, then problem order. This is the whole derived-writeup batch.
+_s27_IDS = (
+    "YANG-2.7-P01",
+    "YANG-2.7-P02",
+    "YANG-2.7-P03",
+    "YANG-2.7-P04",
+    "YANG-2.7-P05",
+    "YANG-2.7-P06",
+    "YANG-2.7-P07",
+    "YANG-2.7-P08",
+    "YANG-2.7-P09",
+    "YANG-2.7-P10",
+    "YANG-2.7-P11",
+    "YANG-2.7-P12",
+    "YANG-2.7-P13",
+    "YANG-3.4-P06",
+    "YANG-3.8-P01",
+    "YANG-3.8-P02",
+    "YANG-3.8-P03",
+    "YANG-3.8-P04",
+    "YANG-3.8-P05",
+    "YANG-3.8-P06",
+    "YANG-3.8-P07",
+    "YANG-3.8-P08",
+    "YANG-3.8-P09",
+    "YANG-3.8-P10",
+    "YANG-3.8-P11",
+    "YANG-3.8-P12",
+    "YANG-3.8-P13",
+    "YANG-3.8-P14",
+    "YANG-4.4-P01",
+    "YANG-4.6-P04",
+    "YANG-6.1-P04",
+    "YANG-6.7-P03",
+)
+
+
+def _s27_require(condition, label):
+    if not condition:
+        raise AssertionError(label)
+
+
+def _s27__is_zero(expr) -> bool:
+    try:
+        return sp.simplify(expr) == 0
+    except Exception:
+        return False
+
+
+def _s27_same(left, right, label):
+    _s27_require(_s27__is_zero(left - right), label)
+
+
+def _s27__no_zero(expr, var, lo, hi) -> bool:
+    try:
+        return sp.solveset(expr, var, sp.Interval.open(lo, hi)) == sp.EmptySet
+    except Exception:
+        return False
+
+
+def _s27__positive_on(expr, var, lo, hi) -> bool:
+    if not _s27__no_zero(expr, var, lo, hi):
+        return False
+    value = sp.simplify(expr.subs(var, (lo + hi) / 2))
+    return value.is_positive is True
+
+
+def _s27_integrand_of(row):
+    return pack_gate._parse(row["sympy_expr"], "x")
+
+
+def _s27_answer_of(row):
+    return pack_gate._parse(row["answer_sympy"], "x")
+
+
+def _s27_require_answer(value, row, label):
+    answer = _s27_answer_of(row)
+    if not _s27__is_zero(sp.simplify(value) - answer) and not _s27__is_zero(value - answer):
+        raise AssertionError(f"{row['id']} derivation disagrees with stored answer: {value} vs {answer}")
+    _s27_require(label, label)
+
+
+def _s27__abs_positive():
+    positive = sp.Dummy("p", positive=True)
+    _s27_same(sp.Abs(positive), positive, "absolute value of a positive quantity")
+
+
+def _s27_check_2_7_p01(row, x):
+    """Sine substitution for x/((1-x) sqrt(1-x**2))."""
+    _s27_require(row["kind"] == "indefinite" and row["limits"] == [], row["id"] + " shape")
+    integrand = _s27_integrand_of(row)
+    th = sp.symbols("th", real=True)
+    _s27_same(sp.sqrt(1 - sp.sin(th) ** 2), sp.Abs(sp.cos(th)), row["id"] + " square root")
+    _s27_require(_s27__positive_on(sp.cos(th), th, 0, sp.pi / 2), row["id"] + " cosine sign")
+    _s27__abs_positive()
+    linked = sp.sin(th) / ((1 - sp.sin(th)) * sp.cos(th)) * sp.cos(th)
+    _s27_same(sp.cancel(linked - sp.sin(th) / (1 - sp.sin(th))), 0, row["id"] + " jacobian")
+    rewritten = -1 + sp.sec(th) ** 2 + sp.sec(th) * sp.tan(th)
+    _s27_same(sp.together(sp.sin(th) / (1 - sp.sin(th)) - rewritten), 0, row["id"] + " rationalization")
+    theta_form = -th + sp.tan(th) + sp.sec(th)
+    _s27_same(sp.diff(theta_form, th), rewritten, row["id"] + " theta antiderivative")
+    answer = _s27_answer_of(row)
+    _s27_same(sp.diff(answer, x), integrand, row["id"] + " x antiderivative")
+    _s27_same((1 + x) / sp.sqrt(1 - x**2), answer + sp.asin(x), row["id"] + " back substitution")
+
+
+def _s27_check_2_7_p02(row, x):
+    """Sine substitution for x**2/(1-x**2)**(3/2) on [0, 1/2]."""
+    _s27_require(row["limits"] == ["0", "1/2"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    th = sp.symbols("th", real=True)
+    _s27_same(sp.sqrt(1 - sp.sin(th) ** 2), sp.Abs(sp.cos(th)), row["id"] + " square root")
+    _s27_require(_s27__positive_on(sp.cos(th), th, 0, sp.pi / 6), row["id"] + " cosine sign")
+    manual = sp.sin(th) ** 2 / sp.cos(th) ** 2
+    _s27_same(manual, sp.tan(th) ** 2, row["id"] + " tangent square")
+    _s27_same(sp.tan(th) ** 2, sp.sec(th) ** 2 - 1, row["id"] + " pythagorean")
+    antideriv = sp.tan(th) - th
+    _s27_same(sp.diff(antideriv, th), sp.sec(th) ** 2 - 1, row["id"] + " antiderivative")
+    value = sp.simplify(antideriv.subs(th, sp.pi / 6) - antideriv.subs(th, 0))
+    _s27_same(value, sp.sqrt(3) / 3 - sp.pi / 6, row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+    # The stored integrand, after x = sin(theta) and sqrt(1-sin**2) = cos(theta), is tan(theta)**2.
+    replaced = integrand.subs(x, sp.sin(th)).subs(sp.sqrt(1 - sp.sin(th) ** 2), sp.cos(th))
+    _s27_same(sp.simplify(replaced * sp.cos(th) - sp.tan(th) ** 2), 0, row["id"] + " substituted integrand")
+
+
+def _s27_check_2_7_p03(row, x):
+    """Cosine substitution for asin(sqrt(1-x**2)) on [-1, 1]."""
+    _s27_require(row["limits"] == ["-1", "1"], row["id"] + " limits")
+    th = sp.symbols("th", real=True)
+    _s27_same(sp.sqrt(sp.sin(th) ** 2), sp.Abs(sp.sin(th)), row["id"] + " square root")
+    _s27_require(_s27__positive_on(sp.sin(th), th, 0, sp.pi), row["id"] + " sine sign")
+    _s27__abs_positive()
+    branch = sp.asin(sp.sin(th))
+    deriv = sp.simplify(sp.diff(branch, th))
+    _s27_same(deriv, sp.cos(th) / sp.Abs(sp.cos(th)), row["id"] + " arcsine derivative")
+    _s27_same(sp.sqrt(sp.cos(th) ** 2), sp.Abs(sp.cos(th)), row["id"] + " cosine root")
+    _s27_require(_s27__positive_on(sp.cos(th), th, 0, sp.pi / 2), row["id"] + " first cosine sign")
+    _s27_same(deriv.subs(sp.Abs(sp.cos(th)), sp.cos(th)), 1, row["id"] + " derivative on the first half")
+    _s27_require(branch.subs(th, 0) == 0, row["id"] + " arcsine at 0")
+    _s27_require(_s27__positive_on(-sp.cos(th), th, sp.pi / 2, sp.pi), row["id"] + " second cosine sign")
+    _s27_same(deriv.subs(sp.Abs(sp.cos(th)), -sp.cos(th)), -1, row["id"] + " derivative on the second half")
+    _s27_same(sp.diff(sp.pi - th, th), -1, row["id"] + " reflected angle")
+    _s27_require(sp.simplify(branch.subs(th, sp.pi / 2) - sp.pi / 2) == 0, row["id"] + " arcsine at pi/2")
+    piece = -th * sp.cos(th) + sp.sin(th)
+    _s27_same(sp.diff(piece, th), th * sp.sin(th), row["id"] + " first antiderivative")
+    first = sp.simplify(piece.subs(th, sp.pi / 2) - piece.subs(th, 0))
+    _s27_require(first == 1, row["id"] + " first piece")
+    other = -(sp.pi - th) * sp.cos(th) - sp.sin(th)
+    _s27_same(sp.diff(other, th), (sp.pi - th) * sp.sin(th), row["id"] + " second antiderivative")
+    second = sp.simplify(other.subs(th, sp.pi) - other.subs(th, sp.pi / 2))
+    _s27_require(second == 1, row["id"] + " second piece")
+    _s27_require_answer(first + second, row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p04(row, x):
+    """Sine substitution for atan(x/sqrt(1-x**2)) on [0, 1]."""
+    _s27_require(row["limits"] == ["0", "1"], row["id"] + " limits")
+    th = sp.symbols("th", real=True)
+    _s27_same(sp.sqrt(1 - sp.sin(th) ** 2), sp.Abs(sp.cos(th)), row["id"] + " square root")
+    _s27_require(_s27__positive_on(sp.cos(th), th, 0, sp.pi / 2), row["id"] + " cosine sign")
+    _s27__abs_positive()
+    branch = sp.atan(sp.tan(th))
+    _s27_same(sp.diff(branch, th), 1, row["id"] + " arctangent derivative")
+    _s27_require(branch.subs(th, 0) == 0, row["id"] + " arctangent at 0")
+    antideriv = th * sp.sin(th) + sp.cos(th)
+    _s27_same(sp.diff(antideriv, th), th * sp.cos(th), row["id"] + " antiderivative")
+    value = sp.simplify(antideriv.subs(th, sp.pi / 2) - antideriv.subs(th, 0))
+    _s27_same(value, sp.pi / 2 - 1, row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p05(row, x):
+    """Tangent substitution for sqrt(1+sqrt(1+x**2))/(1+x**2) on [0, infinity)."""
+    _s27_require(row["limits"] == ["0", "oo"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    th = sp.symbols("th", real=True)
+    _s27_same(1 + sp.tan(th) ** 2, sp.sec(th) ** 2, row["id"] + " pythagorean")
+    _s27_same(sp.diff(sp.tan(th), th), sp.sec(th) ** 2, row["id"] + " tangent derivative")
+    _s27_same(sp.sqrt(sp.sec(th) ** 2), sp.Abs(sp.sec(th)), row["id"] + " secant root")
+    _s27_require(_s27__positive_on(sp.cos(th), th, 0, sp.pi / 2), row["id"] + " cosine sign")
+    _s27__abs_positive()
+    pulled = integrand.subs(x, sp.tan(th)) * sp.sec(th) ** 2
+    reduced = pulled.subs(sp.sqrt(1 + sp.tan(th) ** 2), sp.sec(th))
+    _s27_same(reduced, sp.sqrt(1 + sp.sec(th)), row["id"] + " substituted integrand")
+    _s27_same(1 + sp.sec(th), (1 + sp.cos(th)) / sp.cos(th), row["id"] + " secant sum")
+    _s27_same(1 + sp.cos(th), 2 * sp.cos(th / 2) ** 2, row["id"] + " half-angle cosine")
+    _s27_same(sp.cos(th), 1 - 2 * sp.sin(th / 2) ** 2, row["id"] + " half-angle sine")
+    _s27_require(_s27__positive_on(sp.cos(th / 2), th, 0, sp.pi / 2), row["id"] + " half-angle sign")
+    u_expr = sp.sin(th / 2)
+    _s27_same(sp.diff(u_expr, th), sp.cos(th / 2) / 2, row["id"] + " u derivative")
+    factor = sp.sqrt(2) * sp.cos(th / 2) / sp.sqrt(1 - 2 * u_expr**2) * (2 / sp.cos(th / 2))
+    _s27_same(factor, 2 * sp.sqrt(2) / sp.sqrt(1 - 2 * u_expr**2), row["id"] + " half-angle factor")
+    phi = sp.symbols("phi", real=True)
+    _s27_same(1 - 2 * (sp.sin(phi) / sp.sqrt(2)) ** 2, sp.cos(phi) ** 2, row["id"] + " phi identity")
+    _s27_require(_s27__positive_on(sp.cos(phi), phi, 0, sp.pi / 2), row["id"] + " phi cosine")
+    _s27_same(sp.sqrt(sp.cos(phi) ** 2), sp.Abs(sp.cos(phi)), row["id"] + " phi root")
+    collapsed = 2 * sp.sqrt(2) * (sp.cos(phi) / sp.sqrt(2)) / sp.cos(phi)
+    _s27_same(collapsed, 2, row["id"] + " collapsed integrand")
+    _s27_same(sp.sin(sp.pi / 4), sp.sqrt(2) / 2, row["id"] + " upper u")
+    value = sp.integrate(2, (phi, 0, sp.pi / 2))
+    _s27_require(value == sp.pi, row["id"] + " reduced integral")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p06(row, x):
+    """Logarithmic antiderivative on [0, 1]."""
+    _s27_require(row["limits"] == ["0", "1"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    factored = sp.sqrt(1 - x**2) * (sp.asin(x) + sp.sqrt(1 - x**2))
+    denominator = -x**2 + sp.sqrt(1 - x**2) * sp.asin(x) + 1
+    _s27_same(denominator, factored, row["id"] + " factor")
+    primitive = sp.log(sp.asin(x) + sp.sqrt(1 - x**2))
+    _s27_same(sp.diff(primitive, x), integrand, row["id"] + " derivative")
+    value = sp.simplify(primitive.subs(x, 1) - primitive.subs(x, 0))
+    _s27_same(value, sp.log(sp.pi / 2), row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p07(row, x):
+    """Secant substitution on [sqrt(2), infinity)."""
+    _s27_require(row["limits"] == ["sqrt(2)", "oo"], row["id"] + " limits")
+    th = sp.symbols("th", real=True)
+    _s27_same(sp.sqrt(sp.sec(th) ** 2 - 1), sp.Abs(sp.tan(th)), row["id"] + " square root")
+    _s27_require(_s27__positive_on(sp.tan(th), th, sp.pi / 4, sp.pi / 2), row["id"] + " tangent sign")
+    _s27__abs_positive()
+    manual = 1 / (sp.sec(th) ** 2 * sp.tan(th) ** 3) * (sp.sec(th) * sp.tan(th))
+    target = sp.cos(th) ** 3 / sp.sin(th) ** 2
+    _s27_same(sp.simplify(manual - target), 0, row["id"] + " substituted integrand")
+    rewritten = sp.cos(th) / sp.sin(th) ** 2 - sp.cos(th)
+    _s27_same(target, rewritten, row["id"] + " split")
+    antideriv = -sp.csc(th) - sp.sin(th)
+    _s27_same(sp.diff(antideriv, th), rewritten, row["id"] + " antiderivative")
+    value = sp.simplify(antideriv.subs(th, sp.pi / 2) - antideriv.subs(th, sp.pi / 4))
+    _s27_same(value, -2 + 3 * sp.sqrt(2) / 2, row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p08(row, x):
+    """Hyperbolic substitution for the arctangent weight on [0, infinity)."""
+    _s27_require(row["limits"] == ["0", "oo"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    u = sp.symbols("u", positive=True)
+    _s27_same(sp.diff(sp.sinh(u), u), sp.cosh(u), row["id"] + " sinh derivative")
+    _s27_same(sp.sqrt(1 + sp.sinh(u) ** 2), sp.cosh(u), row["id"] + " hyperbolic root")
+    _s27_same(sp.cosh(u) + sp.sinh(u), sp.exp(u), row["id"] + " exponential sum")
+    substituted = integrand.subs(x, sp.sinh(u)) * sp.cosh(u)
+    reduced = sp.atan(sp.sinh(u)) * sp.exp(-u)
+    _s27_same(substituted, reduced, row["id"] + " substituted integrand")
+    boundary = -sp.exp(-u) * sp.atan(sp.sinh(u))
+    remainder = sp.exp(-u) / sp.cosh(u)
+    _s27_same(reduced, sp.diff(boundary, u) + remainder, row["id"] + " integration by parts")
+    _s27_require(sp.limit(boundary, u, sp.oo) == 0, row["id"] + " upper boundary")
+    _s27_require(sp.simplify(boundary.subs(u, 0)) == 0, row["id"] + " lower boundary")
+    rational = 2 * sp.exp(-2 * u) / (1 + sp.exp(-2 * u))
+    _s27_same(remainder.rewrite(sp.exp), rational, row["id"] + " exponential form")
+    t = sp.symbols("t", positive=True)
+    _s27_same(sp.diff(sp.exp(-2 * u), u), -2 * sp.exp(-2 * u), row["id"] + " t derivative")
+    _s27_require(sp.simplify(sp.exp(-2 * u).subs(u, 0)) == 1, row["id"] + " t at 0")
+    _s27_require(sp.limit(sp.exp(-2 * u), u, sp.oo) == 0, row["id"] + " t at infinity")
+    value = sp.integrate(1 / (1 + t), (t, 0, 1))
+    _s27_same(value, sp.log(2), row["id"] + " reduced integral")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p09(row, x):
+    """Differentiate the exponential arcsecant antiderivative on [1, sqrt(2)]."""
+    _s27_require(row["limits"] == ["1", "sqrt(2)"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    positive = sp.symbols("p", positive=True)
+    primitive = sp.exp(sp.asec(positive)) * positive * (sp.sqrt(positive**2 - 1) - 1) / 2
+    _s27_same(sp.diff(primitive, positive), integrand.subs(x, positive), row["id"] + " derivative")
+    _s27_require(sp.asec(1) == 0, row["id"] + " arcsecant of 1")
+    _s27_same(sp.asec(sp.sqrt(2)), sp.pi / 4, row["id"] + " arcsecant of sqrt(2)")
+    value = sp.simplify(primitive.subs(positive, sp.sqrt(2)) - primitive.subs(positive, 1))
+    _s27_require(value == sp.Rational(1, 2), row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p10(row, x):
+    """Sine substitution for asin(sqrt(x))/sqrt(1-x) on [0, 1]."""
+    _s27_require(row["limits"] == ["0", "1"], row["id"] + " limits")
+    th = sp.symbols("th", real=True)
+    _s27_same(sp.diff(sp.sin(th) ** 2, th), 2 * sp.sin(th) * sp.cos(th), row["id"] + " jacobian")
+    _s27_same(sp.sqrt(sp.sin(th) ** 2), sp.Abs(sp.sin(th)), row["id"] + " sine root")
+    _s27_same(sp.sqrt(sp.cos(th) ** 2), sp.Abs(sp.cos(th)), row["id"] + " cosine root")
+    _s27_require(_s27__positive_on(sp.sin(th), th, 0, sp.pi / 2), row["id"] + " sine sign")
+    _s27_require(_s27__positive_on(sp.cos(th), th, 0, sp.pi / 2), row["id"] + " cosine sign")
+    _s27__abs_positive()
+    antideriv = -2 * th * sp.cos(th) + 2 * sp.sin(th)
+    _s27_same(sp.diff(antideriv, th), 2 * th * sp.sin(th), row["id"] + " antiderivative")
+    value = sp.simplify(antideriv.subs(th, sp.pi / 2) - antideriv.subs(th, 0))
+    _s27_require(value == 2, row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p11(row, x):
+    """Differentiate 2(sqrt(x)-1)/sqrt(1-x) on [0, 1]."""
+    _s27_require(row["limits"] == ["0", "1"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    positive = sp.symbols("p", positive=True)
+    primitive = 2 * (sp.sqrt(positive) - 1) / sp.sqrt(1 - positive)
+    _s27_same(sp.diff(primitive, positive), integrand.subs(x, positive), row["id"] + " derivative")
+    upper = sp.limit(primitive, positive, 1, dir="-")
+    lower = sp.simplify(primitive.subs(positive, 0))
+    _s27_require(upper == 0 and lower == -2, row["id"] + " endpoints")
+    _s27_require_answer(sp.simplify(upper - lower), row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p12(row, x):
+    """Two square roots, then an arctangent antiderivative, on [1, 4]."""
+    _s27_require(row["limits"] == ["1", "4"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    t = sp.symbols("t", positive=True)
+    u = sp.symbols("u", positive=True)
+    _s27_same(sp.diff(t**2, t), 2 * t, row["id"] + " t jacobian")
+    first = integrand.subs(x, t**2) * (2 * t)
+    _s27_same(sp.simplify(first - 2 * t * sp.atan(sp.sqrt(t - 1))), 0, row["id"] + " t integrand")
+    _s27_same(sp.diff(u**2 + 1, u), 2 * u, row["id"] + " u jacobian")
+    second = first.subs(t, u**2 + 1) * (2 * u)
+    piece = u * (u**2 + 1) * sp.atan(u)
+    _s27_same(sp.simplify(second - 4 * piece), 0, row["id"] + " u integrand")
+    antideriv = sp.atan(u) * (u**4 / 4 + u**2 / 2) - u**3 / 12 - u / 4 + sp.atan(u) / 4
+    _s27_same(sp.diff(antideriv, u), (u**3 + u) * sp.atan(u), row["id"] + " antiderivative")
+    value = sp.simplify(4 * (antideriv.subs(u, 1) - antideriv.subs(u, 0)))
+    _s27_same(value, sp.pi - sp.Rational(4, 3), row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_2_7_p13(row, x):
+    """Arctangent antiderivative on [0, 1], using the left-hand limit at 1."""
+    _s27_require(row["limits"] == ["0", "1"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    primitive = sp.atan(sp.sqrt(2) * x / sp.sqrt(1 - x**2)) / sp.sqrt(2)
+    _s27_same(sp.diff(primitive, x), integrand, row["id"] + " derivative")
+    _s27_require(sp.simplify(primitive.subs(x, 0)) == 0, row["id"] + " lower endpoint")
+    upper = sp.limit(primitive, x, 1, dir="-")
+    _s27_same(upper, sp.pi / (2 * sp.sqrt(2)), row["id"] + " upper limit")
+    _s27_same(upper, sp.sqrt(2) * sp.pi / 4, row["id"] + " equivalent form")
+    _s27_require_answer(upper, row, row["id"] + " stored value")
+
+
+def _s27_check_3_4_p06(row, x):
+    """Triple-angle split. The guide prints pi/sqrt(3) - log(8)."""
+    _s27_require(row["limits"] == ["0", "sqrt(3)"], row["id"] + " limits")
+    th = sp.symbols("th", real=True)
+    _s27_same(sp.diff(sp.tan(th), th), sp.sec(th) ** 2, row["id"] + " tangent derivative")
+    _s27_same(sp.tan(sp.pi / 3), sp.sqrt(3), row["id"] + " upper angle")
+    argument = (3 * x - x**3) / (1 - 3 * x**2)
+    _s27_same(sp.expand_trig(argument.subs(x, sp.tan(th)) - sp.tan(3 * th)), 0, row["id"] + " triple angle")
+    y = sp.symbols("y", real=True)
+    _s27_same(sp.diff(sp.atan(sp.tan(y)), y), 1, row["id"] + " arctangent derivative")
+    _s27_require(sp.solveset(sp.cos(y), y, sp.Interval.Ropen(0, sp.pi / 2)) == sp.EmptySet, row["id"] + " first branch")
+    _s27_same(sp.atan(sp.tan(sp.pi / 4)), sp.pi / 4, row["id"] + " first sample")
+    _s27_require(sp.solveset(sp.cos(y), y, sp.Interval.Lopen(sp.pi / 2, sp.pi)) == sp.EmptySet, row["id"] + " second branch")
+    _s27_same(sp.atan(sp.tan(3 * sp.pi / 4)), 3 * sp.pi / 4 - sp.pi, row["id"] + " second sample")
+    _s27_require(_s27__positive_on(sp.cos(th), th, 0, sp.pi / 3), row["id"] + " cosine sign")
+    left = 3 * th * sp.tan(th) + 3 * sp.log(sp.cos(th))
+    right = (3 * th - sp.pi) * sp.tan(th) + 3 * sp.log(sp.cos(th))
+    _s27_same(sp.diff(left, th), 3 * th * sp.sec(th) ** 2, row["id"] + " first antiderivative")
+    _s27_same(sp.diff(right, th), (3 * th - sp.pi) * sp.sec(th) ** 2, row["id"] + " second antiderivative")
+    _s27_require(sp.simplify(left.subs(th, 0)) == 0, row["id"] + " lower endpoint")
+    first = sp.simplify(left.subs(th, sp.pi / 6) - left.subs(th, 0))
+    second = sp.simplify(right.subs(th, sp.pi / 3) - right.subs(th, sp.pi / 6))
+    value = sp.simplify(first + second)
+    _s27_same(value, sp.pi / sp.sqrt(3) - sp.log(8), row["id"] + " guide value")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p01(row, x):
+    """Nested exponential speed integral on [0, (ln 4)**2]."""
+    _s27_require(row["limits"] == ["0", "log(4)**2"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    t = sp.symbols("t", positive=True)
+    _s27_same(sp.diff(t**2, t), 2 * t, row["id"] + " t jacobian")
+    _s27_same(sp.sqrt(sp.log(4) ** 2), sp.log(4), row["id"] + " upper t")
+    substituted = integrand.subs(x, t**2) * (2 * t)
+    reduced = 2 * sp.exp(t / 2) * sp.exp(sp.exp(t / 2) / 2)
+    _s27_same(substituted, reduced, row["id"] + " t integrand")
+    u = sp.symbols("u", positive=True)
+    _s27_same(sp.diff(2 * sp.log(u), u), 2 / u, row["id"] + " u jacobian")
+    _s27_same(sp.exp(sp.log(4) / 2), 2, row["id"] + " upper u")
+    _s27_require(sp.exp(0) == 1, row["id"] + " lower u")
+    changed = reduced.subs(t, 2 * sp.log(u)) * (2 / u)
+    _s27_same(changed, 4 * sp.exp(u / 2), row["id"] + " u integrand")
+    value = sp.integrate(4 * sp.exp(u / 2), (u, 1, 2))
+    _s27_same(value, 8 * (sp.E - sp.sqrt(sp.E)), row["id"] + " reduced integral")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p02(row, x):
+    """Real cube root on [-1, 1]."""
+    _s27_require(row["limits"] == ["-1", "1"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    positive = sp.symbols("p", positive=True)
+    negative = -positive
+    _s27_same(integrand.subs(x, positive**3), 15 * (positive + 1) ** 3, row["id"] + " positive root")
+    _s27_same(integrand.subs(x, negative**3), 15 * (negative + 1) ** 3, row["id"] + " negative root")
+    _s27_require(integrand.subs(x, 0) == 15, row["id"] + " at zero")
+    _s27_same(sp.diff(positive**3, positive), 3 * positive**2, row["id"] + " jacobian")
+    u = sp.symbols("u", real=True)
+    value = sp.integrate(45 * u**2 * (1 + u) ** 3, (u, -1, 1))
+    _s27_require(value == 84, row["id"] + " polynomial")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p03(row, x):
+    """Expand the cubic and add four Gaussian moments on [0, infinity)."""
+    _s27_require(row["limits"] == ["0", "oo"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    expanded = (x**3 + 3 * x**2 + 3 * x + 1) * sp.exp(-x**2)
+    _s27_same(sp.expand(integrand - expanded), 0, row["id"] + " expansion")
+    moments = (
+        (sp.exp(-x**2), sp.sqrt(sp.pi) / 2),
+        (x * sp.exp(-x**2), sp.Rational(1, 2)),
+        (x**2 * sp.exp(-x**2), sp.sqrt(sp.pi) / 4),
+        (x**3 * sp.exp(-x**2), sp.Rational(1, 2)),
+    )
+    weights = (1, 3, 3, 1)
+    total = 0
+    for weight, (term, expected) in zip(weights, moments):
+        got = sp.integrate(term, (x, 0, sp.oo))
+        _s27_same(got, expected, row["id"] + " moment")
+        total += weight * got
+    value = sp.simplify(total)
+    _s27_same(value, 2 + 5 * sp.sqrt(sp.pi) / 4, row["id"] + " combination")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p04(row, x):
+    """Logarithmic substitution for 1/(x (x**ln(4) + 1)) on [1, infinity)."""
+    _s27_require(row["limits"] == ["1", "oo"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    u = sp.symbols("u", real=True)
+    _s27_same(integrand * x, 1 / (x ** sp.log(4) + 1), row["id"] + " remove dx/x")
+    _s27_same(sp.exp(u) ** sp.log(4), 4**u, row["id"] + " power")
+    t = sp.symbols("t", positive=True)
+    _s27_same(sp.diff(sp.exp(-u * sp.log(4)), u), -sp.log(4) * sp.exp(-u * sp.log(4)), row["id"] + " t derivative")
+    # t = 4**(-u) runs from 1 down to 0, and du/(4**u+1) = -dt / (log(4) (1+t)).
+    ratio = sp.together(
+        (1 / (-sp.log(4) * t)) * (t / (1 + t)) + 1 / (sp.log(4) * (1 + t))
+    )
+    _s27_same(ratio, 0, row["id"] + " t integrand")
+    value = sp.integrate(1 / (sp.log(4) * (1 + t)), (t, 0, 1))
+    _s27_same(value, sp.log(2) / sp.log(4), row["id"] + " reduced integral")
+    _s27_same(value, sp.Rational(1, 2), row["id"] + " logarithm quotient")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p05(row, x):
+    """Complete the square on the whole line."""
+    _s27_require(row["limits"] == ["-oo", "oo"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    completed = (x + sp.pi / 2) ** 2 + 3 * sp.pi**2 / 4
+    _s27_same(sp.expand(x**2 + sp.pi * x + sp.pi**2 - completed), 0, row["id"] + " square")
+    amplitude = sp.pi * sp.sqrt(3) / 2
+    _s27_same(sp.sqrt(3 * sp.pi**2 / 4), amplitude, row["id"] + " amplitude")
+    primitive = sp.atan((x + sp.pi / 2) / amplitude) / amplitude
+    _s27_same(sp.diff(primitive, x), 1 / completed, row["id"] + " derivative")
+    _s27_same(integrand, 1 / completed, row["id"] + " integrand")
+    upper = sp.limit(primitive, x, sp.oo)
+    lower = sp.limit(primitive, x, -sp.oo)
+    value = sp.simplify(upper - lower)
+    _s27_same(value, sp.pi / amplitude, row["id"] + " arctangent evaluation")
+    _s27_same(value, 2 / sp.sqrt(3), row["id"] + " simplified quotient")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p06(row, x):
+    """Square-root substitution and integration by parts on [0, infinity)."""
+    _s27_require(row["limits"] == ["0", "oo"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    t = sp.symbols("t", positive=True)
+    _s27_same(sp.diff(t**2, t), 2 * t, row["id"] + " jacobian")
+    _s27_same(sp.log(sp.sqrt(t**2 + 1)), sp.log(1 + t**2) / 2, row["id"] + " logarithm")
+    substituted = integrand.subs(x, t**2) * (2 * t)
+    reduced = sp.log(1 + t**2) / t**2
+    _s27_same(substituted, reduced, row["id"] + " substituted integrand")
+    boundary = -sp.log(1 + t**2) / t
+    _s27_same(sp.diff(boundary, t) + 2 / (1 + t**2), reduced, row["id"] + " parts")
+    _s27_require(sp.limit(sp.log(1 + t**2) / t, t, sp.oo) == 0, row["id"] + " upper boundary")
+    _s27_require(sp.limit(sp.log(1 + t**2) / t, t, 0) == 0, row["id"] + " lower boundary")
+    value = sp.integrate(2 / (1 + t**2), (t, 0, sp.oo))
+    _s27_require(value == sp.pi, row["id"] + " arctangent")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p07(row, x):
+    """Odd terms drop on [-pi/2, pi/2]. The even term is a cosine cube."""
+    _s27_require(row["limits"] == ["-pi/2", "pi/2"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    rewritten = sp.sin(x) * sp.cos(x) ** 2 + sp.cos(x) ** 3 + sp.sin(x) * sp.cos(x)
+    _s27_same(sp.simplify(integrand - rewritten), 0, row["id"] + " cosine factor")
+    odd_square = -sp.cos(x) ** 3 / 3
+    odd_product = -sp.cos(x) ** 2 / 2
+    _s27_same(sp.diff(odd_square, x), sp.sin(x) * sp.cos(x) ** 2, row["id"] + " first odd term")
+    _s27_same(sp.diff(odd_product, x), sp.sin(x) * sp.cos(x), row["id"] + " second odd term")
+    for primitive in (odd_square, odd_product):
+        _s27_require(sp.simplify(primitive.subs(x, sp.pi / 2) - primitive.subs(x, -sp.pi / 2)) == 0, row["id"] + " odd ends")
+    _s27_same(sp.cos(x) ** 3, sp.cos(x) * (1 - sp.sin(x) ** 2), row["id"] + " cosine cube")
+    _s27_same(sp.diff(sp.sin(x), x), sp.cos(x), row["id"] + " sine derivative")
+    half = sp.integrate(1 - x**2, (x, 0, 1))
+    _s27_require(half == sp.Rational(2, 3), row["id"] + " half integral")
+    _s27_require_answer(2 * half, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p08(row, x):
+    """Principal square roots of a complex conjugate pair on [-1, 1]."""
+    _s27_require(row["limits"] == ["-1", "1"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    th = sp.symbols("th", real=True)
+    _s27_require(_s27__positive_on(sp.sin(th), th, 0, sp.pi), row["id"] + " sine sign")
+    _s27_require(_s27__positive_on(sp.cos(th / 2), th, 0, sp.pi), row["id"] + " half cosine")
+    _s27_same(sp.sqrt(-(sp.sin(th) ** 2)), sp.I * sp.Abs(sp.sin(th)), row["id"] + " inner root")
+    _s27__abs_positive()
+    substituted = integrand.subs(x, sp.cos(th))
+    with_abs = sp.sqrt(sp.cos(th) + sp.I * sp.Abs(sp.sin(th))) + sp.sqrt(sp.cos(th) - sp.I * sp.Abs(sp.sin(th)))
+    _s27_same(substituted, with_abs, row["id"] + " absolute sine")
+    plain = sp.sqrt(sp.exp(sp.I * th)) + sp.sqrt(sp.exp(-sp.I * th))
+    _s27_same(with_abs.subs(sp.Abs(sp.sin(th)), sp.sin(th)), plain, row["id"] + " exponential radicands")
+    _s27_same(sp.cos(th) + sp.I * sp.sin(th), sp.exp(sp.I * th), row["id"] + " positive euler")
+    _s27_same(sp.cos(th) - sp.I * sp.sin(th), sp.exp(-sp.I * th), row["id"] + " negative euler")
+    upper = sp.atan2(sp.sin(th), sp.cos(th))
+    lower = sp.atan2(-sp.sin(th), sp.cos(th))
+    _s27_same(sp.diff(upper, th), 1, row["id"] + " upper argument derivative")
+    _s27_same(sp.diff(lower, th), -1, row["id"] + " lower argument derivative")
+    _s27_same(upper.subs(th, sp.pi / 2), sp.pi / 2, row["id"] + " upper argument sample")
+    _s27_same(lower.subs(th, sp.pi / 2), -sp.pi / 2, row["id"] + " lower argument sample")
+    _s27_same(sp.re(sp.sqrt(sp.exp(sp.I * th))), sp.cos(upper / 2), row["id"] + " first real part")
+    _s27_same(sp.im(sp.sqrt(sp.exp(sp.I * th))), sp.sin(upper / 2), row["id"] + " first imaginary part")
+    _s27_same(sp.re(sp.sqrt(sp.exp(-sp.I * th))), sp.cos(lower / 2), row["id"] + " second real part")
+    _s27_same(sp.im(sp.sqrt(sp.exp(-sp.I * th))), sp.sin(lower / 2), row["id"] + " second imaginary part")
+    _s27_same(sp.cos(th / 2) + sp.cos((-th) / 2), 2 * sp.cos(th / 2), row["id"] + " real sum")
+    _s27_same(sp.sin(th / 2) + sp.sin((-th) / 2), 0, row["id"] + " imaginary sum")
+    _s27_same(sp.diff(sp.cos(th), th), -sp.sin(th), row["id"] + " cosine derivative")
+    _s27_same(2 * sp.cos(th / 2) * sp.sin(th), 4 * sp.cos(th / 2) ** 2 * sp.sin(th / 2), row["id"] + " double angle")
+    _s27_same(sp.diff(sp.cos(th / 2), th), -sp.sin(th / 2) / 2, row["id"] + " u derivative")
+    u = sp.symbols("u", real=True)
+    value = sp.integrate(8 * u**2, (u, 0, 1))
+    _s27_require(value == sp.Rational(8, 3), row["id"] + " reduced integral")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p09(row, x):
+    """Integration by parts after t = x**(1/4), on [1, 4]."""
+    _s27_require(row["limits"] == ["1", "4"], row["id"] + " limits")
+    t = sp.symbols("t", positive=True)
+    _s27_same(sp.Integer(4) ** sp.Rational(1, 4), sp.sqrt(2), row["id"] + " upper t")
+    _s27_same(sp.diff(t**4, t), 4 * t**3, row["id"] + " jacobian")
+    parts = t**4 * sp.asec(t)
+    extra = t**3 / sp.sqrt(t**2 - 1)
+    _s27_same(sp.diff(parts, t), 4 * t**3 * sp.asec(t) + extra, row["id"] + " parts")
+    boundary = sp.simplify(parts.subs(t, sp.sqrt(2)) - parts.subs(t, 1))
+    _s27_require(boundary == sp.pi, row["id"] + " boundary")
+    th = sp.symbols("th", real=True)
+    _s27_require(_s27__positive_on(sp.sin(th), th, 0, sp.pi / 4), row["id"] + " sine sign")
+    _s27_require(_s27__positive_on(sp.cos(th), th, 0, sp.pi / 4), row["id"] + " cosine sign")
+    substituted = sp.simplify((extra * sp.diff(sp.sec(th), th)).subs(t, sp.sec(th)))
+    _s27_same(substituted, sp.tan(th) * sp.sec(th) ** 4 / sp.Abs(sp.tan(th)), row["id"] + " secant form")
+    _s27__abs_positive()
+    _s27_same(sp.sec(th) ** 4, sp.sec(th) ** 2 * (1 + sp.tan(th) ** 2), row["id"] + " secant power")
+    _s27_same(sp.diff(sp.tan(th), th), sp.sec(th) ** 2, row["id"] + " tangent derivative")
+    _s27_require(sp.tan(0) == 0, row["id"] + " lower w")
+    _s27_same(sp.tan(sp.pi / 4), 1, row["id"] + " upper w")
+    w = sp.symbols("w", real=True)
+    remainder = sp.integrate(1 + w**2, (w, 0, 1))
+    _s27_require(remainder == sp.Rational(4, 3), row["id"] + " remainder")
+    _s27_require_answer(sp.simplify(boundary - remainder), row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p10(row, x):
+    """Polynomial division. The numerator of the remainder is the derivative of the denominator."""
+    _s27_require(row["kind"] == "indefinite" and row["limits"] == [], row["id"] + " shape")
+    integrand = _s27_integrand_of(row)
+    quotient = 1 + (2 * x - 1) / (x**2 - x + 1)
+    _s27_same(sp.together(integrand - quotient), 0, row["id"] + " division")
+    _s27_same(sp.diff(x**2 - x + 1, x), 2 * x - 1, row["id"] + " denominator derivative")
+    answer = _s27_answer_of(row)
+    _s27_same(sp.diff(answer, x), integrand, row["id"] + " antiderivative")
+
+
+def _s27_check_3_8_p11(row, x):
+    """Arctangent antiderivative of 1/(e**x + e**(-(x+1))) on [0, infinity)."""
+    _s27_require(row["limits"] == ["0", "oo"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    primitive = sp.sqrt(sp.E) * sp.atan(sp.exp(x) * sp.sqrt(sp.E))
+    _s27_same(sp.diff(primitive, x), integrand, row["id"] + " derivative")
+    upper = sp.limit(primitive, x, sp.oo)
+    lower = primitive.subs(x, 0)
+    value = sp.simplify(upper - lower)
+    _s27_same(value, sp.sqrt(sp.E) * (sp.pi / 2 - sp.atan(sp.sqrt(sp.E))), row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p12(row, x):
+    """Two substitutions for 1/sqrt(1+sqrt(e**x)) on [0, infinity)."""
+    _s27_require(row["limits"] == ["0", "oo"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    _s27_same(1 / sp.sqrt(1 + sp.sqrt(sp.exp(x))), integrand, row["id"] + " printed form")
+    u = sp.symbols("u", positive=True)
+    _s27_same(sp.diff(2 * sp.log(u), u), 2 / u, row["id"] + " u jacobian")
+    after_u = integrand.subs(x, 2 * sp.log(u)) * (2 / u)
+    _s27_same(after_u, 2 / (u * sp.sqrt(1 + u)), row["id"] + " u integrand")
+    w = sp.symbols("w", positive=True)
+    _s27_same(sp.diff(w**2 - 1, w), 2 * w, row["id"] + " w jacobian")
+    after_w = after_u.subs(u, w**2 - 1) * (2 * w)
+    _s27_same(sp.simplify(after_w - 4 / (w**2 - 1)), 0, row["id"] + " w integrand")
+    primitive = 2 * sp.log((w - 1) / (w + 1))
+    _s27_same(sp.diff(primitive, w), 4 / (w**2 - 1), row["id"] + " antiderivative")
+    _s27_require(sp.limit(primitive, w, sp.oo) == 0, row["id"] + " upper limit")
+    ratio = (sp.sqrt(2) - 1) / (sp.sqrt(2) + 1)
+    lower = primitive.subs(w, sp.sqrt(2))
+    _s27_same(lower, 2 * sp.log(ratio), row["id"] + " lower logarithm")
+    _s27_require((sp.sqrt(2) - 1).is_positive and (sp.sqrt(2) + 1).is_positive, row["id"] + " positive factors")
+    split = sp.log(sp.sqrt(2) - 1) - sp.log(sp.sqrt(2) + 1)
+    _s27_same(sp.exp(split), ratio, row["id"] + " split exponential")
+    value = -2 * split
+    _s27_same(value, -2 * sp.log(sp.sqrt(2) - 1) + 2 * sp.log(sp.sqrt(2) + 1), row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p13(row, x):
+    """Constant factor e, then two square-root substitutions, on [0, 9]."""
+    _s27_require(row["limits"] == ["0", "9"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    _s27_same(integrand, sp.E * sp.sqrt(1 + sp.sqrt(x)), row["id"] + " constant factor")
+    u = sp.symbols("u", positive=True)
+    _s27_same(sp.diff(u**2, u), 2 * u, row["id"] + " u jacobian")
+    after_u = integrand.subs(x, u**2) * (2 * u)
+    _s27_same(sp.simplify(after_u - 2 * sp.E * u * sp.sqrt(1 + u)), 0, row["id"] + " u integrand")
+    w = sp.symbols("w", positive=True)
+    _s27_same(sp.diff(w - 1, w), 1, row["id"] + " w jacobian")
+    after_w = after_u.subs(u, w - 1)
+    _s27_same(sp.simplify(after_w - 2 * sp.E * (w ** sp.Rational(3, 2) - w ** sp.Rational(1, 2))), 0, row["id"] + " w integrand")
+    primitive = sp.Rational(2, 5) * w ** sp.Rational(5, 2) - sp.Rational(2, 3) * w ** sp.Rational(3, 2)
+    _s27_same(sp.diff(primitive, w), w ** sp.Rational(3, 2) - w ** sp.Rational(1, 2), row["id"] + " antiderivative")
+    span = sp.simplify(primitive.subs(w, 4) - primitive.subs(w, 1))
+    value = sp.simplify(2 * sp.E * span)
+    _s27_same(value, 232 * sp.E / 15, row["id"] + " endpoints")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_3_8_p14(row, x):
+    """Tangent substitution. Differentiate the stored logarithm in u = tan(x)."""
+    _s27_require(row["kind"] == "indefinite" and row["limits"] == [], row["id"] + " shape")
+    integrand = _s27_integrand_of(row)
+    u = sp.symbols("u", positive=True)
+    _s27_same(sp.expand_trig(sp.tan(2 * x) - 2 * sp.tan(x) / (1 - sp.tan(x) ** 2)), 0, row["id"] + " double angle")
+    rewritten = 2 / (u * (1 - u**2))
+    _s27_same(sp.simplify((2 * u / (1 - u**2)) / u**2 - rewritten), 0, row["id"] + " rational integrand")
+    _s27_same(sp.diff(sp.tan(x), x), 1 + sp.tan(x) ** 2, row["id"] + " tangent derivative")
+    rational = rewritten / (1 + u**2)
+    stored_u = -sp.log(u - 1) / 2 - sp.log(u + 1) / 2 - sp.log(u**2 + 1) / 2 + 2 * sp.log(u)
+    _s27_same(sp.diff(stored_u, u), rational, row["id"] + " u antiderivative")
+    answer = _s27_answer_of(row)
+    _s27_same(answer, stored_u.subs(u, sp.tan(x)), row["id"] + " stored combination")
+    chain = sp.diff(answer, x) - rewritten.subs(u, sp.tan(x))
+    _s27_require(sp.simplify(sp.together(chain)) == 0, row["id"] + " chain rule")
+    _s27_require(
+        sp.simplify(sp.expand_trig(integrand - rewritten.subs(u, sp.tan(x)))) == 0,
+        row["id"] + " back to the integrand",
+    )
+
+
+def _s27_check_4_4_p01(row, x):
+    """King's rule for f(f(x)) on [1/4, 3/4]. The guide prints 1/4."""
+    _s27_require(row["limits"] == ["1/4", "3/4"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+
+    def f(argument):
+        return 4**argument / (2 + 4**argument)
+
+    _s27_same(integrand, f(f(x)), row["id"] + " composition")
+    z = sp.symbols("z", real=True)
+    _s27_same(sp.cancel(sp.together(f(z) + f(1 - z) - 1)), 0, row["id"] + " complement")
+    _s27_same(sp.cancel(sp.together(f(f(x)) + f(1 - f(x)) - 1)), 0, row["id"] + " composed complement")
+    _s27_same(f(f(1 - x)), f(1 - f(x)), row["id"] + " swap")
+    _s27_same(integrand + integrand.subs(x, 1 - x), 1, row["id"] + " reflected sum")
+    _s27_same(sp.diff(1 - x, x), -1, row["id"] + " reflection derivative")
+    lo, hi = sp.Rational(1, 4), sp.Rational(3, 4)
+    _s27_same(1 - lo, hi, row["id"] + " swapped lower")
+    _s27_same(1 - hi, lo, row["id"] + " swapped upper")
+    length = sp.simplify(hi - lo)
+    _s27_require(length == sp.Rational(1, 2), row["id"] + " length")
+    _s27_require_answer(length / 2, row, row["id"] + " stored value")
+
+
+def _s27_check_4_6_p04(row, x):
+    """Reverse quotient rule. The guide takes f(x) = x and g(x) = 1 + ln(x)."""
+    _s27_require(row["kind"] == "indefinite" and row["limits"] == [], row["id"] + " shape")
+    integrand = _s27_integrand_of(row)
+    quotient = ((1 + sp.log(x)) - 1) / (1 + sp.log(x)) ** 2
+    _s27_same(sp.together(quotient - integrand), 0, row["id"] + " quotient")
+    answer = _s27_answer_of(row)
+    _s27_same(answer, x / (1 + sp.log(x)), row["id"] + " guide antiderivative")
+    _s27_same(sp.diff(answer, x), integrand, row["id"] + " derivative")
+
+
+def _s27_check_6_1_p04(row, x):
+    """Inverse-function formula. The guide integrates csc(y)**2 and prints 1."""
+    _s27_require(row["limits"] == ["1", "2"], row["id"] + " limits")
+    _s27_same(sp.acsc(1), sp.pi / 2, row["id"] + " lower inverse")
+    _s27_same(sp.acsc(sp.sqrt(2)), sp.pi / 4, row["id"] + " upper inverse")
+    y = sp.symbols("y", real=True)
+    positive = sp.symbols("p", positive=True)
+    _s27_same(sp.csc(sp.acsc(sp.sqrt(positive))) ** 2, positive, row["id"] + " inverse")
+    antideriv = -sp.cot(y)
+    _s27_same(sp.diff(antideriv, y), sp.csc(y) ** 2, row["id"] + " cosecant antiderivative")
+    moved = sp.simplify(antideriv.subs(y, sp.pi / 4) - antideriv.subs(y, sp.pi / 2))
+    _s27_require(moved == -1, row["id"] + " moved integral")
+    value = 2 * (sp.pi / 4) - 1 * (sp.pi / 2) - moved
+    _s27_require(sp.simplify(value) == 1, row["id"] + " formula")
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+def _s27_check_6_7_p03(row, x):
+    """Feynman trick. The guide prints ln(11)."""
+    _s27_require(row["limits"] == ["0", "1"], row["id"] + " limits")
+    integrand = _s27_integrand_of(row)
+    n = sp.symbols("n", positive=True)
+    family = (x**n - 1) / sp.log(x)
+    _s27_same(family.subs(n, 10), integrand, row["id"] + " printed case")
+    _s27_same(sp.diff(family, n), x**n, row["id"] + " parameter derivative")
+    moment = sp.integrate(x**n, (x, 0, 1))
+    _s27_same(moment, 1 / (n + 1), row["id"] + " power integral")
+    _s27_same(sp.diff(sp.log(n + 1), n), 1 / (n + 1), row["id"] + " logarithm derivative")
+    _s27_same((x**0 - 1) / sp.log(x), 0, row["id"] + " vanishing case")
+    value = sp.log(11)
+    _s27_require_answer(value, row, row["id"] + " stored value")
+
+
+_s27_CHECKS = {
+    "YANG-2.7-P01": _s27_check_2_7_p01,
+    "YANG-2.7-P02": _s27_check_2_7_p02,
+    "YANG-2.7-P03": _s27_check_2_7_p03,
+    "YANG-2.7-P04": _s27_check_2_7_p04,
+    "YANG-2.7-P05": _s27_check_2_7_p05,
+    "YANG-2.7-P06": _s27_check_2_7_p06,
+    "YANG-2.7-P07": _s27_check_2_7_p07,
+    "YANG-2.7-P08": _s27_check_2_7_p08,
+    "YANG-2.7-P09": _s27_check_2_7_p09,
+    "YANG-2.7-P10": _s27_check_2_7_p10,
+    "YANG-2.7-P11": _s27_check_2_7_p11,
+    "YANG-2.7-P12": _s27_check_2_7_p12,
+    "YANG-2.7-P13": _s27_check_2_7_p13,
+    "YANG-3.4-P06": _s27_check_3_4_p06,
+    "YANG-3.8-P01": _s27_check_3_8_p01,
+    "YANG-3.8-P02": _s27_check_3_8_p02,
+    "YANG-3.8-P03": _s27_check_3_8_p03,
+    "YANG-3.8-P04": _s27_check_3_8_p04,
+    "YANG-3.8-P05": _s27_check_3_8_p05,
+    "YANG-3.8-P06": _s27_check_3_8_p06,
+    "YANG-3.8-P07": _s27_check_3_8_p07,
+    "YANG-3.8-P08": _s27_check_3_8_p08,
+    "YANG-3.8-P09": _s27_check_3_8_p09,
+    "YANG-3.8-P10": _s27_check_3_8_p10,
+    "YANG-3.8-P11": _s27_check_3_8_p11,
+    "YANG-3.8-P12": _s27_check_3_8_p12,
+    "YANG-3.8-P13": _s27_check_3_8_p13,
+    "YANG-3.8-P14": _s27_check_3_8_p14,
+    "YANG-4.4-P01": _s27_check_4_4_p01,
+    "YANG-4.6-P04": _s27_check_4_6_p04,
+    "YANG-6.1-P04": _s27_check_6_1_p04,
+    "YANG-6.7-P03": _s27_check_6_7_p03,
+}
+
+
+def _s27_load_rows():
+    rows = {}
+    for line in RECORDS.read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            row = json.loads(line)
+            rows[row["id"]] = row
+    return rows
+
+
+_s27_SECTIONS = frozenset({"2.7", "3.4", "3.8", "4.4", "4.6", "6.1", "6.7"})
+
+
+def _s27_check_steps(rows):
+    _s27_require(tuple(_s27_CHECKS) == _s27_IDS, "check order")
+    _s27_require(set(_s27_IDS) == set(_s27_CHECKS), "check ids")
+    _s27_require({ident.split("-")[1] for ident in _s27_IDS} == set(_s27_SECTIONS), "section set")
+    present = [
+        row["id"]
+        for row in rows.values()
+        if row.get("source") == "yang_book" and row.get("section") in _s27_SECTIONS and row.get("kind") != "reference"
+    ]
+    _s27_require(set(present) == set(_s27_IDS), "catalog batch")
+    x = sp.symbols("x", real=True)
+    for ident in _s27_IDS:
+        _s27_CHECKS[ident](rows[ident], x)
+
+
+def _s27_check_text(rows):
+    """The writeup states the stored answer and leaves the origin missing."""
+    for ident in _s27_IDS:
+        row = rows[ident]
+        plain = row.get("worked_solution_plain")
+        latex = row.get("worked_solution_latex")
+        _s27_require(isinstance(plain, str) and plain.strip(), ident + " missing plain")
+        _s27_require(isinstance(latex, str) and latex.strip(), ident + " missing latex")
+        _s27_require(row.get("worked_solution_origin") == "missing", ident + " origin")
+        _s27_require(plain.strip().endswith("The answer is " + row["answer_sympy"] + "."), ident + " plain answer")
+        _s27_require(latex.strip().endswith("The answer is \\(" + row["answer_latex"] + "\\)."), ident + " latex answer")
+
+
+def _s27_main():
+    rows = _s27_load_rows()
+    _s27_check_steps(rows)
+    _s27_check_text(rows)
+    print(f"PASS yang worked steps ({len(_s27_IDS)} rows)")
+
+
+def _s27_entry(argv: list[str]) -> int:
+    try:
+        _s27_main()
+    except Exception as exc:  # the 2.7-6.7 checks raise on failure
+        print(f"FAIL yang worked steps 2.7-6.7: {exc}")
+        return 1
+    return 0
+
+
+LANE_MAINS.append(_s27_entry)
+
 
 
 def main(argv: list[str]) -> int:

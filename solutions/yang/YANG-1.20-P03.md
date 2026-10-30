@@ -11,7 +11,7 @@
 
 ## Solution
 
-\(\sin^{4} x+\cos^{4} x=(3+\cos 4x)/4\), so the integrand is \(4/(3+\cos 4x)\). The substitution \(u=4x\) produces four periods of \(1/(3+\cos u)\). Each period integrates to \(\pi\sqrt{2}/2\), and four of them give \(2\pi\sqrt{2}\).
+\(\sin^{4} x+\cos^{4} x=(3+\cos 4x)/4\), so the integrand is \(4/(3+\cos 4x)\). The substitution \(u=4x\) produces four periods of \(1/(3+\cos u)\). On each side of the jump of \(\tan(x/2)\), the antiderivative \(\arctan(\tan(x/2)/\sqrt{2})/\sqrt{2}\) evaluates to \(\pi\sqrt{2}/4\). One period is \(\pi\sqrt{2}/2\), and four periods give \(2\pi\sqrt{2}\).
 
 ## Final answer
 
@@ -21,4 +21,4 @@
 
 ## SymPy self-check
 
-`verify/pack_gate.py` proves `1/(sin(x)**4 + cos(x)**4)` against `2*sqrt(2)*pi` (definite). The check is an exact closed evaluation. A reduction, when one is used, is `verify/yang_certificates.py`.
+`verify/yang_worked_check.py` differentiates \(\arctan(\tan(x/2)/\sqrt{2})/\sqrt{2}\) and evaluates the one-sided limits. `verify/pack_gate.py` proves `1/(sin(x)**4 + cos(x)**4)` against `2*sqrt(2)*pi`.
