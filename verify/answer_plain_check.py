@@ -6,7 +6,8 @@ superscripts), ln/arctan/cot^-1 spellings, implicit multiplication, and a
 trailing "+ C" on an antiderivative. After normalising those, it must parse
 with SymPy and equal answer_sympy: exactly at sample points for definite and
 other rows, and up to an additive constant (derivative check) for indefinite
-rows. Rows with no answer_plain (unchecked) are skipped.
+rows. Rows with no answer_plain (unchecked) are skipped, and grid rows are left
+to verify/pack_grid.py, which checks their printed clue map.
 
   python3 verify/answer_plain_check.py            # check problems/records.jsonl
   python3 verify/answer_plain_check.py --self-test
@@ -83,8 +84,8 @@ def equivalent(plain, canon, kind: str) -> bool:
 
 def check_row(row: dict) -> str | None:
     plain = str(row.get("answer_plain") or "")
-    if not plain.strip():
-        return None
+    if not plain.strip() or row.get("kind") == "grid":
+        return None  # grid displays are the printed clue map, checked by verify/pack_grid.py
     if plain.strip() == str(row["answer_sympy"]).strip():
         return None
     canon = sp.sympify(row["answer_sympy"])
