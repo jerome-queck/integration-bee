@@ -32,6 +32,8 @@ WORDS = [("π", " pi "), ("−", "-"), ("–", "-"), ("·", "*"), ("×", "*"), (
          ("γ", " EulerGamma "), ("ζ", "zeta"), ("Γ", "gamma")]
 FUNCS = [(r"\b(sin|cos|tan|cot|sec|csc|sinh|cosh|tanh)\s*(?:−|-)\s*1\b", r"a\1"),
          (r"\barc(sin|cos|tan|cot|sec|csc)\b", r"a\1"), (r"\bln\b", "log")]
+# A display written in a parameter the symbolic fields re-encode; each is cited in the row notes.
+DISPLAY_BINDINGS = {"SAMPLE-Q08": {"s": "1 + sigma + I*tau"}}  # notes: "s=1+sigma+i*tau"
 POINTS = (sp.Rational(13, 10), sp.Rational(27, 10), sp.Rational(7, 4))
 INT_POINTS = (2, 3, 1)
 
@@ -45,13 +47,26 @@ def normalise(text: str) -> str:
         s = re.sub(pat, rep, s)
     s = re.sub(r"√\s*\(", "sqrt(", s)
     s = re.sub(r"√\s*([A-Za-z0-9_.]+)", r"sqrt(\1)", s)
-    s = re.sub(r"\|([^|]+)\|", r"Abs(\1)", s)
+    s = re.sub(r"\|([^|]+)\|", r" Abs(\1)", s)
     s = re.sub(r"\s*\+\s*C\s*$", "", s)
+    return _power_calls(s)
+
+
+def _power_calls(s: str) -> str:
+    """Rewrite f^n(arg) as f(arg)**n, the usual sec^2(u) spelling."""
+    while (m := re.search(r"\b([a-z]+)\s*\^\s*(\d+)\s*\(", s)):
+        depth, i = 0, m.end() - 1
+        for i in range(m.end() - 1, len(s)):
+            depth += {"(": 1, ")": -1}.get(s[i], 0)
+            if depth == 0:
+                break
+        s = f"{s[:m.start()]}{m.group(1)}{s[m.end() - 1:i + 1]}**{m.group(2)}{s[i + 1:]}"
     return s
 
 
 def parse_plain(text: str, symbols: dict):
-    local = {"e": sp.E, "E": sp.E, "G": sp.Catalan, "pi": sp.pi, "I": sp.I, **symbols}
+    local = {"cbrt": lambda a: sp.real_root(a, 3), "elliptic_F": sp.elliptic_f,
+             "e": sp.E, "E": sp.E, "G": sp.Catalan, "pi": sp.pi, "I": sp.I, **symbols}
     return parse_expr(normalise(text), local_dict=local, transformations=TRANSFORMS)
 
 
@@ -73,9 +88,14 @@ def _zero(expr) -> bool:
 def equivalent(plain, canon, kind: str) -> bool:
     if not isinstance(canon, sp.Expr) or not isinstance(plain, sp.Expr):
         return sp.srepr(plain) == sp.srepr(canon) or bool(sp.simplify(sp.Eq(plain, canon)) is sp.true)
-    syms = sorted(canon.free_symbols | plain.free_symbols, key=str)
-    diff = plain - canon
-    if kind.endswith("indefinite") and syms:
+    # Sample points are real, so give plain symbols real assumptions (d|x|/dx needs them).
+    real = {v: sp.Symbol(v.name, real=True) for v in canon.free_symbols | plain.free_symbols
+            if v.is_real is None}
+    diff = (plain - canon).subs(real)
+    syms = sorted(diff.free_symbols, key=str)
+    if kind.endswith("indefinite") and not syms:
+        return True  # antiderivatives agree up to a constant
+    if kind.endswith("indefinite"):
         x = next((s for s in syms if s.name == "x"), syms[0])
         diff = sp.diff(diff, x)
     pts = _values(diff, syms) if syms else [{}]
@@ -90,21 +110,32 @@ def check_row(row: dict) -> str | None:
         return None
     canon = sp.sympify(row["answer_sympy"])
     symbols = {s.name: s for s in getattr(canon, "free_symbols", set())}
-    try:
-        got = parse_plain(plain, symbols)
-    except Exception as ex:  # noqa: BLE001 - any parse failure is drift
-        return f"answer_plain does not parse ({type(ex).__name__}): {plain!r}"
-    try:
-        ok = equivalent(got, canon, str(row.get("kind") or ""))
-    except Exception as ex:  # noqa: BLE001
-        return f"cannot compare ({type(ex).__name__}): {plain!r} vs {row['answer_sympy']}"
-    return None if ok else f"answer_plain {plain!r} != answer_sympy {row['answer_sympy']}"
+    for name, value in DISPLAY_BINDINGS.get(row.get("id"), {}).items():
+        symbols[name] = sp.sympify(value, locals=symbols)
+    # "Gamma(n) = (n-1)!" style displays pass when any side equals the canonical answer.
+    errors = []
+    for side in [plain] + (plain.split("=") if plain.count("=") == 1 else []):
+        try:
+            got = parse_plain(side, symbols)
+        except Exception as ex:  # noqa: BLE001 - any parse failure is drift
+            errors.append(f"answer_plain does not parse ({type(ex).__name__}): {plain!r}")
+            continue
+        try:
+            if equivalent(got, canon, str(row.get("kind") or "")):
+                return None
+        except Exception as ex:  # noqa: BLE001
+            errors.append(f"cannot compare ({type(ex).__name__}): {plain!r} vs {row['answer_sympy']}")
+            continue
+        errors.append(f"answer_plain {plain!r} != answer_sympy {row['answer_sympy']}")
+    return errors[-1]
 
 
 def self_test() -> None:
     good = [("π²/4", "pi**2/4", "definite"), ("π ln 2", "pi*log(2)", "definite"),
             ("2 arctan(3)", "2*atan(3)", "definite"), ("tan−1(x) + C", "atan(x) + 5", "indefinite"),
-            ("(1/e) ln(√2 + 1)", "exp(-1)*log(1 + sqrt(2))", "definite"), ("1 −γ", "1 - EulerGamma", "definite")]
+            ("(1/e) ln(√2 + 1)", "exp(-1)*log(1 + sqrt(2))", "definite"), ("1 −γ", "1 - EulerGamma", "definite"),
+            ("ln|tan(x)| + C", "log(Abs(tan(x)))", "indefinite"), ("sec^2(x)", "sec(x)**2", "definite"),
+            ("Γ(n) = (n−1)!", "gamma(n)", "definite")]
     bad = [("1", "1/4", "definite"), ("π\n4", "2 - pi**2/6", "definite"), ("2025", "2025*sin(1)**2/2", "definite"),
            ("tan(x)", "atan(x)", "indefinite")]
     for p, c, k in good:
