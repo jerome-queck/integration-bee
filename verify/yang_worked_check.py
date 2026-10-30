@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Exact step checks for Yang worked solutions.
 
-Sections 1.1, 1.2, 1.3, 2.5, and 2.6. Differentiation uses the same zero test
+Sections 1.1, 1.2, 1.3, 1.8, 1.9, 2.5, and 2.6. Differentiation uses the same zero test
 as verify/pack_gate.py. A wrong antiderivative must fail. Run from the repository root:
 
     python3 verify/yang_worked_check.py
@@ -20,7 +20,7 @@ import pack_gate
 
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
-SECTIONS = frozenset({"1.1", "1.2", "1.3", "2.5", "2.6"})
+SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.8", "1.9", "2.5", "2.6"})
 
 # final is the stored answer_sympy. lines are (plain, latex) without numbers.
 # steps are ("diff", antiderivative), ("diff_of", antiderivative, piece),
@@ -582,6 +582,457 @@ SPECS: dict[str, dict] = {
             ("diff_of", "x**3/3 + x", "x**2 + 1"),
             ("eq", "2*((1/3) + 1)", "8/3"),
             ("ends", "x**3/3 + x", "0", "1", "2", "8/3"),
+        ],
+    },
+    "YANG-1.8-P01": {
+        "final": "log(Abs(x)) - log(Abs(x + 1))",
+        "lines": [
+            (
+                "Partial fractions. 1/(x*(x + 1)) = 1/x - 1/(x + 1).",
+                r"Partial fractions. \(1/(x(x+1))=1/x-1/(x+1)\).",
+            ),
+            (
+                "The antiderivative of 1/x is log(Abs(x)). The antiderivative of -1/(x + 1) is -log(Abs(x + 1)).",
+                r"The antiderivative of \(1/x\) is \(\log|x|\). The antiderivative of \(-1/(x+1)\) is \(-\log|x+1|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(x*(x + 1))", "1/x - 1/(x + 1)"),
+            ("diff_of", "log(Abs(x))", "1/x"),
+            ("diff_of", "-log(Abs(x + 1))", "-1/(x + 1)"),
+            ("diff", "log(Abs(x)) - log(Abs(x + 1))"),
+        ],
+    },
+    "YANG-1.8-P02": {
+        "final": "-log(Abs(x)) + log(Abs(x + 1)) - 1/x",
+        "lines": [
+            (
+                "Partial fractions with a repeated factor. 1/(x**2*(x + 1)) = -1/x + 1/x**2 + 1/(x + 1).",
+                r"Partial fractions with a repeated factor. \(1/(x^{2}(x+1))=-1/x+1/x^{2}+1/(x+1)\).",
+            ),
+            (
+                "The antiderivative of -1/x is -log(Abs(x)). The antiderivative of 1/x**2 is -1/x. The antiderivative of 1/(x + 1) is log(Abs(x + 1)).",
+                r"The antiderivatives are \(-\log|x|\), \(-1/x\), and \(\log|x+1|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(x**2*(x + 1))", "-1/x + 1/x**2 + 1/(x + 1)"),
+            ("diff_of", "-log(Abs(x))", "-1/x"),
+            ("diff_of", "-1/x", "1/x**2"),
+            ("diff_of", "log(Abs(x + 1))", "1/(x + 1)"),
+            ("diff", "-log(Abs(x)) + log(Abs(x + 1)) - 1/x"),
+        ],
+    },
+    "YANG-1.8-P03": {
+        "final": "log(Abs(x + 1)) - log(Abs(x + 2))",
+        "lines": [
+            (
+                "Partial fractions. 1/((x + 1)*(x + 2)) = 1/(x + 1) - 1/(x + 2).",
+                r"Partial fractions. \(1/((x+1)(x+2))=1/(x+1)-1/(x+2)\).",
+            ),
+            (
+                "The antiderivative of 1/(x + 1) is log(Abs(x + 1)). The antiderivative of -1/(x + 2) is -log(Abs(x + 2)).",
+                r"The antiderivatives are \(\log|x+1|\) and \(-\log|x+2|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/((x + 1)*(x + 2))", "1/(x + 1) - 1/(x + 2)"),
+            ("diff_of", "log(Abs(x + 1))", "1/(x + 1)"),
+            ("diff_of", "-log(Abs(x + 2))", "-1/(x + 2)"),
+            ("diff", "log(Abs(x + 1)) - log(Abs(x + 2))"),
+        ],
+    },
+    "YANG-1.8-P04": {
+        "final": "-log(Abs(x)) + log(Abs(2*x - 1))",
+        "lines": [
+            (
+                "Partial fractions. 1/(x*(2*x - 1)) = -1/x + 2/(2*x - 1).",
+                r"Partial fractions. \(1/(x(2x-1))=-1/x+2/(2x-1)\).",
+            ),
+            (
+                "The antiderivative of -1/x is -log(Abs(x)). The antiderivative of 2/(2*x - 1) is log(Abs(2*x - 1)), since the derivative of 2*x - 1 is 2.",
+                r"The antiderivative of \(-1/x\) is \(-\log|x|\). The antiderivative of \(2/(2x-1)\) is \(\log|2x-1|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(x*(2*x - 1))", "-1/x + 2/(2*x - 1)"),
+            ("diff_of", "-log(Abs(x))", "-1/x"),
+            ("diff_of", "log(Abs(2*x - 1))", "2/(2*x - 1)"),
+            ("diff", "-log(Abs(x)) + log(Abs(2*x - 1))"),
+        ],
+    },
+    "YANG-1.8-P05": {
+        "final": "log(Abs(x - 1))/2 - log(Abs(x + 1))/2",
+        "lines": [
+            (
+                "Partial fractions. 1/(x**2 - 1) = (1/2)/(x - 1) - (1/2)/(x + 1).",
+                r"Partial fractions. \(1/(x^{2}-1)=(1/2)/(x-1)-(1/2)/(x+1)\).",
+            ),
+            (
+                "The antiderivative of (1/2)/(x - 1) is log(Abs(x - 1))/2. The antiderivative of -(1/2)/(x + 1) is -log(Abs(x + 1))/2.",
+                r"The antiderivatives are \(\frac12\log|x-1|\) and \(-\frac12\log|x+1|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(x**2 - 1)", "(1/2)/(x - 1) - (1/2)/(x + 1)"),
+            ("diff_of", "log(Abs(x - 1))/2", "(1/2)/(x - 1)"),
+            ("diff_of", "-log(Abs(x + 1))/2", "-(1/2)/(x + 1)"),
+            ("diff", "log(Abs(x - 1))/2 - log(Abs(x + 1))/2"),
+        ],
+    },
+    "YANG-1.8-P06": {
+        "final": "log(Abs(x**2 + 4*x + 3))/2",
+        "lines": [
+            (
+                "Logarithmic derivative. (x + 2)/(x**2 + 4*x + 3) = (2*x + 4)/(2*(x**2 + 4*x + 3)).",
+                r"Logarithmic derivative. \((x+2)/(x^{2}+4x+3)=(2x+4)/(2(x^{2}+4x+3))\).",
+            ),
+            (
+                "The antiderivative is log(Abs(x**2 + 4*x + 3))/2.",
+                r"The antiderivative is \(\frac12\log|x^{2}+4x+3|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(x + 2)/(x**2 + 4*x + 3)", "(2*x + 4)/(2*(x**2 + 4*x + 3))"),
+            ("diff", "log(Abs(x**2 + 4*x + 3))/2"),
+        ],
+    },
+    "YANG-1.8-P07": {
+        "final": "-log(Abs(x)) + log(Abs(x - 1))/2 + log(Abs(x + 1))/2",
+        "lines": [
+            (
+                "Partial fractions. 1/(x**3 - x) = -1/x + (1/2)/(x - 1) + (1/2)/(x + 1).",
+                r"Partial fractions. \(1/(x^{3}-x)=-1/x+(1/2)/(x-1)+(1/2)/(x+1)\).",
+            ),
+            (
+                "The antiderivative of -1/x is -log(Abs(x)). The antiderivative of (1/2)/(x - 1) is log(Abs(x - 1))/2. The antiderivative of (1/2)/(x + 1) is log(Abs(x + 1))/2.",
+                r"The antiderivatives are \(-\log|x|\), \(\frac12\log|x-1|\), and \(\frac12\log|x+1|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(x**3 - x)", "-1/x + (1/2)/(x - 1) + (1/2)/(x + 1)"),
+            ("diff_of", "-log(Abs(x))", "-1/x"),
+            ("diff_of", "log(Abs(x - 1))/2", "(1/2)/(x - 1)"),
+            ("diff_of", "log(Abs(x + 1))/2", "(1/2)/(x + 1)"),
+            ("diff", "-log(Abs(x)) + log(Abs(x - 1))/2 + log(Abs(x + 1))/2"),
+        ],
+    },
+    "YANG-1.8-P08": {
+        "final": "-log(Abs(x + 1))/2 + 2*log(Abs(x + 2)) - 3*log(Abs(x + 3))/2",
+        "lines": [
+            (
+                "Partial fractions. x/((x + 1)*(x + 2)*(x + 3)) = -1/(2*(x + 1)) + 2/(x + 2) - 3/(2*(x + 3)).",
+                r"Partial fractions. \(x/((x+1)(x+2)(x+3))=-1/(2(x+1))+2/(x+2)-3/(2(x+3))\).",
+            ),
+            (
+                "The antiderivative of -1/(2*(x + 1)) is -log(Abs(x + 1))/2. The antiderivative of 2/(x + 2) is 2*log(Abs(x + 2)). The antiderivative of -3/(2*(x + 3)) is -3*log(Abs(x + 3))/2.",
+                r"The antiderivatives are \(-\frac12\log|x+1|\), \(2\log|x+2|\), and \(-\frac32\log|x+3|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "x/((x + 1)*(x + 2)*(x + 3))", "-1/(2*(x + 1)) + 2/(x + 2) - 3/(2*(x + 3))"),
+            ("diff_of", "-log(Abs(x + 1))/2", "-1/(2*(x + 1))"),
+            ("diff_of", "2*log(Abs(x + 2))", "2/(x + 2)"),
+            ("diff_of", "-3*log(Abs(x + 3))/2", "-3/(2*(x + 3))"),
+            ("diff", "-log(Abs(x + 1))/2 + 2*log(Abs(x + 2)) - 3*log(Abs(x + 3))/2"),
+        ],
+    },
+    "YANG-1.8-P09": {
+        "final": "-atan(x) - 1/x",
+        "lines": [
+            (
+                "Partial fractions. 1/(x**2*(x**2 + 1)) = 1/x**2 - 1/(x**2 + 1).",
+                r"Partial fractions. \(1/(x^{2}(x^{2}+1))=1/x^{2}-1/(x^{2}+1)\).",
+            ),
+            (
+                "The antiderivative of 1/x**2 is -1/x. The antiderivative of -1/(x**2 + 1) is -atan(x).",
+                r"The antiderivatives are \(-1/x\) and \(-\arctan x\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(x**2*(x**2 + 1))", "1/x**2 - 1/(x**2 + 1)"),
+            ("diff_of", "-1/x", "1/x**2"),
+            ("diff_of", "-atan(x)", "-1/(x**2 + 1)"),
+            ("diff", "-atan(x) - 1/x"),
+        ],
+    },
+    "YANG-1.8-P10": {
+        "final": "log(Abs(x)) - log(Abs(x + 1)) + 1/(x + 1)",
+        "lines": [
+            (
+                "Partial fractions with a repeated factor. 1/(x*(x + 1)**2) = 1/x - 1/(x + 1) - 1/(x + 1)**2.",
+                r"Partial fractions with a repeated factor. \(1/(x(x+1)^{2})=1/x-1/(x+1)-1/(x+1)^{2}\).",
+            ),
+            (
+                "The antiderivative of 1/x is log(Abs(x)). The antiderivative of -1/(x + 1) is -log(Abs(x + 1)). The antiderivative of -1/(x + 1)**2 is 1/(x + 1).",
+                r"The antiderivatives are \(\log|x|\), \(-\log|x+1|\), and \(1/(x+1)\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(x*(x + 1)**2)", "1/x - 1/(x + 1) - 1/(x + 1)**2"),
+            ("diff_of", "log(Abs(x))", "1/x"),
+            ("diff_of", "-log(Abs(x + 1))", "-1/(x + 1)"),
+            ("diff_of", "1/(x + 1)", "-1/(x + 1)**2"),
+            ("diff", "log(Abs(x)) - log(Abs(x + 1)) + 1/(x + 1)"),
+        ],
+    },
+    "YANG-1.8-P11": {
+        "final": "x - 2*log(Abs(x + 2)) + 2*log(Abs(x + 3))",
+        "lines": [
+            (
+                "Polynomial division, then partial fractions. (x + 1)*(x + 4)/((x + 2)*(x + 3)) = 1 - 2/((x + 2)*(x + 3)).",
+                r"Polynomial division, then partial fractions. \((x+1)(x+4)/((x+2)(x+3))=1-2/((x+2)(x+3))\).",
+            ),
+            (
+                "2/((x + 2)*(x + 3)) = 2/(x + 2) - 2/(x + 3).",
+                r"\(2/((x+2)(x+3))=2/(x+2)-2/(x+3)\).",
+            ),
+            (
+                "The antiderivative of 1 is x. The antiderivative of -2/(x + 2) is -2*log(Abs(x + 2)). The antiderivative of 2/(x + 3) is 2*log(Abs(x + 3)).",
+                r"The antiderivatives are \(x\), \(-2\log|x+2|\), and \(2\log|x+3|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(x + 1)*(x + 4)/((x + 2)*(x + 3))", "1 - 2/((x + 2)*(x + 3))"),
+            ("eq", "2/((x + 2)*(x + 3))", "2/(x + 2) - 2/(x + 3)"),
+            ("diff_of", "x", "1"),
+            ("diff_of", "-2*log(Abs(x + 2))", "-2/(x + 2)"),
+            ("diff_of", "2*log(Abs(x + 3))", "2/(x + 3)"),
+            ("diff", "x - 2*log(Abs(x + 2)) + 2*log(Abs(x + 3))"),
+        ],
+    },
+    "YANG-1.8-P12": {
+        "final": "-log(exp(x) + 1) + 2*log(exp(x) + 2)",
+        "lines": [
+            (
+                "Substitution u = exp(x). exp(2*x)/(exp(2*x) + 3*exp(x) + 2) = exp(x)*exp(x)/((exp(x) + 1)*(exp(x) + 2)).",
+                r"Substitution \(u=e^{x}\). \(e^{2x}/(e^{2x}+3e^{x}+2)=e^{x}e^{x}/((e^{x}+1)(e^{x}+2))\).",
+            ),
+            (
+                "Partial fractions. exp(x)/((exp(x) + 1)*(exp(x) + 2)) = -1/(exp(x) + 1) + 2/(exp(x) + 2).",
+                r"Partial fractions. \(e^{x}/((e^{x}+1)(e^{x}+2))=-1/(e^{x}+1)+2/(e^{x}+2)\).",
+            ),
+            (
+                "The antiderivative of -exp(x)/(exp(x) + 1) is -log(exp(x) + 1). The antiderivative of 2*exp(x)/(exp(x) + 2) is 2*log(exp(x) + 2). Both exp(x) + 1 and exp(x) + 2 stay positive.",
+                r"The antiderivatives are \(-\log(e^{x}+1)\) and \(2\log(e^{x}+2)\). Both factors stay positive.",
+            ),
+        ],
+        "steps": [
+            ("eq", "exp(2*x)/(exp(2*x) + 3*exp(x) + 2)", "exp(x)*exp(x)/((exp(x) + 1)*(exp(x) + 2))"),
+            ("eq", "exp(x)/((exp(x) + 1)*(exp(x) + 2))", "-1/(exp(x) + 1) + 2/(exp(x) + 2)"),
+            ("diff_of", "-log(exp(x) + 1)", "-exp(x)/(exp(x) + 1)"),
+            ("diff_of", "2*log(exp(x) + 2)", "2*exp(x)/(exp(x) + 2)"),
+            ("diff", "-log(exp(x) + 1) + 2*log(exp(x) + 2)"),
+        ],
+    },
+    "YANG-1.8-P13": {
+        "final": "log(Abs(x + 1)) - atan(x)",
+        "lines": [
+            (
+                "Partial fractions. (x**2 - x)/(x**3 + x**2 + x + 1) = 1/(x + 1) - 1/(x**2 + 1).",
+                r"Partial fractions. \((x^{2}-x)/(x^{3}+x^{2}+x+1)=1/(x+1)-1/(x^{2}+1)\).",
+            ),
+            (
+                "The antiderivative of 1/(x + 1) is log(Abs(x + 1)). The antiderivative of -1/(x**2 + 1) is -atan(x).",
+                r"The antiderivatives are \(\log|x+1|\) and \(-\arctan x\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(x**2 - x)/(x**3 + x**2 + x + 1)", "1/(x + 1) - 1/(x**2 + 1)"),
+            ("diff_of", "log(Abs(x + 1))", "1/(x + 1)"),
+            ("diff_of", "-atan(x)", "-1/(x**2 + 1)"),
+            ("diff", "log(Abs(x + 1)) - atan(x)"),
+        ],
+    },
+    "YANG-1.8-P14": {
+        "final": "log(Abs(x - 2)) + 2*log(Abs(x + 4))",
+        "lines": [
+            (
+                "Partial fractions. 3*x/(x**2 + 2*x - 8) = 1/(x - 2) + 2/(x + 4).",
+                r"Partial fractions. \(3x/(x^{2}+2x-8)=1/(x-2)+2/(x+4)\).",
+            ),
+            (
+                "The antiderivative of 1/(x - 2) is log(Abs(x - 2)). The antiderivative of 2/(x + 4) is 2*log(Abs(x + 4)).",
+                r"The antiderivatives are \(\log|x-2|\) and \(2\log|x+4|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "3*x/(x**2 + 2*x - 8)", "1/(x - 2) + 2/(x + 4)"),
+            ("diff_of", "log(Abs(x - 2))", "1/(x - 2)"),
+            ("diff_of", "2*log(Abs(x + 4))", "2/(x + 4)"),
+            ("diff", "log(Abs(x - 2)) + 2*log(Abs(x + 4))"),
+        ],
+    },
+    "YANG-1.8-P15": {
+        "final": "2*log(Abs(x - 1)) - log(Abs(x + 2))",
+        "lines": [
+            (
+                "Partial fractions. (x + 5)/(x**2 + x - 2) = 2/(x - 1) - 1/(x + 2).",
+                r"Partial fractions. \((x+5)/(x^{2}+x-2)=2/(x-1)-1/(x+2)\).",
+            ),
+            (
+                "The antiderivative of 2/(x - 1) is 2*log(Abs(x - 1)). The antiderivative of -1/(x + 2) is -log(Abs(x + 2)).",
+                r"The antiderivatives are \(2\log|x-1|\) and \(-\log|x+2|\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(x + 5)/(x**2 + x - 2)", "2/(x - 1) - 1/(x + 2)"),
+            ("diff_of", "2*log(Abs(x - 1))", "2/(x - 1)"),
+            ("diff_of", "-log(Abs(x + 2))", "-1/(x + 2)"),
+            ("diff", "2*log(Abs(x - 1)) - log(Abs(x + 2))"),
+        ],
+    },
+    "YANG-1.8-P16": {
+        "final": "log(3)/2",
+        "lines": [
+            (
+                "Partial fractions on [2, 4]. (x - 4)/(x**2 - 6*x + 5) = (3/4)/(x - 1) + (1/4)/(x - 5).",
+                r"Partial fractions on \([2,4]\). \((x-4)/(x^{2}-6x+5)=(3/4)/(x-1)+(1/4)/(x-5)\).",
+            ),
+            (
+                "The antiderivative of (3/4)/(x - 1) is (3/4)*log(Abs(x - 1)). The antiderivative of (1/4)/(x - 5) is (1/4)*log(Abs(x - 5)).",
+                r"The antiderivatives are \(\frac34\log|x-1|\) and \(\frac14\log|x-5|\).",
+            ),
+            (
+                "The antiderivative (3/4)*log(Abs(x - 1)) + (1/4)*log(Abs(x - 5)) from 2 to 4 equals log(3)/2.",
+                r"That antiderivative from \(2\) to \(4\) equals \(\frac12\log 3\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(x - 4)/(x**2 - 6*x + 5)", "(3/4)/(x - 1) + (1/4)/(x - 5)"),
+            ("diff_of", "(3/4)*log(Abs(x - 1))", "(3/4)/(x - 1)"),
+            ("diff_of", "(1/4)*log(Abs(x - 5))", "(1/4)/(x - 5)"),
+            ("ends", "(3/4)*log(Abs(x - 1)) + (1/4)*log(Abs(x - 5))", "2", "4", "1", "log(3)/2"),
+        ],
+    },
+    "YANG-1.8-P17": {
+        "final": "log(3)/4",
+        "lines": [
+            (
+                "Partial fractions. 1/((x - 2)*(x + 6)) = (1/8)/(x - 2) - (1/8)/(x + 6).",
+                r"Partial fractions. \(1/((x-2)(x+6))=(1/8)/(x-2)-(1/8)/(x+6)\).",
+            ),
+            (
+                "For x > 0, (x - 2)/(x + 6) = (1 - 2/x)/(1 + 6/x). The antiderivative (1/8)*log(Abs((1 - 2/x)/(1 + 6/x))) equals 0 at oo and -log(3)/4 at 3.",
+                r"For \(x>0\), \((x-2)/(x+6)=(1-2/x)/(1+6/x)\). The antiderivative is \(0\) at infinity and \(-\frac14\log 3\) at \(3\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/((x - 2)*(x + 6))", "(1/8)/(x - 2) - (1/8)/(x + 6)"),
+            ("eq", "(x - 2)/(x + 6)", "(1 - 2/x)/(1 + 6/x)"),
+            ("diff_of", "(1/8)*log(Abs((1 - 2/x)/(1 + 6/x)))", "1/((x - 2)*(x + 6))"),
+            ("ends", "(1/8)*log(Abs((1 - 2/x)/(1 + 6/x)))", "3", "oo", "1", "log(3)/4"),
+        ],
+    },
+    "YANG-1.9-P01a": {
+        "final": "9*pi/4",
+        "lines": [
+            (
+                "Complete the square, as in the guide's Substitution Example. sqrt(-x**2 + 6*x) = sqrt(9-(x-3)**2).",
+                r"Complete the square, as in the guide's Substitution Example. \(\sqrt{6x-x^{2}}=\sqrt{9-(x-3)^{2}}\).",
+            ),
+            (
+                "The antiderivative (1/2)*((x-3)*sqrt(9-(x-3)**2) + 9*asin((x-3)/3)) from 0 to 3 is a quarter disk of radius 3.",
+                r"The antiderivative from \(0\) to \(3\) is a quarter disk of radius \(3\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "sqrt(-x**2 + 6*x)", "sqrt(9-(x-3)**2)"),
+            ("diff_of", "(1/2)*((x-3)*sqrt(9-(x-3)**2) + 9*asin((x-3)/3))", "sqrt(9-(x-3)**2)"),
+            ("ends", "(1/2)*((x-3)*sqrt(9-(x-3)**2) + 9*asin((x-3)/3))", "0", "3", "1", "9*pi/4"),
+        ],
+    },
+    "YANG-1.9-P01b": {
+        "final": "pi/4",
+        "lines": [
+            (
+                "Factor the radicand, as in the guide's Exponential Example. sqrt(exp(-2*x) - exp(-4*x)) = exp(-x)*sqrt(1 - exp(-2*x)).",
+                r"Factor the radicand, as in the guide's Exponential Example. \(\sqrt{e^{-2x}-e^{-4x}}=e^{-x}\sqrt{1-e^{-2x}}\).",
+            ),
+            (
+                "exp(-2*x) = exp(-x)**2, and the derivative of exp(-x) is -exp(-x), so u = exp(-x) carries the integral to sqrt(1 - x**2) from 0 to 1.",
+                r"\(e^{-2x}=(e^{-x})^{2}\), and \(u=e^{-x}\) carries the integral to \(\sqrt{1-x^{2}}\) from \(0\) to \(1\).",
+            ),
+            (
+                "The antiderivative (1/2)*(x*sqrt(1 - x**2) + asin(x)) from 0 to 1 is a quarter disk of radius 1.",
+                r"That antiderivative from \(0\) to \(1\) is a quarter disk of radius \(1\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "sqrt(exp(-2*x) - exp(-4*x))", "exp(-x)*sqrt(1 - exp(-2*x))"),
+            ("eq", "exp(-2*x)", "exp(-x)**2"),
+            ("diff_of", "exp(-x)", "-exp(-x)"),
+            ("diff_of", "(1/2)*(x*sqrt(1 - x**2) + asin(x))", "sqrt(1 - x**2)"),
+            ("ends", "(1/2)*(x*sqrt(1 - x**2) + asin(x))", "0", "1", "1", "pi/4"),
+        ],
+    },
+    "YANG-1.9-P01c": {
+        "final": "3*pi/2",
+        "lines": [
+            (
+                "Algebraic split, as in the guide's Hybrid Example. (2 - x**2)/sqrt(1 - x**2) = 1/sqrt(1 - x**2) + sqrt(1 - x**2).",
+                r"Algebraic split, as in the guide's Hybrid Example. \((2-x^{2})/\sqrt{1-x^{2}}=1/\sqrt{1-x^{2}}+\sqrt{1-x^{2}}\).",
+            ),
+            (
+                "(2 - x**2)*(x**3 + 1)/sqrt(1 - x**2) = (1/sqrt(1 - x**2) + sqrt(1 - x**2))*(1 + x**3).",
+                r"\((2-x^{2})(1+x^{3})/\sqrt{1-x^{2}}=(1/\sqrt{1-x^{2}}+\sqrt{1-x^{2}})(1+x^{3})\).",
+            ),
+            (
+                "The odd part (1/sqrt(1 - x**2) + sqrt(1 - x**2))*x**3 satisfies f(-x) + f(x) = 0 on [-1, 1].",
+                r"The odd part with \(x^{3}\) integrates to \(0\) on \([-1,1]\).",
+            ),
+            (
+                "The even antiderivative (3/2)*asin(x) + (1/2)*x*sqrt(1 - x**2) from -1 to 1 equals 3*pi/2.",
+                r"The even antiderivative from \(-1\) to \(1\) equals \(3\pi/2\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(2 - x**2)/sqrt(1 - x**2)", "1/sqrt(1 - x**2) + sqrt(1 - x**2)"),
+            ("eq", "(2 - x**2)*(x**3 + 1)/sqrt(1 - x**2)", "(1/sqrt(1 - x**2) + sqrt(1 - x**2))*(1 + x**3)"),
+            ("odd", "(1/sqrt(1 - x**2) + sqrt(1 - x**2))*x**3"),
+            ("diff_of", "(3/2)*asin(x) + (1/2)*x*sqrt(1 - x**2)", "1/sqrt(1 - x**2) + sqrt(1 - x**2)"),
+            ("ends", "(3/2)*asin(x) + (1/2)*x*sqrt(1 - x**2)", "-1", "1", "1", "3*pi/2"),
+        ],
+    },
+    "YANG-1.9-P04a": {
+        "final": "pi",
+        "lines": [
+            (
+                "Hidden symmetry, as in the guide. sqrt(4 - x**2)*(x**3*cos(x/2) + 1/2) = x**3*cos(x/2)*sqrt(4 - x**2) + (1/2)*sqrt(4 - x**2).",
+                r"Hidden symmetry, as in the guide. The integrand splits into an odd term and \(\frac12\sqrt{4-x^{2}}\).",
+            ),
+            (
+                "The odd part x**3*cos(x/2)*sqrt(4 - x**2) satisfies f(-x) + f(x) = 0 on [-2, 2].",
+                r"The odd part \(x^{3}\cos(x/2)\sqrt{4-x^{2}}\) integrates to \(0\) on \([-2,2]\).",
+            ),
+            (
+                "The antiderivative (1/2)*(x*sqrt(4 - x**2) + 4*asin(x/2)) of sqrt(4 - x**2), from 0 to 2, is a quarter disk of radius 2.",
+                r"The antiderivative of \(\sqrt{4-x^{2}}\) from \(0\) to \(2\) is a quarter disk of radius \(2\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "sqrt(4 - x**2)*(x**3*cos(x/2) + 1/2)", "x**3*cos(x/2)*sqrt(4 - x**2) + (1/2)*sqrt(4 - x**2)"),
+            ("odd", "x**3*cos(x/2)*sqrt(4 - x**2)"),
+            ("diff_of", "(1/2)*(x*sqrt(4 - x**2) + 4*asin(x/2))", "sqrt(4 - x**2)"),
+            ("ends", "(1/2)*(x*sqrt(4 - x**2) + 4*asin(x/2))", "0", "2", "1", "pi"),
+        ],
+    },
+    "YANG-1.9-P04b": {
+        "final": "sqrt(3)*pi",
+        "lines": [
+            (
+                "Factor the radicand, as in the guide's Ellipse Example. sqrt(12 - 3*x**2) = sqrt(3)*sqrt(4 - x**2).",
+                r"Factor the radicand, as in the guide's Ellipse Example. \(\sqrt{12-3x^{2}}=\sqrt{3}\sqrt{4-x^{2}}\).",
+            ),
+            (
+                "The antiderivative (1/2)*(x*sqrt(4 - x**2) + 4*asin(x/2)) of sqrt(4 - x**2) from 0 to 2 is a quarter disk of radius 2. Multiply by sqrt(3).",
+                r"The integral of \(\sqrt{4-x^{2}}\) from \(0\) to \(2\) is a quarter disk of radius \(2\). Multiply by \(\sqrt{3}\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "sqrt(12 - 3*x**2)", "sqrt(3)*sqrt(4 - x**2)"),
+            ("diff_of", "(1/2)*(x*sqrt(4 - x**2) + 4*asin(x/2))", "sqrt(4 - x**2)"),
+            ("ends", "(1/2)*(x*sqrt(4 - x**2) + 4*asin(x/2))", "0", "2", "sqrt(3)", "sqrt(3)*pi"),
         ],
     },
 }

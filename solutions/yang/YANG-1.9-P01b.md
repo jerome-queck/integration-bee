@@ -25,3 +25,5 @@ Stored `answer_sympy`: `pi/4`.
 ## SymPy self-check
 
 `verify/pack_gate.py` proves `sqrt(exp(-2*x) - exp(-4*x))` against `pi/4` (definite). The check is an exact closed evaluation. Numeric agreement is not the proof.
+
+`verify/yang_worked_check.py` rechecks the worked solution stored on this row. Each indefinite antiderivative is differentiated, and each definite intermediate is an exact identity.
