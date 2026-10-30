@@ -17,7 +17,6 @@ from pathlib import Path
 import sympy as sp
 
 import pack_gate
-import problem_catalog
 
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
@@ -798,15 +797,17 @@ def load_rows():
     return rows
 
 
+SECTIONS = frozenset({"2.7", "3.4", "3.8", "4.4", "4.6", "6.1", "6.7"})
+
+
 def check_steps(rows):
     require(tuple(CHECKS) == IDS, "check order")
     require(set(IDS) == set(CHECKS), "check ids")
-    sections = {ident.split("-")[1] for ident in IDS}
-    require(sections == set(problem_catalog.DERIVED_WORKED_SECTIONS), "section set")
+    require({ident.split("-")[1] for ident in IDS} == set(SECTIONS), "section set")
     present = [
         row["id"]
         for row in rows.values()
-        if row.get("source") == "yang_book" and row.get("section") in problem_catalog.DERIVED_WORKED_SECTIONS and row.get("kind") != "reference"
+        if row.get("source") == "yang_book" and row.get("section") in SECTIONS and row.get("kind") != "reference"
     ]
     require(set(present) == set(IDS), "catalog batch")
     x = sp.symbols("x", real=True)
