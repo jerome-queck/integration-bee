@@ -64,7 +64,7 @@ Required update, in one pull request:
 3. Sections `Problem`, `Solution`, `Final answer`, and `SymPy self-check` when SymPy closes the identity. Point at the certificate module the check actually runs.
 4. Catalog fields only as the gate allows. See the field recipe below.
 
-Origins are only `missing` and `pdf_copy`. A Yang row may store a derived worked solution in `worked_solution_plain` and `worked_solution_latex` together. `worked_solution_origin` stays `missing` for that pair, so the pdf_copy count does not change. A `pdf_copy` row still stores an extract in `worked_solution_plain` and keeps `worked_solution_latex` null. Sample rows must keep `worked_solution_origin` `missing`, an empty `worked_solution_plain`, and a `notes` string that contains `solutions/sample/<id>.md`.
+Origins are `missing`, `pdf_copy`, and `derived`. A Yang row stores a repo-written worked solution in `worked_solution_plain` and `worked_solution_latex` together, with `worked_solution_origin` `derived`; all 275 Yang rows do, `has_worked` is true for them, and the pdf_copy count does not include them. A `pdf_copy` row still stores an extract in `worked_solution_plain` and keeps `worked_solution_latex` null. Sample rows must keep `worked_solution_origin` `missing`, an empty `worked_solution_plain`, and a `notes` string that contains `solutions/sample/<id>.md`.
 
 `solutions/README.md` still says these notes do not change `problems/records.jsonl` and still indexes an older manual-pack list. That page is a historical index. This file is the capture procedure. `solutions/self_check.py` re-proves the ids it lists and does not read the catalog.
 
@@ -84,7 +84,7 @@ The live turn does not fill the row. A fill is its own pull request for one id, 
 
 Do not edit a Yang row outside the batch you are proving. Do not set `answer_plain` alone. An unchecked row whose gate does not accept a final stays unchecked. `YANG-1.9-P01a`–`P01c` and `YANG-1.9-P04a`–`P04b` are the printed §1.9 examples, and `YANG-1.20-P01` is the page-image reading. `YANG-1.14-P10` is a reference formula excluded from the pack, not an integral.
 
-`YANG-1.3-Ex02` is `verify: sympy`. The guide prints 2, and the even-part reduction in `verify/pack_gate.py` accepts that value. `worked_solution_origin` stays `pdf_copy` because the row still stores the printed extract.
+`YANG-1.3-Ex02` is `verify: sympy`. The guide prints 2, and the even-part reduction in `verify/pack_gate.py` accepts that value. Its worked solution is now repo-written and checked, like `YANG-1.3-Ex03`, so `worked_solution_origin` is `derived`, not `pdf_copy`.
 
 Allowed writer: a repo agent, in a pull request that moves the gate constants with the row. The companion is not that writer.
 
@@ -135,9 +135,9 @@ Learner stickies are not capture. Writing `stickies.json` by hand does not recor
 
 ## Field recipe for a resource-pack `sympy` row
 
-Set these together: `verify` `sympy`, `answer_plain`, `answer_source_pdf`, `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable` (one of `x`, `t`, `X`, `e`, or `grid` for a grid), `kind`, `limits` (`[]` when the kind is not bounded, otherwise two strings). Leave `worked_solution_latex` null. Keep `worked_solution_plain` empty unless `worked_solution_origin` is `pdf_copy`, and then store an extract, not a new derivation.
+Set these together: `verify` `sympy`, `answer_plain`, `answer_source_pdf`, `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable` (one of `x`, `t`, `X`, `e`, or `grid` for a grid), `kind`, `limits` (`[]` when the kind is not bounded, otherwise two strings). Leave `worked_solution_latex` null. Keep `worked_solution_plain` empty unless `worked_solution_origin` is `pdf_copy`, and then store an extract, not a new derivation. Yang rows are the exception (see the origins paragraph above): they store both texts with origin `derived`.
 
-`verify/problem_catalog.py` holds `EXPECTED_COUNT` 948, `EXPECTED_SYMPY` 948, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 195 for pack rows after the §1.9 split, the §1.20 page-image proof, and the exclusion of formula `YANG-1.14-P10`. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. The reference row is outside those totals as well. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
+`verify/problem_catalog.py` holds `EXPECTED_COUNT` 948, `EXPECTED_SYMPY` 948, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 193 for pack rows after the §1.9 split, the §1.20 page-image proof, and the exclusion of formula `YANG-1.14-P10`. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. The reference row is outside those totals as well. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
 
 ## Checks before the pull request
 
