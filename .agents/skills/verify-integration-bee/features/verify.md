@@ -18,7 +18,7 @@ Preconditions:
 - Doctor has printed `READY integration-bee`.
 - The reference PDFs are in the tree.
 
-- **Run verify.** Run `scripts/control-integration-bee verify >"$IB_EVIDENCE/verify.out" 2>"$IB_EVIDENCE/verify.err"`. The exit code is 0. Stdout contains `PASS check_math (300 drills + spotchecks)`, `PASS sample_self_check (20 sample rows)`, `PASS mutation (wrong answer rejected)`, `PASS catalog`, `PASS 65 yang worked solutions`, `PASS never-impossible`, `PASS mutation notes-impossible`, `PASS mutation pack-note`, `PASS gap index`, `PASS mutation extra-file`, `PASS cli behavior`, `PASS turn contract`, and `PASS integration-bee verify (multi-unit gates)`. Stderr contains `# 17 drills (tags=`.
+- **Run verify.** Run `scripts/control-integration-bee verify >"$IB_EVIDENCE/verify.out" 2>"$IB_EVIDENCE/verify.err"`. The exit code is 0. Stdout contains `PASS check_math (300 drills + spotchecks)`, `PASS sample_self_check (20 sample rows)`, `PASS mutation (wrong answer rejected)`, `PASS catalog`, `PASS 121 yang worked solutions`, `PASS 29 yang worked solutions`, `PASS 30 yang worked solutions`, `PASS never-impossible`, `PASS mutation notes-impossible`, `PASS mutation pack-note`, `PASS gap index`, `PASS mutation extra-file`, `PASS cli behavior`, `PASS turn contract`, and `PASS integration-bee verify (multi-unit gates)`. Stderr contains `# 17 drills (tags=`.
 - **Confirm no learner write.** Run `find "$IB_DATA_DIR" -type f >"$IB_EVIDENCE/verify-files.txt"`. That file is empty. `verify` does not read `IB_DATA_DIR`.
 
 ## Gotchas

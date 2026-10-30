@@ -11,7 +11,7 @@
 
 ## Solution
 
-On \((0,1)\), \(1+x+x^{2}=(1-x^{3})/(1-x)\), so the integrand is \((\ln(1-x^{3})-\ln(1-x))/x\). The two improper integrals are \(-\pi^{2}/18\) and \(-\pi^{2}/6\), and their difference is \(\pi^{2}/9\).
+On \((0,1)\), \(1+x+x^{2}=(1-x^{3})/(1-x)\), so the integrand is \((\ln(1-x^{3})-\ln(1-x))/x\). \(\operatorname{Li}_{1}(x)=-\ln(1-x)\), and \(\operatorname{Li}_{2}(x)-\operatorname{Li}_{2}(x^{3})/3\) differentiates to that quotient. From \(0\) to \(1\) it equals \(\pi^{2}/9\).
 
 ## Final answer
 
@@ -21,4 +21,4 @@ On \((0,1)\), \(1+x+x^{2}=(1-x^{3})/(1-x)\), so the integrand is \((\ln(1-x^{3})
 
 ## SymPy self-check
 
-`verify/pack_gate.py` proves `log(x**2 + x + 1)/x` against `pi**2/9` (definite). The check is an exact closed evaluation. A reduction, when one is used, is `verify/yang_certificates.py`.
+`verify/yang_worked_check.py` differentiates \(\operatorname{Li}_{2}(x)-\operatorname{Li}_{2}(x^{3})/3\) and evaluates it from \(0\) to \(1\). `verify/pack_gate.py` proves `log(x**2 + x + 1)/x` against `pi**2/9`.

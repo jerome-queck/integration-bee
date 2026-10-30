@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Exact step checks for Yang worked solutions.
 
-Sections 1.1 through 1.5, 1.6, 1.7, 1.8, 1.9, 1.11, 1.12, 2.3, 2.4, 2.5, and 2.6. Differentiation uses the same zero test
-as verify/pack_gate.py. A wrong antiderivative must fail. Run from the repository root:
+Sections 1.1 through 1.9, 1.11, 1.12, 1.15, 1.17, 1.18, 1.20, 2.3 through 2.6, and 2.7 through 6.7. Differentiation uses the same zero test
+as verify/pack_gate.py. Definite steps check each algebraic identity and an exact evaluation of the closed form.
+A wrong antiderivative must fail. Run from the repository root:
 
     python3 verify/yang_worked_check.py
     python3 verify/yang_worked_check.py --write
@@ -26,8 +27,11 @@ SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1
 # steps are ("diff", antiderivative), ("diff_of", antiderivative, piece),
 # ("dvar", variable, antiderivative, piece), ("eq", left, right),
 # ("odd", expression), ("ends", antiderivative, lo, hi, factor, expected),
-# ("branch", antiderivative), ("limit", expr, point, dir, expected),
-# ("at", expr, point, expected), ("nested", ...), or ("elliptic", ...).
+# ("branch", antiderivative), ("limit", expr, point, expected) or with a direction,
+# ("at", expr, point, expected), ("ends", ...) at infinite bounds, ("area", ...),
+# ("sqrt_branch", ...), ("sides", ...), ("pieces", ...), ("reflect", ...),
+# ("flat", ...), ("zero_quot", ...), ("mirror", ...), ("half", ...), ("sum", ...),
+# ("min", ...), ("nested", ...), or ("elliptic", ...).
 SPECS: dict[str, dict] = {
     "YANG-1.1-P01": {
         "final": "5*x**3/3 - 4*x**2 + 5*x",
@@ -2021,6 +2025,566 @@ def _add(ident: str, final: str, lines: list, steps: list) -> None:
 
 
 _add(
+    'YANG-1.15-P01',
+    'pi/4',
+    [('The half-angle identity writes sin(x)**2 as (1 - cos(2*x))/2.',
+  'The half-angle identity writes \\(\\sin^{2}x\\) as \\((1-\\cos 2x)/2\\).'),
+ ('The antiderivative of (1 - cos(2*x))/2 is x/2 - sin(2*x)/4.',
+  'The antiderivative of \\((1-\\cos 2x)/2\\) is \\(x/2-\\sin(2x)/4\\).'),
+ ('From 0 to pi/2 that primitive equals pi/4.',
+  'From \\(0\\) to \\(\\pi/2\\) that primitive equals \\(\\pi/4\\).')],
+    [('eq', 'sin(x)**2', '(1 - cos(2*x))/2'),
+ ('diff_of', 'x/2 - sin(2*x)/4', '(1 - cos(2*x))/2'),
+ ('ends', 'x/2 - sin(2*x)/4', '0', 'pi/2', '1', 'pi/4')],
+)
+
+_add(
+    'YANG-1.15-P02',
+    '2 + 3*pi/4',
+    [('Expand (cos(x) + 1)**2 as 1 + 2*cos(x) + cos(x)**2.',
+  'Expand \\((\\cos x+1)^{2}\\) as \\(1+2\\cos x+\\cos^{2}x\\).'),
+ ('Write cos(x)**2 as (1 + cos(2*x))/2.', 'Write \\(\\cos^{2}x\\) as \\((1+\\cos 2x)/2\\).'),
+ ('Then 1 + 2*cos(x) + (1 + cos(2*x))/2 equals 3/2 + 2*cos(x) + cos(2*x)/2.',
+  'Then \\(1+2\\cos x+(1+\\cos 2x)/2\\) equals \\(3/2+2\\cos x+\\cos(2x)/2\\).'),
+ ('The antiderivative is 3*x/2 + 2*sin(x) + sin(2*x)/4, and from 0 to pi/2 it equals 2 + 3*pi/4.',
+  'The antiderivative is \\(3x/2+2\\sin x+\\sin(2x)/4\\), and from \\(0\\) to \\(\\pi/2\\) it '
+  'equals \\(2+3\\pi/4\\).')],
+    [('eq', '(cos(x) + 1)**2', '1 + 2*cos(x) + cos(x)**2'),
+ ('eq', 'cos(x)**2', '(1 + cos(2*x))/2'),
+ ('eq', '1 + 2*cos(x) + (1 + cos(2*x))/2', '3/2 + 2*cos(x) + cos(2*x)/2'),
+ ('diff_of', '3*x/2 + 2*sin(x) + sin(2*x)/4', '3/2 + 2*cos(x) + cos(2*x)/2'),
+ ('ends', '3*x/2 + 2*sin(x) + sin(2*x)/4', '0', 'pi/2', '1', '2 + 3*pi/4')],
+)
+
+_add(
+    'YANG-1.15-P03',
+    'tan(x)**5/5 + 2*tan(x)**3/3 + tan(x)',
+    [('sec(x)**6 equals (1 + tan(x)**2)**2*sec(x)**2.',
+  '\\(\\sec^{6}x\\) equals \\((1+\\tan^{2}x)^{2}\\sec^{2}x\\).'),
+ ('The derivative of tan(x) is sec(x)**2, so the substitution u = tan(x) integrates the powers of '
+  'u.',
+  'The derivative of \\(\\tan x\\) is \\(\\sec^{2}x\\), so the substitution \\(u=\\tan x\\) '
+  'integrates the powers of \\(u\\).'),
+ ('The antiderivative is tan(x)**5/5 + 2*tan(x)**3/3 + tan(x).',
+  'The antiderivative is \\(\\tan^{5}(x)/5+2\\tan^{3}(x)/3+\\tan x\\).')],
+    [('eq', 'sec(x)**6', '(1 + tan(x)**2)**2*sec(x)**2'),
+ ('diff_of', 'tan(x)', 'sec(x)**2'),
+ ('diff', 'tan(x)**5/5 + 2*tan(x)**3/3 + tan(x)')],
+)
+
+_add(
+    'YANG-1.15-P04',
+    'cos(x)/2 - cos(5*x)/10',
+    [('The product identity writes sin(2*x)*cos(3*x) as (sin(5*x) - sin(x))/2.',
+  'The product identity writes \\(\\sin(2x)\\cos(3x)\\) as \\((\\sin 5x-\\sin x)/2\\).'),
+ ('The antiderivative is cos(x)/2 - cos(5*x)/10.',
+  'The antiderivative is \\(\\cos(x)/2-\\cos(5x)/10\\).')],
+    [('eq', 'sin(2*x)*cos(3*x)', '(sin(5*x) - sin(x))/2'), ('diff', 'cos(x)/2 - cos(5*x)/10')],
+)
+
+_add(
+    'YANG-1.15-P05',
+    'sin(2*x)/4 + sin(12*x)/24',
+    [('cos(5*x)*cos(7*x) equals (cos(12*x) + cos(2*x))/2.',
+  '\\(\\cos(5x)\\cos(7x)\\) equals \\((\\cos 12x+\\cos 2x)/2\\).'),
+ ('The antiderivative is sin(2*x)/4 + sin(12*x)/24.',
+  'The antiderivative is \\(\\sin(2x)/4+\\sin(12x)/24\\).')],
+    [('eq', 'cos(5*x)*cos(7*x)', '(cos(12*x) + cos(2*x))/2'), ('diff', 'sin(2*x)/4 + sin(12*x)/24')],
+)
+
+_add(
+    'YANG-1.15-P06',
+    'tan(x)**5/5',
+    [('tan(x)**6 + tan(x)**4 equals tan(x)**4*sec(x)**2.',
+  '\\(\\tan^{6}x+\\tan^{4}x\\) equals \\(\\tan^{4}x\\sec^{2}x\\).'),
+ ('The derivative of tan(x) is sec(x)**2. The substitution u = tan(x) gives tan(x)**5/5.',
+  'The derivative of \\(\\tan x\\) is \\(\\sec^{2}x\\). The substitution \\(u=\\tan x\\) gives '
+  '\\(\\tan^{5}x/5\\).')],
+    [('eq', 'tan(x)**6 + tan(x)**4', 'tan(x)**4*sec(x)**2'),
+ ('diff_of', 'tan(x)', 'sec(x)**2'),
+ ('diff', 'tan(x)**5/5')],
+)
+
+_add(
+    'YANG-1.15-P07',
+    'tan(x) - sec(x)',
+    [('Multiply by 1 - sin(x). Then (1 - sin(x))/cos(x)**2 equals 1/(1 + sin(x)).',
+  'Multiply by \\(1-\\sin x\\). Then \\((1-\\sin x)/\\cos^{2}x\\) equals \\(1/(1+\\sin x)\\).'),
+ ('(1 - sin(x))/cos(x)**2 equals sec(x)**2 - sec(x)*tan(x).',
+  '\\((1-\\sin x)/\\cos^{2}x\\) equals \\(\\sec^{2}x-\\sec x\\tan x\\).'),
+ ('The antiderivative is tan(x) - sec(x).', 'The antiderivative is \\(\\tan x-\\sec x\\).')],
+    [('eq', '(1 - sin(x))/cos(x)**2', '1/(1 + sin(x))'),
+ ('eq', '(1 - sin(x))/cos(x)**2', 'sec(x)**2 - sec(x)*tan(x)'),
+ ('diff', 'tan(x) - sec(x)')],
+)
+
+_add(
+    'YANG-1.15-P08',
+    '2*sqrt(2)*sin(x/2)',
+    [('1 + cos(x) equals 2*cos(x/2)**2, so (sqrt(2)*cos(x/2))**2 equals 1 + cos(x).',
+  '\\(1+\\cos x\\) equals \\(2\\cos^{2}(x/2)\\), so \\((\\sqrt{2}\\cos(x/2))^{2}\\) equals '
+  '\\(1+\\cos x\\).'),
+ ('The derivative of 2*sqrt(2)*sin(x/2) is sqrt(2)*cos(x/2).',
+  'The derivative of \\(2\\sqrt{2}\\sin(x/2)\\) is \\(\\sqrt{2}\\cos(x/2)\\).'),
+ ('That derivative and sqrt(1 + cos(x)) have the same square, and they agree at 0.',
+  'That derivative and \\(\\sqrt{1+\\cos x}\\) have the same square, and they agree at \\(0\\).')],
+    [('eq', '1 + cos(x)', '2*cos(x/2)**2'),
+ ('eq', '(sqrt(2)*cos(x/2))**2', '1 + cos(x)'),
+ ('diff_of', '2*sqrt(2)*sin(x/2)', 'sqrt(2)*cos(x/2)'),
+ ('sqrt_branch', '2*sqrt(2)*sin(x/2)', '0')],
+)
+
+_add(
+    'YANG-1.15-P09',
+    'sin(2*x)/2',
+    [('The difference of squares -sin(x)**4 + cos(x)**4 equals cos(2*x).',
+  'The difference of squares \\(-\\sin^{4}x+\\cos^{4}x\\) equals \\(\\cos 2x\\).'),
+ ('The antiderivative is sin(2*x)/2.', 'The antiderivative is \\(\\sin(2x)/2\\).')],
+    [('eq', '-sin(x)**4 + cos(x)**4', 'cos(2*x)'), ('diff', 'sin(2*x)/2')],
+)
+
+_add(
+    'YANG-1.15-P10',
+    'Piecewise((2*sqrt(sin(x)), cos(x) >= 0), (4 - 2*sqrt(sin(x)), True))',
+    [('csc(x) - sin(x) equals cos(x)**2/sin(x), and sqrt(-sin(x) + csc(x))**2 equals cos(x)**2/sin(x).',
+  '\\(\\csc x-\\sin x\\) equals \\(\\cos^{2}x/\\sin x\\), and the square of \\(\\sqrt{\\csc '
+  'x-\\sin x}\\) equals \\(\\cos^{2}x/\\sin x\\).'),
+ ('At pi/6 the integrand equals cos(x)/sqrt(sin(x)). At 2*pi/3 it equals -cos(x)/sqrt(sin(x)).',
+  'At \\(\\pi/6\\) the integrand equals \\(\\cos x/\\sqrt{\\sin x}\\). At \\(2\\pi/3\\) it equals '
+  '\\(-\\cos x/\\sqrt{\\sin x}\\).'),
+ ('Where cos(x) >= 0, the derivative of 2*sqrt(sin(x)) is cos(x)/sqrt(sin(x)).',
+  'Where \\(\\cos x\\ge 0\\), the derivative of \\(2\\sqrt{\\sin x}\\) is \\(\\cos x/\\sqrt{\\sin '
+  'x}\\).'),
+ ('On the other side, the derivative of 4 - 2*sqrt(sin(x)) is -cos(x)/sqrt(sin(x)).',
+  'On the other side, the derivative of \\(4-2\\sqrt{\\sin x}\\) is \\(-\\cos x/\\sqrt{\\sin '
+  'x}\\).'),
+ ('2*sqrt(sin(pi/2)) and (4 - 2*sqrt(sin(pi/2))) both equal 2, so the pieces meet at cos(x) = 0.',
+  '\\(2\\sqrt{\\sin(\\pi/2)}\\) and \\(4-2\\sqrt{\\sin(\\pi/2)}\\) both equal \\(2\\), so the '
+  'pieces meet at \\(\\cos x=0\\).')],
+    [('eq', 'csc(x) - sin(x)', 'cos(x)**2/sin(x)'),
+ ('eq', 'sqrt(-sin(x) + csc(x))**2', 'cos(x)**2/sin(x)'),
+ ('sides', 'cos(x)/sqrt(sin(x))', 'pi/6', '-cos(x)/sqrt(sin(x))', '2*pi/3'),
+ ('diff_of', '2*sqrt(sin(x))', 'cos(x)/sqrt(sin(x))'),
+ ('diff_of', '4 - 2*sqrt(sin(x))', '-cos(x)/sqrt(sin(x))'),
+ ('eq', '2*sqrt(sin(pi/2))', '2'),
+ ('eq', '(4 - 2*sqrt(sin(pi/2)))', '2'),
+ ('pieces', 'cos(x) >= 0')],
+)
+
+_add(
+    'YANG-1.15-P11',
+    'Piecewise((log(tan(x) + sec(x)) + log(sec(x)), cos(x) > 0), (-log(-tan(x) - sec(x)) - log(-sec(x)), True))',
+    [('2*tan(x)**2 + 2*tan(x)*sec(x) + 1 equals (sec(x) + tan(x))**2.',
+  '\\(2\\tan^{2}x+2\\tan x\\sec x+1\\) equals \\((\\sec x+\\tan x)^{2}\\).'),
+ ('(sin(x/2) + cos(x/2))**2 equals 1 + sin(x), and (1 + sin(x))/cos(x) equals sec(x) + tan(x).',
+  '\\((\\sin(x/2)+\\cos(x/2))^{2}\\) equals \\(1+\\sin x\\), and \\((1+\\sin x)/\\cos x\\) equals '
+  '\\(\\sec x+\\tan x\\).'),
+ ('At pi/6 the integrand equals sec(x) + tan(x). At 2*pi/3 it equals -(sec(x) + tan(x)). The '
+  'condition is cos(x) > 0.',
+  'At \\(\\pi/6\\) the integrand equals \\(\\sec x+\\tan x\\). At \\(2\\pi/3\\) it equals '
+  '\\(-(\\sec x+\\tan x)\\). The condition is \\(\\cos x>0\\).'),
+ ('Where cos(x) > 0, log(tan(x) + sec(x)) + log(sec(x)) differentiates to sec(x) + tan(x).',
+  'Where \\(\\cos x>0\\), \\(\\log(\\tan x+\\sec x)+\\log(\\sec x)\\) differentiates to \\(\\sec '
+  'x+\\tan x\\).'),
+ ('On the other side, -log(-tan(x) - sec(x)) - log(-sec(x)) differentiates to -(sec(x) + tan(x)).',
+  'On the other side, \\(-\\log(-\\tan x-\\sec x)-\\log(-\\sec x)\\) differentiates to \\(-(\\sec '
+  'x+\\tan x)\\).')],
+    [('eq', '2*tan(x)**2 + 2*tan(x)*sec(x) + 1', '(sec(x) + tan(x))**2'),
+ ('eq', '(sin(x/2) + cos(x/2))**2', '1 + sin(x)'),
+ ('eq', '(1 + sin(x))/cos(x)', 'sec(x) + tan(x)'),
+ ('sides', 'sec(x) + tan(x)', 'pi/6', '-(sec(x) + tan(x))', '2*pi/3'),
+ ('diff_of', 'log(tan(x) + sec(x)) + log(sec(x))', 'sec(x) + tan(x)'),
+ ('diff_of', '-log(-tan(x) - sec(x)) - log(-sec(x))', '-(sec(x) + tan(x))'),
+ ('pieces', 'cos(x) > 0')],
+)
+
+_add(
+    'YANG-1.15-P12',
+    '2*cos(sin(x))',
+    [('sin(x - sin(x)) - sin(x + sin(x)) equals -2*cos(x)*sin(sin(x)).',
+  '\\(\\sin(x-\\sin x)-\\sin(x+\\sin x)\\) equals \\(-2\\cos x\\sin(\\sin x)\\).'),
+ ('The antiderivative is 2*cos(sin(x)).', 'The antiderivative is \\(2\\cos(\\sin x)\\).')],
+    [('eq', 'sin(x - sin(x)) - sin(x + sin(x))', '-2*cos(x)*sin(sin(x))'), ('diff', '2*cos(sin(x))')],
+)
+
+_add(
+    'YANG-1.15-P13',
+    'tan(x) - cot(x)',
+    [('1/(sin(x)**2*cos(x)**2) equals sec(x)**2 + csc(x)**2.',
+  '\\(1/(\\sin^{2}x\\cos^{2}x)\\) equals \\(\\sec^{2}x+\\csc^{2}x\\).'),
+ ('The antiderivative is tan(x) - cot(x).', 'The antiderivative is \\(\\tan x-\\cot x\\).')],
+    [('eq', '1/(sin(x)**2*cos(x)**2)', 'sec(x)**2 + csc(x)**2'), ('diff', 'tan(x) - cot(x)')],
+)
+
+_add(
+    'YANG-1.15-P14',
+    '-x + 2*tan(x) + 2*sec(x)',
+    [('(sec(x) - tan(x))*(sec(x) + tan(x)) equals 1, so (-tan(x) + sec(x))**(-2) equals (sec(x) + '
+  'tan(x))**2.',
+  '\\((\\sec x-\\tan x)(\\sec x+\\tan x)\\) equals \\(1\\), so \\((\\sec x-\\tan x)^{-2}\\) equals '
+  '\\((\\sec x+\\tan x)^{2}\\).'),
+ ('(sec(x) + tan(x))**2 equals 2*sec(x)**2 + 2*sec(x)*tan(x) - 1.',
+  '\\((\\sec x+\\tan x)^{2}\\) equals \\(2\\sec^{2}x+2\\sec x\\tan x-1\\).'),
+ ('The antiderivative is -x + 2*tan(x) + 2*sec(x).',
+  'The antiderivative is \\(-x+2\\tan x+2\\sec x\\).')],
+    [('eq', '(sec(x) - tan(x))*(sec(x) + tan(x))', '1'),
+ ('eq', '(-tan(x) + sec(x))**(-2)', '(sec(x) + tan(x))**2'),
+ ('eq', '(sec(x) + tan(x))**2', '2*sec(x)**2 + 2*sec(x)*tan(x) - 1'),
+ ('diff', '-x + 2*tan(x) + 2*sec(x)')],
+)
+
+_add(
+    'YANG-1.15-P15',
+    'x/2 + log(tan(2*x) + sec(2*x))/4',
+    [('2*cos(x)**2 - 1 equals cos(2*x), so cos(x)**2/(2*cos(x)**2 - 1) equals 1/2 + sec(2*x)/2.',
+  '\\(2\\cos^{2}x-1\\) equals \\(\\cos 2x\\), so \\(\\cos^{2}x/(2\\cos^{2}x-1)\\) equals '
+  '\\(1/2+\\sec(2x)/2\\).'),
+ ('The antiderivative is x/2 + log(tan(2*x) + sec(2*x))/4.',
+  'The antiderivative is \\(x/2+\\log(\\tan 2x+\\sec 2x)/4\\).')],
+    [('eq', '2*cos(x)**2 - 1', 'cos(2*x)'),
+ ('eq', 'cos(x)**2/(2*cos(x)**2 - 1)', '1/2 + sec(2*x)/2'),
+ ('diff', 'x/2 + log(tan(2*x) + sec(2*x))/4')],
+)
+
+_add(
+    'YANG-1.15-P16',
+    'x - tan(x)/2',
+    [('tan(x)/tan(2*x) equals (1 - tan(x)**2)/2, which equals 1 - sec(x)**2/2.',
+  '\\(\\tan x/\\tan 2x\\) equals \\((1-\\tan^{2}x)/2\\), which equals \\(1-\\sec^{2}x/2\\).'),
+ ('The antiderivative is x - tan(x)/2.', 'The antiderivative is \\(x-\\tan(x)/2\\).')],
+    [('eq', 'tan(x)/tan(2*x)', '(1 - tan(x)**2)/2'),
+ ('eq', '(1 - tan(x)**2)/2', '1 - sec(x)**2/2'),
+ ('diff', 'x - tan(x)/2')],
+)
+
+_add(
+    'YANG-1.15-P17',
+    'sqrt(2)*log(3)/2',
+    [('1/(1 - sin(x)) + 1/(1 + sin(x)) equals 2/cos(x)**2, and sqrt(1/(1 - sin(x)) + 1/(1 + '
+  'sin(x)))**2 equals 2/cos(x)**2.',
+  '\\(1/(1-\\sin x)+1/(1+\\sin x)\\) equals \\(2/\\cos^{2}x\\), so the square of the integrand '
+  'equals \\(2/\\cos^{2}x\\).'),
+ ('sqrt(2/cos(x)**2) equals sqrt(2)/cos(x). On [0, pi/6] the minimum of cos(x) is sqrt(3)/2.',
+  '\\(\\sqrt{2/\\cos^{2}x}\\) equals \\(\\sqrt{2}/\\cos x\\). On \\([0,\\pi/6]\\) the minimum of '
+  '\\(\\cos x\\) is \\(\\sqrt{3}/2\\).'),
+ ('The antiderivative sqrt(2)*log(sec(x) + tan(x)) from 0 to pi/6 equals sqrt(2)*log(3)/2.',
+  'The antiderivative \\(\\sqrt{2}\\log(\\sec x+\\tan x)\\) from \\(0\\) to \\(\\pi/6\\) equals '
+  '\\(\\sqrt{2}\\log(3)/2\\).')],
+    [('eq', '1/(1 - sin(x)) + 1/(1 + sin(x))', '2/cos(x)**2'),
+ ('eq', 'sqrt(1/(1 - sin(x)) + 1/(1 + sin(x)))**2', '2/cos(x)**2'),
+ ('eq', 'sqrt(2/cos(x)**2)', 'sqrt(2)/cos(x)'),
+ ('min', 'cos(x)', '0', 'pi/6', 'sqrt(3)/2'),
+ ('diff_of', 'sqrt(2)*log(sec(x) + tan(x))', 'sqrt(2)/cos(x)'),
+ ('ends', 'sqrt(2)*log(sec(x) + tan(x))', '0', 'pi/6', '1', 'sqrt(2)*log(3)/2')],
+)
+
+_add(
+    'YANG-1.15-P18',
+    'log(cos(x)) + tan(x)**2/2',
+    [('tan(x)**3 equals sec(x)**2*tan(x) - tan(x).',
+  '\\(\\tan^{3}x\\) equals \\(\\sec^{2}x\\tan x-\\tan x\\).'),
+ ('The antiderivative is log(cos(x)) + tan(x)**2/2.',
+  'The antiderivative is \\(\\log(\\cos x)+\\tan^{2}(x)/2\\).')],
+    [('eq', 'tan(x)**3', 'sec(x)**2*tan(x) - tan(x)'), ('diff', 'log(cos(x)) + tan(x)**2/2')],
+)
+
+_add(
+    'YANG-1.15-P19',
+    'log(4*sin(x) - cos(x))',
+    [('(4*cot(x) + 1)/(4 - cot(x)) equals (sin(x) + 4*cos(x))/(4*sin(x) - cos(x)).',
+  '\\((4\\cot x+1)/(4-\\cot x)\\) equals \\((\\sin x+4\\cos x)/(4\\sin x-\\cos x)\\).'),
+ ('The derivative of 4*sin(x) - cos(x) is 4*cos(x) + sin(x), which is the numerator.',
+  'The derivative of \\(4\\sin x-\\cos x\\) is \\(4\\cos x+\\sin x\\), which is the numerator.'),
+ ('The antiderivative is log(4*sin(x) - cos(x)).',
+  'The antiderivative is \\(\\log(4\\sin x-\\cos x)\\).')],
+    [('eq', '(4*cot(x) + 1)/(4 - cot(x))', '(sin(x) + 4*cos(x))/(4*sin(x) - cos(x))'),
+ ('diff_of', '4*sin(x) - cos(x)', '4*cos(x) + sin(x)'),
+ ('diff', 'log(4*sin(x) - cos(x))')],
+)
+
+_add(
+    'YANG-1.15-P20',
+    'atan(2*sin(x)**2 - 1)/2',
+    [('sin(x)**4 + cos(x)**4 equals 2*sin(x)**4 - 2*sin(x)**2 + 1, so sin(x)*cos(x)/(sin(x)**4 + '
+  'cos(x)**4) equals sin(x)*cos(x)/(2*sin(x)**4 - 2*sin(x)**2 + 1).',
+  '\\(\\sin^{4}x+\\cos^{4}x\\) equals \\(2\\sin^{4}x-2\\sin^{2}x+1\\), so \\(\\sin x\\cos '
+  'x/(\\sin^{4}x+\\cos^{4}x)\\) equals \\(\\sin x\\cos x/(2\\sin^{4}x-2\\sin^{2}x+1)\\).'),
+ ('With u = sin(x)**2, the derivative of sin(x)**2 is 2*sin(x)*cos(x).',
+  'With \\(u=\\sin^{2}x\\), the derivative of \\(\\sin^{2}x\\) is \\(2\\sin x\\cos x\\).'),
+ ('2*sin(x)**4 - 2*sin(x)**2 + 1 equals (1/2)*((2*sin(x)**2 - 1)**2 + 1).',
+  '\\(2\\sin^{4}x-2\\sin^{2}x+1\\) equals \\(\\frac12((2\\sin^{2}x-1)^{2}+1)\\).'),
+ ('The antiderivative is atan(2*sin(x)**2 - 1)/2.',
+  'The antiderivative is \\(\\arctan(2\\sin^{2}x-1)/2\\).')],
+    [('eq', 'sin(x)**4 + cos(x)**4', '2*sin(x)**4 - 2*sin(x)**2 + 1'),
+ ('eq', 'sin(x)*cos(x)/(sin(x)**4 + cos(x)**4)', 'sin(x)*cos(x)/(2*sin(x)**4 - 2*sin(x)**2 + 1)'),
+ ('diff_of', 'sin(x)**2', '2*sin(x)*cos(x)'),
+ ('eq', '2*sin(x)**4 - 2*sin(x)**2 + 1', '(1/2)*((2*sin(x)**2 - 1)**2 + 1)'),
+ ('diff', 'atan(2*sin(x)**2 - 1)/2')],
+)
+
+_add(
+    'YANG-1.17-P01',
+    '2*log(2)**2',
+    [
+        (
+            "The guide sets u = x*log(2)**2 on the first term. log(2)**2 * 2**(sqrt(x/log(2)**2)) * (1/log(2)**2) equals exp(sqrt(x)). The new bounds are 0*log(2)**2 and 1*log(2)**2, and 1*log(2)**2 equals log(2)**2.",
+            r"The guide sets \(u=x\log(2)^{2}\) on the first term. \(\log(2)^{2}\,2^{\sqrt{x/\log(2)^{2}}}\,(1/\log(2)^{2})\) equals \(e^{\sqrt{x}}\). The new bounds are \(0\cdot\log(2)^{2}\) and \(1\cdot\log(2)^{2}\), and \(1\cdot\log(2)^{2}\) equals \(\log(2)^{2}\).",
+        ),
+        (
+            "exp(sqrt(x)) equals (exp(sqrt(x)) - 1) + 1. The inverse of log(1 + x)**2 is exp(sqrt(x)) - 1. exp(sqrt(log(1 + x)**2)) - 1 equals x, and log(1 + (exp(sqrt(x)) - 1))**2 equals x. log(1 + 0)**2 equals 0, and exp(sqrt(log(2)**2)) - 1 equals 1.",
+            r"\(e^{\sqrt{x}}\) equals \((e^{\sqrt{x}}-1)+1\). The inverse of \(\log(1+x)^{2}\) is \(e^{\sqrt{x}}-1\). \(e^{\sqrt{\log(1+x)^{2}}}-1\) equals \(x\), and \(\log(1+(e^{\sqrt{x}}-1))^{2}\) equals \(x\). \(\log(1+0)^{2}\) equals \(0\), and \(e^{\sqrt{\log(2)^{2}}}-1\) equals \(1\).",
+        ),
+        (
+            "The derivative of log(1 + x)**2 is 2*log(1 + x)/(1 + x). The derivative of exp(sqrt(x)) - 1 is exp(sqrt(x))/(2*sqrt(x)). Then log(1 + x)**2 * (exp(sqrt(log(1 + x)**2))/(2*sqrt(log(1 + x)**2))) * (2*log(1 + x)/(1 + x)) equals log(1 + x)**2, so the two integrals have the same derivative and the same lower limit.",
+            r"The derivative of \(\log(1+x)^{2}\) is \(2\log(1+x)/(1+x)\). The derivative of \(e^{\sqrt{x}}-1\) is \(e^{\sqrt{x}}/(2\sqrt{x})\). Then \(\log(1+x)^{2}\cdot(e^{\sqrt{\log(1+x)^{2}}}/(2\sqrt{\log(1+x)^{2}}))\cdot(2\log(1+x)/(1+x))\) equals \(\log(1+x)^{2}\), so the two integrals have the same derivative and the same lower limit.",
+        ),
+        (
+            "The derivative of x*(exp(sqrt(x)) - 1) is (exp(sqrt(x)) - 1) + x*exp(sqrt(x))/(2*sqrt(x)). From 0 to log(2)**2 that primitive equals log(2)**2. That is the inverse-function sum in the guide.",
+            r"The derivative of \(x(e^{\sqrt{x}}-1)\) is \((e^{\sqrt{x}}-1)+xe^{\sqrt{x}}/(2\sqrt{x})\). From \(0\) to \(\log(2)^{2}\) that primitive equals \(\log(2)^{2}\). That is the inverse-function sum in the guide.",
+        ),
+        (
+            "The antiderivative of 1 is x. From 0 to log(2)**2 it equals log(2)**2. The guide adds that width. log(2)**2 + log(2)**2 equals 2*log(2)**2.",
+            r"The antiderivative of \(1\) is \(x\). From \(0\) to \(\log(2)^{2}\) it equals \(\log(2)^{2}\). The guide adds that width. \(\log(2)^{2}+\log(2)^{2}\) equals \(2\log(2)^{2}\).",
+        ),
+    ],
+    [
+        ("eq", "log(2)**2 * 2**(sqrt(x/log(2)**2)) * (1/log(2)**2)", "exp(sqrt(x))"),
+        ("eq", "0*log(2)**2", "0"),
+        ("eq", "1*log(2)**2", "log(2)**2"),
+        ("eq", "exp(sqrt(x))", "(exp(sqrt(x)) - 1) + 1"),
+        ("eq", "exp(sqrt(log(1 + x)**2)) - 1", "x"),
+        ("eq", "log(1 + (exp(sqrt(x)) - 1))**2", "x"),
+        ("eq", "log(1 + 0)**2", "0"),
+        ("eq", "exp(sqrt(log(2)**2)) - 1", "1"),
+        ("diff_of", "log(1 + x)**2", "2*log(1 + x)/(1 + x)"),
+        ("diff_of", "exp(sqrt(x)) - 1", "exp(sqrt(x))/(2*sqrt(x))"),
+        (
+            "eq",
+            "log(1 + x)**2 * (exp(sqrt(log(1 + x)**2))/(2*sqrt(log(1 + x)**2))) * (2*log(1 + x)/(1 + x))",
+            "log(1 + x)**2",
+        ),
+        (
+            "diff_of",
+            "x*(exp(sqrt(x)) - 1)",
+            "(exp(sqrt(x)) - 1) + x*exp(sqrt(x))/(2*sqrt(x))",
+        ),
+        ("ends", "x*(exp(sqrt(x)) - 1)", "0", "log(2)**2", "1", "log(2)**2"),
+        ("diff_of", "x", "1"),
+        ("ends", "x", "0", "log(2)**2", "1", "log(2)**2"),
+        ("sum", "log(2)**2 + log(2)**2", "2*log(2)**2"),
+    ],
+)
+
+_add(
+    'YANG-1.18-P02',
+    '1/2',
+    [('On [0, 1], (1 + x)*(2 - x) equals 2 + x - x**2, and log((1 + x)*(2 - x)) equals log(1 + x) + '
+  'log(2 - x).',
+  'On \\([0,1]\\), \\((1+x)(2-x)\\) equals \\(2+x-x^{2}\\), and \\(\\log((1+x)(2-x))\\) equals '
+  '\\(\\log(1+x)+\\log(2-x)\\).'),
+ ('log(-x**2 + x + 2) equals log((1 + x)*(2 - x)), so log(x + 1)/log(-x**2 + x + 2) equals log(x + 1)/log((1 + x)*(2 - x)), which equals log(1 + x)/(log(1 + x) + log(2 - x)).',
+  '\\(\\log(-x^{2}+x+2)\\) equals \\(\\log((1+x)(2-x))\\), so \\(\\log(x+1)/\\log(-x^{2}+x+2)\\) equals \\(\\log(x+1)/\\log((1+x)(2-x))\\), which equals \\(\\log(1+x)/(\\log(1+x)+\\log(2-x))\\).'),
+ ('The guide reflects by 1 - x. The two integrands add to 1, the endpoints swap, and the value is '
+  '1/2.',
+  'The guide reflects by \\(1-x\\). The two integrands add to \\(1\\), the endpoints swap, and the '
+  'value is \\(1/2\\).')],
+    [('eq', '(1 + x)*(2 - x)', '2 + x - x**2'),
+ ('eq', 'log((1 + x)*(2 - x))', 'log(1 + x) + log(2 - x)'),
+ ('eq', 'log(-x**2 + x + 2)', 'log((1 + x)*(2 - x))'),
+ ('eq', 'log(x + 1)/log(-x**2 + x + 2)', 'log(x + 1)/log((1 + x)*(2 - x))'),
+ ('eq', 'log(x + 1)/log((1 + x)*(2 - x))', 'log(1 + x)/(log(1 + x) + log(2 - x))'),
+ ('reflect', '1 - x', 'log(1 + x)/(log(1 + x) + log(2 - x))', '0', '1', '1/2')],
+)
+
+_add(
+    'YANG-1.20-P01',
+    'pi',
+    [('For x > 0, log(sqrt(x + 1)) equals log(x + 1)/2, so log(sqrt(x + 1))/x**(3/2) equals log(x + '
+  '1)/(2*x**(3/2)).',
+  'For \\(x>0\\), \\(\\log\\sqrt{x+1}\\) equals \\(\\log(x+1)/2\\), so '
+  '\\(\\log\\sqrt{x+1}/x^{3/2}\\) equals \\(\\log(x+1)/(2x^{3/2})\\).'),
+ ('Substitute x**2. It sends 0 to 0 and oo to oo, and log(x**2 + 1)/(2*(x**2)**(3/2))*2*x equals '
+  'log(x**2 + 1)/x**2.',
+  'Substitute \\(x^{2}\\). It sends \\(0\\) to \\(0\\) and \\(\\infty\\) to \\(\\infty\\), and '
+  '\\(\\log(x^{2}+1)/(2(x^{2})^{3/2})\\cdot 2x\\) equals \\(\\log(x^{2}+1)/x^{2}\\).'),
+ ('The antiderivative of log(x**2 + 1)/x**2 is -log(x**2 + 1)/x + 2*atan(x).',
+  'The antiderivative of \\(\\log(x^{2}+1)/x^{2}\\) is \\(-\\log(x^{2}+1)/x+2\\arctan x\\).'),
+ ('That primitive tends to 0 at 0+ and to pi at oo, so the integral equals pi.',
+  'That primitive tends to \\(0\\) at \\(0+\\) and to \\(\\pi\\) at \\(\\infty\\), so the integral '
+  'equals \\(\\pi\\).')],
+    [('eq', 'log(sqrt(x + 1))', 'log(x + 1)/2'),
+ ('eq', 'log(sqrt(x + 1))/x**(3/2)', 'log(x + 1)/(2*x**(3/2))'),
+ ('at', 'x**2', '0', '0'),
+ ('limit', 'x**2', 'oo', 'oo'),
+ ('eq', 'log(x**2 + 1)/(2*(x**2)**(3/2))*2*x', 'log(x**2 + 1)/x**2'),
+ ('diff_of', '-log(x**2 + 1)/x + 2*atan(x)', 'log(x**2 + 1)/x**2'),
+ ('limit', '-log(x**2 + 1)/x + 2*atan(x)', '0+', '0'),
+ ('limit', '-log(x**2 + 1)/x + 2*atan(x)', 'oo', 'pi'),
+ ('ends', '-log(x**2 + 1)/x + 2*atan(x)', '0+', 'oo', '1', 'pi')],
+)
+
+_add(
+    'YANG-1.20-P02',
+    'exp(-1)',
+    [('(-2*x**6 + 5*x**4)*exp(-x**2) is the derivative of x**5*exp(-x**2).',
+  '\\((-2x^{6}+5x^{4})e^{-x^{2}}\\) is the derivative of \\(x^{5}e^{-x^{2}}\\).'),
+ ('x**5*exp(-x**2) tends to 0 at oo, and at -1 it equals -exp(-1).',
+  '\\(x^{5}e^{-x^{2}}\\) tends to \\(0\\) at \\(\\infty\\), and at \\(-1\\) it equals '
+  '\\(-e^{-1}\\).'),
+ ('The tail from -1 to oo equals exp(-1).',
+  'The tail from \\(-1\\) to \\(\\infty\\) equals \\(e^{-1}\\).')],
+    [('diff_of', 'x**5*exp(-x**2)', '(-2*x**6 + 5*x**4)*exp(-x**2)'),
+ ('limit', 'x**5*exp(-x**2)', 'oo', '0'),
+ ('ends', 'x**5*exp(-x**2)', '-1', 'oo', '1', 'exp(-1)')],
+)
+
+_add(
+    'YANG-1.20-P03',
+    '2*sqrt(2)*pi',
+    [('sin(x)**4 + cos(x)**4 equals (3 + cos(4*x))/4, so 1/(sin(x)**4 + cos(x)**4) equals 4/(3 + '
+  'cos(4*x)).',
+  '\\(\\sin^{4}x+\\cos^{4}x\\) equals \\((3+\\cos 4x)/4\\), so \\(1/(\\sin^{4}x+\\cos^{4}x)\\) '
+  'equals \\(4/(3+\\cos 4x)\\).'),
+ ('The substitution u = 4*x gives 4/(3 + cos(4*(x/4)))*(1/4), which equals 1/(3 + cos(x)).',
+  'The substitution \\(u=4x\\) gives \\(4/(3+\\cos(4(x/4)))\\cdot(1/4)\\), which equals '
+  '\\(1/(3+\\cos x)\\).'),
+ ('cos(x + 2*pi) equals cos(x), and 1/(3 + cos(x + 2*pi)) equals 1/(3 + cos(x)). The '
+  'antiderivative of 1/(3 + cos(x)) is atan(tan(x/2)/sqrt(2))/sqrt(2).',
+  '\\(\\cos(x+2\\pi)\\) equals \\(\\cos x\\), and \\(1/(3+\\cos(x+2\\pi))\\) equals '
+  '\\(1/(3+\\cos x)\\). The antiderivative of \\(1/(3+\\cos x)\\) is '
+  '\\(\\arctan(\\tan(x/2)/\\sqrt{2})/\\sqrt{2}\\).'),
+ ('From 0 it is 0, and at pi from the left it is sqrt(2)*pi/4. At pi from the right it is '
+  '-sqrt(2)*pi/4, and at 2*pi from the left it is 0. (sqrt(2)*pi/4 - 0) + (0 - '
+  '(-sqrt(2)*pi/4)) equals sqrt(2)*pi/2. Four periods give 4*(sqrt(2)*pi/2), which equals '
+  '2*sqrt(2)*pi.',
+  'From \\(0\\) it is \\(0\\), and at \\(\\pi\\) from the left it is \\(\\sqrt{2}\\pi/4\\). At '
+  '\\(\\pi\\) from the right it is \\(-\\sqrt{2}\\pi/4\\), and at \\(2\\pi\\) from the left it is '
+  '\\(0\\). \\((\\sqrt{2}\\pi/4-0)+(0-(-\\sqrt{2}\\pi/4))\\) equals \\(\\sqrt{2}\\pi/2\\). Four '
+  'periods give \\(4\\cdot(\\sqrt{2}\\pi/2)\\), which equals \\(2\\sqrt{2}\\pi\\).')],
+    [('eq', 'sin(x)**4 + cos(x)**4', '(3 + cos(4*x))/4'),
+ ('eq', '1/(sin(x)**4 + cos(x)**4)', '4/(3 + cos(4*x))'),
+ ('eq', '4/(3 + cos(4*(x/4)))*(1/4)', '1/(3 + cos(x))'),
+ ('eq', 'cos(x + 2*pi)', 'cos(x)'),
+ ('eq', '1/(3 + cos(x + 2*pi))', '1/(3 + cos(x))'),
+ ('diff_of', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', '1/(3 + cos(x))'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', '0', '+', '0'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', 'pi', '-', 'sqrt(2)*pi/4'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', 'pi', '+', '-sqrt(2)*pi/4'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', '2*pi', '-', '0'),
+ ('sum', '(sqrt(2)*pi/4 - 0) + (0 - (-sqrt(2)*pi/4))', 'sqrt(2)*pi/2'),
+ ('sum', '4*(sqrt(2)*pi/2)', '2*sqrt(2)*pi')],
+)
+
+_add(
+    'YANG-1.20-P04',
+    '1/4',
+    [('Set u = exp(x*log(x)). Its derivative is exp(x*log(x))*(log(x) + 1).',
+  'Set \\(u=e^{x\\log x}\\). Its derivative is \\(e^{x\\log x}(\\log x+1)\\).'),
+ ('x**(1 - 2*x)*(log(x) + 1)*log(x) equals log(exp(x*log(x)))*exp(x*log(x))*(log(x) + '
+  '1)/exp(x*log(x))**3, which is log(u) times du/u**3.',
+  '\\(x^{1-2x}(\\log x+1)\\log x\\) equals \\(\\log(e^{x\\log x})\\,e^{x\\log x}(\\log '
+  'x+1)/e^{3x\\log x}\\), which is \\(\\log u\\) times \\(du/u^{3}\\).'),
+ ('The antiderivative of log(x)/x**3 is -(2*log(x) + 1)/(4*x**2). Composed with u it is '
+  '-(2*x*log(x) + 1)/(4*exp(2*x*log(x))).',
+  'The antiderivative of \\(\\log x/x^{3}\\) is \\(-(2\\log x+1)/(4x^{2})\\). Composed with '
+  '\\(u\\) it is \\(-(2x\\log x+1)/(4e^{2x\\log x})\\).'),
+ ('That primitive tends to -1/4 at 0+ and to 0 at oo, so the integral equals 1/4.',
+  'That primitive tends to \\(-1/4\\) at \\(0+\\) and to \\(0\\) at \\(\\infty\\), so the integral '
+  'equals \\(1/4\\).')],
+    [('diff_of', 'exp(x*log(x))', 'exp(x*log(x))*(log(x) + 1)'),
+ ('eq',
+  'x**(1 - 2*x)*(log(x) + 1)*log(x)',
+  'log(exp(x*log(x)))*exp(x*log(x))*(log(x) + 1)/exp(x*log(x))**3'),
+ ('diff_of', '-(2*log(x) + 1)/(4*x**2)', 'log(x)/x**3'),
+ ('diff_of', '-(2*x*log(x) + 1)/(4*exp(2*x*log(x)))', 'x**(1 - 2*x)*(log(x) + 1)*log(x)'),
+ ('limit', '-(2*x*log(x) + 1)/(4*exp(2*x*log(x)))', '0+', '-1/4'),
+ ('limit', '-(2*x*log(x) + 1)/(4*exp(2*x*log(x)))', 'oo', '0'),
+ ('ends', '-(2*x*log(x) + 1)/(4*exp(2*x*log(x)))', '0+', 'oo', '1', '1/4')],
+)
+
+_add(
+    'YANG-1.20-P05',
+    'pi**2/4',
+    [('After the substitution x = e^t, the weight atan(exp(x))/(exp(x)*(log(exp(x))**2 + 1))*exp(x) '
+  'equals atan(exp(x))/(x**2 + 1).',
+  'After the substitution \\(x=e^{t}\\), the weight '
+  '\\(\\arctan(e^{x})/(e^{x}(\\log(e^{x})^{2}+1))\\cdot e^{x}\\) equals '
+  '\\(\\arctan(e^{x})/(x^{2}+1)\\).'),
+ ('exp(-x) equals 1/exp(x). The derivative of atan(exp(x)) + atan(exp(-x)) - pi/2 is 0, and the '
+  'value at 0 is 0, so the sum is pi/2.',
+  '\\(e^{-x}\\) equals \\(1/e^{x}\\). The derivative of '
+  '\\(\\arctan(e^{x})+\\arctan(e^{-x})-\\pi/2\\) is \\(0\\), and the value at \\(0\\) is \\(0\\), '
+  'so the sum is \\(\\pi/2\\).'),
+ ('atan(exp(x))/(x**2 + 1) + atan(exp(-x))/(x**2 + 1) equals (atan(exp(x)) + atan(exp(-x)))/(x**2 '
+  '+ 1).',
+  '\\(\\arctan(e^{x})/(x^{2}+1)+\\arctan(e^{-x})/(x^{2}+1)\\) equals '
+  '\\((\\arctan(e^{x})+\\arctan(e^{-x}))/(x^{2}+1)\\).'),
+ ('The numerator atan(exp(x)) + atan(exp(-x)) - pi/2 over the denominator x**2 + 1 is 0, so the '
+  'reflected sum is (pi/2)/(x**2 + 1).',
+  'The numerator \\(\\arctan(e^{x})+\\arctan(e^{-x})-\\pi/2\\) over the denominator \\(x^{2}+1\\) '
+  'is \\(0\\), so the reflected sum is \\((\\pi/2)/(x^{2}+1)\\).'),
+ (
+            "The map -x swaps -oo and oo. The antiderivative of (pi/2)/(x**2 + 1) is (pi/2)*atan(x). From -oo to oo it equals pi**2/2, and (pi**2/2)/2 equals pi**2/4.",
+            r"The map \(-x\) swaps \(-\infty\) and \(\infty\). The antiderivative of \((\pi/2)/(x^{2}+1)\) is \((\pi/2)\arctan x\). From \(-\infty\) to \(\infty\) it equals \(\pi^{2}/2\), and \((\pi^{2}/2)/2\) equals \(\pi^{2}/4\).",
+        ),
+    ],
+    [
+        ("eq", "atan(exp(x))/(exp(x)*(log(exp(x))**2 + 1))*exp(x)", "atan(exp(x))/(x**2 + 1)"),
+        ("eq", "exp(-x)", "1/exp(x)"),
+        ("flat", "atan(exp(x)) + atan(exp(-x)) - pi/2", "0", "0"),
+        (
+            "eq",
+            "atan(exp(x))/(x**2 + 1) + atan(exp(-x))/(x**2 + 1)",
+            "(atan(exp(x)) + atan(exp(-x)))/(x**2 + 1)",
+        ),
+        ("zero_quot", "atan(exp(x)) + atan(exp(-x)) - pi/2", "x**2 + 1"),
+        ("mirror", "-x", "-oo", "oo"),
+        ("diff_of", "(pi/2)*atan(x)", "(pi/2)/(x**2 + 1)"),
+        ("ends", "(pi/2)*atan(x)", "-oo", "oo", "1", "pi**2/2"),
+        ("sum", "(pi**2/2)/2", "pi**2/4"),
+    ],
+)
+
+_add(
+    'YANG-1.20-P06',
+    '24*x/25 + 7*log(4*sin(x) + 3*cos(x))/25',
+    [('The derivative of 4*sin(x) + 3*cos(x) is 4*cos(x) - 3*sin(x).',
+  'The derivative of \\(4\\sin x+3\\cos x\\) is \\(4\\cos x-3\\sin x\\).'),
+ ('(7/25)*(4*cos(x) - 3*sin(x)) + (24/25)*(4*sin(x) + 3*cos(x)) equals 3*sin(x) + 4*cos(x).',
+  '\\((7/25)(4\\cos x-3\\sin x)+(24/25)(4\\sin x+3\\cos x)\\) equals \\(3\\sin x+4\\cos x\\).'),
+ ('The antiderivative is 24*x/25 + 7*log(4*sin(x) + 3*cos(x))/25.',
+  'The antiderivative is \\(24x/25+7\\log(4\\sin x+3\\cos x)/25\\).')],
+    [('diff_of', '4*sin(x) + 3*cos(x)', '4*cos(x) - 3*sin(x)'),
+ ('eq', '(7/25)*(4*cos(x) - 3*sin(x)) + (24/25)*(4*sin(x) + 3*cos(x))', '3*sin(x) + 4*cos(x)'),
+ ('diff', '24*x/25 + 7*log(4*sin(x) + 3*cos(x))/25')],
+)
+
+_add(
+    'YANG-1.20-P07',
+    'pi**2/9',
+    [('(1 - x)*(1 + x + x**2) equals 1 - x**3. log(1 + x + x**2) equals log((1 - x**3)/(1 - x)), and log((1 - x**3)/(1 - x)) equals log(1 - x**3) - log(1 - x).',
+  '\\((1-x)(1+x+x^{2})\\) equals \\(1-x^{3}\\). \\(\\log(1+x+x^{2})\\) equals \\(\\log((1-x^{3})/(1-x))\\), and \\(\\log((1-x^{3})/(1-x))\\) equals \\(\\log(1-x^{3})-\\log(1-x)\\).'),
+ ('log(1 + x + x**2)/x equals log((1 - x**3)/(1 - x))/x, which equals (log(1 - x**3) - log(1 - x))/x.',
+  '\\(\\log(1+x+x^{2})/x\\) equals \\(\\log((1-x^{3})/(1-x))/x\\), which equals \\((\\log(1-x^{3})-\\log(1-x))/x\\).'),
+ ('polylog(1, x) equals -log(1 - x), and polylog(1, x**3) equals -log(1 - x**3). The '
+  'antiderivative of (log(1 - x**3) - log(1 - x))/x is polylog(2, x) - polylog(2, x**3)/3.',
+  '\\(\\operatorname{Li}_{1}(x)\\) equals \\(-\\log(1-x)\\), and \\(\\operatorname{Li}_{1}(x^{3})\\) '
+  'equals \\(-\\log(1-x^{3})\\). The antiderivative of \\((\\log(1-x^{3})-\\log(1-x))/x\\) is '
+  '\\(\\operatorname{Li}_{2}(x)-\\operatorname{Li}_{2}(x^{3})/3\\).'),
+ ('From 0 to 1 that primitive equals pi**2/9.',
+  'From \\(0\\) to \\(1\\) that primitive equals \\(\\pi^{2}/9\\).')],
+    [('eq', '(1 - x)*(1 + x + x**2)', '1 - x**3'),
+ ('eq', 'log(1 + x + x**2)', 'log((1 - x**3)/(1 - x))'),
+ ('eq', 'log((1 - x**3)/(1 - x))', 'log(1 - x**3) - log(1 - x)'),
+ ('eq', 'log(1 + x + x**2)/x', 'log((1 - x**3)/(1 - x))/x'),
+ ('eq', 'log((1 - x**3)/(1 - x))/x', '(log(1 - x**3) - log(1 - x))/x'),
+ ('eq', 'polylog(1, x)', '-log(1 - x)'),
+ ('eq', 'polylog(1, x**3)', '-log(1 - x**3)'),
+ ('diff_of', 'polylog(2, x) - polylog(2, x**3)/3', '(log(1 - x**3) - log(1 - x))/x'),
+ ('ends', 'polylog(2, x) - polylog(2, x**3)/3', '0', '1', '1', 'pi**2/9')],
+)
+
+_add(
     "YANG-2.3-P01",
     "2*sqrt(x)*exp(sqrt(x)) - 2*exp(sqrt(x))",
     [
@@ -3477,6 +4041,17 @@ _add(
 )
 
 
+# Sections 1.15, 1.17, 1.18, and 1.20 sit between 1.1 and 1.2 in records.jsonl.
+LANE_SECTIONS = frozenset({"1.15", "1.17", "1.18", "1.20"})
+LANE_SPECS: dict[str, dict] = {}
+for _ident in [
+    key
+    for key in SPECS
+    if key.startswith(("YANG-1.15-", "YANG-1.17-", "YANG-1.18-", "YANG-1.20-"))
+]:
+    LANE_SPECS[_ident] = SPECS.pop(_ident)
+
+
 def parse(text: str, variable: str = "x"):
     return pack_gate._parse(text, variable)
 
@@ -3485,12 +4060,22 @@ def fold(text: str) -> str:
     return "".join(str(text).split())
 
 
+def closed_zero(expr) -> bool:
+    if pack_gate._zero(expr):
+        return True
+    has = getattr(expr, "has", None)
+    if has is not None and has(sp.polylog):
+        return pack_gate._zero(sp.expand_func(expr))
+    return False
+
+
 def same(left, right) -> bool:
-    if pack_gate._zero(left - right):
+    delta = left - right
+    if closed_zero(delta):
         return True
     symbol = pack_gate.namespace("x")["x"]
     positive = sp.Symbol("x", positive=True)
-    return pack_gate._zero((left - right).subs(symbol, positive))
+    return closed_zero(delta.subs(symbol, positive))
 
 
 def diff_ok(antiderivative, integrand) -> bool:
@@ -3500,13 +4085,13 @@ def diff_ok(antiderivative, integrand) -> bool:
 
 def diff_expr(antiderivative, integrand, symbol) -> bool:
     delta = sp.diff(antiderivative, symbol) - integrand
-    if pack_gate._zero(delta):
+    if closed_zero(delta):
         return True
     dropped = pack_gate._drop_log_abs(antiderivative)
-    if dropped != antiderivative and pack_gate._zero(sp.diff(dropped, symbol) - integrand):
+    if dropped != antiderivative and closed_zero(sp.diff(dropped, symbol) - integrand):
         return True
     positive = sp.Symbol(symbol.name, positive=True)
-    return pack_gate._zero(delta.subs(symbol, positive))
+    return closed_zero(delta.subs(symbol, positive))
 
 
 def branch_ok(antiderivative, integrand) -> bool:
@@ -3637,7 +4222,32 @@ def _at(primitive, symbol, bound: str, side: str):
     return sp.limit(primitive, symbol, point, dir=direction)
 
 
-def run_step(ident: str, step: tuple, integrand) -> None:
+def evaluate(expr, text: str):
+    symbol = pack_gate.namespace("x")["x"]
+    if text == "oo":
+        return sp.limit(expr, symbol, sp.oo)
+    if text == "-oo":
+        return sp.limit(expr, symbol, -sp.oo)
+    if text.endswith("+"):
+        return sp.limit(expr, symbol, parse(text[:-1]), dir="+")
+    return expr.subs(symbol, parse(text))
+
+
+def bound(text: str):
+    if text == "oo":
+        return sp.oo
+    if text == "-oo":
+        return -sp.oo
+    return parse(text)
+
+
+def _end(primitive, symbol, text: str, side: str):
+    if text.endswith("+"):
+        return evaluate(primitive, text)
+    return _at(primitive, symbol, text, side)
+
+
+def run_step(ident: str, step: tuple, integrand, row: dict | None = None, spec: dict | None = None) -> None:
     kind = step[0]
     if kind == "diff":
         if not diff_ok(parse(step[1]), integrand):
@@ -3667,7 +4277,7 @@ def run_step(ident: str, step: tuple, integrand) -> None:
         _, ant, lo, hi, factor, expected = step
         symbol = pack_gate.namespace("x")["x"]
         primitive = parse(ant)
-        got = parse(factor) * (_at(primitive, symbol, hi, "hi") - _at(primitive, symbol, lo, "lo"))
+        got = parse(factor) * (_end(primitive, symbol, hi, "hi") - _end(primitive, symbol, lo, "lo"))
         if not same(sp.simplify(got), parse(expected)):
             raise AssertionError(f"{ident} endpoints {ant} on [{lo}, {hi}]")
         return
@@ -3682,10 +4292,23 @@ def run_step(ident: str, step: tuple, integrand) -> None:
             raise AssertionError(f"{ident} value at {step[2]}")
         return
     if kind == "limit":
-        symbol = pack_gate.namespace("x")["x"]
-        got = sp.limit(parse(step[1]), symbol, parse(step[2]), dir=step[3])
-        if not same(got, parse(step[4])):
-            raise AssertionError(f"{ident} limit {step[2]}")
+        if len(step) == 4:
+            got = evaluate(parse(step[1]), step[2])
+            expected = step[3]
+        else:
+            symbol = pack_gate.namespace("x")["x"]
+            got = sp.limit(parse(step[1]), symbol, parse(step[2]), dir=step[3])
+            expected = step[4]
+        if expected == "oo":
+            if got != sp.oo:
+                raise AssertionError(f"{ident} limit {step[2]} gave {got}")
+            return
+        if expected == "-oo":
+            if got != -sp.oo:
+                raise AssertionError(f"{ident} limit {step[2]} gave {got}")
+            return
+        if not same(got, parse(expected)):
+            raise AssertionError(f"{ident} limit {step[2]} gave {got}")
         return
     if kind == "nested":
         try:
@@ -3699,15 +4322,119 @@ def run_step(ident: str, step: tuple, integrand) -> None:
         except AssertionError as exc:
             raise AssertionError(f"{ident} {exc}") from exc
         return
+
+    if kind == "area":
+        _, expr, lo, hi, expected = step
+        symbol = pack_gate.namespace("x")["x"]
+        value = sp.integrate(parse(expr), (symbol, bound(lo), bound(hi)))
+        if not pack_gate._closed(value) or not same(value, parse(expected)):
+            raise AssertionError(f"{ident} area {expr} on [{lo}, {hi}] gave {value}")
+        return
+    if kind == "sqrt_branch":
+        symbol = pack_gate.namespace("x")["x"]
+        ant = parse(step[1])
+        deriv = sp.diff(ant, symbol)
+        if not same(deriv**2, integrand**2):
+            raise AssertionError(f"{ident} square branch {step[1]}")
+        point = parse(step[2])
+        if not same(deriv.subs(symbol, point), integrand.subs(symbol, point)):
+            raise AssertionError(f"{ident} sample {step[2]}")
+        return
+    if kind == "sides":
+        symbol = pack_gate.namespace("x")["x"]
+        pos, pos_at, neg, neg_at = (parse(step[1]), parse(step[2]), parse(step[3]), parse(step[4]))
+        if not same(pos**2, integrand**2) or not same(neg**2, integrand**2):
+            raise AssertionError(f"{ident} branch squares")
+        if not same(integrand.subs(symbol, pos_at), pos.subs(symbol, pos_at)):
+            raise AssertionError(f"{ident} positive sample {step[2]}")
+        if not same(integrand.subs(symbol, neg_at), neg.subs(symbol, neg_at)):
+            raise AssertionError(f"{ident} negative sample {step[4]}")
+        return
+    if kind == "pieces":
+        if row is None or spec is None:
+            raise AssertionError(f"{ident} pieces need the stored row")
+        answer = parse(row["answer_sympy"])
+        if not isinstance(answer, sp.Piecewise) or len(answer.args) != 2:
+            raise AssertionError(f"{ident} answer is not a two-piece formula")
+        if answer.args[0][1] != parse(step[1]):
+            raise AssertionError(f"{ident} piece condition {step[1]}")
+        for ant, _cond in answer.args:
+            matched = any(
+                item[0] == "diff_of" and same(parse(item[1]), ant) for item in spec["steps"]
+            )
+            if not matched:
+                raise AssertionError(f"{ident} piece {ant} is not differentiated")
+        return
+    if kind == "reflect":
+        symbol = pack_gate.namespace("x")["x"]
+        sub = parse(step[1])
+        expr = parse(step[2])
+        lo, hi, expected = step[3], step[4], step[5]
+        if not pack_gate._zero(sp.diff(sub, symbol) + 1):
+            raise AssertionError(f"{ident} reflection derivative")
+        if evaluate(sub, lo) != parse(hi) or evaluate(sub, hi) != parse(lo):
+            raise AssertionError(f"{ident} reflection endpoints")
+        total = expr + expr.subs(symbol, sub)
+        if not same(total, 1):
+            raise AssertionError(f"{ident} reflection sum")
+        if not same((parse(hi) - parse(lo)) / 2, parse(expected)):
+            raise AssertionError(f"{ident} reflection value")
+        return
+    if kind == "flat":
+        symbol = pack_gate.namespace("x")["x"]
+        expr = parse(step[1])
+        if not diff_ok(expr, parse("0")):
+            raise AssertionError(f"{ident} flat derivative")
+        if not same(expr.subs(symbol, parse(step[2])), parse(step[3])):
+            raise AssertionError(f"{ident} flat value")
+        return
+    if kind == "zero_quot":
+        symbol = pack_gate.namespace("x")["x"]
+        num = parse(step[1])
+        den = parse(step[2])
+        if not diff_ok(num, parse("0")) or not same(num.subs(symbol, 0), parse("0")):
+            raise AssertionError(f"{ident} numerator is not 0")
+        if same(den, parse("0")) or den.subs(symbol, 0) == 0:
+            raise AssertionError(f"{ident} denominator vanishes")
+        return
+    if kind == "mirror":
+        symbol = pack_gate.namespace("x")["x"]
+        sub = parse(step[1])
+        lo, hi = step[2], step[3]
+        if not pack_gate._zero(sp.diff(sub, symbol) + 1):
+            raise AssertionError(f"{ident} mirror derivative")
+        if evaluate(sub, lo) != bound(hi) or evaluate(sub, hi) != bound(lo):
+            raise AssertionError(f"{ident} mirror endpoints {evaluate(sub, lo)} {evaluate(sub, hi)}")
+        return
+    if kind == "half":
+        if spec is None:
+            raise AssertionError(f"{ident} half needs the spec")
+        if not same(parse(step[1]) / 2, parse(step[2])):
+            raise AssertionError(f"{ident} half {step[1]}")
+        if not any(item[0] == "area" and fold(item[-1]) == fold(step[1]) for item in spec["steps"]):
+            raise AssertionError(f"{ident} half has no matching area")
+        return
+    if kind == "sum":
+        if not same(parse(step[1]), parse(step[2])):
+            raise AssertionError(f"{ident} sum {step[1]} vs {step[2]}")
+        return
+    if kind == "min":
+        symbol = pack_gate.namespace("x")["x"]
+        got = sp.calculus.util.minimum(parse(step[1]), symbol, sp.Interval(parse(step[2]), parse(step[3])))
+        if not same(got, parse(step[4])):
+            raise AssertionError(f"{ident} minimum {got}")
+        return
     raise AssertionError(f"{ident} unknown step {kind}")
 
 
 def proves_final(spec: dict) -> bool:
     final = fold(spec["final"])
     for step in spec["steps"]:
-        if step[0] in {"diff", "branch"} and fold(step[1]) == final:
+        if step[0] in {"diff", "branch", "sqrt_branch"} and fold(step[1]) == final:
             return True
-        if step[0] in {"limit", "ends"} and fold(step[-1]) == final:
+        if step[0] == "pieces":
+            return True
+        if step[0] in {"limit", "ends", "area", "reflect", "half", "sum"} and fold(step[-1]) == final:
             return True
         if step[0] in {"nested", "elliptic"} and any(fold(token) == final for token in step[1:]):
             return True
@@ -3730,7 +4457,7 @@ def check_steps(row: dict, spec: dict) -> None:
     else:
         raise AssertionError(f"{ident} kind {row['kind']}")
     for step in spec["steps"]:
-        run_step(ident, step, integrand)
+        run_step(ident, step, integrand, row, spec)
     assert_shown(ident, spec)
     if not same(parse(spec["final"]), parse(row["answer_sympy"])):
         raise AssertionError(f"DISAGREE {ident}: simplified final does not match answer_sympy")
@@ -5001,6 +5728,59 @@ def _s111_main(argv: list[str]) -> int:
     return 0
 
 
+def _lane_rows(rows: list[dict]) -> list[dict]:
+    chosen = []
+    for row in rows:
+        if row.get("source") != "yang_book" or row.get("kind") == "reference":
+            continue
+        if row.get("section") not in LANE_SECTIONS:
+            continue
+        if row.get("worked_solution_origin") == "pdf_copy":
+            continue
+        chosen.append(row)
+    return chosen
+
+
+def _lane_write(rows: list[dict]) -> None:
+    by_id = {row["id"]: row for row in rows}
+    for ident, spec in LANE_SPECS.items():
+        plain, latex = compose(by_id[ident], spec)
+        by_id[ident]["worked_solution_plain"] = plain
+        by_id[ident]["worked_solution_latex"] = latex
+    body = "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows)
+    RECORDS.write_text(body, encoding="utf-8")
+
+
+def _lane_main(argv: list[str]) -> int:
+    rows = load_rows()
+    chosen = _lane_rows(rows)
+    ids = [row["id"] for row in chosen]
+    if ids != list(LANE_SPECS):
+        missing = [ident for ident in ids if ident not in LANE_SPECS]
+        extra = [ident for ident in LANE_SPECS if ident not in ids]
+        print(f"FAIL section rows missing={missing} extra={extra}", file=sys.stderr)
+        return 1
+    try:
+        for row in chosen:
+            check_steps(row, LANE_SPECS[row["id"]])
+    except AssertionError as exc:
+        print(f"FAIL {exc}", file=sys.stderr)
+        return 1
+    if "--write" in argv:
+        _lane_write(rows)
+        print(f"WROTE {len(chosen)}")
+        return 0
+    try:
+        for row in chosen:
+            check_prose(row, LANE_SPECS[row["id"]])
+    except AssertionError as exc:
+        print(f"FAIL {exc}", file=sys.stderr)
+        return 1
+    print(f"PASS {len(chosen)} yang worked solutions")
+    return 0
+
+
+LANE_MAINS.append(_lane_main)
 LANE_MAINS.append(_s111_main)
 
 # ---- folded from yang_worked_steps.py ----
