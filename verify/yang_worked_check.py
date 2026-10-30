@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Exact step checks for Yang worked solutions.
 
-Sections 1.1 through 1.5, 1.8, 1.9, 1.11, 1.12, 2.3, 2.4, 2.5, and 2.6. Differentiation uses the same zero test
-as verify/pack_gate.py. An improper endpoint is a limit. A wrong antiderivative must fail. Run from the repository root:
+Sections 1.1 through 1.5, 1.6, 1.7, 1.8, 1.9, 1.11, 1.12, 2.3, 2.4, 2.5, and 2.6. Differentiation uses the same zero test
+as verify/pack_gate.py. A wrong antiderivative must fail. Run from the repository root:
 
     python3 verify/yang_worked_check.py
     python3 verify/yang_worked_check.py --write
@@ -20,7 +20,7 @@ import pack_gate
 
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
-SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.4", "1.5", "1.8", "1.9", "2.3", "2.4", "2.5", "2.6"})
+SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "2.3", "2.4", "2.5", "2.6"})
 
 # final is the stored answer_sympy. lines are (plain, latex) without numbers.
 # steps are ("diff", antiderivative), ("diff_of", antiderivative, piece),
@@ -1165,6 +1165,401 @@ SPECS: dict[str, dict] = {
             ("eq", "(sin(x) + cos(x))/(csc(x) + sec(x))", "sin(x)*cos(x)"),
             ("diff_of", "sin(x)**2/2", "sin(x)*cos(x)"),
             ("diff", "sin(x)**2/2"),
+        ],
+    },
+    # Section 1.6. Integration by parts. The guide prints no finals.
+    "YANG-1.6-P01": {
+        "final": "x**2*exp(x) - 2*x*exp(x) + 2*exp(x)",
+        "lines": [
+            (
+                "Integrate by parts twice, differentiating x**2. The reduced antiderivative (x - 1)*exp(x) has derivative x*exp(x).",
+                r"Integrate by parts twice, differentiating \(x^{2}\). The reduced antiderivative \((x-1)e^{x}\) has derivative \(xe^{x}\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "(x - 1)*exp(x)", "x*exp(x)"),
+            ("diff", "x**2*exp(x) - 2*x*exp(x) + 2*exp(x)"),
+        ],
+    },
+    "YANG-1.6-P02": {
+        "final": "x*log(x) - x",
+        "lines": [
+            (
+                "Integrate by parts, differentiating the logarithm. The remaining integral of 1 has antiderivative x.",
+                r"Integrate by parts, differentiating the logarithm. The remaining integral of \(1\) has antiderivative \(x\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "x", "1"),
+            ("diff", "x*log(x) - x"),
+        ],
+    },
+    "YANG-1.6-P03": {
+        "final": "-x*cos(x) + sin(x)",
+        "lines": [
+            (
+                "Integrate by parts, differentiating x. The remaining integral of cos(x) has antiderivative sin(x).",
+                r"Integrate by parts, differentiating \(x\). The remaining integral of \(\cos x\) has antiderivative \(\sin x\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "sin(x)", "cos(x)"),
+            ("diff", "-x*cos(x) + sin(x)"),
+        ],
+    },
+    "YANG-1.6-P04": {
+        "final": "-x*exp(-x) - exp(-x)",
+        "lines": [
+            (
+                "Integrate by parts, differentiating x. The subtracted integral of -exp(-x) has antiderivative exp(-x).",
+                r"Integrate by parts, differentiating \(x\). The subtracted integral of \(-e^{-x}\) has antiderivative \(e^{-x}\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "exp(-x)", "-exp(-x)"),
+            ("diff", "-x*exp(-x) - exp(-x)"),
+        ],
+    },
+    "YANG-1.6-P05": {
+        "final": "x*tan(x) + log(cos(x))",
+        "lines": [
+            (
+                "Integrate by parts, differentiating x. The remaining integral of tan(x) has antiderivative -log(cos(x)).",
+                r"Integrate by parts, differentiating \(x\). The remaining integral of \(\tan x\) has antiderivative \(-\log(\cos x)\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "-log(cos(x))", "tan(x)"),
+            ("diff", "x*tan(x) + log(cos(x))"),
+        ],
+    },
+    "YANG-1.6-P06": {
+        "final": "x**2*log(x)/2 - x**2/4",
+        "lines": [
+            (
+                "Integrate by parts, differentiating log(x). The remaining integral of x/2 has antiderivative x**2/4.",
+                r"Integrate by parts, differentiating \(\log x\). The remaining integral of \(x/2\) has antiderivative \(x^{2}/4\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "x**2/4", "x/2"),
+            ("diff", "x**2*log(x)/2 - x**2/4"),
+        ],
+    },
+    "YANG-1.6-P07": {
+        "final": "x**2*exp(2*x)/2 - x*exp(2*x)/2 + exp(2*x)/4",
+        "lines": [
+            (
+                "The printed square (x*exp(x))**2 equals x**2*exp(2*x). The reduced antiderivative x*exp(2*x)/2 - exp(2*x)/4 has derivative x*exp(2*x).",
+                r"The printed square \((xe^{x})^{2}\) equals \(x^{2}e^{2x}\). The reduced antiderivative \(xe^{2x}/2-e^{2x}/4\) has derivative \(xe^{2x}\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(x*exp(x))**2", "x**2*exp(2*x)"),
+            ("diff_of", "x*exp(2*x)/2 - exp(2*x)/4", "x*exp(2*x)"),
+            ("diff", "x**2*exp(2*x)/2 - x*exp(2*x)/2 + exp(2*x)/4"),
+        ],
+    },
+    "YANG-1.6-P08": {
+        "final": "x**3/3 + 2*x*exp(x) + exp(2*x)/2 - 2*exp(x)",
+        "lines": [
+            (
+                "Expand (x + exp(x))**2 as x**2 + 2*x*exp(x) + exp(2*x). exp(x)*(x - 1) has derivative x*exp(x), so 2*exp(x)*(x - 1) has derivative 2*x*exp(x).",
+                r"Expand \((x+e^{x})^{2}\) as \(x^{2}+2xe^{x}+e^{2x}\). \(e^{x}(x-1)\) has derivative \(xe^{x}\), so \(2e^{x}(x-1)\) has derivative \(2xe^{x}\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(x + exp(x))**2", "x**2 + 2*x*exp(x) + exp(2*x)"),
+            ("diff_of", "exp(x)*(x - 1)", "x*exp(x)"),
+            ("diff_of", "2*exp(x)*(x - 1)", "2*x*exp(x)"),
+            ("diff", "x**3/3 + 2*x*exp(x) + exp(2*x)/2 - 2*exp(x)"),
+        ],
+    },
+    "YANG-1.6-P09": {
+        "final": "-log(x)/x - 1/x",
+        "lines": [
+            (
+                "Integrate by parts, differentiating log(x). Subtracting the integral of -1/x**2 contributes the antiderivative 1/x.",
+                r"Integrate by parts, differentiating \(\log x\). Subtracting the integral of \(-1/x^{2}\) contributes the antiderivative \(1/x\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "1/x", "-1/x**2"),
+            ("diff", "-log(x)/x - 1/x"),
+        ],
+    },
+    "YANG-1.6-P10": {
+        "final": "-log(sec(x))*cos(x) - cos(x)",
+        "lines": [
+            (
+                "Substitute u = cos(x). The integral becomes the logarithm integral, whose antiderivative x*log(x) - x has derivative log(x).",
+                r"Substitute \(u=\cos x\). The integral becomes the logarithm integral, whose antiderivative \(x\log x-x\) has derivative \(\log x\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "x*log(x) - x", "log(x)"),
+            ("diff", "-log(sec(x))*cos(x) - cos(x)"),
+        ],
+    },
+    "YANG-1.6-P11": {
+        "final": "x**2*sin(x) + 2*x*sin(x) + 2*x*cos(x) - sin(x) + 2*cos(x)",
+        "lines": [
+            (
+                "Integrate by parts twice, differentiating (x + 1)**2. The reduced antiderivative -(x + 1)*cos(x) + sin(x) has derivative (x + 1)*sin(x).",
+                r"Integrate by parts twice, differentiating \((x+1)^{2}\). The reduced antiderivative \(-(x+1)\cos x+\sin x\) has derivative \((x+1)\sin x\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "-(x + 1)*cos(x) + sin(x)", "(x + 1)*sin(x)"),
+            ("diff", "x**2*sin(x) + 2*x*sin(x) + 2*x*cos(x) - sin(x) + 2*cos(x)"),
+        ],
+    },
+    "YANG-1.6-P12": {
+        "final": "x*atan(x) - log(x**2 + 1)/2",
+        "lines": [
+            (
+                "Integrate by parts, differentiating atan(x). The remaining integral of x/(1 + x**2) has antiderivative log(1 + x**2)/2.",
+                r"Integrate by parts, differentiating \(\arctan x\). The remaining integral of \(x/(1+x^{2})\) has antiderivative \(\log(1+x^{2})/2\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "log(1 + x**2)/2", "x/(1 + x**2)"),
+            ("diff", "x*atan(x) - log(x**2 + 1)/2"),
+        ],
+    },
+    "YANG-1.6-P13": {
+        "final": "2*x**(3/2)*log(x)/3 - 4*x**(3/2)/9",
+        "lines": [
+            (
+                "Integrate by parts, differentiating log(x). The remaining integral of 2*sqrt(x)/3 has antiderivative 4*x**(3/2)/9.",
+                r"Integrate by parts, differentiating \(\log x\). The remaining integral of \(2\sqrt{x}/3\) has antiderivative \(4x^{3/2}/9\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "4*x**(3/2)/9", "2*sqrt(x)/3"),
+            ("diff", "2*x**(3/2)*log(x)/3 - 4*x**(3/2)/9"),
+        ],
+    },
+    "YANG-1.6-P14": {
+        "final": "2*atan(x) - log(x**2 + 1)/x",
+        "lines": [
+            (
+                "Integrate by parts, differentiating log(x**2 + 1). The remaining integral of 2/(1 + x**2) has antiderivative 2*atan(x).",
+                r"Integrate by parts, differentiating \(\log(x^{2}+1)\). The remaining integral of \(2/(1+x^{2})\) has antiderivative \(2\arctan x\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "2*atan(x)", "2/(1 + x**2)"),
+            ("diff", "2*atan(x) - log(x**2 + 1)/x"),
+        ],
+    },
+    "YANG-1.6-P15": {
+        "final": "x*asin(x) + sqrt(1 - x**2)",
+        "lines": [
+            (
+                "Integrate by parts, differentiating asin(x). The remaining integral of x/sqrt(1 - x**2) has antiderivative -sqrt(1 - x**2).",
+                r"Integrate by parts, differentiating \(\arcsin x\). The remaining integral of \(x/\sqrt{1-x^{2}}\) has antiderivative \(-\sqrt{1-x^{2}}\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "-sqrt(1 - x**2)", "x/sqrt(1 - x**2)"),
+            ("diff", "x*asin(x) + sqrt(1 - x**2)"),
+        ],
+    },
+    "YANG-1.6-P16": {
+        "final": "x*sec(x)**2/2 - tan(x)/2",
+        "lines": [
+            (
+                "Integrate by parts, differentiating x. Substitute u = sec(x). Then sec(x)**2/2 has derivative sec(x)**2*tan(x), and tan(x)/2 has derivative sec(x)**2/2.",
+                r"Integrate by parts, differentiating \(x\). Substitute \(u=\sec x\). Then \(\sec^{2}x/2\) has derivative \(\sec^{2}x\tan x\), and \(\tan x/2\) has derivative \(\sec^{2}x/2\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "sec(x)**2/2", "sec(x)**2*tan(x)"),
+            ("diff_of", "tan(x)/2", "sec(x)**2/2"),
+            ("diff", "x*sec(x)**2/2 - tan(x)/2"),
+        ],
+    },
+    "YANG-1.6-P17": {
+        "final": "2**x*x/log(2) - 2**x/log(2)**2",
+        "lines": [
+            (
+                "Integrate by parts, differentiating x. The antiderivative of 2**x is 2**x/log(2).",
+                r"Integrate by parts, differentiating \(x\). The antiderivative of \(2^{x}\) is \(2^{x}/\log 2\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "2**x/log(2)", "2**x"),
+            ("diff", "2**x*x/log(2) - 2**x/log(2)**2"),
+        ],
+    },
+    "YANG-1.6-P18": {
+        "final": "x*sin(x) - x*cos(x) + sin(x) + cos(x)",
+        "lines": [
+            (
+                "Split into x*cos(x) and x*sin(x). Their antiderivatives are x*sin(x) + cos(x) and -x*cos(x) + sin(x).",
+                r"Split into \(x\cos x\) and \(x\sin x\). Their antiderivatives are \(x\sin x+\cos x\) and \(-x\cos x+\sin x\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "x*sin(x) + cos(x)", "x*cos(x)"),
+            ("diff_of", "-x*cos(x) + sin(x)", "x*sin(x)"),
+            ("diff", "x*sin(x) - x*cos(x) + sin(x) + cos(x)"),
+        ],
+    },
+    "YANG-1.6-P19": {
+        "final": "2*x**2*exp(x/2)/sqrt(x**2 + 6*x + 9) + 8*x*exp(x/2)/sqrt(x**2 + 6*x + 9) + 6*exp(x/2)/sqrt(x**2 + 6*x + 9)",
+        "lines": [
+            (
+                "On x > -3 the antiderivative 2*(x + 1)*exp(x/2) has derivative exp(x/2)*(x + 3). The two-sided quotient is 2*(x**2 + 4*x + 3)*exp(x/2)/sqrt(x**2 + 6*x + 9).",
+                r"On \(x>-3\) the antiderivative \(2(x+1)e^{x/2}\) has derivative \(e^{x/2}(x+3)\). The two-sided quotient is \(2(x^{2}+4x+3)e^{x/2}/\sqrt{x^{2}+6x+9}\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "2*(x + 1)*exp(x/2)", "exp(x/2)*(x + 3)"),
+            (
+                "eq",
+                "2*(x**2 + 4*x + 3)*exp(x/2)/sqrt(x**2 + 6*x + 9)",
+                "2*x**2*exp(x/2)/sqrt(x**2 + 6*x + 9) + 8*x*exp(x/2)/sqrt(x**2 + 6*x + 9) + 6*exp(x/2)/sqrt(x**2 + 6*x + 9)",
+            ),
+            (
+                "diff",
+                "2*x**2*exp(x/2)/sqrt(x**2 + 6*x + 9) + 8*x*exp(x/2)/sqrt(x**2 + 6*x + 9) + 6*exp(x/2)/sqrt(x**2 + 6*x + 9)",
+            ),
+        ],
+    },
+    "YANG-1.6-P20": {
+        "final": "2*sqrt(x)*log(x) - 4*sqrt(x)",
+        "lines": [
+            (
+                "Integrate by parts, differentiating log(x). The remaining integral of 2*x**(-1/2) has antiderivative 4*sqrt(x).",
+                r"Integrate by parts, differentiating \(\log x\). The remaining integral of \(2x^{-1/2}\) has antiderivative \(4\sqrt{x}\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "4*sqrt(x)", "2*x**(-1/2)"),
+            ("diff", "2*sqrt(x)*log(x) - 4*sqrt(x)"),
+        ],
+    },
+    # Section 1.7. Trig substitution. The guide prints no finals.
+    "YANG-1.7-P01": {
+        "final": "atan(sqrt(x**2 - 1))",
+        "lines": [
+            (
+                "Trig substitution x = sec(theta). Back-substitution stores atan(sqrt(x**2 - 1)), which matches both signs of x with |x| > 1.",
+                r"Trig substitution \(x=\sec\theta\). Back-substitution stores \(\arctan\sqrt{x^{2}-1}\), which matches both signs of \(x\) with \(|x|>1\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "atan(sqrt(x**2 - 1))"),
+        ],
+    },
+    "YANG-1.7-P02": {
+        "final": "sqrt(x**2 - 1)/x",
+        "lines": [
+            (
+                "Trig substitution x = sec(theta) collapses the integrand to cos(theta). Back-substitution gives sqrt(x**2 - 1)/x.",
+                r"Trig substitution \(x=\sec\theta\) collapses the integrand to \(\cos\theta\). Back-substitution gives \(\sqrt{x^{2}-1}/x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "sqrt(x**2 - 1)/x"),
+        ],
+    },
+    "YANG-1.7-P03": {
+        "final": "x/sqrt(1 - x**2)",
+        "lines": [
+            (
+                "Trig substitution x = sin(theta) turns the integrand into sec(theta)**2. Back-substitution gives x/sqrt(1 - x**2).",
+                r"Trig substitution \(x=\sin\theta\) turns the integrand into \(\sec^{2}\theta\). Back-substitution gives \(x/\sqrt{1-x^{2}}\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "x/sqrt(1 - x**2)"),
+        ],
+    },
+    "YANG-1.7-P04": {
+        "final": "x/sqrt(x**2 + 1)",
+        "lines": [
+            (
+                "Trig substitution x = tan(theta) turns the integrand into cos(theta). Back-substitution gives x/sqrt(x**2 + 1).",
+                r"Trig substitution \(x=\tan\theta\) turns the integrand into \(\cos\theta\). Back-substitution gives \(x/\sqrt{x^{2}+1}\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "x/sqrt(x**2 + 1)"),
+        ],
+    },
+    "YANG-1.7-P05": {
+        "final": "-x/sqrt(x**2 - 1)",
+        "lines": [
+            (
+                "Trig substitution x = sec(theta) turns the integrand into cos(theta)/sin(theta)**2. Back-substitution gives -x/sqrt(x**2 - 1).",
+                r"Trig substitution \(x=\sec\theta\) turns the integrand into \(\cos\theta/\sin^{2}\theta\). Back-substitution gives \(-x/\sqrt{x^{2}-1}\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "-x/sqrt(x**2 - 1)"),
+        ],
+    },
+    "YANG-1.7-P06": {
+        "final": "atan(x/2)/2",
+        "lines": [
+            (
+                "Trig substitution x = 2*tan(theta) collapses the integrand to 1/2. Back-substitution gives atan(x/2)/2.",
+                r"Trig substitution \(x=2\tan\theta\) collapses the integrand to \(1/2\). Back-substitution gives \(\arctan(x/2)/2\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "atan(x/2)/2"),
+        ],
+    },
+    "YANG-1.7-P07": {
+        "final": "-asin(x) - sqrt(1 - x**2)/x",
+        "lines": [
+            (
+                "Trig substitution x = sin(theta) turns the integrand into cot(theta)**2. Back-substitution gives -asin(x) - sqrt(1 - x**2)/x.",
+                r"Trig substitution \(x=\sin\theta\) turns the integrand into \(\cot^{2}\theta\). Back-substitution gives \(-\arcsin x-\sqrt{1-x^{2}}/x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "-asin(x) - sqrt(1 - x**2)/x"),
+        ],
+    },
+    "YANG-1.7-P08": {
+        "final": "x/sqrt(1 - x**2) - asin(x)",
+        "lines": [
+            (
+                "Trig substitution x = sin(theta) turns the integrand into tan(theta)**2. Back-substitution gives x/sqrt(1 - x**2) - asin(x).",
+                r"Trig substitution \(x=\sin\theta\) turns the integrand into \(\tan^{2}\theta\). Back-substitution gives \(x/\sqrt{1-x^{2}}-\arcsin x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "x/sqrt(1 - x**2) - asin(x)"),
+        ],
+    },
+    "YANG-1.7-P09": {
+        "final": "asin(x/3)",
+        "lines": [
+            (
+                "Trig substitution x = 3*sin(theta) collapses the integrand to 1. Back-substitution gives asin(x/3).",
+                r"Trig substitution \(x=3\sin\theta\) collapses the integrand to \(1\). Back-substitution gives \(\arcsin(x/3)\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "asin(x/3)"),
+        ],
+    },
+    "YANG-1.7-P10": {
+        "final": "sqrt(x**2 - 1) - atan(sqrt(x**2 - 1))",
+        "lines": [
+            (
+                "Trig substitution x = sec(theta) turns the integrand into tan(theta)**2. Back-substitution stores sqrt(x**2 - 1) - atan(sqrt(x**2 - 1)), which matches both signs of x with |x| > 1.",
+                r"Trig substitution \(x=\sec\theta\) turns the integrand into \(\tan^{2}\theta\). Back-substitution stores \(\sqrt{x^{2}-1}-\arctan\sqrt{x^{2}-1}\), which matches both signs of \(x\) with \(|x|>1\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "sqrt(x**2 - 1) - atan(sqrt(x**2 - 1))"),
         ],
     },
     "YANG-1.8-P01": {
