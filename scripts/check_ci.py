@@ -5,6 +5,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 REQUIRED = (
     "ci",
+    "docs",
     "agents",
     "structure",
     "templates",

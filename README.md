@@ -47,13 +47,4 @@ That's it. 🎉 Setup is one script, `scripts/setup.py`, that works the same on 
 
 Prefer doing it by hand, or maintaining the pack? See [docs/setup-manual.md](docs/setup-manual.md).
 
-## 🧩 Agent skills
-
-Skills live in `.agents/skills/`; `.cursor/skills/` and `.claude/skills/` link to them.
-
-- `.agents/skills/setup-integration-bee/SKILL.md`: set up a fresh clone
-- `.agents/skills/integration-bee-companion/SKILL.md`: the coach
-- `.agents/skills/verify-integration-bee/SKILL.md`: drive and check the CLI
-- `.agents/skills/formal-verify-integration-bee/SKILL.md`: formal checks
-
-Contributing agents start with [AGENTS.md](AGENTS.md).
+Contributing? Agents start with [AGENTS.md](AGENTS.md); people with [docs/setup-manual.md](docs/setup-manual.md).

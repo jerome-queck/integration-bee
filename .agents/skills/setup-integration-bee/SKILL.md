@@ -10,6 +10,7 @@ description: Set up a fresh clone of the Integration Bee pack. Use when someone 
    - Windows: `py scripts\setup.py`
 2. Verify: the last line is `SETUP OK` and the output includes `READY integration-bee`. If it prints `FAIL`, fix the named step (usually: install Python 3.11+) and run it again.
 3. Use `.venv` Python for later commands (`.venv/bin/python` or `.venv\Scripts\python.exe`).
-4. Tell the person it is ready, then invoke the `integration-bee-companion` skill to start studying.
+4. Load context: read `AGENTS.md` (gates and rules) and `docs/skills.md` (every skill and when to use it). Architecture is `docs/architecture.md`.
+5. Tell the person it is ready, then invoke the `integration-bee-companion` skill to start studying.
 
 Only maintainers who run `make check` need TeX, Java, and the pstack plugin. Those steps are in `docs/setup-manual.md`.

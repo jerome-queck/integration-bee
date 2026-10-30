@@ -4,27 +4,16 @@ This repository is the public study pack for the UK University Integration Bee. 
 
 ## Setup
 
-Run `python3 scripts/setup.py` (Windows: `py scripts\setup.py`). The setup skill is `.agents/skills/setup-integration-bee/SKILL.md`. Or install Python 3.11 or newer, SymPy, and PyYAML by hand.
+Run `python3 scripts/setup.py` (Windows: `py scripts\setup.py`). It is the setup skill `.agents/skills/setup-integration-bee/SKILL.md`: it makes `.venv/` from the pinned `requirements.txt` and runs `doctor`. Manual steps, TeX, Java, and pstack are in `docs/setup-manual.md`. Point Git at the drift hook once with `make hooks`. Install Python 3.11 or newer, SymPy, and PyYAML by hand only if the script cannot run.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
+## Gates
 
-Install `latexmk` and `pdflatex` when you build PDFs. Point Git at the drift hook once.
+- Run `make check` before every pull request. CI runs the same command. On a shared box, run it through `/home/box/box-ops/heavy --bot <bot> --class test -- make check`, which queues heavy work so at most two full checks run at once.
+- `make docs` is part of `make check`: every path or skill named in repo markdown must exist (`scripts/check_doc_paths.py`), and code that changes without its docs fails (`scripts/check_docs_drift.py`).
+- `make sanity` is the fast numeric check for solutions. The rule is under Decisions below.
+- `verify/all_rounds_check.py` passes when the Round 1, Round 2, and Round 3 PDFs match `past/inventory.json`. The check requires the committed PDFs.
 
-```bash
-make hooks
-```
-
-## Check
-
-Run this before every pull request. CI runs the same command.
-
-```bash
-make check
-```
-
-`verify/all_rounds_check.py` passes when the Round 1, Round 2, and Round 3 PDFs match `past/inventory.json`. The check requires the committed PDFs.
+Architecture and the learner turn flow are in `docs/architecture.md`. Every skill is listed in `docs/skills.md`.
 
 Concept units `01-foundations-substitution` through `36-unique-tricks` (36 directories) have machine drills in `verify/drills_unit*.json` (300 drills).
 
@@ -112,7 +101,7 @@ Regenerate this file with `python3 scripts/generate_agents_md.py` after you add 
 
 ## Boundaries
 
-- Open a pull request for changes. Do not merge it, and do not force-push, unless the operator authorizes that merge.
+- Open a pull request for changes. Do not merge it unless the operator authorizes that merge. A merge needs `make check` passing, green CI, and a squash-merge. Never force-push or rewrite pushed history.
 - Do not commit `progress.local.json`, `trackers/live/`, or `.venv/`.
 - The unpacked contest PDFs and the site PDFs are committed reference copies under `sources/past/` and `sources/`. `sources/fetch.sh` can still verify checksums. Do not commit `Resource_pack.zip`.
 - Do not commit a plaintext copy of the Yang guide. The committed copy is `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`.

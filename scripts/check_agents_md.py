@@ -13,6 +13,7 @@ from generate_agents_md import (
     SCENARIOS,
     SKILL_NAMES,
     render,
+    render_skills,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -104,6 +105,8 @@ FILE_MARKERS = {
         "docs/setup-manual.md",
         "docs/architecture.md",
         "mermaid",
+    ),
+    "docs/setup-manual.md": (
         ".agents/skills/integration-bee-companion/SKILL.md",
         ".agents/skills/verify-integration-bee/SKILL.md",
         ".agents/skills/formal-verify-integration-bee/SKILL.md",
@@ -134,6 +137,11 @@ AGENTS_MARKERS = (
     ".agents/skills/setup-integration-bee/SKILL.md",
     "poteto-mode",
     "core.symlinks",
+    "heavy",
+    "make sanity",
+    "learning-capture.md",
+    "force-push",
+    "docs/architecture.md",
 )
 
 FORBIDDEN = (
@@ -282,6 +290,9 @@ def main() -> None:
     current = (ROOT / "AGENTS.md").read_text()
     if current != expected:
         print("AGENTS.md drifted. Run python3 scripts/generate_agents_md.py", file=sys.stderr)
+        fail = 1
+    if (ROOT / "docs" / "skills.md").read_text() != render_skills():
+        print("docs/skills.md drifted. Run python3 scripts/generate_agents_md.py", file=sys.stderr)
         fail = 1
     for marker in file_gaps(expected, AGENTS_MARKERS):
         print(f"FAIL AGENTS.md missing harness marker {marker}", file=sys.stderr)
