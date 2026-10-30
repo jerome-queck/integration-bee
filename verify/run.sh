@@ -88,14 +88,12 @@ echo "== all_rounds_check (Resource pack r1|r2|r3) =="
 
 echo "== problem catalog =="
 "$PY" "$ROOT/verify/catalog_check.py" || fail=1
+echo "== yang worked steps =="
+"$PY" "$ROOT/verify/yang_worked_check.py" || fail=1
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail invented-sympy || fail=1
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail missing-cite || fail=1
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail yang-invented || fail=1
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail dropped-record || fail=1
-
-echo "== yang worked steps =="
-"$PY" "$ROOT/verify/yang_worked_steps.py" || fail=1
-"$PY" "$ROOT/verify/yang_worked_steps.py" --expect-fail || fail=1
 
 echo "== never-impossible =="
 "$PY" "$ROOT/verify/never_impossible_check.py" || fail=1
