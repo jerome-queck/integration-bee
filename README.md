@@ -18,14 +18,11 @@ You chat with an AI coach. It finds what you already know, teaches what you don'
 ## 🗺️ How it fits together
 
 ```mermaid
-flowchart LR
-    You([🙋 You]) -- chat & photos --> Coach[🤖 Coach agent<br/>integration-bee-companion skill]
-    Coach -- one JSON turn --> CLI[⚙️ control-integration-bee]
-    CLI --> Pack[(📚 Contest pack<br/>Rounds 1–3)]
-    CLI --> Yang[(📖 Yang set)]
-    CLI --> Progress[(📝 Your progress<br/>stays on your machine)]
-    Checker[✅ Checker<br/>SymPy + make check] -. proves every answer .-> Pack
-    Checker -. proves every answer .-> Yang
+flowchart TD
+    You([🙋 You]) --> Coach[🤖 Coach agent]
+    Coach --> CLI[⚙️ Pack CLI]
+    CLI --> Problems[(📚 Contest pack + 📖 Yang set)]
+    Checker[✅ Checker] -. proves answers .-> Problems
 ```
 
 More detail: [docs/architecture.md](docs/architecture.md).

@@ -2,6 +2,15 @@
 
 How the pack, the Yang set, the checker, and the companion fit together. The short picture is the diagram in the [README](../README.md); setup lives in [setup-manual.md](setup-manual.md).
 
+## Diagram detail
+
+The README diagram is kept small (five nodes, top-down) so it fits GitHub's default view; it draws the contest pack and the Yang set as one store and leaves out learner progress. The full picture:
+
+- You chat with the coach and can send photos of handwritten working.
+- The coach is the `integration-bee-companion` skill. It sends one JSON turn to `scripts/control-integration-bee`.
+- The CLI reads the contest pack (Rounds 1–3) and the Yang set from `problems/records.jsonl`, and writes your progress to the data directory (`trackers/live` by default). Progress stays on your machine.
+- The checker (SymPy plus `make check`) proves every stored answer in the pack and the Yang set.
+
 ## Start
 
 The learner talks to the companion and does not run the CLI. The companion reads `.agents/skills/integration-bee-companion/SKILL.md` and writes one JSON turn.
