@@ -344,25 +344,25 @@ SPECS: dict[str, dict] = {
         ],
     },
     "YANG-1.2-P11": {
-        "final": "3*(x - 2024)**(2/3)/2",
+        "final": "3*Abs(x - 2024)**(2/3)/2",
         "lines": [
             (
                 "Substitution u = x - 2024. The derivative of x - 2024 is 1.",
                 r"Substitution \(u=x-2024\). The derivative of \(x-2024\) is \(1\).",
             ),
             (
-                "(x - 2024)**(2/3)/(2/3) equals 3*(x - 2024)**(2/3)/2.",
-                r"\((x-2024)^{2/3}/(2/3)\) equals \(3(x-2024)^{2/3}/2\).",
+                "Read (x - 2024)**(-1/3) as the real cube root, defined for every x except 2024. For x > 2024, 3*Abs(x - 2024)**(2/3)/2 equals 3*(x - 2024)**(2/3)/2.",
+                r"Read \((x-2024)^{-1/3}\) as the real cube root, defined for every \(x\neq 2024\). For \(x>2024\), \(3|x-2024|^{2/3}/2\) equals \(3(x-2024)^{2/3}/2\).",
             ),
             (
-                "The antiderivative is 3*(x - 2024)**(2/3)/2.",
-                r"The antiderivative is \(3(x-2024)^{2/3}/2\).",
+                "The derivative of 3*Abs(x - 2024)**(2/3)/2 is (x - 2024)/Abs(x - 2024)**(4/3), the real cube root of 1/(x - 2024) on both sides of 2024. The antiderivative is 3*Abs(x - 2024)**(2/3)/2.",
+                r"The derivative of \(3|x-2024|^{2/3}/2\) is \((x-2024)/|x-2024|^{4/3}\), the real cube root of \(1/(x-2024)\) on both sides of \(2024\). The antiderivative is \(3|x-2024|^{2/3}/2\).",
             ),
         ],
         "steps": [
             ("diff_of", "x - 2024", "1"),
-            ("eq", "(x - 2024)**(2/3)/(2/3)", "3*(x - 2024)**(2/3)/2"),
-            ("diff", "3*(x - 2024)**(2/3)/2"),
+            ("diff_of", "3*Abs(x - 2024)**(2/3)/2", "(x - 2024)/Abs(x - 2024)**(4/3)"),
+            ("diff", "3*Abs(x - 2024)**(2/3)/2"),
         ],
     },
     "YANG-1.2-P12": {
@@ -2174,19 +2174,29 @@ _add(
 )
 
 _add(
-    'YANG-1.15-P08',
-    '2*sqrt(2)*sin(x/2)',
-    [('1 + cos(x) equals 2*cos(x/2)**2, so (sqrt(2)*cos(x/2))**2 equals 1 + cos(x).',
-  '\\(1+\\cos x\\) equals \\(2\\cos^{2}(x/2)\\), so \\((\\sqrt{2}\\cos(x/2))^{2}\\) equals '
-  '\\(1+\\cos x\\).'),
- ('The derivative of 2*sqrt(2)*sin(x/2) is sqrt(2)*cos(x/2).',
-  'The derivative of \\(2\\sqrt{2}\\sin(x/2)\\) is \\(\\sqrt{2}\\cos(x/2)\\).'),
- ('That derivative and sqrt(1 + cos(x)) have the same square, and they agree at 0.',
-  'That derivative and \\(\\sqrt{1+\\cos x}\\) have the same square, and they agree at \\(0\\).')],
-    [('eq', '1 + cos(x)', '2*cos(x/2)**2'),
- ('eq', '(sqrt(2)*cos(x/2))**2', '1 + cos(x)'),
- ('diff_of', '2*sqrt(2)*sin(x/2)', 'sqrt(2)*cos(x/2)'),
- ('sqrt_branch', '2*sqrt(2)*sin(x/2)', '0')],
+    "YANG-1.15-P08",
+    "2*sin(x)/sqrt(cos(x) + 1)",
+    [
+        (
+            "Half-angle: 1 + cos(x) = 2*cos(x/2)**2, so sqrt(1 + cos(x)) = sqrt(2)*Abs(cos(x/2)). The integrand is not sqrt(2)*cos(x/2) where cos(x/2) < 0.",
+            r"Half-angle: \(1+\cos x=2\cos^{2}(x/2)\), so \(\sqrt{1+\cos x}=\sqrt{2}|\cos(x/2)|\). The integrand is not \(\sqrt{2}\cos(x/2)\) where \(\cos(x/2)<0\).",
+        ),
+        (
+            "On each interval the antiderivative is 2*sqrt(2)*sign(cos(x/2))*sin(x/2). Since sin(x) = 2*sin(x/2)*cos(x/2), that equals 2*sin(x)/sqrt(cos(x) + 1) (the squares (2*sin(x)/sqrt(cos(x) + 1))**2 and (2*sqrt(2)*sin(x/2))**2 agree and the signs match), valid for every x with cos(x/2) != 0.",
+            r"On each interval the antiderivative is \(2\sqrt{2}\operatorname{sgn}(\cos(x/2))\sin(x/2)\). Since \(\sin x=2\sin(x/2)\cos(x/2)\), that equals \(2\sin x/\sqrt{1+\cos x}\) (the squares agree and the signs match), valid for every \(x\) with \(\cos(x/2)\neq 0\).",
+        ),
+        (
+            "The derivative of 2*sin(x)/sqrt(cos(x) + 1) is sqrt(1 + cos(x)). The antiderivative is 2*sin(x)/sqrt(cos(x) + 1).",
+            r"The derivative of \(2\sin x/\sqrt{1+\cos x}\) is \(\sqrt{1+\cos x}\). The antiderivative is \(2\sin x/\sqrt{1+\cos x}\).",
+        ),
+    ],
+    [
+        ("eq", "1 + cos(x)", "2*cos(x/2)**2"),
+        ("eq", "sin(x)", "2*sin(x/2)*cos(x/2)"),
+        ("eq", "(2*sin(x)/sqrt(cos(x) + 1))**2", "(2*sqrt(2)*sin(x/2))**2"),
+        ("diff_of", "2*sin(x)/sqrt(cos(x) + 1)", "sqrt(1 + cos(x))"),
+        ("diff", "2*sin(x)/sqrt(cos(x) + 1)"),
+    ],
 )
 
 _add(
@@ -3571,28 +3581,32 @@ _add(
 
 _add(
     "YANG-2.5-P12",
-    "x**3*asec(x)/3 - x*sqrt(x**2 - 1)/6 - log(x + sqrt(x**2 - 1))/6",
+    "x**3*asec(x)/3 - Abs(x)*sqrt(x**2 - 1)/6 - log(Abs(x) + sqrt(x**2 - 1))/6",
     [
         (
-            "Parts with u = asec(x). For x > 1 the derivative of asec(x) is 1/(x*sqrt(x**2 - 1)), so the remainder is x**2/(3*sqrt(x**2 - 1)).",
-            r"Parts with \(u=\operatorname{arcsec} x\). For \(x>1\) the derivative of \(\operatorname{arcsec} x\) is \(1/(x\sqrt{x^{2}-1})\), so the remainder is \(x^{2}/(3\sqrt{x^{2}-1})\).",
+            "Parts with u = asec(x), defined for Abs(x) >= 1. The derivative of asec(x) is 1/(Abs(x)*sqrt(x**2 - 1)), so the remainder is x**3/(3*Abs(x)*sqrt(x**2 - 1)).",
+            r"Parts with \(u=\operatorname{arcsec} x\), defined for \(|x|\ge 1\). The derivative of \(\operatorname{arcsec} x\) is \(1/(|x|\sqrt{x^{2}-1})\), so the remainder is \(x^{3}/(3|x|\sqrt{x^{2}-1})\).",
         ),
         (
-            "x**3/(3*x*sqrt(x**2 - 1)) equals that remainder. Its antiderivative is x*sqrt(x**2 - 1)/6 + log(x + sqrt(x**2 - 1))/6.",
-            r"\(x^{3}/(3x\sqrt{x^{2}-1})\) equals that remainder. Its antiderivative is \(x\sqrt{x^{2}-1}/6+\log(x+\sqrt{x^{2}-1})/6\).",
+            "That remainder equals x*Abs(x)/(3*sqrt(x**2 - 1)). Its antiderivative is Abs(x)*sqrt(x**2 - 1)/6 + log(Abs(x) + sqrt(x**2 - 1))/6 on both x > 1 and x < -1.",
+            r"That remainder equals \(x|x|/(3\sqrt{x^{2}-1})\). Its antiderivative is \(|x|\sqrt{x^{2}-1}/6+\log(|x|+\sqrt{x^{2}-1})/6\) on both \(x>1\) and \(x<-1\).",
+        ),
+        (
+            "The antiderivative is x**3*asec(x)/3 - Abs(x)*sqrt(x**2 - 1)/6 - log(Abs(x) + sqrt(x**2 - 1))/6.",
+            r"The antiderivative is \(\frac{x^{3}}{3}\operatorname{arcsec} x-\frac{|x|\sqrt{x^{2}-1}}{6}-\frac{1}{6}\log\left(|x|+\sqrt{x^{2}-1}\right)\).",
         ),
     ],
     [
-        ("diff_of", "asec(x)", "1/(x*sqrt(x**2 - 1))"),
-        ("eq", "x**3/(3*x*sqrt(x**2 - 1))", "x**2/(3*sqrt(x**2 - 1))"),
+        ("diff_of", "asec(x)", "1/(Abs(x)*sqrt(x**2 - 1))"),
+        ("eq", "x**3/(3*Abs(x)*sqrt(x**2 - 1))", "x*Abs(x)/(3*sqrt(x**2 - 1))"),
         (
             "diff_of",
-            "x*sqrt(x**2 - 1)/6 + log(x + sqrt(x**2 - 1))/6",
-            "x**2/(3*sqrt(x**2 - 1))",
+            "Abs(x)*sqrt(x**2 - 1)/6 + log(Abs(x) + sqrt(x**2 - 1))/6",
+            "x*Abs(x)/(3*sqrt(x**2 - 1))",
         ),
         (
             "diff",
-            "x**3*asec(x)/3 - x*sqrt(x**2 - 1)/6 - log(x + sqrt(x**2 - 1))/6",
+            "x**3*asec(x)/3 - Abs(x)*sqrt(x**2 - 1)/6 - log(Abs(x) + sqrt(x**2 - 1))/6",
         ),
     ],
 )
@@ -3726,28 +3740,27 @@ _add(
 
 _add(
     "YANG-2.6-P01",
-    "2*sqrt(2)*sin(x/2)",
+    "2*sin(x)/sqrt(cos(x) + 1)",
     [
         (
-            "Half-angle: 1 + cos(x) = 2*cos(x/2)**2, so sqrt(2*cos(x/2)**2) = sqrt(2)*Abs(cos(x/2)).",
-            r"Half-angle: \(1+\cos x=2\cos^{2}(x/2)\), so \(\sqrt{2\cos^{2}(x/2)}=\sqrt{2}|\cos(x/2)|\).",
+            "Half-angle: 1 + cos(x) = 2*cos(x/2)**2, so sqrt(1 + cos(x)) = sqrt(2)*Abs(cos(x/2)). The integrand is not sqrt(2)*cos(x/2) where cos(x/2) < 0.",
+            r"Half-angle: \(1+\cos x=2\cos^{2}(x/2)\), so \(\sqrt{1+\cos x}=\sqrt{2}|\cos(x/2)|\). The integrand is not \(\sqrt{2}\cos(x/2)\) where \(\cos(x/2)<0\).",
         ),
         (
-            "Where cos(x/2) > 0 the integrand is sqrt(2)*cos(x/2), and the derivative of 2*sqrt(2)*sin(x/2) is that factor.",
-            r"Where \(\cos(x/2)>0\) the integrand is \(\sqrt{2}\cos(x/2)\), and the derivative of \(2\sqrt{2}\sin(x/2)\) is that factor.",
+            "On each interval the antiderivative is 2*sqrt(2)*sign(cos(x/2))*sin(x/2). Since sin(x) = 2*sin(x/2)*cos(x/2), that equals 2*sin(x)/sqrt(cos(x) + 1) (the squares (2*sin(x)/sqrt(cos(x) + 1))**2 and (2*sqrt(2)*sin(x/2))**2 agree and the signs match), valid for every x with cos(x/2) != 0.",
+            r"On each interval the antiderivative is \(2\sqrt{2}\operatorname{sgn}(\cos(x/2))\sin(x/2)\). Since \(\sin x=2\sin(x/2)\cos(x/2)\), that equals \(2\sin x/\sqrt{1+\cos x}\) (the squares agree and the signs match), valid for every \(x\) with \(\cos(x/2)\neq 0\).",
         ),
         (
-            "The squares of the two sides agree, and sqrt(2)*cos(0) = sqrt(1 + cos(0)) = sqrt(2).",
-            r"The squares of the two sides agree, and \(\sqrt{2}\cos 0=\sqrt{1+\cos 0}=\sqrt{2}\).",
+            "The derivative of 2*sin(x)/sqrt(cos(x) + 1) is sqrt(1 + cos(x)). The antiderivative is 2*sin(x)/sqrt(cos(x) + 1).",
+            r"The derivative of \(2\sin x/\sqrt{1+\cos x}\) is \(\sqrt{1+\cos x}\). The antiderivative is \(2\sin x/\sqrt{1+\cos x}\).",
         ),
     ],
     [
         ("eq", "1 + cos(x)", "2*cos(x/2)**2"),
-        ("eq", "sqrt(2*cos(x/2)**2)", "sqrt(2)*Abs(cos(x/2))"),
-        ("diff_of", "2*sqrt(2)*sin(x/2)", "sqrt(2)*cos(x/2)"),
-        ("eq", "sqrt(2)*cos(0)", "sqrt(2)"),
-        ("eq", "sqrt(1 + cos(0))", "sqrt(2)"),
-        ("branch", "2*sqrt(2)*sin(x/2)"),
+        ("eq", "sin(x)", "2*sin(x/2)*cos(x/2)"),
+        ("eq", "(2*sin(x)/sqrt(cos(x) + 1))**2", "(2*sqrt(2)*sin(x/2))**2"),
+        ("diff_of", "2*sin(x)/sqrt(cos(x) + 1)", "sqrt(1 + cos(x))"),
+        ("diff", "2*sin(x)/sqrt(cos(x) + 1)"),
     ],
 )
 
@@ -4524,7 +4537,7 @@ def check_prose(row: dict, spec: dict) -> None:
         raise AssertionError(f"{row['id']} plain text drifted")
     if row.get("worked_solution_latex") != latex:
         raise AssertionError(f"{row['id']} latex drifted")
-    if row.get("worked_solution_origin") != "missing":
+    if row.get("worked_solution_origin") != "derived":
         raise AssertionError(f"{row['id']} origin changed")
 
 
@@ -5730,7 +5743,7 @@ def _s111_check_prose(row: dict, spec: dict) -> None:
         raise AssertionError(f"{row['id']} plain text drifted")
     if row.get("worked_solution_latex") != latex:
         raise AssertionError(f"{row['id']} latex drifted")
-    if row.get("worked_solution_origin") != "missing":
+    if row.get("worked_solution_origin") != "derived":
         raise AssertionError(f"{row['id']} origin changed")
 
 
@@ -6641,7 +6654,7 @@ def _s27_check_text(rows):
         latex = row.get("worked_solution_latex")
         _s27_require(isinstance(plain, str) and plain.strip(), ident + " missing plain")
         _s27_require(isinstance(latex, str) and latex.strip(), ident + " missing latex")
-        _s27_require(row.get("worked_solution_origin") == "missing", ident + " origin")
+        _s27_require(row.get("worked_solution_origin") == "derived", ident + " origin")
         _s27_require(plain.strip().endswith("The answer is " + row["answer_sympy"] + "."), ident + " plain answer")
         _s27_require(latex.strip().endswith("The answer is \\(" + row["answer_latex"] + "\\)."), ident + " latex answer")
 
@@ -6722,6 +6735,89 @@ def _final_main(argv: list[str]) -> int:
 
 
 LANE_MAINS.append(_final_main)
+
+
+# ---- real-domain gate: an indefinite answer must hold on the whole real domain ----
+# The symbolic checks above may pass an answer that is right on only part of the
+# domain (for example 2*sqrt(2)*sin(x/2) for sqrt(1 + cos(x)), right only where
+# cos(x/2) > 0). Here every Yang indefinite answer is differentiated numerically
+# at real points on both sides of 0. A point counts when the integrand is real
+# and finite there. An odd root such as (x - 2024)**(-1/3) means the real root.
+# The answer is evaluated in the complex plane, so a log of a negative number
+# (a constant i*pi) still passes.
+REAL_POINTS = ("-7.3", "-3.1", "-1.7", "-0.6", "0.4", "1.3", "2.9", "6.1")
+REAL_STEP = "1e-12"
+REAL_TOL = "1e-6"
+# Rows that still fail, each awaiting an approved answer change. Odd cube roots
+# of a negative base: the stored answers use principal roots. This set must equal
+# the failing set exactly, so a fix or a new failure both stop the gate.
+REAL_KNOWN_PARTIAL = frozenset({"YANG-2.3-P06", "YANG-2.3-P13"})
+
+
+def _real_roots(expr):
+    def fix(node):
+        exp = node.exp
+        if exp.is_Rational and not exp.is_Integer and exp.q % 2 == 1:
+            return sp.sign(node.base) ** exp.p * sp.Abs(node.base) ** exp
+        return node
+
+    return expr.replace(lambda node: node.is_Pow, fix)
+
+
+def _real_number(value, digits: int):
+    value = sp.N(value, digits)
+    if not value.is_number or value.has(sp.nan, sp.zoo, sp.oo, -sp.oo):
+        return None
+    return value
+
+
+def real_domain_failures(row: dict) -> list[str]:
+    variable = row.get("variable") or "x"
+    symbol = pack_gate.namespace(variable)[variable]
+    integrand = _real_roots(pack_gate._parse(row["sympy_expr"], variable))
+    answer = pack_gate._parse(row["answer_sympy"], variable)
+    step = sp.Float(REAL_STEP, 40)
+    tol = sp.Float(REAL_TOL)
+    bad = []
+    for text in REAL_POINTS:
+        point = sp.Float(text, 40)
+        value = _real_number(integrand.subs(symbol, point), 30)
+        if value is None:
+            continue
+        real, imag = value.as_real_imag()
+        if abs(imag) > sp.Float("1e-20"):
+            continue
+        upper = _real_number(answer.subs(symbol, point + step), 40)
+        lower = _real_number(answer.subs(symbol, point - step), 40)
+        if upper is None or lower is None or abs((upper - lower) / (2 * step) - real) > tol * (1 + abs(real)):
+            bad.append(text)
+    return bad
+
+
+def _real_main(argv: list[str]) -> int:
+    if real_domain_failures({"sympy_expr": "sqrt(cos(x) + 1)", "answer_sympy": "2*sqrt(2)*sin(x/2)"}) == []:
+        print("FAIL real-domain gate accepted a half-domain answer", file=sys.stderr)
+        return 1
+    failing = {}
+    rows = load_rows()
+    for row in rows:
+        if row.get("source") == "yang_book" and row.get("kind") == "indefinite":
+            bad = real_domain_failures(row)
+            if bad:
+                failing[row["id"]] = bad
+    for ident in sorted(set(failing) - REAL_KNOWN_PARTIAL):
+        print(f"FAIL {ident} answer is wrong on part of the real domain, at x = {failing[ident]}", file=sys.stderr)
+    stale = sorted(REAL_KNOWN_PARTIAL - set(failing))
+    if stale:
+        print(f"FAIL REAL_KNOWN_PARTIAL lists rows that now pass: {stale}", file=sys.stderr)
+    if set(failing) != REAL_KNOWN_PARTIAL:
+        return 1
+    count = sum(1 for row in rows if row.get("source") == "yang_book" and row.get("kind") == "indefinite")
+    print(f"PASS real-domain derivative check ({count} indefinite rows, known partial {sorted(REAL_KNOWN_PARTIAL)})")
+    return 0
+
+
+LANE_MAINS.append(_real_main)
 
 
 def main(argv: list[str]) -> int:

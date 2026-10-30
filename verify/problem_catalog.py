@@ -18,7 +18,8 @@ SAMPLE_ANSWERS_PDF = "sources/Integration_bee_sample_problems_answers.pdf"
 SAMPLE_SOLUTIONS_PDF = "sources/UK_University_integration_bee_sample_problems_solutions.pdf"
 VERIFIES = frozenset({"manual", "unchecked", "sympy"})
 SYMPY_VARIABLES = frozenset({"x", "t", "X", "e"})
-ORIGINS = frozenset({"missing", "pdf_copy"})
+# derived: a worked solution this repo wrote and the gate checks.
+ORIGINS = frozenset({"missing", "pdf_copy", "derived"})
 YANG_WITH_ANSWER = frozenset({
     "YANG-1.1-P01",
     "YANG-1.1-P02",
@@ -376,7 +377,7 @@ def index_view(row: dict) -> dict:
         "kind": row.get("kind"),
         "verify": row.get("verify"),
         "has_answer": bool(row.get("answer_plain")),
-        "has_worked": row.get("worked_solution_origin") == "pdf_copy",
+        "has_worked": row.get("worked_solution_origin") in {"pdf_copy", "derived"},
     }
 
 
@@ -394,7 +395,7 @@ def prompt_view(row: dict) -> dict:
         "integrand_plain": row.get("integrand_plain"),
         "verify": row.get("verify"),
         "has_answer": bool(row.get("answer_plain")),
-        "has_worked": row.get("worked_solution_origin") == "pdf_copy",
+        "has_worked": row.get("worked_solution_origin") in {"pdf_copy", "derived"},
         "yang": list(row.get("yang") or []),
     }
     if row.get("section"):
@@ -437,11 +438,11 @@ def _blank(value) -> bool:
 
 
 def _derived_worked(row: dict) -> bool:
-    """A Yang writeup stores both texts and keeps origin missing.
+    """A Yang writeup stores both texts and has origin derived.
 
     pdf_copy remains an extract from a PDF, so this pair does not change that count.
     """
-    if row.get("source") != "yang_book" or row.get("worked_solution_origin") != "missing":
+    if row.get("source") != "yang_book" or row.get("worked_solution_origin") != "derived":
         return False
     plain = row.get("worked_solution_plain")
     latex = row.get("worked_solution_latex")
