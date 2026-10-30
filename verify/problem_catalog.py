@@ -485,8 +485,16 @@ def _sympy_shape(row: dict) -> str | None:
             return f"{ident} non-bounded kind has limits"
     elif not isinstance(limits, list) or len(limits) != 2 or any(_blank(item) or not isinstance(item, str) for item in limits):
         return f"{ident} definite limits"
-    if row.get("worked_solution_latex") is not None:
-        return f"{ident} invented worked latex"
+    worked_latex = row.get("worked_solution_latex")
+    if worked_latex is not None:
+        plain = row.get("worked_solution_plain")
+        if (
+            row.get("worked_solution_origin") != "missing"
+            or _blank(plain)
+            or not isinstance(worked_latex, str)
+            or _blank(worked_latex)
+        ):
+            return f"{ident} invented worked latex"
     return None
 
 
@@ -680,9 +688,14 @@ def catalog_problem(rows: list[dict]) -> str | None:
                 return f"{row.get('id')} answered row is not manual"
             if not has_answer and row.get("verify") != "unchecked":
                 return f"{row.get('id')} unanswered row is not unchecked"
-        worked = not _blank(row.get("worked_solution_plain"))
+        plain_filled = not _blank(row.get("worked_solution_plain"))
+        worked_latex = row.get("worked_solution_latex")
+        latex_filled = isinstance(worked_latex, str) and not _blank(worked_latex)
         origin = row.get("worked_solution_origin")
-        if worked != (origin == "pdf_copy"):
+        if origin == "pdf_copy":
+            if not plain_filled or worked_latex is not None:
+                return f"{row.get('id')} worked text and origin diverged"
+        elif plain_filled != latex_filled or (worked_latex is not None and not latex_filled):
             return f"{row.get('id')} worked text and origin diverged"
         pack = row.get("source") == "resource_pack"
         if pack == (row.get("round") == "yang"):
