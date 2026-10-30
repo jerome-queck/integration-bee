@@ -23,3 +23,5 @@ Stored `answer_sympy`: `log(3)/4`.
 ## SymPy self-check
 
 `verify/pack_gate.py` proves this row by `definite` comparison of the stored fields. The stored value is the exact evaluation of the printed limits. `make check` re-proves those fields. Numeric agreement is not the proof.
+
+`verify/yang_worked_check.py` rechecks the worked solution stored on this row. Each indefinite antiderivative is differentiated, and each definite intermediate is an exact identity.
