@@ -146,3 +146,5 @@ One-way choices are in `docs/decisions/`.
 Before editing pack manuals, read the [source conflicts registry](docs/decisions/0016-pack-source-holds.md). Preserve conflicting source marks in the notes, certify the printed problem with an exact gate-accepted answer, and update answer citations, grading fixtures, and counts together. Do not invent agreement with a wrong mark.
 
 A study turn writes learner state only. When teaching or a solved integral should change the pack, follow [learning capture](docs/learning-capture.md).
+
+Solution skepticism: any agent that touches a solution may question it. Run `make sanity` (or `make sanity IDS="<id> ..."`) as a quick numeric check. It does not block the learner reply or the current pull request. A `MISMATCH` is checked against the problem source and fixed in a follow-up pull request; `UNCONFIRMED` stays listed, never labelled impossible.

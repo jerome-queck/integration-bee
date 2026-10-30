@@ -123,6 +123,10 @@ def check_r1_2020_q11() -> None:
     integrand = (3 * x**10 + 2 * x**8 - 2) * (x**10 + x**8 + 1) ** sp.Rational(1, 4) / x**6
     antideriv = sp.Rational(2, 5) * (x**6 + x**4 + x ** (-4)) ** sp.Rational(5, 4)
     _eq(sp.diff(antideriv, x), integrand)
+    y = sp.symbols("y", real=True, nonzero=True)
+    real_integrand = (3 * y**10 + 2 * y**8 - 2) * (y**10 + y**8 + 1) ** sp.Rational(1, 4) / y**6
+    stored = 2 * (y**10 + y**8 + 1) ** sp.Rational(5, 4) / (5 * y**5)
+    _eq(sp.diff(stored, y), real_integrand)
 
 
 def check_r1_2020_q13() -> None:

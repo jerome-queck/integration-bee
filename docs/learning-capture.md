@@ -4,6 +4,14 @@ Any agent that teaches a concept or gives a solution updates the pack when the c
 
 GitHub tip is the source of truth. A fleet copy of `STATE.md` is not in this repo and does not authorize a write.
 
+## Solution skepticism
+
+Any agent that touches a solution has the right, and the duty, to question it, without slowing the work:
+
+- Run `make sanity` (rows changed against `origin/main`) or `make sanity IDS="<id> ..."`. It differentiates indefinite answers and integrates definite ones numerically, in seconds.
+- Do not hold the learner reply or the current pull request for it. Flag a `MISMATCH` in the reply or pull request and fix it in a follow-up pull request after checking the problem source.
+- `UNCONFIRMED` means the numerics could not decide. Leave the row listed; never label a problem impossible.
+
 ## Two writers
 
 | Writer | May change | May not change |
