@@ -436,6 +436,23 @@ def _blank(value) -> bool:
     return value is None or value == ""
 
 
+def _derived_worked(row: dict) -> bool:
+    """A Yang writeup stores both texts and keeps origin missing.
+
+    pdf_copy remains an extract from a PDF, so this pair does not change that count.
+    """
+    if row.get("source") != "yang_book" or row.get("worked_solution_origin") != "missing":
+        return False
+    plain = row.get("worked_solution_plain")
+    latex = row.get("worked_solution_latex")
+    return (
+        isinstance(plain, str)
+        and not _blank(plain)
+        and isinstance(latex, str)
+        and not _blank(latex)
+    )
+
+
 def manual_input_problem(row: dict) -> str | None:
     """Validate the remaining display-only transcriptions without proving a final."""
     ident = row.get("id")
@@ -485,7 +502,7 @@ def _sympy_shape(row: dict) -> str | None:
             return f"{ident} non-bounded kind has limits"
     elif not isinstance(limits, list) or len(limits) != 2 or any(_blank(item) or not isinstance(item, str) for item in limits):
         return f"{ident} definite limits"
-    if row.get("worked_solution_latex") is not None:
+    if row.get("worked_solution_latex") is not None and not _derived_worked(row):
         return f"{ident} invented worked latex"
     return None
 
@@ -682,8 +699,13 @@ def catalog_problem(rows: list[dict]) -> str | None:
                 return f"{row.get('id')} unanswered row is not unchecked"
         worked = not _blank(row.get("worked_solution_plain"))
         origin = row.get("worked_solution_origin")
-        if worked != (origin == "pdf_copy"):
-            return f"{row.get('id')} worked text and origin diverged"
+        latex = row.get("worked_solution_latex")
+        if origin == "pdf_copy":
+            if not worked or latex is not None:
+                return f"{row.get('id')} worked text and origin diverged"
+        elif worked or latex is not None:
+            if not _derived_worked(row):
+                return f"{row.get('id')} worked text and origin diverged"
         pack = row.get("source") == "resource_pack"
         if pack == (row.get("round") == "yang"):
             return f"{row.get('id')} source and round diverged"
