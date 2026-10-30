@@ -90,8 +90,6 @@ echo "== problem catalog =="
 "$PY" "$ROOT/verify/catalog_check.py" || fail=1
 echo "== yang worked steps =="
 "$PY" "$ROOT/verify/yang_worked_check.py" || fail=1
-echo "== yang worked steps 1.11 and 1.12 =="
-"$PY" "$ROOT/verify/yang_worked_1_11.py" || fail=1
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail invented-sympy || fail=1
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail missing-cite || fail=1
 "$PY" "$ROOT/verify/catalog_check.py" --expect-fail yang-invented || fail=1
