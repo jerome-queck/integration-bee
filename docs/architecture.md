@@ -40,7 +40,7 @@ The session file is `session.json` in the data directory. One replace holds the 
 
 `scripts/control-integration-bee --help` lists every command. `--format json` is the stable record. `problems list`, `practice list`, and `drills list` print a table unless you pass `--format json`. `problems select` names matching ids and exits 2 when the filter is not one row. `practice check` accepts an indefinite `+C` the same way a mark does. `mock-finish` on `turn apply` and on `progress` exits 2 while phase is `awaiting_answer`, `aptitude`, or `proposing`. `doctor` prints `IB_DATA_DIR` and ignores `--data-dir`. Other commands honor `--data-dir`. A photo mark may set `image` to a file path. The CLI copies it under `submissions/<IB_USER>/` and lists that relative path from `progress show` and `mark.picture`.
 
-`make check` runs `verify/run.sh`. That script drives the turn contract, including aptitude, confirm, cover, and the gap index.
+`make check` runs `verify/run.sh`. Its `verify/answer_plain_check.py` step fails when a row's `answer_plain` display does not equal `answer_sympy` (SymPy parse after unicode normalisation, sample-point equality, derivative equality for indefinite rows); a superseded printed display is kept in that row's notes. That script drives the turn contract, including aptitude, confirm, cover, and the gap index.
 
 
 ## Pack status

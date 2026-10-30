@@ -108,6 +108,9 @@ echo "== pack proof certificates =="
 "$PY" "$ROOT/verify/pack_certificates_check.py" || fail=1
 "$PY" "$ROOT/verify/pack_multiplicative_check.py" || fail=1
 
+echo "== answer_plain matches answer_sympy =="
+"$PY" "$ROOT/verify/answer_plain_check.py" || fail=1
+
 echo "== gap index =="
 "$PY" "$ROOT/verify/gap_index.py" || fail=1
 "$PY" "$ROOT/verify/gap_index.py" --expect-fail extra-file || fail=1
