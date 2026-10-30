@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Exact step checks for Yang worked solutions.
 
-Sections 1.1, 1.2, 1.3, 1.8, 1.9, 1.11, 1.12, 2.5, and 2.6. Differentiation uses the same zero test
+Sections 1.1 through 1.5, 1.8, 1.9, 1.11, 1.12, 2.5, and 2.6. Differentiation uses the same zero test
 as verify/pack_gate.py. A wrong antiderivative must fail. Run from the repository root:
 
     python3 verify/yang_worked_check.py
@@ -20,7 +20,7 @@ import pack_gate
 
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
-SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.8", "1.9", "2.5", "2.6"})
+SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.4", "1.5", "1.8", "1.9", "2.5", "2.6"})
 
 # final is the stored answer_sympy. lines are (plain, latex) without numbers.
 # steps are ("diff", antiderivative), ("diff_of", antiderivative, piece),
@@ -582,6 +582,589 @@ SPECS: dict[str, dict] = {
             ("diff_of", "x**3/3 + x", "x**2 + 1"),
             ("eq", "2*((1/3) + 1)", "8/3"),
             ("ends", "x**3/3 + x", "0", "1", "2", "8/3"),
+        ],
+    },
+    "YANG-1.4-P01": {
+        "final": "log(exp(x) + 2024)",
+        "lines": [
+            (
+                "Substitution. The derivative of exp(x) + 2024 is exp(x).",
+                r"Substitution. The derivative of \(e^{x}+2024\) is \(e^{x}\).",
+            ),
+            (
+                "The integrand exp(x)/(exp(x) + 2024) becomes 1/u.",
+                r"The integrand becomes \(1/u\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "exp(x) + 2024", "exp(x)"),
+            ("diff", "log(exp(x) + 2024)"),
+        ],
+    },
+    "YANG-1.4-P02": {
+        "final": "-1/(exp(x) + 1)",
+        "lines": [
+            (
+                "Substitution u = exp(x) + 1. Then exp(x)/(exp(x) + 1)**2 is u**(-2).",
+                r"Substitution \(u=e^{x}+1\). The integrand is \(u^{-2}\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "-1/(exp(x) + 1)"),
+        ],
+    },
+    "YANG-1.4-P03": {
+        "final": "1/(-log(2) + log(5)) + 1/(-log(3) + log(5))",
+        "lines": [
+            (
+                "Split the quotient. (2**x + 3**x)/5**x = (2/5)**x + (3/5)**x.",
+                r"Split the quotient into \((2/5)^{x}+(3/5)^{x}\).",
+            ),
+            (
+                "Write the powers as exponentials. (2/5)**x = exp(x*log(2/5)) and (3/5)**x = exp(x*log(3/5)).",
+                r"Write \((2/5)^{x}=\exp(x\log(2/5))\) and \((3/5)^{x}=\exp(x\log(3/5))\).",
+            ),
+            (
+                "The antiderivative of exp(x*log(2/5)) is exp(x*log(2/5))/log(2/5). The antiderivative of exp(x*log(3/5)) is exp(x*log(3/5))/log(3/5).",
+                r"Each exponential ray has antiderivative \(e^{cx}/c\).",
+            ),
+            (
+                "Evaluate exp(x*log(2/5))/log(2/5) + exp(x*log(3/5))/log(3/5) from 0 to oo.",
+                r"Evaluate the sum of those antiderivatives from \(0\) to \(\infty\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(2**x + 3**x)/5**x", "(2/5)**x + (3/5)**x"),
+            ("eq", "(2/5)**x", "exp(x*log(2/5))"),
+            ("eq", "(3/5)**x", "exp(x*log(3/5))"),
+            ("diff_of", "exp(x*log(2/5))/log(2/5)", "exp(x*log(2/5))"),
+            ("diff_of", "exp(x*log(3/5))/log(3/5)", "exp(x*log(3/5))"),
+            (
+                "ends",
+                "exp(x*log(2/5))/log(2/5) + exp(x*log(3/5))/log(3/5)",
+                "0",
+                "oo",
+                "1",
+                "1/(-log(2) + log(5)) + 1/(-log(3) + log(5))",
+            ),
+        ],
+    },
+    "YANG-1.4-P04": {
+        "final": "x - log(exp(x) + 1)",
+        "lines": [
+            (
+                "Split the fraction. 1/(exp(x) + 1) = 1 - exp(x)/(exp(x) + 1).",
+                r"Split \(1/(e^{x}+1)=1-e^{x}/(e^{x}+1)\).",
+            ),
+            (
+                "The second term has antiderivative log(exp(x) + 1), so the signed term is -log(exp(x) + 1) and its integrand is -exp(x)/(exp(x) + 1).",
+                r"The second term is a logarithm.",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(exp(x) + 1)", "1 - exp(x)/(exp(x) + 1)"),
+            ("diff_of", "-log(exp(x) + 1)", "-exp(x)/(exp(x) + 1)"),
+            ("diff", "x - log(exp(x) + 1)"),
+        ],
+    },
+    "YANG-1.4-P05": {
+        "final": "log(x + exp(x) + 1)",
+        "lines": [
+            (
+                "The numerator of (exp(x) + 1)/(x + exp(x) + 1) is the derivative of the denominator.",
+                r"The numerator is the derivative of the denominator.",
+            ),
+            (
+                "The derivative of x + exp(x) + 1 is exp(x) + 1.",
+                r"The derivative of \(x+e^{x}+1\) is \(e^{x}+1\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "x + exp(x) + 1", "exp(x) + 1"),
+            ("diff", "log(x + exp(x) + 1)"),
+        ],
+    },
+    "YANG-1.4-P06": {
+        "final": "6*x + exp(4*x)/4 + 2*exp(2*x) - 2*exp(-2*x) - exp(-4*x)/4",
+        "lines": [
+            (
+                "Expand the power. (exp(x) + exp(-x))**4 = exp(4*x) + 4*exp(2*x) + 6 + 4*exp(-2*x) + exp(-4*x).",
+                r"Expand \((e^{x}+e^{-x})^{4}\).",
+            ),
+        ],
+        "steps": [
+            (
+                "eq",
+                "(exp(x) + exp(-x))**4",
+                "exp(4*x) + 4*exp(2*x) + 6 + 4*exp(-2*x) + exp(-4*x)",
+            ),
+            ("diff", "6*x + exp(4*x)/4 + 2*exp(2*x) - 2*exp(-2*x) - exp(-4*x)/4"),
+        ],
+    },
+    "YANG-1.4-P07": {
+        "final": "2**x*E*exp(x)/(2*log(2) + 2)",
+        "lines": [
+            (
+                "Combine the bases. 2**(x - 1)*exp(x + 1) = (E/2)*exp(x*(1 + log(2))).",
+                r"Combine the bases into one exponential.",
+            ),
+            (
+                "Divide by the exponent constant. (E/2)*exp(x*(1 + log(2)))/(1 + log(2)) is that antiderivative.",
+                r"Divide by the constant in the exponent.",
+            ),
+        ],
+        "steps": [
+            ("eq", "2**(x - 1)*exp(x + 1)", "(E/2)*exp(x*(1 + log(2)))"),
+            ("diff_of", "(E/2)*exp(x*(1 + log(2)))/(1 + log(2))", "(E/2)*exp(x*(1 + log(2)))"),
+            ("eq", "(E/2)*exp(x*(1 + log(2)))/(1 + log(2))", "2**x*E*exp(x)/(2*log(2) + 2)"),
+            ("diff", "2**x*E*exp(x)/(2*log(2) + 2)"),
+        ],
+    },
+    "YANG-1.4-P08": {
+        "final": "-cos(exp(x))",
+        "lines": [
+            (
+                "Substitution u = exp(x). Then exp(x)*sin(exp(x)) becomes sin(u).",
+                r"Substitution \(u=e^{x}\). The integrand becomes \(\sin u\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "-cos(exp(x))"),
+        ],
+    },
+    "YANG-1.4-P09": {
+        "final": "exp(2*x)/2",
+        "lines": [
+            (
+                "Cancel the common factor. (exp(7*x) + exp(4*x))/(exp(5*x) + exp(2*x)) = exp(2*x).",
+                r"Cancel \(e^{3x}+1\). The quotient is \(e^{2x}\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(exp(7*x) + exp(4*x))/(exp(5*x) + exp(2*x))", "exp(2*x)"),
+            ("diff_of", "exp(2*x)/2", "exp(2*x)"),
+            ("diff", "exp(2*x)/2"),
+        ],
+    },
+    "YANG-1.4-P10": {
+        "final": "asin(exp(x))",
+        "lines": [
+            (
+                "Substitution u = exp(x). Then exp(x)/sqrt(1 - exp(2*x)) becomes 1/sqrt(1 - u**2).",
+                r"Substitution \(u=e^{x}\). The integrand becomes \(1/\sqrt{1-u^{2}}\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "asin(exp(x))"),
+        ],
+    },
+    "YANG-1.4-P11": {
+        "final": "log(exp(2*x) + 1)/2 + atan(exp(x))",
+        "lines": [
+            (
+                "Split the integrand. (exp(2*x) + exp(x))/(exp(2*x) + 1) = exp(2*x)/(exp(2*x) + 1) + exp(x)/(exp(2*x) + 1).",
+                r"Split the integrand into two terms.",
+            ),
+            (
+                "The first antiderivative is log(exp(2*x) + 1)/2. Substitution u = exp(x) gives atan(exp(x)).",
+                r"The first term is a logarithm and the second is an arctangent.",
+            ),
+        ],
+        "steps": [
+            (
+                "eq",
+                "(exp(2*x) + exp(x))/(exp(2*x) + 1)",
+                "exp(2*x)/(exp(2*x) + 1) + exp(x)/(exp(2*x) + 1)",
+            ),
+            ("diff_of", "log(exp(2*x) + 1)/2", "exp(2*x)/(exp(2*x) + 1)"),
+            ("diff_of", "atan(exp(x))", "exp(x)/(exp(2*x) + 1)"),
+            ("diff", "log(exp(2*x) + 1)/2 + atan(exp(x))"),
+        ],
+    },
+    "YANG-1.4-P12": {
+        "final": "2*x + exp(x) - exp(-x)",
+        "lines": [
+            (
+                "Expand the product. (1 + exp(-x))*(exp(x) + 1) = exp(x) + 2 + exp(-x).",
+                r"Expand \((1+e^{-x})(e^{x}+1)\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(1 + exp(-x))*(exp(x) + 1)", "exp(x) + 2 + exp(-x)"),
+            ("diff_of", "2*x + exp(x) - exp(-x)", "exp(x) + 2 + exp(-x)"),
+            ("diff", "2*x + exp(x) - exp(-x)"),
+        ],
+    },
+    "YANG-1.4-P13": {
+        "final": "atan(exp(x))",
+        "lines": [
+            (
+                "Clear the negative power. 1/(exp(x) + exp(-x)) = exp(x)/(exp(2*x) + 1).",
+                r"Multiply numerator and denominator by \(e^{x}\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(exp(x) + exp(-x))", "exp(x)/(exp(2*x) + 1)"),
+            ("diff_of", "atan(exp(x))", "exp(x)/(exp(2*x) + 1)"),
+            ("diff", "atan(exp(x))"),
+        ],
+    },
+    "YANG-1.4-P14": {
+        "final": "log(log(exp(x) - 1))",
+        "lines": [
+            (
+                "Substitution u = log(exp(x) - 1). The integrand exp(x)/((exp(x) - 1)*log(exp(x) - 1)) becomes 1/u.",
+                r"Substitution \(u=\log(e^{x}-1)\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "log(log(exp(x) - 1))"),
+        ],
+    },
+    "YANG-1.4-P15": {
+        "final": "tan(exp(2*x))/2",
+        "lines": [
+            (
+                "Substitution u = exp(2*x). Then exp(2*x)/cos(exp(2*x))**2 becomes sec(u)**2 / 2.",
+                r"Substitution \(u=e^{2x}\). The integrand becomes \(\sec^{2}(u)/2\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "tan(exp(2*x))/2"),
+        ],
+    },
+    "YANG-1.4-P16": {
+        "final": "exp(x)*exp(exp(x))",
+        "lines": [
+            (
+                "The integrand (exp(2*x) + exp(x))*exp(exp(x)) is the derivative of exp(x)*exp(exp(x)).",
+                r"The integrand is the derivative of \(e^{x}e^{e^{x}}\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "exp(x)*exp(exp(x))"),
+        ],
+    },
+    "YANG-1.4-P17": {
+        "final": "4*exp(3*x/4)/3",
+        "lines": [
+            (
+                "The printed root simplifies. sqrt(exp(x)*sqrt(exp(x))) = exp(3*x/4).",
+                r"The printed root is \(e^{3x/4}\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "sqrt(exp(x)*sqrt(exp(x)))", "exp(3*x/4)"),
+            ("diff_of", "4*exp(3*x/4)/3", "exp(3*x/4)"),
+            ("diff", "4*exp(3*x/4)/3"),
+        ],
+    },
+    "YANG-1.4-P18": {
+        "final": "5/3",
+        "lines": [
+            (
+                "Substitution t = exp(-x). The derivative of exp(-x) is -exp(-x), and the limit at oo is 0.",
+                r"Substitution \(t=e^{-x}\). Then \(dt=-e^{-x}\,dx\).",
+            ),
+            (
+                "The integrand matches that differential. (sqrt(1 - exp(-x)) + 1)*exp(-x) = -(1 + sqrt(1 - exp(-x)))*(-exp(-x)).",
+                r"The integrand becomes \(-(1+\sqrt{1-t})\,dt\).",
+            ),
+            (
+                "An antiderivative is -exp(-x) + (2/3)*(1 - exp(-x))**(3/2). Evaluate it from 0 to oo.",
+                r"Evaluate \(-e^{-x}+(2/3)(1-e^{-x})^{3/2}\) from \(0\) to \(\infty\).",
+            ),
+        ],
+        "steps": [
+            ("diff_of", "exp(-x)", "-exp(-x)"),
+            (
+                "eq",
+                "(sqrt(1 - exp(-x)) + 1)*exp(-x)",
+                "-(1 + sqrt(1 - exp(-x)))*(-exp(-x))",
+            ),
+            (
+                "diff_of",
+                "-exp(-x) + (2/3)*(1 - exp(-x))**(3/2)",
+                "(sqrt(1 - exp(-x)) + 1)*exp(-x)",
+            ),
+            (
+                "ends",
+                "-exp(-x) + (2/3)*(1 - exp(-x))**(3/2)",
+                "0",
+                "oo",
+                "1",
+                "5/3",
+            ),
+        ],
+    },
+    "YANG-1.5-P01": {
+        "final": "x - log(cos(x))",
+        "lines": [
+            (
+                "Split the quotient. (sin(x) + cos(x))/cos(x) = tan(x) + 1.",
+                r"Split the quotient into \(\tan x+1\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(sin(x) + cos(x))/cos(x)", "tan(x) + 1"),
+            ("diff_of", "x - log(cos(x))", "tan(x) + 1"),
+            ("diff", "x - log(cos(x))"),
+        ],
+    },
+    "YANG-1.5-P02": {
+        "final": "sin(x)**3/3",
+        "lines": [
+            (
+                "Substitution u = sin(x). Then sin(x)**2*cos(x) becomes u**2.",
+                r"Substitution \(u=\sin x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "sin(x)**3/3"),
+        ],
+    },
+    "YANG-1.5-P03": {
+        "final": "-sin(x)**5/5 + sin(x)**3/3",
+        "lines": [
+            (
+                "Save one cosine. sin(x)**2*cos(x)**3 = sin(x)**2*(1 - sin(x)**2)*cos(x).",
+                r"Write \(\cos^{2}x=1-\sin^{2}x\) and keep one factor of \(\cos x\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "sin(x)**2*cos(x)**3", "sin(x)**2*(1 - sin(x)**2)*cos(x)"),
+            ("diff_of", "-sin(x)**5/5 + sin(x)**3/3", "sin(x)**2*(1 - sin(x)**2)*cos(x)"),
+            ("diff", "-sin(x)**5/5 + sin(x)**3/3"),
+        ],
+    },
+    "YANG-1.5-P04": {
+        "final": "tan(x)**3/3",
+        "lines": [
+            (
+                "Substitution u = tan(x). Then tan(x)**2*sec(x)**2 becomes u**2.",
+                r"Substitution \(u=\tan x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "tan(x)**3/3"),
+        ],
+    },
+    "YANG-1.5-P05": {
+        "final": "sec(x)**3/3",
+        "lines": [
+            (
+                "Substitution u = sec(x). Then tan(x)*sec(x)**3 becomes u**2.",
+                r"Substitution \(u=\sec x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "sec(x)**3/3"),
+        ],
+    },
+    "YANG-1.5-P06": {
+        "final": "-x + tan(x)",
+        "lines": [
+            (
+                "Pythagorean rewrite. tan(x)**2 = sec(x)**2 - 1.",
+                r"Write \(\tan^{2}x=\sec^{2}x-1\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "tan(x)**2", "sec(x)**2 - 1"),
+            ("diff_of", "-x + tan(x)", "sec(x)**2 - 1"),
+            ("diff", "-x + tan(x)"),
+        ],
+    },
+    "YANG-1.5-P07": {
+        "final": "atan(sin(x))",
+        "lines": [
+            (
+                "Substitution u = sin(x). Then cos(x)/(sin(x)**2 + 1) becomes 1/(u**2 + 1).",
+                r"Substitution \(u=\sin x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "atan(sin(x))"),
+        ],
+    },
+    "YANG-1.5-P08": {
+        "final": "-log(csc(x) + 1)",
+        "lines": [
+            (
+                "Substitution u = csc(x). Then cot(x)*csc(x)/(csc(x) + 1) leads to -1/(u + 1).",
+                r"Substitution \(u=\csc x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "-log(csc(x) + 1)"),
+        ],
+    },
+    "YANG-1.5-P09": {
+        "final": "-log(sin(x) + cos(x))",
+        "lines": [
+            (
+                "The numerator of (sin(x) - cos(x))/(sin(x) + cos(x)) is the negative derivative of the denominator.",
+                r"The numerator is the negative derivative of \(\sin x+\cos x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "-log(sin(x) + cos(x))"),
+        ],
+    },
+    "YANG-1.5-P10": {
+        "final": "cos(x)**3/3 - cos(x)",
+        "lines": [
+            (
+                "Save one sine. sin(x)**3 = sin(x)*(1 - cos(x)**2).",
+                r"Write \(\sin^{2}x=1-\cos^{2}x\) and keep one factor of \(\sin x\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "sin(x)**3", "sin(x)*(1 - cos(x)**2)"),
+            ("diff_of", "cos(x)**3/3 - cos(x)", "sin(x)*(1 - cos(x)**2)"),
+            ("diff", "cos(x)**3/3 - cos(x)"),
+        ],
+    },
+    "YANG-1.5-P11": {
+        "final": "tan(x) - cot(x)",
+        "lines": [
+            (
+                "Simplify the quotient. (tan(x) + cot(x))/(sin(x)*cos(x)) = sec(x)**2 + csc(x)**2.",
+                r"The quotient equals \(\sec^{2}x+\csc^{2}x\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(tan(x) + cot(x))/(sin(x)*cos(x))", "sec(x)**2 + csc(x)**2"),
+            ("diff_of", "tan(x) - cot(x)", "sec(x)**2 + csc(x)**2"),
+            ("diff", "tan(x) - cot(x)"),
+        ],
+    },
+    "YANG-1.5-P12": {
+        "final": "x - cos(2*x)/2",
+        "lines": [
+            (
+                "Double angle. (sin(x) + cos(x))**2 = 1 + sin(2*x).",
+                r"Expand and use \(\sin(2x)=2\sin x\cos x\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(sin(x) + cos(x))**2", "1 + sin(2*x)"),
+            ("diff_of", "x - cos(2*x)/2", "1 + sin(2*x)"),
+            ("diff", "x - cos(2*x)/2"),
+        ],
+    },
+    "YANG-1.5-P13": {
+        "final": "-x + 2*tan(x) + 2*sec(x)",
+        "lines": [
+            (
+                "Expand and replace tan(x)**2. (tan(x) + sec(x))**2 = 2*sec(x)**2 + 2*sec(x)*tan(x) - 1.",
+                r"Expand and replace \(\tan^{2}x\) by \(\sec^{2}x-1\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(tan(x) + sec(x))**2", "2*sec(x)**2 + 2*sec(x)*tan(x) - 1"),
+            ("diff_of", "-x + 2*tan(x) + 2*sec(x)", "2*sec(x)**2 + 2*sec(x)*tan(x) - 1"),
+            ("diff", "-x + 2*tan(x) + 2*sec(x)"),
+        ],
+    },
+    "YANG-1.5-P14": {
+        "final": "x + sin(x)**2/2 + sin(x) - cos(x)",
+        "lines": [
+            (
+                "Expand the product. (sin(x) + 1)*(cos(x) + 1) = sin(x)*cos(x) + sin(x) + cos(x) + 1.",
+                r"Expand the product.",
+            ),
+        ],
+        "steps": [
+            ("eq", "(sin(x) + 1)*(cos(x) + 1)", "sin(x)*cos(x) + sin(x) + cos(x) + 1"),
+            ("diff_of", "x + sin(x)**2/2 + sin(x) - cos(x)", "sin(x)*cos(x) + sin(x) + cos(x) + 1"),
+            ("diff", "x + sin(x)**2/2 + sin(x) - cos(x)"),
+        ],
+    },
+    "YANG-1.5-P15": {
+        "final": "tan(tan(x))",
+        "lines": [
+            (
+                "Substitution u = tan(x). Then sec(x)**2*sec(tan(x))**2 becomes sec(u)**2.",
+                r"Substitution \(u=\tan x\).",
+            ),
+        ],
+        "steps": [
+            ("diff", "tan(tan(x))"),
+        ],
+    },
+    "YANG-1.5-P16": {
+        "final": "log(sin(x) + 1)",
+        "lines": [
+            (
+                "Rationalize by the conjugate. 1/(tan(x) + sec(x)) = sec(x) - tan(x).",
+                r"Multiply by \(\sec x-\tan x\). The denominator becomes 1.",
+            ),
+        ],
+        "steps": [
+            ("eq", "1/(tan(x) + sec(x))", "sec(x) - tan(x)"),
+            ("diff_of", "log(sin(x) + 1)", "sec(x) - tan(x)"),
+            ("diff", "log(sin(x) + 1)"),
+        ],
+    },
+    "YANG-1.5-P17": {
+        "final": "sin(x) - cos(x)",
+        "lines": [
+            (
+                "Cancel the secant. (tan(x) + 1)/sec(x) = sin(x) + cos(x).",
+                r"Multiply through by \(\cos x\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(tan(x) + 1)/sec(x)", "sin(x) + cos(x)"),
+            ("diff_of", "sin(x) - cos(x)", "sin(x) + cos(x)"),
+            ("diff", "sin(x) - cos(x)"),
+        ],
+    },
+    "YANG-1.5-P18": {
+        "final": "x - cos(x) + tan(x) + sec(x)",
+        "lines": [
+            (
+                "Expand the product. (sin(x) + 1)*(sec(x)**2 + 1) = 1 + sin(x) + sec(x)**2 + sec(x)*tan(x).",
+                r"Expand, then replace \(\sin x\sec^{2}x\) by \(\sec x\tan x\).",
+            ),
+        ],
+        "steps": [
+            ("eq", "(sin(x) + 1)*(sec(x)**2 + 1)", "1 + sin(x) + sec(x)**2 + sec(x)*tan(x)"),
+            ("diff_of", "x - cos(x) + tan(x) + sec(x)", "1 + sin(x) + sec(x)**2 + sec(x)*tan(x)"),
+            ("diff", "x - cos(x) + tan(x) + sec(x)"),
+        ],
+    },
+    "YANG-1.5-P19": {
+        "final": "-log(sin(2*x))",
+        "lines": [
+            (
+                "Difference of squares. (-csc(x) + sec(x))*(csc(x) + sec(x))/(tan(x) + cot(x)) = -2*cot(2*x).",
+                r"The quotient simplifies to \(-2\cot(2x)\).",
+            ),
+        ],
+        "steps": [
+            (
+                "eq",
+                "(-csc(x) + sec(x))*(csc(x) + sec(x))/(tan(x) + cot(x))",
+                "-2*cot(2*x)",
+            ),
+            ("diff_of", "-log(sin(2*x))", "-2*cot(2*x)"),
+            ("diff", "-log(sin(2*x))"),
+        ],
+    },
+    "YANG-1.5-P20": {
+        "final": "sin(x)**2/2",
+        "lines": [
+            (
+                "Cancel sin(x) + cos(x). (sin(x) + cos(x))/(csc(x) + sec(x)) = sin(x)*cos(x).",
+                r"Write \(\sec x+\csc x=(\sin x+\cos x)/(\sin x\cos x)\) and cancel.",
+            ),
+        ],
+        "steps": [
+            ("eq", "(sin(x) + cos(x))/(csc(x) + sec(x))", "sin(x)*cos(x)"),
+            ("diff_of", "sin(x)**2/2", "sin(x)*cos(x)"),
+            ("diff", "sin(x)**2/2"),
         ],
     },
     "YANG-1.8-P01": {

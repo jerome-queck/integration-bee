@@ -4,7 +4,7 @@
 
 ## Sub-features
 
-- `verify-pass` exits 0 when the source files, the 36 unit shapes, Yang 1.1–1.20 in the syllabus map, unit order, the 300 drill answers, the past-paper indexes, the sample answers and worked notes, the Yang practice-seed smoke, the round PDFs, the problem catalog, the never-impossible lint, the gap index, the CLI behavior checks, and the turn contract all pass.
+- `verify-pass` exits 0 when the source files, the 36 unit shapes, Yang 1.1–1.20 in the syllabus map, unit order, the 300 drill answers, the past-paper indexes, the sample answers and worked notes, the Yang practice-seed smoke, the round PDFs, the problem catalog, the Yang worked-step checks, the never-impossible lint, the gap index, the CLI behavior checks, and the turn contract all pass.
 - `verify-mutation` prints a math failure for the corrupted answer, then records that the failure happened.
 
 ## How to get to it (user POV)
@@ -18,7 +18,7 @@ Preconditions:
 - Doctor has printed `READY integration-bee`.
 - The reference PDFs are in the tree.
 
-- **Run verify.** Run `scripts/control-integration-bee verify >"$IB_EVIDENCE/verify.out" 2>"$IB_EVIDENCE/verify.err"`. The exit code is 0. Stdout contains `PASS check_math (300 drills + spotchecks)`, `PASS sample_self_check (20 sample rows)`, `PASS mutation (wrong answer rejected)`, `PASS catalog`, `PASS never-impossible`, `PASS mutation notes-impossible`, `PASS mutation pack-note`, `PASS gap index`, `PASS mutation extra-file`, `PASS cli behavior`, `PASS turn contract`, and `PASS integration-bee verify (multi-unit gates)`. Stderr contains `# 17 drills (tags=`.
+- **Run verify.** Run `scripts/control-integration-bee verify >"$IB_EVIDENCE/verify.out" 2>"$IB_EVIDENCE/verify.err"`. The exit code is 0. Stdout contains `PASS check_math (300 drills + spotchecks)`, `PASS sample_self_check (20 sample rows)`, `PASS mutation (wrong answer rejected)`, `PASS catalog`, `PASS 65 yang worked solutions`, `PASS never-impossible`, `PASS mutation notes-impossible`, `PASS mutation pack-note`, `PASS gap index`, `PASS mutation extra-file`, `PASS cli behavior`, `PASS turn contract`, and `PASS integration-bee verify (multi-unit gates)`. Stderr contains `# 17 drills (tags=`.
 - **Confirm no learner write.** Run `find "$IB_DATA_DIR" -type f >"$IB_EVIDENCE/verify-files.txt"`. That file is empty. `verify` does not read `IB_DATA_DIR`.
 
 ## Gotchas
