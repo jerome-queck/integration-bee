@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Exact step checks for Yang worked solutions.
 
-Sections 1.1 through 1.5, 1.8, 1.9, 1.11, 1.12, 2.5, and 2.6. Differentiation uses the same zero test
-as verify/pack_gate.py. A wrong antiderivative must fail. Run from the repository root:
+Sections 1.1 through 1.5, 1.8, 1.9, 1.11, 1.12, 2.3, 2.4, 2.5, and 2.6. Differentiation uses the same zero test
+as verify/pack_gate.py. An improper endpoint is a limit. A wrong antiderivative must fail. Run from the repository root:
 
     python3 verify/yang_worked_check.py
     python3 verify/yang_worked_check.py --write
@@ -20,7 +20,7 @@ import pack_gate
 
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
-SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.4", "1.5", "1.8", "1.9", "2.5", "2.6"})
+SECTIONS = frozenset({"1.1", "1.2", "1.3", "1.4", "1.5", "1.8", "1.9", "2.3", "2.4", "2.5", "2.6"})
 
 # final is the stored answer_sympy. lines are (plain, latex) without numbers.
 # steps are ("diff", antiderivative), ("diff_of", antiderivative, piece),
@@ -1626,6 +1626,653 @@ def _add(ident: str, final: str, lines: list, steps: list) -> None:
 
 
 _add(
+    "YANG-2.3-P01",
+    "2*sqrt(x)*exp(sqrt(x)) - 2*exp(sqrt(x))",
+    [
+        (
+            "Forced substitution u = sqrt(x). The derivative of sqrt(x) is 1/(2*sqrt(x)), and 2*sqrt(x)*(1/(2*sqrt(x))) equals 1, so dx = 2*sqrt(x)*du.",
+            r"Forced substitution \(u=\sqrt{x}\). The derivative of \(\sqrt{x}\) is \(1/(2\sqrt{x})\), and \(2\sqrt{x}\cdot(1/(2\sqrt{x}))\) equals \(1\), so \(dx=2\sqrt{x}\,du\).",
+        ),
+        (
+            "The integrand becomes 2*u*exp(u). Integration by parts gives 2*exp(sqrt(x))*(sqrt(x) - 1).",
+            r"The integrand becomes \(2ue^{u}\). Integration by parts gives \(2e^{\sqrt{x}}(\sqrt{x}-1)\).",
+        ),
+        (
+            "That equals 2*sqrt(x)*exp(sqrt(x)) - 2*exp(sqrt(x)).",
+            r"That equals \(2\sqrt{x}e^{\sqrt{x}}-2e^{\sqrt{x}}\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(x)", "1/(2*sqrt(x))"),
+        ("eq", "2*sqrt(x)*(1/(2*sqrt(x)))", "1"),
+        ("eq", "2*exp(sqrt(x))*(sqrt(x) - 1)", "2*sqrt(x)*exp(sqrt(x)) - 2*exp(sqrt(x))"),
+        ("diff", "2*exp(sqrt(x))*(sqrt(x) - 1)"),
+        ("diff", "2*sqrt(x)*exp(sqrt(x)) - 2*exp(sqrt(x))"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P02",
+    "x*sin(log(x))/2 - x*cos(log(x))/2",
+    [
+        (
+            "Forced substitution u = log(x). The derivative of log(x) is 1/x, and exp(log(x)) equals x, so dx = x*du.",
+            r"Forced substitution \(u=\log x\). The derivative of \(\log x\) is \(1/x\), and \(e^{\log x}=x\), so \(dx=x\,du\).",
+        ),
+        (
+            "The integrand becomes x*sin(u) in u, that is exp(u)*sin(u). Two integrations by parts give x*(sin(log(x)) - cos(log(x)))/2.",
+            r"The integrand becomes \(e^{u}\sin u\). Two integrations by parts give \(x(\sin(\log x)-\cos(\log x))/2\).",
+        ),
+        (
+            "That equals x*sin(log(x))/2 - x*cos(log(x))/2.",
+            r"That equals \(\frac{x\sin(\log x)}{2}-\frac{x\cos(\log x)}{2}\).",
+        ),
+    ],
+    [
+        ("diff_of", "log(x)", "1/x"),
+        ("eq", "exp(log(x))", "x"),
+        ("eq", "x*(sin(log(x)) - cos(log(x)))/2", "x*sin(log(x))/2 - x*cos(log(x))/2"),
+        ("diff", "x*(sin(log(x)) - cos(log(x)))/2"),
+        ("diff", "x*sin(log(x))/2 - x*cos(log(x))/2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P03",
+    "4097/45",
+    [
+        (
+            "Forced substitution u = sqrt(x). The derivative of sqrt(x) is 1/(2*sqrt(x)), so dx = 2*u*du.",
+            r"Forced substitution \(u=\sqrt{x}\). The derivative of \(\sqrt{x}\) is \(1/(2\sqrt{x})\), so \(dx=2u\,du\).",
+        ),
+        (
+            "Let t = 1 + u. The antiderivative is 2*((sqrt(x)+1)**10/10 - (sqrt(x)+1)**9/9).",
+            r"Let \(t=1+u\). The antiderivative is \(2(( \sqrt{x}+1)^{10}/10-(\sqrt{x}+1)^{9}/9)\).",
+        ),
+        (
+            "The endpoints u = 0 and u = 1 give 2*(2**10/10 - 2**9/9 - 1/10 + 1/9), which equals 4097/45.",
+            r"The endpoints \(u=0\) and \(u=1\) give \(2(2^{10}/10-2^{9}/9-1/10+1/9)\), which equals \(4097/45\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(x)", "1/(2*sqrt(x))"),
+        ("diff", "2*((sqrt(x)+1)**10/10 - (sqrt(x)+1)**9/9)"),
+        ("eq", "2*(2**10/10 - 2**9/9 - 1/10 + 1/9)", "4097/45"),
+        ("ends", "2*((sqrt(x)+1)**10/10 - (sqrt(x)+1)**9/9)", "0", "1", "1", "4097/45"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P04",
+    "4*sqrt(x)*sqrt(sqrt(x) + 1)/3 - 8*sqrt(sqrt(x) + 1)/3",
+    [
+        (
+            "Forced substitution u = sqrt(sqrt(x) + 1), after t = sqrt(x). Then 4*(sqrt(sqrt(x)+1))**3/3 - 4*sqrt(sqrt(x)+1) is an antiderivative.",
+            r"Forced substitution \(u=\sqrt{\sqrt{x}+1}\), after \(t=\sqrt{x}\). Then \(\frac{4}{3}(\sqrt{\sqrt{x}+1})^{3}-4\sqrt{\sqrt{x}+1}\) is an antiderivative.",
+        ),
+        (
+            "Expand u**3 = (sqrt(x) + 1)*u. That form equals 4*sqrt(x)*sqrt(sqrt(x) + 1)/3 - 8*sqrt(sqrt(x) + 1)/3.",
+            r"Expand \(u^{3}=(\sqrt{x}+1)u\). That form equals \(\frac{4\sqrt{x}\sqrt{\sqrt{x}+1}}{3}-\frac{8\sqrt{\sqrt{x}+1}}{3}\).",
+        ),
+    ],
+    [
+        ("diff", "4*(sqrt(sqrt(x)+1))**3/3 - 4*sqrt(sqrt(x)+1)"),
+        ("eq", "4*(sqrt(sqrt(x)+1))**3/3 - 4*sqrt(sqrt(x)+1)", "4*sqrt(x)*sqrt(sqrt(x) + 1)/3 - 8*sqrt(sqrt(x) + 1)/3"),
+        ("diff", "4*sqrt(x)*sqrt(sqrt(x) + 1)/3 - 8*sqrt(sqrt(x) + 1)/3"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P05",
+    "x*asin(x)**2 - 2*x + 2*sqrt(1 - x**2)*asin(x)",
+    [
+        (
+            "Integration by parts on asin(x)**2, then t = asin(x). The combined antiderivative is x*asin(x)**2 - 2*(-asin(x)*sqrt(1-x**2) + x).",
+            r"Integration by parts on \((\arcsin x)^{2}\), then \(t=\arcsin x\). The combined antiderivative is \(x(\arcsin x)^{2}-2(-\arcsin x\sqrt{1-x^{2}}+x)\).",
+        ),
+        (
+            "That equals x*asin(x)**2 - 2*x + 2*sqrt(1 - x**2)*asin(x).",
+            r"That equals \(x(\arcsin x)^{2}-2x+2\sqrt{1-x^{2}}\arcsin x\).",
+        ),
+    ],
+    [
+        ("eq", "x*asin(x)**2 - 2*(-asin(x)*sqrt(1-x**2) + x)", "x*asin(x)**2 - 2*x + 2*sqrt(1 - x**2)*asin(x)"),
+        ("diff", "x*asin(x)**2 - 2*x + 2*sqrt(1 - x**2)*asin(x)"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P06",
+    "3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112",
+    [
+        (
+            "Forced substitution u = 2*x - 1, so x = (u + 1)/2 and dx = du/2. The antiderivative in u is 3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16.",
+            r"Forced substitution \(u=2x-1\), so \(x=(u+1)/2\) and \(dx=du/2\). The antiderivative in \(u\) is \(\frac{3}{28}(2x-1)^{7/3}+\frac{3}{16}(2x-1)^{4/3}\).",
+        ),
+        (
+            "Factor u**(1/3). That equals 3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112.",
+            r"Factor \(u^{1/3}\). That equals \(\frac{3x^{2}(2x-1)^{1/3}}{7}-\frac{3x(2x-1)^{1/3}}{56}-\frac{9(2x-1)^{1/3}}{112}\).",
+        ),
+    ],
+    [
+        ("diff", "3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16"),
+        ("eq", "3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16", "3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112"),
+        ("diff", "3*x**2*(2*x - 1)**(1/3)/7 - 3*x*(2*x - 1)**(1/3)/56 - 9*(2*x - 1)**(1/3)/112"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P07",
+    "4*sqrt(2)/3 + 8/3",
+    [
+        (
+            "Forced substitution t = sqrt(1 + x), then u = sqrt(1 + t). The antiderivative is 4*((sqrt(1+sqrt(1+x)))**3/3 - sqrt(1+sqrt(1+x))).",
+            r"Forced substitution \(t=\sqrt{1+x}\), then \(u=\sqrt{1+t}\). The antiderivative is \(4((\sqrt{1+\sqrt{1+x}})^{3}/3-\sqrt{1+\sqrt{1+x}})\).",
+        ),
+        (
+            "On [0, 8], u runs from sqrt(2) to 2. The evaluation equals 4*sqrt(2)/3 + 8/3.",
+            r"On \([0,8]\), \(u\) runs from \(\sqrt{2}\) to \(2\). The evaluation equals \(\frac{4\sqrt{2}}{3}+\frac{8}{3}\).",
+        ),
+    ],
+    [
+        ("diff", "4*((sqrt(1+sqrt(1+x)))**3/3 - sqrt(1+sqrt(1+x)))"),
+        ("ends", "4*((sqrt(1+sqrt(1+x)))**3/3 - sqrt(1+sqrt(1+x)))", "0", "8", "1", "4*sqrt(2)/3 + 8/3"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P08",
+    "-sqrt(x) + x*atan(sqrt(x)) + atan(sqrt(x))",
+    [
+        (
+            "Forced substitution u = sqrt(x), so the integral is 2*u*atan(u). Integration by parts gives sqrt(x)**2*atan(sqrt(x)) - sqrt(x) + atan(sqrt(x)).",
+            r"Forced substitution \(u=\sqrt{x}\), so the integral is \(2u\arctan u\). Integration by parts gives \(x\arctan\sqrt{x}-\sqrt{x}+\arctan\sqrt{x}\).",
+        ),
+        (
+            "That equals -sqrt(x) + x*atan(sqrt(x)) + atan(sqrt(x)).",
+            r"That equals \(-\sqrt{x}+x\arctan\sqrt{x}+\arctan\sqrt{x}\).",
+        ),
+    ],
+    [
+        ("eq", "sqrt(x)**2*atan(sqrt(x)) - sqrt(x) + atan(sqrt(x))", "-sqrt(x) + x*atan(sqrt(x)) + atan(sqrt(x))"),
+        ("diff", "sqrt(x)**2*atan(sqrt(x)) - sqrt(x) + atan(sqrt(x))"),
+        ("diff", "-sqrt(x) + x*atan(sqrt(x)) + atan(sqrt(x))"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P09",
+    "x*log(x)**3 - 3*x*log(x)**2 + 6*x*log(x) - 6*x",
+    [
+        (
+            "The derivative of x*log(x)**3 is log(x)**3 + 3*log(x)**2. Repeat the reduction twice.",
+            r"The derivative of \(x(\log x)^{3}\) is \((\log x)^{3}+3(\log x)^{2}\). Repeat the reduction twice.",
+        ),
+        (
+            "The nested form x*log(x)**3 - 3*(x*log(x)**2 - 2*(x*log(x) - x)) equals x*log(x)**3 - 3*x*log(x)**2 + 6*x*log(x) - 6*x.",
+            r"The nested form \(x(\log x)^{3}-3(x(\log x)^{2}-2(x\log x-x))\) equals \(x(\log x)^{3}-3x(\log x)^{2}+6x\log x-6x\).",
+        ),
+    ],
+    [
+        ("diff_of", "x*log(x)**3", "log(x)**3 + 3*log(x)**2"),
+        ("eq", "x*log(x)**3 - 3*(x*log(x)**2 - 2*(x*log(x) - x))", "x*log(x)**3 - 3*x*log(x)**2 + 6*x*log(x) - 6*x"),
+        ("diff", "x*log(x)**3 - 3*x*log(x)**2 + 6*x*log(x) - 6*x"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P10",
+    "2*log(sqrt(x) + 1) + 2/(sqrt(x) + 1)",
+    [
+        (
+            "Forced substitution u = sqrt(x). The derivative of sqrt(x) is 1/(2*sqrt(x)).",
+            r"Forced substitution \(u=\sqrt{x}\). The derivative of \(\sqrt{x}\) is \(1/(2\sqrt{x})\).",
+        ),
+        (
+            "Then 2*sqrt(x)/(sqrt(x)+1)**2 equals 2*(1/(sqrt(x)+1) - 1/(sqrt(x)+1)**2).",
+            r"Then \(2\sqrt{x}/(\sqrt{x}+1)^{2}\) equals \(2(1/(\sqrt{x}+1)-1/(\sqrt{x}+1)^{2})\).",
+        ),
+        (
+            "The antiderivative is 2*log(sqrt(x) + 1) + 2/(sqrt(x) + 1).",
+            r"The antiderivative is \(2\log(\sqrt{x}+1)+2/(\sqrt{x}+1)\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(x)", "1/(2*sqrt(x))"),
+        ("eq", "2*sqrt(x)/(sqrt(x)+1)**2", "2*(1/(sqrt(x)+1) - 1/(sqrt(x)+1)**2)"),
+        ("diff", "2*log(sqrt(x) + 1) + 2/(sqrt(x) + 1)"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P11",
+    "6 - 3*pi/2",
+    [
+        (
+            "Forced substitution t = sqrt(exp(x)-1). Then sqrt(exp(x)-1)**2 + 1 equals exp(x), and the integrand becomes 2*t**2/(t**2 + 9).",
+            r"Forced substitution \(t=\sqrt{e^{x}-1}\). Then \(t^{2}+1=e^{x}\), and the integrand becomes \(2t^{2}/(t^{2}+9)\).",
+        ),
+        (
+            "Write that as 2*(1 - 9/(t**2 + 9)). The antiderivative is 2*(sqrt(exp(x)-1) - 3*atan(sqrt(exp(x)-1)/3)).",
+            r"Write that as \(2(1-9/(t^{2}+9))\). The antiderivative is \(2(\sqrt{e^{x}-1}-3\arctan(\sqrt{e^{x}-1}/3))\).",
+        ),
+        (
+            "From 0 to log(10), t runs from 0 to 3. Then 2*(3 - 3*atan(1)) equals 6 - 3*pi/2.",
+            r"From \(0\) to \(\log 10\), \(t\) runs from \(0\) to \(3\). Then \(2(3-3\arctan 1)\) equals \(6-3\pi/2\).",
+        ),
+    ],
+    [
+        ("eq", "sqrt(exp(x)-1)**2 + 1", "exp(x)"),
+        ("eq", "2*(3 - 3*atan(1))", "6 - 3*pi/2"),
+        ("diff", "2*(sqrt(exp(x)-1) - 3*atan(sqrt(exp(x)-1)/3))"),
+        ("ends", "2*(sqrt(exp(x)-1) - 3*atan(sqrt(exp(x)-1)/3))", "0", "log(10)", "1", "6 - 3*pi/2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P12",
+    "2*atan(sqrt(2021**x - 1))/log(2021)",
+    [
+        (
+            "Forced substitution u = sqrt(2021**x - 1). Then sqrt(2021**x - 1)**2 + 1 equals 2021**x.",
+            r"Forced substitution \(u=\sqrt{2021^{x}-1}\). Then \(u^{2}+1=2021^{x}\).",
+        ),
+        (
+            "The derivative of log(2021**x) is log(2021), so dx = 2*u*du/(u**2 + 1)/log(2021). The integral in u is 2*atan(u)/log(2021).",
+            r"The derivative of \(\log(2021^{x})\) is \(\log 2021\), so \(dx=2u\,du/((u^{2}+1)\log 2021)\). The integral in \(u\) is \(2\arctan(u)/\log 2021\).",
+        ),
+        (
+            "The antiderivative is 2*atan(sqrt(2021**x - 1))/log(2021).",
+            r"The antiderivative is \(2\arctan(\sqrt{2021^{x}-1})/\log 2021\).",
+        ),
+    ],
+    [
+        ("eq", "sqrt(2021**x - 1)**2 + 1", "2021**x"),
+        ("diff_of", "log(2021**x)", "log(2021)"),
+        ("diff", "2*atan(sqrt(2021**x - 1))/log(2021)"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P13",
+    "3*(x + 1)**(2/3)/2 + 3*(x + 1)**(1/3) + 3*log((x + 1)**(1/3) - 1)",
+    [
+        (
+            "Forced substitution u = (x + 1)**(1/3), so dx = 3*u**2*du. Division gives (x+1)**(2/3)/((x+1)**(1/3)-1) = (x+1)**(1/3) + 1 + 1/((x+1)**(1/3)-1).",
+            r"Forced substitution \(u=(x+1)^{1/3}\), so \(dx=3u^{2}\,du\). Division gives \(u^{2}/(u-1)=u+1+1/(u-1)\).",
+        ),
+        (
+            "Integrate termwise. The antiderivative is 3*(x + 1)**(2/3)/2 + 3*(x + 1)**(1/3) + 3*log((x + 1)**(1/3) - 1).",
+            r"Integrate termwise. The antiderivative is \(\frac{3}{2}(x+1)^{2/3}+3(x+1)^{1/3}+3\log((x+1)^{1/3}-1)\).",
+        ),
+    ],
+    [
+        ("eq", "(x+1)**(2/3)/((x+1)**(1/3)-1)", "(x+1)**(1/3) + 1 + 1/((x+1)**(1/3)-1)"),
+        ("diff", "3*(x + 1)**(2/3)/2 + 3*(x + 1)**(1/3) + 3*log((x + 1)**(1/3) - 1)"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P14",
+    "log(x + 2*sqrt(x + 3)) - log(sqrt(x + 3) - 1)/2 + log(sqrt(x + 3) + 3)/2",
+    [
+        (
+            "Forced substitution t = sqrt(x + 3). Then x + 2*sqrt(x + 3) equals (sqrt(x + 3) + 3)*(sqrt(x + 3) - 1).",
+            r"Forced substitution \(t=\sqrt{x+3}\). Then \(x+2\sqrt{x+3}=(\sqrt{x+3}+3)(\sqrt{x+3}-1)\).",
+        ),
+        (
+            "Partial fractions give 2*sqrt(x+3)/((sqrt(x+3)+3)*(sqrt(x+3)-1)) = (3/2)/(sqrt(x+3)+3) + (1/2)/(sqrt(x+3)-1).",
+            r"Partial fractions give \(2t/((t+3)(t-1))=(3/2)/(t+3)+(1/2)/(t-1)\).",
+        ),
+        (
+            "The logarithmic form (3/2)*log(sqrt(x+3)+3) + (1/2)*log(sqrt(x+3)-1) differentiates to 1/(x + 2*sqrt(x + 3)), and so does log(x + 2*sqrt(x + 3)) - log(sqrt(x + 3) - 1)/2 + log(sqrt(x + 3) + 3)/2.",
+            r"Both \(\frac{3}{2}\log(t+3)+\frac{1}{2}\log(t-1)\) and \(\log(x+2\sqrt{x+3})-\frac{1}{2}\log(\sqrt{x+3}-1)+\frac{1}{2}\log(\sqrt{x+3}+3)\) differentiate to the integrand.",
+        ),
+    ],
+    [
+        ("eq", "x + 2*sqrt(x + 3)", "(sqrt(x + 3) + 3)*(sqrt(x + 3) - 1)"),
+        ("eq", "2*sqrt(x+3)/((sqrt(x+3)+3)*(sqrt(x+3)-1))", "(3/2)/(sqrt(x+3)+3) + (1/2)/(sqrt(x+3)-1)"),
+        ("diff_of", "(3/2)*log(sqrt(x+3)+3) + (1/2)*log(sqrt(x+3)-1)", "1/(x + 2*sqrt(x + 3))"),
+        ("diff", "log(x + 2*sqrt(x + 3)) - log(sqrt(x + 3) - 1)/2 + log(sqrt(x + 3) + 3)/2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P15",
+    "3**(sqrt(2*x + 1))*sqrt(2*x + 1)/log(3) - 3**(sqrt(2*x + 1))/log(3)**2",
+    [
+        (
+            "Forced substitution u = sqrt(2*x + 1). The derivative of sqrt(2*x + 1) is 1/sqrt(2*x + 1), so dx = u*du.",
+            r"Forced substitution \(u=\sqrt{2x+1}\). The derivative of \(\sqrt{2x+1}\) is \(1/\sqrt{2x+1}\), so \(dx=u\,du\).",
+        ),
+        (
+            "The integral becomes u*3**u. Integration by parts gives 3**(sqrt(2*x + 1))*sqrt(2*x + 1)/log(3) - 3**(sqrt(2*x + 1))/log(3)**2.",
+            r"The integral becomes \(u\cdot 3^{u}\). Integration by parts gives \(3^{\sqrt{2x+1}}\sqrt{2x+1}/\log 3-3^{\sqrt{2x+1}}/(\log 3)^{2}\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(2*x + 1)", "1/sqrt(2*x + 1)"),
+        ("diff", "3**(sqrt(2*x + 1))*sqrt(2*x + 1)/log(3) - 3**(sqrt(2*x + 1))/log(3)**2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P16",
+    "-log(2)**2/2",
+    [
+        (
+            "The factor exp(-x)/(1 - exp(-x)) equals 1/(exp(x) - 1), so log(1 - exp(-x))**2/2 is an antiderivative.",
+            r"The factor \(e^{-x}/(1-e^{-x})\) equals \(1/(e^{x}-1)\), so \((\log(1-e^{-x}))^{2}/2\) is an antiderivative.",
+        ),
+        (
+            "Evaluate from log(2) to oo. The limit at oo is 0, and the value at log(2) leaves -log(2)**2/2.",
+            r"Evaluate from \(\log 2\) to \(\infty\). The limit at infinity is \(0\), and the value at \(\log 2\) leaves \(-\frac{1}{2}(\log 2)^{2}\).",
+        ),
+    ],
+    [
+        ("eq", "exp(-x)/(1 - exp(-x))", "1/(exp(x) - 1)"),
+        ("diff", "log(1 - exp(-x))**2/2"),
+        ("ends", "log(1 - exp(-x))**2/2", "log(2)", "oo", "1", "-log(2)**2/2"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P17",
+    "x**2*log(x)**5/2 - 5*x**2*log(x)**4/4 + 5*x**2*log(x)**3/2 - 15*x**2*log(x)**2/4 + 15*x**2*log(x)/4 - 15*x**2/8",
+    [
+        (
+            "Substitution u = log(x). Then exp(2*log(x)) equals x**2, and the integral becomes u**5*exp(2*u).",
+            r"Substitution \(u=\log x\). Then \(e^{2\log x}=x^{2}\), and the integral becomes \(u^{5}e^{2u}\).",
+        ),
+        (
+            "Five integrations by parts. The antiderivative is x**2*log(x)**5/2 - 5*x**2*log(x)**4/4 + 5*x**2*log(x)**3/2 - 15*x**2*log(x)**2/4 + 15*x**2*log(x)/4 - 15*x**2/8.",
+            r"Five integrations by parts. The antiderivative is \(\frac{x^{2}(\log x)^{5}}{2}-\frac{5x^{2}(\log x)^{4}}{4}+\frac{5x^{2}(\log x)^{3}}{2}-\frac{15x^{2}(\log x)^{2}}{4}+\frac{15x^{2}\log x}{4}-\frac{15x^{2}}{8}\).",
+        ),
+    ],
+    [
+        ("eq", "exp(2*log(x))", "x**2"),
+        ("diff", "x**2*log(x)**5/2 - 5*x**2*log(x)**4/4 + 5*x**2*log(x)**3/2 - 15*x**2*log(x)**2/4 + 15*x**2*log(x)/4 - 15*x**2/8"),
+    ],
+)
+
+_add(
+    "YANG-2.3-P18",
+    "-4*sqrt(x)*sqrt(1 - sqrt(x))/15 + 4*x*sqrt(1 - sqrt(x))/5 - 8*sqrt(1 - sqrt(x))/15",
+    [
+        (
+            "Forced substitution t = 1 - sqrt(x), after u = sqrt(x). Then 4*(1 - sqrt(x))**(5/2)/5 - 4*(1 - sqrt(x))**(3/2)/3 is an antiderivative.",
+            r"Forced substitution \(t=1-\sqrt{x}\), after \(u=\sqrt{x}\). Then \(\frac{4}{5}(1-\sqrt{x})^{5/2}-\frac{4}{3}(1-\sqrt{x})^{3/2}\) is an antiderivative.",
+        ),
+        (
+            "Factor sqrt(1 - sqrt(x)). That equals -4*sqrt(x)*sqrt(1 - sqrt(x))/15 + 4*x*sqrt(1 - sqrt(x))/5 - 8*sqrt(1 - sqrt(x))/15.",
+            r"Factor \(\sqrt{1-\sqrt{x}}\). That equals \(-\frac{4\sqrt{x}\sqrt{1-\sqrt{x}}}{15}+\frac{4x\sqrt{1-\sqrt{x}}}{5}-\frac{8\sqrt{1-\sqrt{x}}}{15}\).",
+        ),
+    ],
+    [
+        ("diff", "4*(1 - sqrt(x))**(5/2)/5 - 4*(1 - sqrt(x))**(3/2)/3"),
+        ("eq", "4*(1 - sqrt(x))**(5/2)/5 - 4*(1 - sqrt(x))**(3/2)/3", "-4*sqrt(x)*sqrt(1 - sqrt(x))/15 + 4*x*sqrt(1 - sqrt(x))/5 - 8*sqrt(1 - sqrt(x))/15"),
+        ("diff", "-4*sqrt(x)*sqrt(1 - sqrt(x))/15 + 4*x*sqrt(1 - sqrt(x))/5 - 8*sqrt(1 - sqrt(x))/15"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P01",
+    "120",
+    [
+        (
+            "The guide's factorial integral says the integral of x**n*exp(-x) from 0 to oo is n!. Here n = 5, and 5*4*3*2*1 equals 120.",
+            r"The guide's factorial integral says \(\int_0^\infty x^{n}e^{-x}\,dx=n!\). Here \(n=5\), and \(5\cdot4\cdot3\cdot2\cdot1=120\).",
+        ),
+        (
+            "The antiderivative -exp(-x)*(x**5 + 5*x**4 + 20*x**3 + 60*x**2 + 120*x + 120), from 0 to oo, equals 120.",
+            r"The antiderivative \(-e^{-x}(x^{5}+5x^{4}+20x^{3}+60x^{2}+120x+120)\), from \(0\) to \(\infty\), equals \(120\).",
+        ),
+    ],
+    [
+        ("eq", "5*4*3*2*1", "120"),
+        ("diff", "-exp(-x)*(x**5 + 5*x**4 + 20*x**3 + 60*x**2 + 120*x + 120)"),
+        ("ends", "-exp(-x)*(x**5 + 5*x**4 + 20*x**3 + 60*x**2 + 120*x + 120)", "0", "oo", "1", "120"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P02",
+    "720",
+    [
+        (
+            "Substitution x = exp(-u) sends log(x)**6 on [0, 1] to u**6*exp(-u) on [0, oo]. The factorial integral gives 6*5*4*3*2*1, which equals 720.",
+            r"Substitution \(x=e^{-u}\) sends \((\log x)^{6}\) on \([0,1]\) to \(u^{6}e^{-u}\) on \([0,\infty)\). The factorial integral gives \(6!\), which equals \(720\).",
+        ),
+        (
+            "The antiderivative x*(log(x)**6 - 6*log(x)**5 + 30*log(x)**4 - 120*log(x)**3 + 360*log(x)**2 - 720*log(x) + 720), from 0 to 1, equals 720.",
+            r"The antiderivative \(x((\log x)^{6}-6(\log x)^{5}+30(\log x)^{4}-120(\log x)^{3}+360(\log x)^{2}-720\log x+720)\), from \(0\) to \(1\), equals \(720\).",
+        ),
+    ],
+    [
+        ("eq", "6*5*4*3*2*1", "720"),
+        ("diff", "x*(log(x)**6 - 6*log(x)**5 + 30*log(x)**4 - 120*log(x)**3 + 360*log(x)**2 - 720*log(x) + 720)"),
+        ("ends", "x*(log(x)**6 - 6*log(x)**5 + 30*log(x)**4 - 120*log(x)**3 + 360*log(x)**2 - 720*log(x) + 720)", "0", "1", "1", "720"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P03",
+    "19",
+    [
+        (
+            "Substitution t = -x. The polynomial (-x)**4 + (-x)**3 + (-x)**2 + (-x) equals x**4 - x**3 + x**2 - x.",
+            r"Substitution \(t=-x\). The polynomial \((-x)^{4}+(-x)^{3}+(-x)^{2}+(-x)\) equals \(x^{4}-x^{3}+x^{2}-x\).",
+        ),
+        (
+            "The factorial integral gives 4*3*2*1 - 3*2*1 + 2*1 - 1, and 24 - 6 + 2 - 1 equals 19.",
+            r"The factorial integral gives \(4!-3!+2!-1!\), and \(24-6+2-1=19\).",
+        ),
+        (
+            "The antiderivative (x**4 - 3*x**3 + 10*x**2 - 19*x + 19)*exp(x), from -oo to 0, equals 19.",
+            r"The antiderivative \((x^{4}-3x^{3}+10x^{2}-19x+19)e^{x}\), from \(-\infty\) to \(0\), equals \(19\).",
+        ),
+    ],
+    [
+        ("eq", "(-x)**4 + (-x)**3 + (-x)**2 + (-x)", "x**4 - x**3 + x**2 - x"),
+        ("eq", "4*3*2*1 - 3*2*1 + 2*1 - 1", "19"),
+        ("eq", "24 - 6 + 2 - 1", "19"),
+        ("diff", "(x**4 - 3*x**3 + 10*x**2 - 19*x + 19)*exp(x)"),
+        ("ends", "(x**4 - 3*x**3 + 10*x**2 - 19*x + 19)*exp(x)", "-oo", "0", "1", "19"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P04",
+    "1",
+    [
+        (
+            "Substitution u = x**2. Then (x**2)**2 equals x**4, and x**5*exp(-x**2) dx becomes u**2*exp(-u) du/2. So 2*1/2 equals 1.",
+            r"Substitution \(u=x^{2}\). Then \((x^{2})^{2}=x^{4}\), and \(x^{5}e^{-x^{2}}\,dx\) becomes \(u^{2}e^{-u}\,du/2\). So \(2!/2=1\).",
+        ),
+        (
+            "The antiderivative -exp(-x**2)*(x**4 + 2*x**2 + 2)/2, from 0 to oo, equals 1.",
+            r"The antiderivative \(-\frac{1}{2}e^{-x^{2}}(x^{4}+2x^{2}+2)\), from \(0\) to \(\infty\), equals \(1\).",
+        ),
+    ],
+    [
+        ("eq", "(x**2)**2", "x**4"),
+        ("eq", "2*1/2", "1"),
+        ("diff", "-exp(-x**2)*(x**4 + 2*x**2 + 2)/2"),
+        ("ends", "-exp(-x**2)*(x**4 + 2*x**2 + 2)/2", "0", "oo", "1", "1"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P05",
+    "65",
+    [
+        (
+            "Expand (x+1)**4 as x**4 + 4*x**3 + 6*x**2 + 4*x + 1. The factorial integral gives 24 + 4*6 + 6*2 + 4*1 + 1, which equals 65.",
+            r"Expand \((x+1)^{4}\) as \(x^{4}+4x^{3}+6x^{2}+4x+1\). The factorial integral gives \(24+4\cdot6+6\cdot2+4\cdot1+1\), which equals \(65\).",
+        ),
+        (
+            "The antiderivative (-x**4 - 8*x**3 - 30*x**2 - 64*x - 65)*exp(-x), from 0 to oo, equals 65.",
+            r"The antiderivative \((-x^{4}-8x^{3}-30x^{2}-64x-65)e^{-x}\), from \(0\) to \(\infty\), equals \(65\).",
+        ),
+    ],
+    [
+        ("eq", "(x+1)**4", "x**4 + 4*x**3 + 6*x**2 + 4*x + 1"),
+        ("eq", "24 + 4*6 + 6*2 + 4*1 + 1", "65"),
+        ("diff", "(-x**4 - 8*x**3 - 30*x**2 - 64*x - 65)*exp(-x)"),
+        ("ends", "(-x**4 - 8*x**3 - 30*x**2 - 64*x - 65)*exp(-x)", "0", "oo", "1", "65"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P06",
+    "4",
+    [
+        (
+            "Forced substitution u = sqrt(x). The derivative of sqrt(x) is 1/(2*sqrt(x)), and the integrand becomes 2*u**2*exp(-u). Then 2*2 equals 4.",
+            r"Forced substitution \(u=\sqrt{x}\). The derivative of \(\sqrt{x}\) is \(1/(2\sqrt{x})\), and the integrand becomes \(2u^{2}e^{-u}\). Then \(2\cdot2!=4\).",
+        ),
+        (
+            "The antiderivative -2*exp(-sqrt(x))*(x + 2*sqrt(x) + 2), from 0 to oo, equals 4.",
+            r"The antiderivative \(-2e^{-\sqrt{x}}(x+2\sqrt{x}+2)\), from \(0\) to \(\infty\), equals \(4\).",
+        ),
+    ],
+    [
+        ("diff_of", "sqrt(x)", "1/(2*sqrt(x))"),
+        ("eq", "2*2", "4"),
+        ("diff", "-2*exp(-sqrt(x))*(x + 2*sqrt(x) + 2)"),
+        ("ends", "-2*exp(-sqrt(x))*(x + 2*sqrt(x) + 2)", "0", "oo", "1", "4"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P07",
+    "3",
+    [
+        (
+            "Forced substitution u = x**(1/3). The derivative of x**(1/3) is 1/(3*x**(2/3)), so the integral becomes 3*u*exp(-u). Then 3*1 equals 3.",
+            r"Forced substitution \(u=x^{1/3}\). The derivative of \(x^{1/3}\) is \(1/(3x^{2/3})\), so the integral becomes \(3ue^{-u}\). Then \(3\cdot1!=3\).",
+        ),
+        (
+            "The antiderivative -3*exp(-x**(1/3))*(x**(1/3) + 1), from 0 to oo, equals 3.",
+            r"The antiderivative \(-3e^{-x^{1/3}}(x^{1/3}+1)\), from \(0\) to \(\infty\), equals \(3\).",
+        ),
+    ],
+    [
+        ("diff_of", "x**(1/3)", "1/(3*x**(2/3))"),
+        ("eq", "3*1", "3"),
+        ("diff", "-3*exp(-x**(1/3))*(x**(1/3) + 1)"),
+        ("ends", "-3*exp(-x**(1/3))*(x**(1/3) + 1)", "0", "oo", "1", "3"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P08",
+    "12",
+    [
+        (
+            "Forced substitution u = sqrt(x). The integrand becomes 2*u**3*exp(-u), and 2*6 equals 12.",
+            r"Forced substitution \(u=\sqrt{x}\). The integrand becomes \(2u^{3}e^{-u}\), and \(2\cdot3!=12\).",
+        ),
+        (
+            "The antiderivative -2*exp(-sqrt(x))*(sqrt(x)**3 + 3*x + 6*sqrt(x) + 6), from 0 to oo, equals 12.",
+            r"The antiderivative \(-2e^{-\sqrt{x}}(x^{3/2}+3x+6\sqrt{x}+6)\), from \(0\) to \(\infty\), equals \(12\).",
+        ),
+    ],
+    [
+        ("eq", "2*6", "12"),
+        ("diff", "-2*exp(-sqrt(x))*(sqrt(x)**3 + 3*x + 6*sqrt(x) + 6)"),
+        ("ends", "-2*exp(-sqrt(x))*(sqrt(x)**3 + 3*x + 6*sqrt(x) + 6)", "0", "oo", "1", "12"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P09",
+    "2",
+    [
+        (
+            "Substitution u = exp(x). Then exp(3*x - exp(x))/exp(x) equals exp(2*x - exp(x)), which is u**2*exp(-u). The factorial integral gives 2*1, which equals 2.",
+            r"Substitution \(u=e^{x}\). Then \(e^{3x-e^{x}}/e^{x}=e^{2x-e^{x}}\), which is \(u^{2}e^{-u}\). The factorial integral gives \(2!\), which equals \(2\).",
+        ),
+        (
+            "The antiderivative -exp(-exp(x))*(exp(2*x) + 2*exp(x) + 2), from -oo to oo, equals 2.",
+            r"The antiderivative \(-e^{-e^{x}}(e^{2x}+2e^{x}+2)\), from \(-\infty\) to \(\infty\), equals \(2\).",
+        ),
+    ],
+    [
+        ("eq", "exp(3*x - exp(x))/exp(x)", "exp(2*x - exp(x))"),
+        ("eq", "2*1", "2"),
+        ("diff", "-exp(-exp(x))*(exp(2*x) + 2*exp(x) + 2)"),
+        ("ends", "-exp(-exp(x))*(exp(2*x) + 2*exp(x) + 2)", "-oo", "oo", "1", "2"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P10",
+    "8/81",
+    [
+        (
+            "Substitution u = log(x) gives the integral of u**4*exp(-3*u) from 0 to oo, which is 4!/3**5. Then 24/3**5 equals 8/81.",
+            r"Substitution \(u=\log x\) gives \(\int_0^\infty u^{4}e^{-3u}\,du=4!/3^{5}\). Then \(24/3^{5}=8/81\).",
+        ),
+        (
+            "The antiderivative -log(x)**4/(3*x**3) - 4*log(x)**3/(9*x**3) - 4*log(x)**2/(9*x**3) - 8*log(x)/(27*x**3) - 8/(81*x**3), from 1 to oo, equals 8/81.",
+            r"The antiderivative \(-\frac{(\log x)^{4}}{3x^{3}}-\frac{4(\log x)^{3}}{9x^{3}}-\frac{4(\log x)^{2}}{9x^{3}}-\frac{8\log x}{27x^{3}}-\frac{8}{81x^{3}}\), from \(1\) to \(\infty\), equals \(8/81\).",
+        ),
+    ],
+    [
+        ("eq", "24/3**5", "8/81"),
+        ("diff", "-log(x)**4/(3*x**3) - 4*log(x)**3/(9*x**3) - 4*log(x)**2/(9*x**3) - 8*log(x)/(27*x**3) - 8/(81*x**3)"),
+        ("ends", "-log(x)**4/(3*x**3) - 4*log(x)**3/(9*x**3) - 4*log(x)**2/(9*x**3) - 8*log(x)/(27*x**3) - 8/(81*x**3)", "1", "oo", "1", "8/81"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P11",
+    "120",
+    [
+        (
+            "Substitution u = 1/x turns exp(-1/x)/x**7 into u**5*exp(-u). The factorial integral gives 5*4*3*2*1, which equals 120.",
+            r"Substitution \(u=1/x\) turns \(e^{-1/x}/x^{7}\) into \(u^{5}e^{-u}\). The factorial integral gives \(5!\), which equals \(120\).",
+        ),
+        (
+            "The antiderivative exp(-1/x)*(120 + 120/x + 60/x**2 + 20/x**3 + 5/x**4 + 1/x**5), from 0 to oo, equals 120.",
+            r"The antiderivative \(e^{-1/x}(120+120/x+60/x^{2}+20/x^{3}+5/x^{4}+1/x^{5})\), from \(0\) to \(\infty\), equals \(120\).",
+        ),
+    ],
+    [
+        ("eq", "5*4*3*2*1", "120"),
+        ("diff", "exp(-1/x)*(120 + 120/x + 60/x**2 + 20/x**3 + 5/x**4 + 1/x**5)"),
+        ("ends", "exp(-1/x)*(120 + 120/x + 60/x**2 + 20/x**3 + 5/x**4 + 1/x**5)", "0", "oo", "1", "120"),
+    ],
+)
+
+_add(
+    "YANG-2.4-P12",
+    "29",
+    [
+        (
+            "Substitution u = tan(x). Then sec(x)**2 equals 1 + tan(x)**2, and (1 + tan(x)**2)**2*sec(x)**2 equals sec(x)**6.",
+            r"Substitution \(u=\tan x\). Then \(\sec^{2}x=1+\tan^{2}x\), and \((1+\tan^{2}x)^{2}\sec^{2}x=\sec^{6}x\).",
+        ),
+        (
+            "The integral becomes (1 + 2*u**2 + u**4)*exp(-u) on [0, oo]. The factorial integral gives 1 + 4 + 24, which equals 29.",
+            r"The integral becomes \((1+2u^{2}+u^{4})e^{-u}\) on \([0,\infty)\). The factorial integral gives \(0!+2\cdot2!+4!=1+4+24\), which equals \(29\).",
+        ),
+        (
+            "The antiderivative -exp(-tan(x))*(tan(x)**4 + 4*tan(x)**3 + 14*tan(x)**2 + 28*tan(x) + 29), from 0 to pi/2, equals 29.",
+            r"The antiderivative \(-e^{-\tan x}(\tan^{4}x+4\tan^{3}x+14\tan^{2}x+28\tan x+29)\), from \(0\) to \(\pi/2\), equals \(29\).",
+        ),
+    ],
+    [
+        ("eq", "sec(x)**2", "1 + tan(x)**2"),
+        ("eq", "(1 + tan(x)**2)**2*sec(x)**2", "sec(x)**6"),
+        ("eq", "1 + 4 + 24", "29"),
+        ("diff", "-exp(-tan(x))*(tan(x)**4 + 4*tan(x)**3 + 14*tan(x)**2 + 28*tan(x) + 29)"),
+        ("ends", "-exp(-tan(x))*(tan(x)**4 + 4*tan(x)**3 + 14*tan(x)**2 + 28*tan(x) + 29)", "0", "pi/2", "1", "29"),
+    ],
+)
+
+_add(
     "YANG-2.5-P01",
     "x**2*log(x + 1)/2 - x**2/4 + x/2 - log(x + 1)/2",
     [
@@ -2575,6 +3222,26 @@ def run_elliptic(step) -> None:
         raise AssertionError("integrand scale")
 
 
+def _bad_value(value) -> bool:
+    if value in (sp.nan, sp.zoo, sp.oo, -sp.oo):
+        return True
+    has = getattr(value, "has", None)
+    if has is None:
+        return False
+    return bool(has(sp.nan, sp.zoo, sp.oo, -sp.oo))
+
+
+def _at(primitive, symbol, bound: str, side: str):
+    point = parse(bound)
+    if bound in {"oo", "-oo"}:
+        return sp.limit(primitive, symbol, point)
+    value = primitive.subs(symbol, point)
+    if not _bad_value(value):
+        return value
+    direction = "-" if side == "hi" else "+"
+    return sp.limit(primitive, symbol, point, dir=direction)
+
+
 def run_step(ident: str, step: tuple, integrand) -> None:
     kind = step[0]
     if kind == "diff":
@@ -2605,7 +3272,7 @@ def run_step(ident: str, step: tuple, integrand) -> None:
         _, ant, lo, hi, factor, expected = step
         symbol = pack_gate.namespace("x")["x"]
         primitive = parse(ant)
-        got = parse(factor) * (primitive.subs(symbol, parse(hi)) - primitive.subs(symbol, parse(lo)))
+        got = parse(factor) * (_at(primitive, symbol, hi, "hi") - _at(primitive, symbol, lo, "lo"))
         if not same(sp.simplify(got), parse(expected)):
             raise AssertionError(f"{ident} endpoints {ant} on [{lo}, {hi}]")
         return
