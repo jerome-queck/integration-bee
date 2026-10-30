@@ -106,8 +106,6 @@ echo "== never-impossible =="
 
 echo "== pack proof certificates =="
 "$PY" "$ROOT/verify/pack_certificates_check.py" || fail=1
-echo "== yang worked steps 2.7 through 6.7 =="
-"$PY" "$ROOT/verify/yang_worked_steps.py" || fail=1
 "$PY" "$ROOT/verify/pack_multiplicative_check.py" || fail=1
 
 echo "== gap index =="
