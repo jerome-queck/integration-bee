@@ -2,7 +2,7 @@
 
 The companion is the skill `.agents/skills/integration-bee-companion/SKILL.md`. Codex loads that directory. `.cursor/skills/integration-bee-companion` and `.claude/skills/integration-bee-companion` are symlinks to it. Cursor and Claude Code load the same file.
 
-A new person follows the Codex, Claude, or Cursor section in `README.md`. Each section is the clone, the packages, `scripts/control-integration-bee`, and the pstack plugin for that harness. The skill repeats those steps so the agent can onboard that person.
+A new person clones the repo and asks their agent to set it up (`README.md`, setup skill `.agents/skills/setup-integration-bee/SKILL.md`, entry point `scripts/setup.py`). The manual path is the Codex, Claude, or Cursor section in `docs/setup-manual.md`. Each section is the clone, the packages, `scripts/control-integration-bee`, and the pstack plugin for that harness. The skill repeats those steps so the agent can onboard that person.
 
 ## Pieces
 

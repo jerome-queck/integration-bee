@@ -1,0 +1,4 @@
+# Pinned Python dependencies. scripts/setup.py and CI install exactly these.
+sympy==1.14.0
+mpmath==1.3.0
+PyYAML==6.0.3

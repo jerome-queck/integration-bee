@@ -27,6 +27,7 @@ ENFORCERS = [
 ]
 
 SKILL_NAMES = (
+    "setup-integration-bee",
     "integration-bee-companion",
     "verify-integration-bee",
     "formal-verify-integration-bee",
@@ -40,7 +41,7 @@ Canonical skill files are `.agents/skills/<name>/SKILL.md`. Codex loads that dir
 
 Claude Code reads this file when the repository has no `CLAUDE.md`.
 
-A new person follows one getting-started section in `README.md`: Codex, Claude, or Cursor. Each section lists the Python packages, the TeX and Java packages for `make check`, `scripts/control-integration-bee`, and the pstack plugin install for that harness. The plugin repository is https://github.com/michael-denyer/pstack-claude.
+A new person clones the repo and asks their agent to set it up. The agent follows `.agents/skills/setup-integration-bee/SKILL.md`, which runs `scripts/setup.py` (macOS, Linux, and Windows; it creates `.venv/` from the pinned `requirements.txt`). `README.md` links that skill. The manual path is one getting-started section in `docs/setup-manual.md`: Codex, Claude, or Cursor. Each section lists the Python packages, the TeX and Java packages for `make check`, `scripts/control-integration-bee`, and the pstack plugin install for that harness. The plugin repository is https://github.com/michael-denyer/pstack-claude.
 
 When a row below names a pstack skill, open `skills/<name>/SKILL.md` in the cache for the harness you are running. The version directory is the one the installer created.
 
@@ -50,7 +51,7 @@ When a row below names a pstack skill, open `skills/<name>/SKILL.md` in the cach
 | Claude | `${CLAUDE_CODE_PLUGIN_CACHE_DIR:-${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins}/cache/pstack-claude/pstack/<version>/skills` |
 | Cursor | `~/.cursor/plugins/cache/<marketplace>/<plugin>/<version>/skills` |
 
-An installed Codex copy at version 0.9.102 keeps its skills in `~/.codex/plugins/cache/pstack-claude/pstack/0.9.102/skills`. If that file is missing, the person running the agent installs the plugin from the matching `README.md` section and starts a new session.
+An installed Codex copy at version 0.9.102 keeps its skills in `~/.codex/plugins/cache/pstack-claude/pstack/0.9.102/skills`. If that file is missing, the person running the agent installs the plugin from the matching `docs/setup-manual.md` section and starts a new session.
 """
 
 SCENARIOS = [
@@ -109,7 +110,7 @@ This repository is the public study pack for the UK University Integration Bee. 
 
 ## Setup
 
-Install Python 3.11 or newer, SymPy, and PyYAML.
+Run `python3 scripts/setup.py` (Windows: `py scripts\\setup.py`). The setup skill is `.agents/skills/setup-integration-bee/SKILL.md`. Or install Python 3.11 or newer, SymPy, and PyYAML by hand.
 
 ```bash
 python3 -m pip install sympy pyyaml
@@ -156,6 +157,7 @@ Regenerate this file with `python3 scripts/generate_agents_md.py` after you add 
 
 | Skill | When |
 |---|---|
+| `{CANONICAL_SKILL_ROOT}/setup-integration-bee` | Set up a fresh clone with `scripts/setup.py`. |
 | `{CANONICAL_SKILL_ROOT}/verify-integration-bee` | Drive the CLI and keep a transcript. |
 | `{CANONICAL_SKILL_ROOT}/formal-verify-integration-bee` | Check unit order, Round 1 readiness, and tracker records. |
 
