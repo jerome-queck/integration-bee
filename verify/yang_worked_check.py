@@ -2053,21 +2053,31 @@ _add(
  ('The substitution u = 4*x gives 4/(3 + cos(4*(x/4)))*(1/4), which equals 1/(3 + cos(x)).',
   'The substitution \\(u=4x\\) gives \\(4/(3+\\cos(4(x/4)))\\cdot(1/4)\\), which equals '
   '\\(1/(3+\\cos x)\\).'),
- ('cos(x + 2*pi) equals cos(x). One period, the integral of 1/(3 + cos(x)) from 0 to 2*pi, equals '
-  'sqrt(2)*pi/2.',
-  '\\(\\cos(x+2\\pi)\\) equals \\(\\cos x\\). One period, the integral of \\(1/(3+\\cos x)\\) from '
-  '\\(0\\) to \\(2\\pi\\), equals \\(\\sqrt{2}\\pi/2\\).'),
- ('Four periods give 4*(sqrt(2)*pi/2), which equals 2*sqrt(2)*pi. The integral of 4/(3 + cos(4*x)) '
-  'from 0 to 2*pi is that value.',
-  'Four periods give \\(4\\cdot(\\sqrt{2}\\pi/2)\\), which equals \\(2\\sqrt{2}\\pi\\). The '
-  'integral of \\(4/(3+\\cos 4x)\\) from \\(0\\) to \\(2\\pi\\) is that value.')],
+ ('cos(x + 2*pi) equals cos(x), and 1/(3 + cos(x + 2*pi)) equals 1/(3 + cos(x)). The '
+  'antiderivative of 1/(3 + cos(x)) is atan(tan(x/2)/sqrt(2))/sqrt(2).',
+  '\\(\\cos(x+2\\pi)\\) equals \\(\\cos x\\), and \\(1/(3+\\cos(x+2\\pi))\\) equals '
+  '\\(1/(3+\\cos x)\\). The antiderivative of \\(1/(3+\\cos x)\\) is '
+  '\\(\\arctan(\\tan(x/2)/\\sqrt{2})/\\sqrt{2}\\).'),
+ ('From 0 it is 0, and at pi from the left it is sqrt(2)*pi/4. At pi from the right it is '
+  '-sqrt(2)*pi/4, and at 2*pi from the left it is 0. (sqrt(2)*pi/4 - 0) + (0 - '
+  '(-sqrt(2)*pi/4)) equals sqrt(2)*pi/2. Four periods give 4*(sqrt(2)*pi/2), which equals '
+  '2*sqrt(2)*pi.',
+  'From \\(0\\) it is \\(0\\), and at \\(\\pi\\) from the left it is \\(\\sqrt{2}\\pi/4\\). At '
+  '\\(\\pi\\) from the right it is \\(-\\sqrt{2}\\pi/4\\), and at \\(2\\pi\\) from the left it is '
+  '\\(0\\). \\((\\sqrt{2}\\pi/4-0)+(0-(-\\sqrt{2}\\pi/4))\\) equals \\(\\sqrt{2}\\pi/2\\). Four '
+  'periods give \\(4\\cdot(\\sqrt{2}\\pi/2)\\), which equals \\(2\\sqrt{2}\\pi\\).')],
     [('eq', 'sin(x)**4 + cos(x)**4', '(3 + cos(4*x))/4'),
  ('eq', '1/(sin(x)**4 + cos(x)**4)', '4/(3 + cos(4*x))'),
  ('eq', '4/(3 + cos(4*(x/4)))*(1/4)', '1/(3 + cos(x))'),
  ('eq', 'cos(x + 2*pi)', 'cos(x)'),
- ('area', '1/(3 + cos(x))', '0', '2*pi', 'sqrt(2)*pi/2'),
- ('eq', '4*(sqrt(2)*pi/2)', '2*sqrt(2)*pi'),
- ('area', '4/(3 + cos(4*x))', '0', '2*pi', '2*sqrt(2)*pi')],
+ ('eq', '1/(3 + cos(x + 2*pi))', '1/(3 + cos(x))'),
+ ('diff_of', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', '1/(3 + cos(x))'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', '0', '+', '0'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', 'pi', '-', 'sqrt(2)*pi/4'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', 'pi', '+', '-sqrt(2)*pi/4'),
+ ('limit', 'atan(tan(x/2)/sqrt(2))/sqrt(2)', '2*pi', '-', '0'),
+ ('sum', '(sqrt(2)*pi/4 - 0) + (0 - (-sqrt(2)*pi/4))', 'sqrt(2)*pi/2'),
+ ('sum', '4*(sqrt(2)*pi/2)', '2*sqrt(2)*pi')],
 )
 
 _add(
@@ -2161,20 +2171,22 @@ _add(
   '\\((1-x)(1+x+x^{2})\\) equals \\(1-x^{3}\\). \\(\\log(1+x+x^{2})\\) equals \\(\\log((1-x^{3})/(1-x))\\), and \\(\\log((1-x^{3})/(1-x))\\) equals \\(\\log(1-x^{3})-\\log(1-x)\\).'),
  ('log(1 + x + x**2)/x equals log((1 - x**3)/(1 - x))/x, which equals (log(1 - x**3) - log(1 - x))/x.',
   '\\(\\log(1+x+x^{2})/x\\) equals \\(\\log((1-x^{3})/(1-x))/x\\), which equals \\((\\log(1-x^{3})-\\log(1-x))/x\\).'),
- ('The integral of log(1 - x**3)/x from 0 to 1 equals -pi**2/18. The integral of log(1 - x)/x from '
-  '0 to 1 equals -pi**2/6.',
-  'The integral of \\(\\log(1-x^{3})/x\\) from \\(0\\) to \\(1\\) equals \\(-\\pi^{2}/18\\). The '
-  'integral of \\(\\log(1-x)/x\\) from \\(0\\) to \\(1\\) equals \\(-\\pi^{2}/6\\).'),
- ('Their difference -pi**2/18 - (-pi**2/6) equals pi**2/9.',
-  'Their difference \\(-\\pi^{2}/18-(-\\pi^{2}/6)\\) equals \\(\\pi^{2}/9\\).')],
+ ('polylog(1, x) equals -log(1 - x), and polylog(1, x**3) equals -log(1 - x**3). The '
+  'antiderivative of (log(1 - x**3) - log(1 - x))/x is polylog(2, x) - polylog(2, x**3)/3.',
+  '\\(\\operatorname{Li}_{1}(x)\\) equals \\(-\\log(1-x)\\), and \\(\\operatorname{Li}_{1}(x^{3})\\) '
+  'equals \\(-\\log(1-x^{3})\\). The antiderivative of \\((\\log(1-x^{3})-\\log(1-x))/x\\) is '
+  '\\(\\operatorname{Li}_{2}(x)-\\operatorname{Li}_{2}(x^{3})/3\\).'),
+ ('From 0 to 1 that primitive equals pi**2/9.',
+  'From \\(0\\) to \\(1\\) that primitive equals \\(\\pi^{2}/9\\).')],
     [('eq', '(1 - x)*(1 + x + x**2)', '1 - x**3'),
  ('eq', 'log(1 + x + x**2)', 'log((1 - x**3)/(1 - x))'),
  ('eq', 'log((1 - x**3)/(1 - x))', 'log(1 - x**3) - log(1 - x)'),
  ('eq', 'log(1 + x + x**2)/x', 'log((1 - x**3)/(1 - x))/x'),
  ('eq', 'log((1 - x**3)/(1 - x))/x', '(log(1 - x**3) - log(1 - x))/x'),
- ('area', 'log(1 - x**3)/x', '0', '1', '-pi**2/18'),
- ('area', 'log(1 - x)/x', '0', '1', '-pi**2/6'),
- ('sum', '-pi**2/18 - (-pi**2/6)', 'pi**2/9')],
+ ('eq', 'polylog(1, x)', '-log(1 - x)'),
+ ('eq', 'polylog(1, x**3)', '-log(1 - x**3)'),
+ ('diff_of', 'polylog(2, x) - polylog(2, x**3)/3', '(log(1 - x**3) - log(1 - x))/x'),
+ ('ends', 'polylog(2, x) - polylog(2, x**3)/3', '0', '1', '1', 'pi**2/9')],
 )
 
 _add(
@@ -3006,12 +3018,22 @@ def fold(text: str) -> str:
     return "".join(str(text).split())
 
 
+def closed_zero(expr) -> bool:
+    if pack_gate._zero(expr):
+        return True
+    has = getattr(expr, "has", None)
+    if has is not None and has(sp.polylog):
+        return pack_gate._zero(sp.expand_func(expr))
+    return False
+
+
 def same(left, right) -> bool:
-    if pack_gate._zero(left - right):
+    delta = left - right
+    if closed_zero(delta):
         return True
     symbol = pack_gate.namespace("x")["x"]
     positive = sp.Symbol("x", positive=True)
-    return pack_gate._zero((left - right).subs(symbol, positive))
+    return closed_zero(delta.subs(symbol, positive))
 
 
 def diff_ok(antiderivative, integrand) -> bool:
@@ -3021,13 +3043,13 @@ def diff_ok(antiderivative, integrand) -> bool:
 
 def diff_expr(antiderivative, integrand, symbol) -> bool:
     delta = sp.diff(antiderivative, symbol) - integrand
-    if pack_gate._zero(delta):
+    if closed_zero(delta):
         return True
     dropped = pack_gate._drop_log_abs(antiderivative)
-    if dropped != antiderivative and pack_gate._zero(sp.diff(dropped, symbol) - integrand):
+    if dropped != antiderivative and closed_zero(sp.diff(dropped, symbol) - integrand):
         return True
     positive = sp.Symbol(symbol.name, positive=True)
-    return pack_gate._zero(delta.subs(symbol, positive))
+    return closed_zero(delta.subs(symbol, positive))
 
 
 def branch_ok(antiderivative, integrand) -> bool:
