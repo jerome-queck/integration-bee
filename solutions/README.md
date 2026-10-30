@@ -16,7 +16,7 @@ python3 solutions/self_check.py
 |---|---|---|
 | R1-2020-Q06 | \(\pi^2/24\) | [pack/R1-2020-Q06.md](pack/R1-2020-Q06.md) |
 | R1-2020-Q10 | \(1\) | [pack/R1-2020-Q10.md](pack/R1-2020-Q10.md) |
-| R1-2020-Q11 | \(\frac25(x^6+x^4+x^{-4})^{5/4}+C\) | [pack/R1-2020-Q11.md](pack/R1-2020-Q11.md) |
+| R1-2020-Q11 | \(\frac{2(x^{10}+x^8+1)^{5/4}}{5x^5}+C\) | [pack/R1-2020-Q11.md](pack/R1-2020-Q11.md) |
 | R1-2020-Q13 | \(\ln\bigl\|(\sqrt{1+e^x}-1)/(\sqrt{1+e^x}+1)\bigr\|+2\sqrt{1+e^x}+C\) | [pack/R1-2020-Q13.md](pack/R1-2020-Q13.md) |
 | R1-2020-Q15 | \(-\operatorname{arsinh}(e^{-x})+C\) | [pack/R1-2020-Q15.md](pack/R1-2020-Q15.md) |
 | R1-2020-Q18 | \(\ln\bigl\|(\tan(x/2)+1)/(\tan(x/2)+3)\bigr\|+C\) | [pack/R1-2020-Q18.md](pack/R1-2020-Q18.md) |

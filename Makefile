@@ -1,7 +1,7 @@
 PYTHON ?= python3
 export PYTHONPATH := $(CURDIR)/scripts
 
-.PHONY: check hooks ci agents structure templates invariants mutations verify doctor latex formal
+.PHONY: check hooks ci agents structure templates invariants mutations verify doctor latex formal sanity
 
 check: ci agents structure templates invariants mutations verify doctor latex formal
 
@@ -52,3 +52,7 @@ latex:
 
 formal:
 	bash verify/formal/run.sh
+
+# Fast numeric sanity check of solutions changed vs origin/main (IDS="A B" to name rows). Not part of check.
+sanity:
+	$(PYTHON) verify/solution_sanity.py $(IDS)

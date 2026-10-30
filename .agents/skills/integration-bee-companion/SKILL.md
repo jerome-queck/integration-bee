@@ -192,6 +192,8 @@ When `verify` is `manual`, compare the learner's answer with `answer_plain` and 
 
 When `verify` is `unchecked`, the source prints no answer. Say so. Do not invent an answer and do not send `verdict`.
 
+If a stored answer looks wrong, say so and keep teaching. Do not stall the reply. A repo agent later runs `make sanity IDS="<id>"` and follows the solution skepticism rule in `docs/learning-capture.md`.
+
 Read `docs/techniques/beyond-yang.md` before a mark when the move is a recurrence, a floor function, a t-substitution, a reflection, an introduced constant, or a Round 2 or Round 3 format. The six headings are the only gap ids. Yang is one source among others.
 
 ## Timed mock
