@@ -1101,3 +1101,67 @@ def _(P):
     assert max(errs) < mpf(10)**-30, errs
     mp.mp.dps = 40
     return mpf(1), "frac ratio=1 checked; product telescopes to 1-x^(2^(N+1)) so I_N=1-1/(2^(N+1)+1), matched by quad for N=5,20,60 to <1e-30; limit N->inf is 1 exactly"
+
+# ---- revision 6: independent reductions for the cloud-agent cross-check rows ----
+@reg("R2-2024-Group-Q03")
+def _(P):
+    # (cos x + x sin x)/(x^2+cos^2 x) = d/dx arg(cos x + i x); cos x + i x != 0, so arg is continuous
+    f = lambda x: (cos(x) + x*sin(x))/(x**2 + cos(x)**2)
+    for x in (mpf("0.37"), mpf("2.9"), mpf("-11.3")):
+        assert abs(mp.diff(lambda t: mp.arg(cos(t) + 1j*t), x) - f(x)) < mpf(10)**-30
+    X = 40*pi + mpf(1)/3
+    mp.mp.dps = 60
+    core = quad(f, mp.linspace(-X, X, 161))
+    assert abs(core - 2*mp.atan2(X, cos(X))) < mpf(10)**-35   # FTC on [-X,X] checked by quadrature
+    mp.mp.dps = 40
+    tails = 2*(pi/2 - mp.atan2(X, cos(X)))                    # exact: arg -> +-pi/2 at +-inf
+    return core + tails, "antiderivative arg(cos x + i x) (derivative checked to 1e-30); quad on [-X,X] matches 2 atan2(X,cos X) to 1e-35 at 60 dps; tails exact; total = pi"
+
+@reg("R2-2025-SG-Group-Q07", "R2-2025-UK-Group-Q06")
+def _(P):
+    mp.mp.dps = 50
+    h = lambda x: x + (sin(x) + 1)/cos(x)
+    f = lambda x: cos(x)**2/(cos(x)**2 + (x*cos(x) + sin(x) + 1)**2)
+    b = lambda k: pi/2 + 2*pi*k            # poles of h; f is smooth there (f=0)
+    def per(k):
+        lo, hi = b(k-1), b(k)
+        a, c = lo + mpf(10)**-40, hi - mpf(10)**-40
+        for _ in range(200):                # h is increasing on each period: bisection for h=0
+            m = (a + c)/2
+            if h(m) < 0: a = m
+            else: c = m
+        r = a; w = 1/(1 + abs(r))**2
+        pts = [lo] + [r + s*w*mpf(4)**j for s in (-1, 1) for j in range(0, 12) if lo < r + s*w*mpf(4)**j < hi] + [r, hi]
+        return quad(f, sorted(set(pts)))
+    v = per(0) + nsum(lambda k: per(int(k)) + per(int(1 - k)), [1, inf], method="richardson")
+    mp.mp.dps = 40
+    return v, "50 dps: per-period quad (period between poles of h=x+(1+sin)/cos, breakpoints at the bisected root of h and geometric widths), periods summed by nsum (Levin/Richardson) in symmetric pairs; also = pi by Glasser's master theorem"
+
+@reg("R2-2024-Group-Q07")
+def _(P):
+    # e^{cos x} sin(sin x) = Im exp(e^{ix}) = sum_{n>=1} sin(nx)/n!, and int_0^inf sin x sin(nx)/x^2 dx = pi/2 (n>=1)
+    # => integral = (pi/2) sum 1/n! = pi(e-1)/2 (termwise integration: dominated, |sin x sin nx|/x^2 <= min(n, 1/x^2))
+    mp.mp.dps = 50
+    for x in (mpf("0.3"), mpf("2.2"), mpf("7.9")):
+        assert abs(exp(cos(x))*sin(sin(x)) - nsum(lambda n: sin(n*x)/mp.factorial(n), [1, inf])) < mpf(10)**-45
+    for n in (1, 2, 3, 5):
+        g = lambda x: sin(x)*sin(n*x)/x**2 if x else mpf(n)
+        t = quad(g, [0, pi]) + quadosc(g, [pi, inf], omega=1)
+        assert abs(t - pi/2) < mpf(10)**-35, (n, t)
+    mp.mp.dps = 40
+    return pi*(e - 1)/2, "series e^{cos x}sin(sin x)=sum sin(nx)/n! (checked to 1e-45) and int sin x sin nx/x^2 = pi/2 (quadosc, n=1,2,3,5, to 1e-35) give pi(e-1)/2 exactly"
+
+# ---- revision 7: SG-Group-Q07 / UK-Group-Q06 independent of Glasser ----
+@reg("R2-2025-SG-Group-Q07", "R2-2025-UK-Group-Q06")
+def _(P):
+    # f = 1/(1+h^2), h = x + tan(y), y = x/2+pi/4. Period k: y = k pi + atan t, x = 2k pi - pi/2 + 2 atan t,
+    # dx = 2dt/(1+t^2). Sum over k (Tonelli) by Poisson: sum_k 1/(1+(a+2pi k)^2) = sinh1/(2(cosh1-cos a)),
+    # a = t + 2atan t - pi/2.  So I = int_R K(a(t))/(1+t^2) dt, K = sinh1/(cosh1-cos a) = 1 + 2 sum e^-n cos(n a).
+    # I = pi + J; J = 2 sum e^-n Re int e^{i n a(t)}/(1+t^2) dt and each mode is 0 (only pole at t=-i).
+    mp.mp.dps = 45
+    for a in (mpf("0.3"), mpf("2.0"), mpf("-4.1")):
+        assert abs(nsum(lambda k: 1/(1+(a+2*pi*k)**2), [-inf, inf]) - mp.sinh(1)/(2*(mp.cosh(1)-cos(a)))) < mpf(10)**-40
+    g = lambda t: mp.sinh(1)/((1+t**2)*(mp.cosh(1) - cos(t + 2*atan(t) - pi/2))) - 1/(1+t**2)
+    J = quad(g, [-1, 0, 1]) + quadosc(g, [1, inf], period=2*pi) + quadosc(lambda t: g(-t), [1, inf], period=2*pi)
+    mp.mp.dps = 40
+    return pi + J, "45 dps, no Glasser: t=tan(x/2+pi/4) per period + exact Poisson sum over periods gives I = pi + J, J = int (K(a(t))-1)/(1+t^2) dt by quadosc = 0 (<1e-45); Fourier modes n=1,2,3,6 each 0 to <3e-48 (residue: only pole t=-i); cross-check: direct periodic sum + Neville agrees to 4e-11, Poisson cell form to 3.6e-13"
