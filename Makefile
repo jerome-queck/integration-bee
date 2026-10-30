@@ -1,15 +1,19 @@
 PYTHON ?= python3
 export PYTHONPATH := $(CURDIR)/scripts
 
-.PHONY: check hooks ci agents structure templates invariants mutations verify doctor latex formal sanity
+.PHONY: check hooks ci docs agents structure templates invariants mutations verify doctor latex formal sanity
 
-check: ci agents structure templates invariants mutations verify doctor latex formal
+check: ci docs agents structure templates invariants mutations verify doctor latex formal
 
 hooks:
 	git config core.hooksPath .githooks
 
 ci:
 	$(PYTHON) scripts/check_ci.py
+
+docs:
+	$(PYTHON) scripts/check_doc_paths.py
+	$(PYTHON) scripts/check_docs_drift.py
 
 agents:
 	$(PYTHON) scripts/check_agents_md.py

@@ -13,6 +13,7 @@ from generate_agents_md import (
     SCENARIOS,
     SKILL_NAMES,
     render,
+    render_skills,
 )
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -99,6 +100,13 @@ HARNESS_MARKERS = {
 
 FILE_MARKERS = {
     "README.md": (
+        ".agents/skills/setup-integration-bee/SKILL.md",
+        "scripts/setup.py",
+        "docs/setup-manual.md",
+        "docs/architecture.md",
+        "mermaid",
+    ),
+    "docs/setup-manual.md": (
         ".agents/skills/integration-bee-companion/SKILL.md",
         ".agents/skills/verify-integration-bee/SKILL.md",
         ".agents/skills/formal-verify-integration-bee/SKILL.md",
@@ -125,8 +133,15 @@ AGENTS_MARKERS = (
     ".claude}/plugins}/cache/pstack-claude/pstack",
     "~/.cursor/plugins/cache/",
     "README.md",
+    "docs/setup-manual.md",
+    ".agents/skills/setup-integration-bee/SKILL.md",
     "poteto-mode",
     "core.symlinks",
+    "heavy",
+    "make sanity",
+    "learning-capture.md",
+    "force-push",
+    "docs/architecture.md",
 )
 
 FORBIDDEN = (
@@ -276,6 +291,9 @@ def main() -> None:
     if current != expected:
         print("AGENTS.md drifted. Run python3 scripts/generate_agents_md.py", file=sys.stderr)
         fail = 1
+    if (ROOT / "docs" / "skills.md").read_text() != render_skills():
+        print("docs/skills.md drifted. Run python3 scripts/generate_agents_md.py", file=sys.stderr)
+        fail = 1
     for marker in file_gaps(expected, AGENTS_MARKERS):
         print(f"FAIL AGENTS.md missing harness marker {marker}", file=sys.stderr)
         fail = 1
@@ -285,7 +303,7 @@ def main() -> None:
             print(f"FAIL {rel} missing {marker}", file=sys.stderr)
             fail = 1
     onboarding = (
-        ROOT / "README.md",
+        ROOT / "docs" / "setup-manual.md",
         ROOT / CANONICAL_SKILL_ROOT / "integration-bee-companion" / "SKILL.md",
     )
     for path in onboarding:
@@ -293,7 +311,7 @@ def main() -> None:
         for gap in gaps:
             print(f"FAIL {path.relative_to(ROOT)} {gap}", file=sys.stderr)
             fail = 1
-    scanned = [ROOT / "README.md", ROOT / "COMPANION_SPEC.md", ROOT / "AGENTS.md"]
+    scanned = [ROOT / "README.md", ROOT / "docs" / "setup-manual.md", ROOT / "COMPANION_SPEC.md", ROOT / "AGENTS.md"]
     scanned.extend((ROOT / CANONICAL_SKILL_ROOT).rglob("*.md"))
     for path in scanned:
         for phrase in forbidden_hits(path.read_text()):

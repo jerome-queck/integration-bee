@@ -19,7 +19,7 @@ scripts/control-integration-bee turn apply --file turn.json --format json
 
 This section is for the person running the agent, once, before study. The learner still does not run a command. This file is `.agents/skills/integration-bee-companion/SKILL.md`. Run `scripts/control-integration-bee doctor` yourself. If it does not print `READY integration-bee`, or the pstack skill `poteto-mode` is not in the cache for this harness, show that person the matching section below and wait. They install the packages and the plugin. Leave the plugin install to them.
 
-The full prose is also in `README.md`. Use the section that matches the harness you are running.
+The fastest path is `python3 scripts/setup.py` (the `setup-integration-bee` skill). The full prose is also in `docs/setup-manual.md`. Use the section that matches the harness you are running.
 
 ### Codex
 

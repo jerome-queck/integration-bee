@@ -5,7 +5,7 @@ description: Check Integration Bee unit order, Round 1 mock readiness, tracker r
 
 # Formal checks for Integration Bee
 
-Two checks. `verify/model.py` is a set of Python predicates over catalogs and tracker records. `verify/formal/` is a TLA+ model of one study session and of two writers sharing one data directory. TLC 1.7.4 checks the model. Read the pstack skill `statechart` when you read a TLC result or redraw the chart. Open it from the harness plugin cache named in `README.md`. Do not copy that skill's commands into this file.
+Two checks. `verify/model.py` is a set of Python predicates over catalogs and tracker records. `verify/formal/` is a TLA+ model of one study session and of two writers sharing one data directory. TLC 1.7.4 checks the model. Read the pstack skill `statechart` when you read a TLC result or redraw the chart. Open it from the harness plugin cache named in `docs/setup-manual.md`. Do not copy that skill's commands into this file.
 
 ## Catalog predicates
 
@@ -121,4 +121,4 @@ tracker_writes_blob: beda9eabb9b852eee1729c2e77e615d820ac3c6e
 
 Move a blob only after `make formal` passes on that file. `git hash-object` prints it. If the spec changes and the blob line does not, `make formal` fails.
 
-The pstack skill `maintain-formal-verification-skill` is the update path when covered code moves and this file was not rechecked. Read it from the harness plugin cache in `README.md`.
+The pstack skill `maintain-formal-verification-skill` is the update path when covered code moves and this file was not rechecked. Read it from the harness plugin cache in `docs/setup-manual.md`.
