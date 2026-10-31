@@ -3213,6 +3213,16 @@ def _arcsec_exp_ray(integrand, symbol, lo, hi):
     if not _zero(sp.simplify(claimed - 2 * sp.sin(u))):
         return None
     slope = sp.diff(sp.asec(sec), u).subs(sp.Abs(sp.sin(u)), sp.sin(u))
+    # d/du asec(sec u) has sqrt(1 - cos(u)**2) = |sin u|. On (0, π/2) sin u > 0,
+    # so that root is sin u; prove the sign on the interval rather than force it.
+    from sympy.calculus.util import function_range
+    root = sp.sqrt(1 - 1 / sec**2)
+    if not _zero(root**2 - sp.sin(u) ** 2):
+        return None
+    sin_range = function_range(sp.sin(u), u, sp.Interval.open(0, sp.pi / 2))
+    if sin_range.is_subset(sp.Interval.open(0, sp.oo)) is not True:
+        return None
+    slope = slope.subs(root, sp.sin(u))
     if not _zero(sp.simplify(slope - 1)):
         return None
     if not _zero(sp.asec(sp.sec(sp.pi / 4)) - sp.pi / 4):
