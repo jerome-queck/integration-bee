@@ -13,7 +13,7 @@
 
 ## Solution
 
-The solutions PDF factors \(x^3+1=(x+1)(x^2-x+1)\) and finds
+The factor \(\log(x+1)\) in the real antiderivative is \(\log|x+1|\). The quadratic \(x^2-x+1\) stays positive. The solutions PDF factors \(x^3+1=(x+1)(x^2-x+1)\) and finds
 
 \[
 \frac{1}{x^3+1}=\frac{1}{3(x+1)}+\frac{2-x}{3(x^2-x+1)}.

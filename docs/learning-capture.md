@@ -145,7 +145,7 @@ Learner stickies are not capture. Writing `stickies.json` by hand does not recor
 
 Set these together: `verify` `sympy`, `answer_plain`, `answer_source_pdf`, `answer_sympy`, `sympy_expr`, `integrand_latex`, `answer_latex`, `variable` (one of `x`, `t`, `X`, `e`, or `grid` for a grid), `kind`, `limits` (`[]` when the kind is not bounded, otherwise two strings). Leave `worked_solution_latex` null. Keep `worked_solution_plain` empty unless `worked_solution_origin` is `pdf_copy`, and then store an extract, not a new derivation. Yang rows are the exception (see the origins paragraph above): they store both texts with origin `derived`.
 
-`verify/problem_catalog.py` holds `EXPECTED_COUNT` 948, `EXPECTED_SYMPY` 948, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 193 for pack rows after the §1.9 split, the §1.20 page-image proof, and the exclusion of formula `YANG-1.14-P10`. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. The reference row is outside those totals as well. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
+`verify/problem_catalog.py` holds `EXPECTED_COUNT` 948, `EXPECTED_SYMPY` 948, `EXPECTED_MANUAL` 0, and `EXPECTED_PDF_COPY` 183 for pack rows after the §1.9 split, the §1.20 page-image proof, the exclusion of formula `YANG-1.14-P10`, and the C1 re-extraction that cleared 10 unmatched copied worked fields. Sample rows are 20 and all `sympy` at this tip; they are outside those totals. The reference row is outside those totals as well. Recount after rebasing. Do not copy a historical total out of `docs/decisions/0016-pack-source-holds.md`.
 
 ## Checks before the pull request
 

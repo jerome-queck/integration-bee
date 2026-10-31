@@ -5,7 +5,7 @@
     "kind": "indefinite",
     "latex": "\\int\\frac{2x^{3}-1}{x^{4}+x}\\,dx",
     "sympy_expr": "(2*x**3-1)/(x**4+x)",
-    "answer_sympy": "log(x**2+1/x)",
+    "answer_sympy": "log(Abs(x**2+1/x))",
     "answer_display": "\\log{\\left(x^{2} + \\frac{1}{x} \\right)}+C",
     "technique_tags": [
       "undertow",
@@ -15,7 +15,7 @@
       "yang:4.1"
     ],
     "unit": "24-undertow-square",
-    "solution_note": "\u00f7x."
+    "solution_note": "÷x."
   },
   {
     "id": "U24-D02",
@@ -41,7 +41,7 @@
     "kind": "indefinite",
     "latex": "\\int\\frac{e^{x}-\\sin x}{e^{x}+\\cos x}\\,dx",
     "sympy_expr": "(exp(x)-sin(x))/(exp(x)+cos(x))",
-    "answer_sympy": "log(exp(x)+cos(x))",
+    "answer_sympy": "log(Abs(exp(x)+cos(x)))",
     "answer_display": "\\log{\\left(e^{x} + \\cos{\\left(x \\right)} \\right)}+C",
     "technique_tags": [
       "undertow",
@@ -59,7 +59,7 @@
     "kind": "indefinite",
     "latex": "\\int\\frac{x^{2}-1}{x^{3}+x}\\,dx",
     "sympy_expr": "(x**2-1)/(x**3+x)",
-    "answer_sympy": "log(x+1/x)",
+    "answer_sympy": "log(Abs(x+1/x))",
     "answer_display": "\\log{\\left(x + \\frac{1}{x} \\right)}+C",
     "technique_tags": [
       "undertow",
@@ -69,7 +69,7 @@
       "yang:4.1"
     ],
     "unit": "24-undertow-square",
-    "solution_note": "\u00f7x."
+    "solution_note": "÷x."
   },
   {
     "id": "U24-D05",

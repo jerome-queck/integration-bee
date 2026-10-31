@@ -12,7 +12,7 @@
 
 ## Solution
 
-The antiderivative \(\operatorname{atan}(\sqrt{2}\,x/\sqrt{1-x^2})/\sqrt{2}\) differentiates back to the integrand. Its value at \(0\) is \(0\). The two-sided limit at \(1\) is the negative of the left-hand limit, and the left-hand limit is \(\sqrt{2}\,\pi/4=\pi/(2\sqrt{2})\).
+The antiderivative \(\operatorname{atan}(\sqrt{2}\,x/\sqrt{1-x^2})/\sqrt{2}\) differentiates back to the integrand. Its value at \(0\) is \(0\). The integrand is real on \([-1,1]\). Only the left-hand limit at \(1\) exists in the reals, and that limit is \(\pi/(2\sqrt{2})=\sqrt{2}\,\pi/4\).
 
 ## Final answer
 

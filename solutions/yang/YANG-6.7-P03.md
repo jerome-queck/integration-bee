@@ -12,7 +12,7 @@
 
 ## Solution
 
-For \(n> -1\) set \(I(n)=\int_0^1(x^n-1)/\log x\,dx\). Differentiating under the integral sign gives \(I'(n)=\int_0^1 x^n\,dx=1/(n+1)\), so \(I(n)=\log(n+1)+C\). The integrand vanishes at \(n=0\), hence \(C=0\). The printed case is \(n=10\), and \(I(10)=\log 11\).
+For \(n> -1\) set \(I(n)=\int_0^1(x^n-1)/\log x\,dx\). On \((0,1)\) and \(n\ge 0\), \(|x^n|=x^n\le 1\), and \(1\) is integrable, so the \(n\)-derivative \(x^n\) is dominated near \(n=10\). Differentiating under the integral sign gives \(I'(n)=\int_0^1 x^n\,dx=1/(n+1)\), so \(I(n)=\log(n+1)+C\). The integrand vanishes at \(n=0\), hence \(C=0\). The printed case is \(n=10\), and \(I(10)=\log 11\).
 
 ## Final answer
 

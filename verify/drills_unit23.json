@@ -19,7 +19,7 @@
       "2*pi"
     ],
     "unit": "23-periodicity-speed",
-    "solution_note": "m\u2260n."
+    "solution_note": "m≠n."
   },
   {
     "id": "U23-D02",
@@ -107,7 +107,7 @@
       "2*pi"
     ],
     "unit": "23-periodicity-speed",
-    "solution_note": "m\u2260n."
+    "solution_note": "m≠n."
   },
   {
     "id": "U23-D06",
@@ -151,7 +151,7 @@
     "kind": "indefinite",
     "latex": "\\int(x^{-2}+x^{-1}+1-(x^{2}+1)^{-1})\\,dx",
     "sympy_expr": "1/x**2+1/x+1-1/(x**2+1)",
-    "answer_sympy": "-1/x+log(x)+x-atan(x)",
+    "answer_sympy": "-1/x+log(Abs(x))+x-atan(x)",
     "answer_display": "x + \\log{\\left(x \\right)} - \\operatorname{atan}{\\left(x \\right)} - \\frac{1}{x}+C",
     "technique_tags": [
       "speed-bashing",

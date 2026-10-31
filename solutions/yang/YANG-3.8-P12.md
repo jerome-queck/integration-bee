@@ -12,7 +12,7 @@
 
 ## Solution
 
-Put \(u=e^{x/2}\), then \(w=\sqrt{1+u}\). The integral becomes \(4\int_{\sqrt{2}}^\infty dw/(w^2-1)\). The antiderivative \(\log|(w-1)/(w+1)|\) gives \(-2\log(\sqrt{2}-1)+2\log(\sqrt{2}+1)\).
+Put \(u=e^{x/2}\), then \(w=\sqrt{1+u}\). The integral becomes \(4\int_{\sqrt{2}}^\infty dw/(w^2-1)\). The antiderivative of \(4/(w^2-1)\) is \(2\log|(w-1)/(w+1)|\), and the definite value is \(-2\log(\sqrt{2}-1)+2\log(\sqrt{2}+1)\).
 
 ## Final answer
 

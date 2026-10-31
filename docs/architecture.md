@@ -4,12 +4,23 @@ How the pack, the Yang set, the checker, and the companion fit together. The sho
 
 ## Diagram detail
 
-The README diagram is kept small (five nodes, top-down) so it fits GitHub's default view; it draws the contest pack and the Yang set as one store and leaves out learner progress. The full picture:
+The README shows the learner journey as a statechart ([journey.mmd](images/journey/journey.mmd), model and render steps in [images/journey/README.md](images/journey/README.md)). It has 10 states in five phases (get set up, find your level, practise, learn, prove it) and 14 arrows, so it fits GitHub's default view. It leaves out the parts below.
+
+How the pieces fit together:
+
+```mermaid
+flowchart TD
+    You([🙋 You]) --> Coach[🤖 Coach agent]
+    Coach --> CLI[⚙️ Pack CLI]
+    CLI --> Problems[(📚 Contest pack + 📖 Yang set)]
+    Checker[✅ Checker] -. proves answers .-> Problems
+```
 
 - You chat with the coach and can send photos of handwritten working.
 - The coach is the `integration-bee-companion` skill. It sends one JSON turn to `scripts/control-integration-bee`.
 - The CLI reads the contest pack (Rounds 1–3) and the Yang set from `problems/records.jsonl`, and writes your progress to the data directory (`trackers/live` by default). Progress stays on your machine.
 - The checker (`make check`, including SymPy) re-checks stored `verify: sympy` answers in the pack and the Yang integral rows. `YANG-1.14-P10` stays unchecked. A conflicting printed mark can remain in the note.
+- The journey states map to turn kinds: placement drill is `aptitude`, coach marks is `mark`, pick what to skip is the `proposing` phase and `confirm`, lesson is `teach`, mock exam is `mock-start`/`mock-finish`. Full coverage (`cover`) and the gap index are described below.
 
 ## Start
 

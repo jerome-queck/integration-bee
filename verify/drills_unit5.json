@@ -72,7 +72,7 @@
     "latex": "\\int \\frac{1}{x^2-1}\\,dx",
     "sympy_expr": "1/(x**2-1)",
     "limits": null,
-    "answer_sympy": "log(x-1)/2 - log(x+1)/2",
+    "answer_sympy": "log(Abs(x-1))/2 - log(Abs(x+1))/2",
     "answer_display": "\\frac12\\ln\\left|\\frac{x-1}{x+1}\\right|+C",
     "technique_tags": [
       "partial-fractions",
