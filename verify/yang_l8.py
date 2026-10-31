@@ -23,6 +23,7 @@ def definite_value(integrand, symbol, lo, hi):
         _arctangent_complement,
         _fourth_root_arcsecant,
         _exponential_arctangent,
+        _nested_root_exponential,
         _triple_angle_arctangent,
         _composed_exponential_fraction,
         _nested_exponential_speed,
@@ -277,17 +278,23 @@ def _fourth_root_arcsecant(integrand, x, lo, hi):
 
 
 def _exponential_arctangent(integrand, x, lo, hi):
-    """∫_0^∞ dx/(e**x + e**(-(x+1))) = sqrt(E)*(pi/2 - atan(sqrt(E)))."""
-    target = 1 / (sp.exp(x) + sp.exp(-(x + 1)))
+    """∫_0^∞ dx/(e**x + 1/(e**x + 1)) = log(3)/2 + sqrt(3)*pi/18 (YANG-3.8-P11, audit A1).
+
+    u = e**x gives (u + 1)/(u*(u**2 + u + 1)) = 1/u - u/(u**2 + u + 1) on [1, ∞).
+    """
+    target = 1 / (sp.exp(x) + 1 / (sp.exp(x) + 1))
     if integrand != target or lo != 0 or hi != sp.oo:
         return None
-    primitive = sp.sqrt(sp.E) * sp.atan(sp.exp(x) * sp.sqrt(sp.E))
-    if not _is_zero(sp.diff(primitive, x) - integrand):
+    u = sp.symbols("u", positive=True)
+    rational = 1 / u - u / (u**2 + u + 1)
+    if not _is_zero(integrand.subs(x, sp.log(u)) / u - rational):
         return None
-    upper = sp.limit(primitive, x, sp.oo)
-    lower = primitive.subs(x, 0)
-    value = sp.simplify(upper - lower)
-    if not _is_zero(value - sp.sqrt(sp.E) * (sp.pi / 2 - sp.atan(sp.sqrt(sp.E)))):
+    primitive = sp.log(u) - sp.log(u**2 + u + 1) / 2 + sp.atan((2 * u + 1) / sp.sqrt(3)) / sp.sqrt(3)
+    if not _is_zero(sp.diff(primitive, u) - rational):
+        return None
+    upper = sp.limit(primitive, u, sp.oo)
+    value = sp.simplify(upper - primitive.subs(u, 1))
+    if not _is_zero(value - (sp.log(3) / 2 + sp.sqrt(3) * sp.pi / 18)):
         return None
     return value
 
@@ -514,5 +521,26 @@ def _conjugate_square_roots(integrand, x, lo, hi):
     u = sp.Dummy("u", real=True)
     value = sp.integrate(8 * u**2, (u, 0, 1))
     if value != sp.Rational(8, 3):
+        return None
+    return value
+
+
+def _nested_root_exponential(integrand, x, lo, hi):
+    """∫_0^9 exp(sqrt(sqrt(x) + 1)) dx = 4*e**2 + 8*e (YANG-3.8-P13, audit A1).
+
+    x = u**2 and u = w**2 - 1 give 4*(w**3 - w)*e**w on [1, 2].
+    """
+    if integrand != sp.exp(sp.sqrt(sp.sqrt(x) + 1)) or lo != 0 or hi != 9:
+        return None
+    u = sp.symbols("u", positive=True)
+    w = sp.symbols("w", positive=True)
+    reduced = (integrand.subs(x, u**2) * 2 * u).subs(u, w**2 - 1) * 2 * w
+    if not _is_zero(reduced - 4 * (w**3 - w) * sp.exp(w)):
+        return None
+    primitive = 4 * (w**3 - 3 * w**2 + 5 * w - 5) * sp.exp(w)
+    if not _is_zero(sp.diff(primitive, w) - 4 * (w**3 - w) * sp.exp(w)):
+        return None
+    value = sp.expand(primitive.subs(w, 2) - primitive.subs(w, 1))
+    if not _is_zero(value - (4 * sp.exp(2) + 8 * sp.E)):
         return None
     return value
