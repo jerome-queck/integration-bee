@@ -123,6 +123,33 @@ def test_q32_real_coeff() -> int:
         return fail("Q32 certificate rejected pi*|a|/2 for a negative coefficient")
     if pack_gate._cosine_over_square(sp.Integer(0), x, 0, sp.oo) != 0:
         return fail("Q32 certificate rejected the zero integrand")
+    pair_a, pair_b = sp.symbols("a b")
+    pair = (sp.cos(pair_a * x) - sp.cos(pair_b * x)) / x**2
+    if pack_gate._cosine_over_square(pair, x, 0, sp.oo) is not None:
+        return fail("Q32 certificate accepted bare a and b with no stated assumption")
+    stated = {
+        "a": sp.Symbol("a", positive=True),
+        "b": sp.Symbol("b", positive=True),
+    }
+    got = pack_gate._cosine_over_square(pair, x, 0, sp.oo, stated)
+    wanted = -sp.pi * sp.Abs(pair_a) / 2 + sp.pi * sp.Abs(pair_b) / 2
+    if got is None or sp.simplify(got - wanted) != 0:
+        return fail("Q32 certificate ignored stated a>0, b>0")
+    payload = (
+        "definite",
+        "(cos(a*x) - cos(b*x))/x**2",
+        ("0", "oo"),
+        "-pi*Abs(a)/2 + pi*Abs(b)/2",
+        "x",
+    )
+    previous = pack_gate._PROOF_ROW
+    pack_gate._PROOF_ROW = payload
+    try:
+        looked = pack_gate._cosine_over_square(pair, x, 0, sp.oo)
+    finally:
+        pack_gate._PROOF_ROW = previous
+    if looked is None or sp.simplify(looked - wanted) != 0:
+        return fail("Q32 certificate did not apply the row grading-assumptions")
     return ok("Q32 certificate requires a real coefficient")
 
 

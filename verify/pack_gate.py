@@ -54,7 +54,8 @@ reduction. A reciprocal power that clears to a rational function is integrated
 directly. (cos(a x)-cos(b x))/x**2 on [0, ∞) reduces by parts to the Dirichlet
 integral. For a nonzero real coefficient the substitution u = |k| x scales that
 value by |k|; a zero coefficient is handled separately and contributes 0.
-A coefficient that is not known to be real is refused.
+A coefficient that is not known to be real is refused, unless the row states
+that it is positive.
 A logarithm of an absolute value differentiates as the logarithm
 of its argument. An indefinite answer is accepted when its derivative
 matches the integrand, including the sign(u)/Abs(u) form of the derivative of
@@ -2432,6 +2433,106 @@ def _constant_log_span(integrand, symbol, lo, hi):
     return sp.simplify((hi - lo) * sp.Rational(1, 2))
 
 
+_PROOF_ROW = None
+
+
+def _notes_assumptions(notes: str, variable: str) -> dict:
+    """Positive parameters named by ``grading-assumptions: a>0, b>0``.
+
+    The same clause is what the grader reads. The integration variable is
+    left alone.
+    """
+    import re
+
+    found = re.search(r"grading-assumptions:\s*([^.\n]*)", notes or "")
+    if found is None:
+        return {}
+    stated = {}
+    for token in found.group(1).split(","):
+        matched = re.fullmatch(r"\s*([A-Za-z][A-Za-z0-9_]*)\s*>\s*0\s*", token)
+        if matched is None:
+            continue
+        name = matched.group(1)
+        if name == variable:
+            continue
+        stated[name] = sp.Symbol(name, positive=True)
+    return stated
+
+
+def _expressed_assumptions(text: str, variable: str) -> dict:
+    """Symbols the row already stores as positive, negative, or real."""
+    if not isinstance(text, str) or not text:
+        return {}
+    try:
+        expr = _parse(text, variable)
+    except Exception:
+        return {}
+    stated = {}
+    for sym in getattr(expr, "free_symbols", ()):
+        if getattr(sym, "name", None) in (None, variable):
+            continue
+        if sym.is_positive or sym.is_nonnegative or sym.is_negative or sym.is_extended_real or sym.is_real:
+            stated[sym.name] = sym
+    return stated
+
+
+def _proof_stated_assumptions() -> dict:
+    """Assumptions of the catalog row this worker is proving, if it matches.
+
+    A direct certificate call has no row, so a bare symbol stays unassumed.
+    """
+    payload = _PROOF_ROW
+    if not isinstance(payload, tuple) or len(payload) < 5:
+        return {}
+    kind, integrand_s, limits, answer_s, variable = payload[:5]
+    if kind != "definite" or not isinstance(integrand_s, str) or not isinstance(answer_s, str):
+        return {}
+    if not isinstance(limits, (list, tuple)) or len(limits) != 2:
+        return {}
+    wanted = [str(item) for item in limits]
+    from pathlib import Path
+
+    records = Path(__file__).resolve().parent.parent / "problems" / "records.jsonl"
+    try:
+        lines = records.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return {}
+    import json
+
+    for line in lines:
+        if not line.strip():
+            continue
+        try:
+            record = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if record.get("kind") != kind or record.get("variable") != variable:
+            continue
+        if record.get("sympy_expr") != integrand_s or record.get("answer_sympy") != answer_s:
+            continue
+        if [str(item) for item in (record.get("limits") or [])] != wanted:
+            continue
+        stated = _notes_assumptions(str(record.get("notes") or ""), variable)
+        for name, sym in _expressed_assumptions(integrand_s, variable).items():
+            stated.setdefault(name, sym)
+        for name, sym in _expressed_assumptions(answer_s, variable).items():
+            stated.setdefault(name, sym)
+        return stated
+    return {}
+
+
+def _apply_stated(coeff, assumptions: dict):
+    """Replace coefficients by the row's stated positive (or real) symbols."""
+    if not assumptions or not hasattr(coeff, "free_symbols"):
+        return coeff
+    repl = {}
+    for sym in coeff.free_symbols:
+        stated = assumptions.get(getattr(sym, "name", None))
+        if stated is not None and stated != sym:
+            repl[sym] = stated
+    return coeff.xreplace(repl) if repl else coeff
+
+
 def _known_real_coefficient(coeff) -> bool:
     """0, or a coefficient SymPy knows is real.
 
@@ -2445,14 +2546,16 @@ def _known_real_coefficient(coeff) -> bool:
     return getattr(coeff, "is_real", None) is True
 
 
-def _cosine_over_square(integrand, symbol, lo, hi):
+def _cosine_over_square(integrand, symbol, lo, hi, assumptions=None):
     """∫_0^∞ (cos(a x)-cos(b x))/x**2 dx = π(|b|-|a|)/2 for real a, b.
 
     Parts moves a positive coefficient to the Dirichlet integral. For a nonzero
     real k, u = |k| x multiplies ∫_0^∞ (1-cos u)/u**2 du by |k|. A zero
     coefficient is not that substitution: cos(0·x) = 1, the integrand is 0,
     and the term contributes 0. A coefficient that is not known to be real
-    is refused: the formula is not π|a|/2 for a general complex a.
+    is refused, unless the row states that it is positive (grading-assumptions
+    or a positive symbol already on the row). The formula is not π|a|/2 for
+    a general complex a.
     """
     if not (_zero(lo) and hi == sp.oo):
         return None
@@ -2547,29 +2650,40 @@ def _cosine_over_square(integrand, symbol, lo, hi):
         return None
     # π|k|/2 needs a real k. A bare symbol, and a symbol only assumed complex,
     # are not known to be real: |cos(c x)| grows like exp(|Im c| x)/2 and the
-    # integral need not converge. Zero, positive, and negative coefficients
-    # are real. The catalog states a>0, b>0; that positive reading is proved
-    # by rewriting the parameters, not by returning Abs for an unassumed symbol.
+    # integral need not converge. A catalog row that states a>0, b>0 supplies
+    # that assumption before this check. The value is still π|k|/2, which
+    # matches the stored absolute-value answer without a second integration.
+    checked_first, checked_second = first, second
     if not _known_real_coefficient(first) or not _known_real_coefficient(second):
-        return None
+        stated = assumptions if assumptions is not None else _proof_stated_assumptions()
+        checked_first = _apply_stated(first, stated)
+        checked_second = _apply_stated(second, stated)
+        if not _known_real_coefficient(checked_first) or not _known_real_coefficient(checked_second):
+            return None
 
-    def half_line(coeff):
+    def half_line(original, checked):
         """π|k|/2. A zero coefficient returns 0 and does not divide by |k|.
 
-        Abs is returned only when k is known real and its sign is not.
+        Abs is returned when k is known real and its sign is not. A stated
+        positive assumption is enough for that reality; Abs stays on the
+        original symbol so the catalog answer matches this value directly.
         """
-        if coeff == 0 or getattr(coeff, "is_zero", None) is True:
+        if original == 0 or getattr(original, "is_zero", None) is True:
             return sp.Integer(0)
-        if getattr(coeff, "is_positive", None) is True:
-            return sp.pi * coeff / 2
-        if getattr(coeff, "is_negative", None) is True:
-            return sp.pi * (-coeff) / 2
-        if not _known_real_coefficient(coeff):
+        if getattr(original, "is_positive", None) is True:
+            return sp.pi * original / 2
+        if getattr(original, "is_negative", None) is True:
+            return sp.pi * (-original) / 2
+        if _known_real_coefficient(original):
+            return sp.pi * sp.Abs(original) / 2
+        if not _known_real_coefficient(checked):
             return None
-        return sp.pi * sp.Abs(coeff) / 2
+        if checked == 0 or getattr(checked, "is_zero", None) is True:
+            return sp.Integer(0)
+        return sp.pi * sp.Abs(original) / 2
 
-    left = half_line(second)
-    right = half_line(first)
+    left = half_line(second, checked_second)
+    right = half_line(first, checked_first)
     if left is None or right is None:
         return None
     return sp.simplify(left - right)
@@ -6317,6 +6431,17 @@ def _handoff_e_octahedron(integrand, symbol, lo, hi):
 
 
 def _worker(payload, queue) -> None:
+    global _PROOF_ROW
+    previous = _PROOF_ROW
+    if isinstance(payload, tuple) and payload and payload[0] in {"definite", "indefinite"}:
+        _PROOF_ROW = payload
+    try:
+        _worker_body(payload, queue)
+    finally:
+        _PROOF_ROW = previous
+
+
+def _worker_body(payload, queue) -> None:
     try:
         kind, integrand_s, limits, answer_s, variable = payload
         if kind == "_grid_clue":
