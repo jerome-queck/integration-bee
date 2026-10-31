@@ -1,7 +1,7 @@
 """Resumable confirmation of the 125 rows left UNCONFIRMED by /workspace/audit-skep.
 Usage: confirm125.py [ID ...]   (no args: all ids in ids.txt not yet in results.tsv)
 Appends one TSV row per id: id, status, value, answer, rel_err, tol, method."""
-import os, sys, json, time, signal, traceback
+import hashlib, os, sys, json, time, signal, traceback
 REPO = os.environ.get("IBE_REPO", "/workspace/repos/ibe-confirm")
 sys.path[:0] = [REPO + "/verify", REPO + "/scripts", os.path.dirname(__file__)]
 import sympy as sp, mpmath as mp
@@ -11,6 +11,27 @@ OVERRIDE = {"R1-2020-Q16": {"k": "7/10"}, "R1-2020-Q25": {"a": "3", "b": "2"},
             "R2-2021-Group-Q06": {"a": "27/10", "b": "13/10"},
             "R2-2025-SG-Relay-Q03": {"m": "2", "n": "2"}, "R2-2025-UK-Relay-Q03": {"m": "2", "n": "2"}}
 PARAMS = ["13/10", "27/10", "7/4"]; INTS = ["2", "3", "1"]
+PINS = os.path.join(os.path.dirname(__file__), "expr_pins.json")
+
+def expression_pin(row):
+    payload = json.dumps({
+        "sympy_expr": row.get("sympy_expr"),
+        "limits": row.get("limits"),
+        "variable": row.get("variable"),
+        "kind": row.get("kind"),
+    }, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+def rejects_unbound_expression(ident, row) -> bool:
+    """True when this row is not the expression the id's check was pinned to."""
+    try:
+        pins = json.load(open(PINS, encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return True
+    pinned = pins.get(ident)
+    if not pinned:
+        return True
+    return expression_pin(row) != pinned
 
 def param_point(r, x):
     exprs = [pack_gate._parse(r["sympy_expr"], r["variable"]), pack_gate._parse(r["answer_sympy"], r["variable"])]
@@ -31,7 +52,11 @@ def answer_value(r, x, P):
     return mp.mpf(sp.N(F, 60))
 
 def run(i, rows):
-    r = rows[i]; x = pack_gate.namespace(r["variable"])[r["variable"]]
+    r = rows[i]
+    if rejects_unbound_expression(i, r):
+        return dict(id=i, status="MISMATCH", value="", answer="", rel_err="", tol="", params="", secs=0,
+                    method="sympy_expr is not the pinned expression for this id")
+    x = pack_gate.namespace(r["variable"])[r["variable"]]
     mp.mp.dps = 40
     P = param_point(r, x)
     t0 = time.time()
