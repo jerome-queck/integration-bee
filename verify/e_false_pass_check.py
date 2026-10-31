@@ -140,6 +140,32 @@ def test_worked_999() -> int:
         return ok("worked-step 999=999")
     return fail("worked step accepted 999=999")
 
+
+def test_near_nan() -> int:
+    import mpmath as mp
+
+    modules = [
+        "pack_checks",
+        "pack_checks_r1_rem",
+        "pack_checks_r1_wave3",
+        "pack_checks_r3_dichotomy",
+        "pack_checks_wave",
+        "sample_self_check",
+        "self_check",
+    ]
+    accepted = []
+    for name in modules:
+        module = __import__(name)
+        try:
+            module._near(mp.nan, mp.nan, mp.mpf("1e-6"))
+            module._near(mp.nan, 1, mp.mpf("1e-6"))
+        except AssertionError:
+            continue
+        accepted.append(name)
+    if accepted:
+        return fail("_near accepted NaN in " + ", ".join(accepted))
+    return ok("seven _near reject NaN")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
@@ -149,6 +175,7 @@ CASES = {
     "display": test_display,
     "yang-sampler": test_yang_sampler,
     "worked-999": test_worked_999,
+    "near-nan": test_near_nan,
 }
 
 
