@@ -117,7 +117,7 @@
     "latex": "\\int \\frac{2x+3}{x^2+3x+2}\\,dx",
     "sympy_expr": "(2*x+3)/(x**2+3*x+2)",
     "limits": null,
-    "answer_sympy": "log(x**2+3*x+2)",
+    "answer_sympy": "log(Abs(x**2+3*x+2))",
     "answer_display": "\\ln|x^2+3x+2|+C",
     "hint": "Numerator is d/dx of denominator.",
     "technique_tags": [

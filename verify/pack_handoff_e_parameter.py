@@ -10,12 +10,55 @@ def _require(condition, label):
         raise ValueError("handoff-e parameter certificate: " + label)
 
 
+def _sinc_power(integrand, symbol, lo, hi):
+    """∫_0^∞ sin(x)/x^n dx = π / (2 Γ(n) sin(π n/2)) for 0<n<2.
+
+    The form cos(π n/2) Γ(1-n) is an indeterminate 0·∞ at n=1. The gamma
+    reflection rewrites it as this quotient, which equals π/2 at n=1, the
+    value of the sine integral.
+    """
+    if lo != 0 or hi != sp.oo:
+        return None
+    degree = sp.Symbol("n")
+    if integrand.free_symbols != {symbol, degree}:
+        return None
+    if integrand != sp.sin(symbol) / symbol**degree:
+        return None
+    height = 1 - degree
+    reflection = sp.gamma(height) * sp.gamma(degree) - sp.pi / sp.sin(sp.pi * height)
+    _require(sp.simplify(reflection) == 0, "gamma-reflection")
+    _require(sp.simplify(sp.sin(sp.pi - sp.pi * degree) - sp.sin(sp.pi * degree)) == 0, "sine-supplement")
+    _require(
+        sp.trigsimp(sp.sin(sp.pi * degree) - 2 * sp.sin(sp.pi * degree / 2) * sp.cos(sp.pi * degree / 2)) == 0,
+        "double-angle",
+    )
+    # Γ(1-n) = π / (sin(π n) Γ(n)), so cos(π n/2) Γ(1-n) cancels to the quotient.
+    rewritten = sp.cos(sp.pi * degree / 2) * sp.pi / (sp.sin(sp.pi * degree) * sp.gamma(degree))
+    value = sp.pi / (2 * sp.sin(sp.pi * degree / 2) * sp.gamma(degree))
+    _require(sp.simplify(rewritten - value) == 0, "cancelled-quotient")
+    piece = (
+        2
+        * 4 ** (-degree / 2 - sp.Rational(1, 2))
+        * sp.sqrt(sp.pi)
+        * sp.gamma(1 - degree / 2)
+        / sp.gamma(degree / 2 + sp.Rational(1, 2))
+    )
+    _require(sp.simplify(sp.gammasimp(piece / value)) == 1, "sympy-gamma-ratio")
+    _require(sp.limit(value, degree, 1) == sp.pi / 2, "removable-n-equals-one")
+    _require(sp.integrate(sp.sin(symbol) / symbol, (symbol, 0, sp.oo)) == sp.pi / 2, "sine-integral")
+    return value
+
+
 def definite_value(integrand, symbol, lo, hi):
     """Evaluate the two branch-safe logarithm contours in worked solution p.31.
 
     The matcher retains the stated positive parameter domain. The original
     problem and mark are on p.3 of their respective 2022 Round 1 PDFs.
+    The sine-power row is the 0<n<2 form that stays finite at n=1.
     """
+    sinc = _sinc_power(integrand, symbol, lo, hi)
+    if sinc is not None:
+        return sinc
     a = sp.Symbol("a", positive=True)
     if symbol == a or lo != 0 or hi != sp.oo:
         return None
