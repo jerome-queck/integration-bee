@@ -61,7 +61,7 @@ def indefinite(r, x):
                 dv = None if a is None or b is None else (a - b) / 2e-15
             except Exception: dv = None
         if dv is None: continue
-        if abs(dv.real - fv.real) <= 1e-7 * (1 + abs(fv)): good += 1
+        if abs(complex(dv) - complex(fv)) <= 1e-7 * (1 + abs(complex(fv))): good += 1
         else: bad += 1; badpts.append(p)
     if bad: return "MISMATCH", f"derivative differs at {badpts}; ok at {good}", free
     if good >= 3: return "CONFIRMED", f"derivative matches at {good} real points", free
@@ -117,8 +117,8 @@ def _definite(r, x):
             vals.append(None)
     ok = [v for v in vals if v is not None]
     if not ok: return "UNCONFIRMED", "quadrature failed", free
-    tol = lambda u, w: abs(u - w) <= 1e-9 * (1 + abs(w))
-    if not any(tol(v.real, ans.real) for v in ok) and b == mp.inf:
+    tol = lambda u, w: abs(complex(u) - complex(w)) <= 1e-9 * (1 + abs(complex(w)))
+    if not any(tol(v, ans) for v in ok) and b == mp.inf:
         freqs = {sp.simplify(t.args[0].diff(x)) for t in f.atoms(sp.sin, sp.cos)}
         terms = sp.Add.make_args(sp.expand(f))
         tf = [{sp.simplify(t.args[0].diff(x)) for t in term.atoms(sp.sin, sp.cos)} for term in terms]
@@ -141,11 +141,11 @@ def _definite(r, x):
                 ok.append(complex(head + mp.quadosc(gg, [start, mp.inf], omega=w)))
             except Exception:
                 pass
-    if any(tol(v.real, ans.real) for v in ok):
-        hit = next(v for v in ok if tol(v.real, ans.real))
-        return "CONFIRMED", f"quad {hit.real:.15g} = answer {ans.real:.15g}", free
-    if len(ok) == 2 and abs(ok[0] - ok[1]) <= 1e-12 * (1 + abs(ok[0])) and not tol(ok[0].real, ans.real):
-        return "MISMATCH", f"both quadratures {ok[0].real:.15g}, answer {ans.real:.15g}", free
+    if any(tol(v, ans) for v in ok):
+        hit = next(v for v in ok if tol(v, ans))
+        return "CONFIRMED", f"quad {complex(hit).real:.15g}{complex(hit).imag:+.15g}j = answer {complex(ans).real:.15g}{complex(ans).imag:+.15g}j", free
+    if len(ok) == 2 and abs(complex(ok[0]) - complex(ok[1])) <= 1e-12 * (1 + abs(complex(ok[0]))) and not tol(ok[0], ans):
+        return "MISMATCH", f"both quadratures {complex(ok[0]).real:.15g}{complex(ok[0]).imag:+.15g}j, answer {complex(ans).real:.15g}{complex(ans).imag:+.15g}j", free
     return "UNCONFIRMED", "quadratures disagree or miss: " + ", ".join(f"{v.real:.12g}" for v in ok) + f"; answer {ans.real:.12g}", free
 
 ROW_SECONDS = int(os.environ.get("SANITY_ROW_SECONDS", "30"))
