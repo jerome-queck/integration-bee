@@ -125,6 +125,11 @@ def _without_abs_sign(expr):
                     used.add(j)
                     extra.append(1 / base)
                     break
+                if isinstance(other, sp.Pow) and other.base == sp.Abs(base):
+                    used.add(i)
+                    used.add(j)
+                    extra.append(base * sp.Abs(base) ** (other.exp - 1))
+                    break
         if not used:
             return node
         kept = [arg for i, arg in enumerate(args) if i not in used]

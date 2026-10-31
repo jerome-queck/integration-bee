@@ -4303,6 +4303,35 @@ def _end(primitive, symbol, text: str, side: str):
     return _at(primitive, symbol, text, side)
 
 
+def _equal_on_interval(left, right, row: dict | None) -> bool:
+    """True when left and right agree on a definite row's open interval.
+
+    Squares that match differ only by a sign. One nonzero interior point fixes
+    that sign on the interval. This does not make them equal off that interval.
+    """
+    if not row or row.get("kind") != "definite":
+        return False
+    limits = row.get("limits") or []
+    if len(limits) != 2:
+        return False
+    variable = row.get("variable") or "x"
+    symbol = pack_gate.namespace(variable)[variable]
+    try:
+        lo = pack_gate._parse(str(limits[0]), variable)
+        hi = pack_gate._parse(str(limits[1]), variable)
+        mid = sp.simplify((lo + hi) / 2)
+    except Exception:
+        return False
+    if not closed_zero(sp.simplify(left**2 - right**2)):
+        return False
+    try:
+        side = sp.simplify(left.subs(symbol, mid))
+        gap = sp.simplify(side - right.subs(symbol, mid))
+    except Exception:
+        return False
+    return closed_zero(gap) and not closed_zero(side)
+
+
 def run_step(ident: str, step: tuple, integrand, row: dict | None = None, spec: dict | None = None) -> None:
     kind = step[0]
     if kind == "diff":
@@ -4324,7 +4353,9 @@ def run_step(ident: str, step: tuple, integrand, row: dict | None = None, spec: 
         right_text = str(step[2]).strip()
         if left_text == right_text and left_text.lstrip("-").isdigit():
             raise AssertionError(f"{ident} numeric tautology {step[1]} = {step[2]}")
-        if not same(parse(step[1]), parse(step[2])):
+        left = parse(step[1])
+        right = parse(step[2])
+        if not same(left, right) and not _equal_on_interval(left, right, row):
             raise AssertionError(f"{ident} equality {step[1]} vs {step[2]}")
         return
     if kind == "odd":

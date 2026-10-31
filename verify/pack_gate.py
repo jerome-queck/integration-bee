@@ -461,8 +461,10 @@ def _principal_value_only(integrand, symbol, lo, hi) -> bool:
     if not _closed(odd) or _zero(odd):
         return False
     absolute = _integrate_fast(sp.Abs(integrand), symbol, lo, hi)
+    # An unevaluated or timed-out absolute integral is not proof of divergence.
+    # 1/x on [-1, 1] evaluates to a form that still contains infinity.
     if absolute is None or not _closed(absolute):
-        return True
+        return False
     return bool(absolute.has(sp.oo, -sp.oo, sp.zoo, sp.nan))
 
 
