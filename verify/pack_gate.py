@@ -1873,7 +1873,14 @@ def _cot_log_sec(integrand, symbol, lo, hi):
     def build():
         x = sp.Symbol("_x", real=True)
         u = sp.Symbol("_u", positive=True)
-        _require(_logs_equivalent(sp.log(sp.sec(x)), -sp.log(sp.cos(x))), "sec-log")
+        # log(1/c) = -log(c) needs c > 0; for real x it can be off by 2*pi*I.
+        # cos is positive on (0, pi/2), so prove the identity for a positive c.
+        c = sp.Symbol("_c", positive=True)
+        from sympy.calculus.util import function_range
+        cos_range = function_range(sp.cos(x), x, sp.Interval.open(0, sp.pi / 2))
+        _require(cos_range.is_subset(sp.Interval.open(0, sp.oo)) is True, "cos-positive")
+        _require(_zero(sp.sec(x) - 1 / sp.cos(x)), "sec-recip")
+        _require(_zero(sp.log(1 / c) + sp.log(c)), "sec-log")
         _require(_zero(sp.log(sp.cos(x) ** 2) - 2 * sp.log(sp.cos(x))), "cos-log")
         _require(_zero(sp.cos(x) ** 2 - (1 - sp.sin(x) ** 2)), "cos-square")
         _require(_zero(sp.diff(sp.sin(x), x) - sp.cos(x)), "sin-diff")
