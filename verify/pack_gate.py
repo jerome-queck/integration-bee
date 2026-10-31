@@ -339,13 +339,41 @@ def _zero(expr) -> bool:
     return False
 
 
+def _exp_one_implies_zero(delta) -> bool:
+    """exp(z) == 1 proves z == 0 only when z is not 2*pi*I*k for a nonzero integer k."""
+    try:
+        simplified = sp.simplify(delta)
+    except Exception:
+        return False
+    if simplified == 0:
+        return True
+    try:
+        periods = sp.simplify(simplified / (2 * sp.pi * sp.I))
+    except Exception:
+        return False
+    if getattr(periods, "is_integer", None) is True:
+        return False
+    if getattr(simplified, "is_real", None) is True:
+        try:
+            return sp.simplify(sp.exp(simplified)) == 1
+        except Exception:
+            return False
+    return False
+
+
 def _log_identity(left, right) -> bool:
-    """Two log forms can be equal when their exponential ratio denests to 1."""
+    """Two log forms can be equal when their exponential ratio denests to 1.
+
+    A ratio of 1 is not enough: exp(2*pi*I*k) is 1 for every integer k.
+    """
     if not (left.has(sp.log) or right.has(sp.log)):
         return False
-    ratio = sp.exp(left - right)
+    delta = left - right
+    ratio = sp.exp(delta)
     reduced = sp.simplify(sp.sqrtdenest(sp.powdenest(sp.expand(ratio), force=True)))
-    return reduced == 1
+    if reduced != 1:
+        return False
+    return _exp_one_implies_zero(delta)
 
 
 def _same(left, right) -> bool:
@@ -423,6 +451,21 @@ def _exponential_limit(integrand, answer, symbol, lo, hi) -> bool:
     return _same(value, goal)
 
 
+def _principal_value_only(integrand, symbol, lo, hi) -> bool:
+    """The even part is the Cauchy principal value when the odd part does not converge.
+
+    Averaging f(x) and f(-x) turns 1/x on [-1, 1] into 0. The improper integral
+    does not exist, so that value is not a proof.
+    """
+    odd = sp.simplify((integrand - integrand.subs(symbol, -symbol)) / 2)
+    if not _closed(odd) or _zero(odd):
+        return False
+    absolute = _integrate_fast(sp.Abs(integrand), symbol, lo, hi)
+    if absolute is None or not _closed(absolute):
+        return True
+    return bool(absolute.has(sp.oo, -sp.oo, sp.zoo, sp.nan))
+
+
 def _reduced_integrals(integrand, symbol, lo, hi):
     """Algebraic identities SymPy can check. Each item is a candidate value."""
     # x**2023 makes the reflection simplify blow the proof budget. Rows with a
@@ -431,7 +474,7 @@ def _reduced_integrals(integrand, symbol, lo, hi):
     if _large_integer_power(integrand):
         return []
     found = []
-    if lo == -hi or _zero(lo + hi):
+    if (lo == -hi or _zero(lo + hi)) and not _principal_value_only(integrand, symbol, lo, hi):
         half = sp.simplify((integrand + integrand.subs(symbol, -symbol)) / 2)
         if _closed(half) and _easier(half, integrand):
             fast = _integrate_fast(half, symbol, lo, hi)
@@ -485,6 +528,17 @@ def _floor_sum(integrand, symbol, lo, hi):
         return None
     total = sp.summation(piece, (step, 0, sp.oo))
     if not _closed(total):
+        return None
+    # A full cell can sum to 0 while the integral on [0, oo) still fails to
+    # exist, because the mass on [n, n+1/2] need not tend to 0.
+    half = sp.integrate(body, (symbol, step, step + sp.Rational(1, 2)))
+    if not _closed(half):
+        return None
+    try:
+        tail = sp.limit(half, step, sp.oo)
+    except Exception:
+        return None
+    if tail != 0:
         return None
     return total
 
@@ -596,7 +650,9 @@ def _easier(new, old) -> bool:
 def _even_power(expr) -> bool:
     if not isinstance(expr, sp.Pow):
         return False
-    _base, exponent = expr.as_base_exp()
+    base, exponent = expr.as_base_exp()
+    if getattr(base, "is_real", None) is not True:
+        return False
     return bool(
         getattr(exponent, "is_integer", False)
         and getattr(exponent, "is_even", False)
@@ -605,7 +661,7 @@ def _even_power(expr) -> bool:
 
 
 def _complement_arg_positive(arg, symbol=None, lo=None, hi=None) -> bool:
-    """atan(a)+atan(1/a)=pi/2 needs a>0. Squares are positive off a null set.
+    """atan(a)+atan(1/a)=pi/2 needs a>0. A square of a real base is positive off a null set.
 
     On [0, pi/4], c*(tan(x)+d) with c>0 and d>0 is positive because tan is.
     """
@@ -1047,7 +1103,7 @@ def _logs_equivalent(left, right) -> bool:
             pair = sp.log(free) + sp.log(1 / free)
             if sp.expand_log(pair, force=True) == 0 and sp.simplify(simplified.subs(pair, 0)) == 0:
                 return True
-        return sp.simplify(sp.exp(simplified)) == 1
+        return _exp_one_implies_zero(simplified)
     except Exception:
         return False
 
