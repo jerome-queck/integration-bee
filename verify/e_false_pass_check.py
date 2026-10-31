@@ -128,6 +128,18 @@ def test_yang_sampler() -> int:
         return fail("Yang sampler accepted zero valid samples")
     return ok("Yang sampler zero valid samples")
 
+
+def test_worked_999() -> int:
+    import sympy as sp
+
+    import yang_worked_check as yang
+
+    try:
+        yang.run_step("REGRESS", ("eq", "999", "999"), sp.Integer(1))
+    except AssertionError:
+        return ok("worked-step 999=999")
+    return fail("worked step accepted 999=999")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
@@ -136,6 +148,7 @@ CASES = {
     "arctan-square": test_arctan_square,
     "display": test_display,
     "yang-sampler": test_yang_sampler,
+    "worked-999": test_worked_999,
 }
 
 
