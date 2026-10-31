@@ -36,7 +36,11 @@ def makefile_missing(text: str) -> list[str]:
 
 
 def workflow_runs_make_check(text: str) -> bool:
-    return "run: make check" in text
+    for line in text.splitlines():
+        code = line.split("#", 1)[0]
+        if "run: make check" in code:
+            return True
+    return False
 
 
 def sample_guard(text: str) -> str | None:
@@ -67,6 +71,9 @@ def self_test() -> None:
         sys.exit(1)
     if not workflow_runs_make_check("        run: make check\n"):
         print("FAIL workflow self-test rejected make check", file=sys.stderr)
+        sys.exit(1)
+    if workflow_runs_make_check("# run: make check\n"):
+        print("FAIL workflow self-test accepted a comment", file=sys.stderr)
         sys.exit(1)
     if sample_guard("latexmk -r templates/latexmkrc teaching.tex\n") is None:
         print("FAIL sample self-test accepted a compile with no off-root sample", file=sys.stderr)
