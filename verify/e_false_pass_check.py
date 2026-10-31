@@ -40,6 +40,119 @@ def test_pack_gate_abs_primitive() -> int:
     return ok("pack_gate primitive of |x|")
 
 
+def test_indefinite_sample_zeros() -> int:
+    import sympy as sp
+
+    import pack_gate
+
+    x = pack_gate.namespace("x")["x"]
+    # (1-sign(x)) is 0 for x>0. The polynomial is 0 at the six fixed probes
+    # ±1/2, ±1, ±2, so those samples are 0 = 0 for the answer 0.
+    integrand = (1 - sp.sign(x)) * (
+        (x + 2) * (x + 1) * (x + sp.Rational(1, 2))
+        * (x - sp.Rational(1, 2)) * (x - 1) * (x - 2)
+    )
+    if pack_gate._positive_domain_derivative(sp.Integer(0), integrand, x):
+        return fail("indefinite sample check accepted 0 at the six rational roots")
+    text = (
+        "(1-sign(x))*((x+2)*(x+1)*(x+Rational(1,2))"
+        "*(x-Rational(1,2))*(x-1)*(x-2))"
+    )
+    if pack_gate.proven("indefinite", text, None, "0", "x"):
+        return fail("pack_gate.proven accepted 0 for the sign-polynomial integrand")
+    poly = (
+        (x + 2) * (x + 1) * (x + sp.Rational(1, 2))
+        * (x - sp.Rational(1, 2)) * (x - 1) * (x - 2)
+    )
+    primitive = sp.integrate(poly, x)
+    if not pack_gate._positive_domain_derivative(primitive, poly, x):
+        return fail("symbolic derivative path rejected a polynomial antiderivative")
+    if pack_gate._positive_domain_derivative(sp.Integer(0), poly, x):
+        return fail("sample zeros accepted 0 for a polynomial that is not identically 0")
+    q09 = None
+    for line in (ROOT / "problems" / "records.jsonl").read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if row["id"] == "R1-2021-Q09":
+            q09 = row
+            break
+    if q09 is None:
+        return fail("R1-2021-Q09 missing")
+    q09_integrand = pack_gate._parse(q09["sympy_expr"], "x")
+    q09_answer = pack_gate._answer_expr(q09["answer_sympy"], "x", allow_constant=True)
+    if not pack_gate._positive_domain_derivative(q09_answer, q09_integrand, x):
+        return fail("positive-domain samples rejected R1-2021-Q09")
+    if pack_gate._positive_domain_derivative(x**2 / 2, sp.Abs(x), x):
+        return fail("positive-domain samples accepted x**2/2 for Abs(x)")
+    return ok("indefinite samples do not pass on zeros")
+
+
+def test_q32_real_coeff() -> int:
+    import sympy as sp
+
+    import pack_gate
+
+    x = pack_gate.namespace("x")["x"]
+
+    def one_sided(coeff):
+        return pack_gate._cosine_over_square((1 - sp.cos(coeff * x)) / x**2, x, 0, sp.oo)
+
+    bare = sp.symbols("a")
+    got = one_sided(bare)
+    if got is not None and (
+        got == sp.pi * sp.Abs(bare) / 2 or sp.simplify(got - sp.pi * sp.Abs(bare) / 2) == 0
+    ):
+        return fail("Q32 certificate accepted pi*Abs(a)/2 when a is not known to be real")
+    if got is not None:
+        return fail(f"Q32 certificate returned {got} for a symbol with no reality assumption")
+    complex_a = sp.symbols("ac", complex=True)
+    if one_sided(complex_a) is not None:
+        return fail("Q32 certificate accepted a complex coefficient")
+    real = sp.symbols("ar", real=True)
+    got = one_sided(real)
+    if got is None or sp.simplify(got - sp.pi * sp.Abs(real) / 2) != 0:
+        return fail("Q32 certificate rejected pi*Abs(a)/2 for a real coefficient")
+    positive = sp.symbols("ap", positive=True)
+    got = one_sided(positive)
+    if got is None or sp.simplify(got - sp.pi * positive / 2) != 0:
+        return fail("Q32 certificate rejected pi*a/2 for a positive coefficient")
+    negative = sp.symbols("an", negative=True)
+    got = one_sided(negative)
+    if got is None or sp.simplify(got - sp.pi * (-negative) / 2) != 0:
+        return fail("Q32 certificate rejected pi*|a|/2 for a negative coefficient")
+    if pack_gate._cosine_over_square(sp.Integer(0), x, 0, sp.oo) != 0:
+        return fail("Q32 certificate rejected the zero integrand")
+    pair_a, pair_b = sp.symbols("a b")
+    pair = (sp.cos(pair_a * x) - sp.cos(pair_b * x)) / x**2
+    if pack_gate._cosine_over_square(pair, x, 0, sp.oo) is not None:
+        return fail("Q32 certificate accepted bare a and b with no stated assumption")
+    stated = {
+        "a": sp.Symbol("a", positive=True),
+        "b": sp.Symbol("b", positive=True),
+    }
+    got = pack_gate._cosine_over_square(pair, x, 0, sp.oo, stated)
+    wanted = -sp.pi * sp.Abs(pair_a) / 2 + sp.pi * sp.Abs(pair_b) / 2
+    if got is None or sp.simplify(got - wanted) != 0:
+        return fail("Q32 certificate ignored stated a>0, b>0")
+    payload = (
+        "definite",
+        "(cos(a*x) - cos(b*x))/x**2",
+        ("0", "oo"),
+        "-pi*Abs(a)/2 + pi*Abs(b)/2",
+        "x",
+    )
+    previous = pack_gate._PROOF_ROW
+    pack_gate._PROOF_ROW = payload
+    try:
+        looked = pack_gate._cosine_over_square(pair, x, 0, sp.oo)
+    finally:
+        pack_gate._PROOF_ROW = previous
+    if looked is None or sp.simplify(looked - wanted) != 0:
+        return fail("Q32 certificate did not apply the row grading-assumptions")
+    return ok("Q32 certificate requires a real coefficient")
+
+
 def test_worked_log_square_step() -> int:
     import sympy as sp
 
@@ -418,6 +531,8 @@ def test_empty_notes() -> int:
 
 CASES = {
     "pack-gate-abs": test_pack_gate_abs_primitive,
+    "indefinite-sample-zeros": test_indefinite_sample_zeros,
+    "q32-real-coeff": test_q32_real_coeff,
     "worked-log-square-step": test_worked_log_square_step,
     "logs-equivalent-square": test_logs_equivalent_square,
     "grader-assumptions": test_grader_stated_assumptions,
