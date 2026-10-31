@@ -71,9 +71,24 @@ def parse_plain(text: str, symbols: dict):
 
 
 def _values(expr, syms):
+    """One distinct sample per symbol, plus a point outside the fixed triple.
+
+    Giving every symbol the same value makes a+b match 2*a. A cubic that
+    vanishes on POINTS matches x at those three samples and nowhere else.
+    """
+    ordered = list(syms)
     pts = []
-    for j in range(len(POINTS)):
-        pts.append({s: (INT_POINTS[j] if s.is_integer else POINTS[j]) for s in syms})
+    span = len(POINTS)
+    for j in range(span):
+        binding = {}
+        for i, symbol in enumerate(ordered):
+            k = (j + i) % span
+            binding[symbol] = INT_POINTS[k] if symbol.is_integer else POINTS[k]
+        pts.append(binding)
+    extra = {}
+    for i, symbol in enumerate(ordered):
+        extra[symbol] = (5 + i) if symbol.is_integer else (sp.Rational(11, 3) + i)
+    pts.append(extra)
     return pts
 
 
@@ -98,36 +113,97 @@ def equivalent(plain, canon, kind: str) -> bool:
     if kind.endswith("indefinite"):
         x = next((s for s in syms if s.name == "x"), syms[0])
         diff = sp.diff(diff, x)
+        syms = sorted(diff.free_symbols, key=str)
+    if syms and getattr(diff, "is_polynomial", lambda *_: False)(*syms) and sp.expand(diff) != 0:
+        return False
     pts = _values(diff, syms) if syms else [{}]
-    return all(_zero(diff.subs(p)) for p in pts)
+    usable = 0
+    for point in pts:
+        try:
+            if not _zero(diff.subs(point)):
+                return False
+            usable += 1
+        except Exception:
+            continue
+    return usable > 0
+
+
+def _display_equality(plain: str) -> list[str] | None:
+    """Two sides of one top-level display '=', ignoring >=, <=, ==, and !=."""
+    depth = 0
+    found = None
+    for i, ch in enumerate(plain):
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth = max(0, depth - 1)
+        elif ch == "=" and depth == 0:
+            prev = plain[i - 1] if i else ""
+            nxt = plain[i + 1] if i + 1 < len(plain) else ""
+            if prev in "<>!" or nxt == "=":
+                continue
+            if found is not None:
+                return None
+            found = i
+    if found is None:
+        return None
+    return [plain[:found].strip(), plain[found + 1 :].strip()]
 
 
 def check_row(row: dict) -> str | None:
     plain = str(row.get("answer_plain") or "")
-    if not plain.strip() or row.get("kind") == "grid":
+    if row.get("kind") == "grid":
         return None  # grid displays are the printed clue map, checked by verify/pack_grid.py
+    if not plain.strip():
+        if str(row.get("answer_sympy") or "").strip():
+            return "answer_plain is blank"
+        return None
+    if row.get("kind") == "comparison":
+        claim = "".join(plain.split())
+        canon_text = str(row.get("answer_sympy") or "")
+        name = canon_text
+        try:
+            parsed = sp.sympify(canon_text)
+            if isinstance(parsed, sp.Symbol):
+                name = parsed.name
+        except Exception:
+            name = canon_text
+        if claim == "".join(str(name).split()):
+            return None
+        return f"answer_plain {plain!r} != answer_sympy {canon_text}"
     if plain.strip() == str(row["answer_sympy"]).strip():
         return None
     canon = sp.sympify(row["answer_sympy"])
     symbols = {s.name: s for s in getattr(canon, "free_symbols", set())}
     for name, value in DISPLAY_BINDINGS.get(row.get("id"), {}).items():
         symbols[name] = sp.sympify(value, locals=symbols)
-    # "Gamma(n) = (n-1)!" style displays pass when any side equals the canonical answer.
+    # A display equality passes when a parsed side matches and no parsed value disagrees.
+    # "1=2" disagrees. A bare name such as φ, or a side the printer could not parse, does not.
+    sides = _display_equality(plain) or [plain]
+    if _display_equality(plain) is not None and any(not side for side in sides):
+        return f"answer_plain has an empty side: {plain!r}"
     errors = []
-    for side in [plain] + (plain.split("=") if plain.count("=") == 1 else []):
+    matched = 0
+    for side in sides:
         try:
             got = parse_plain(side, symbols)
         except Exception as ex:  # noqa: BLE001 - any parse failure is drift
             errors.append(f"answer_plain does not parse ({type(ex).__name__}): {plain!r}")
             continue
         try:
-            if equivalent(got, canon, str(row.get("kind") or "")):
-                return None
+            agrees = equivalent(got, canon, str(row.get("kind") or ""))
         except Exception as ex:  # noqa: BLE001
             errors.append(f"cannot compare ({type(ex).__name__}): {plain!r} vs {row['answer_sympy']}")
             continue
+        if agrees:
+            matched += 1
+            continue
+        if isinstance(got, sp.Symbol):
+            continue
         errors.append(f"answer_plain {plain!r} != answer_sympy {row['answer_sympy']}")
-    return errors[-1]
+    if matched and not any("!=" in item or "cannot compare" in item for item in errors):
+        return None
+    return errors[-1] if errors else f"answer_plain {plain!r} != answer_sympy {row['answer_sympy']}"
 
 
 def self_test() -> None:
@@ -136,8 +212,10 @@ def self_test() -> None:
             ("(1/e) ln(√2 + 1)", "exp(-1)*log(1 + sqrt(2))", "definite"), ("1 −γ", "1 - EulerGamma", "definite"),
             ("ln|tan(x)| + C", "log(Abs(tan(x)))", "indefinite"), ("sec^2(x)", "sec(x)**2", "definite"),
             ("Γ(n) = (n−1)!", "gamma(n)", "definite")]
+    vanish = f"(x-({POINTS[0]}))*(x-({POINTS[1]}))*(x-({POINTS[2]}))"
     bad = [("1", "1/4", "definite"), ("π\n4", "2 - pi**2/6", "definite"), ("2025", "2025*sin(1)**2/2", "definite"),
-           ("tan(x)", "atan(x)", "indefinite")]
+           ("tan(x)", "atan(x)", "indefinite"), ("   ", "1", "definite"), ("1=2", "1", "definite"),
+           ("a + b", "2*a", "definite"), (f"x + {vanish}", "x", "definite")]
     for p, c, k in good:
         if check_row({"answer_plain": p, "answer_sympy": c, "kind": k}):
             sys.exit(f"FAIL self-test rejected {p!r} == {c}")
