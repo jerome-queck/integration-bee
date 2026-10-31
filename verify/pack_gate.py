@@ -171,6 +171,7 @@ from __future__ import annotations
 
 import multiprocessing as mp
 
+import safe_expr
 import sympy as sp
 
 import check_math
@@ -240,8 +241,8 @@ def _parse(text: str, variable: str):
     # collapses a true link to True and the next link to False.
     if "Eq(" in text:
         with sp.evaluate(False):
-            return sp.sympify(text, locals=namespace(variable))
-    return sp.sympify(text, locals=namespace(variable))
+            return safe_expr.safe_sympify(text, namespace(variable))
+    return safe_expr.safe_sympify(text, namespace(variable))
 
 
 def _unwrap_equality(expr):
@@ -750,7 +751,7 @@ def _printable(text: str, variable: str):
     if not _huge_integer(expr):
         return expr
     with sp.evaluate(False):
-        return sp.sympify(text, locals=namespace(variable))
+        return safe_expr.safe_sympify(text, namespace(variable))
 
 
 def _equivalent_rewrites(expr, symbol):
