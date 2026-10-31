@@ -80,11 +80,28 @@ def test_floor_cell() -> int:
         return fail("floor whole-cell sum accepted a non-convergent integral as 0")
     return ok("floor whole-cell sum")
 
+
+def test_arctan_square() -> int:
+    import sympy as sp
+
+    import pack_gate
+
+    z = sp.symbols("z")
+    folded = pack_gate._fold_inverse_complements(sp.atan(z**2) + sp.atan(1 / z**2))
+    if folded == sp.pi / 2 or sp.simplify(folded - sp.pi / 2) == 0:
+        return fail("complex square was folded to +pi/2")
+    real = sp.symbols("xr", real=True)
+    kept = sp.simplify(pack_gate._fold_inverse_complements(sp.atan(real**2) + sp.atan(1 / real**2)))
+    if kept != sp.pi / 2:
+        return fail("real square lost the positive arctangent complement")
+    return ok("complex-square arctan sign")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
     "symmetry-pv": test_symmetry_pv,
     "floor-cell": test_floor_cell,
+    "arctan-square": test_arctan_square,
 }
 
 
