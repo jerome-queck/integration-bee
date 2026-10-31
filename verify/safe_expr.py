@@ -132,6 +132,9 @@ def _check(node, names: dict) -> None:
             if func.id == "Limit" and keyword.arg == "dir" and isinstance(keyword.value, ast.Constant) \
                     and keyword.value.value in _LIMIT_DIRS:
                 continue
+            if keyword.arg == "evaluate" and func.id in {"Eq", "Ne", "Add", "Mul", "Pow"} and isinstance(keyword.value, ast.Constant) \
+                    and isinstance(keyword.value.value, bool):
+                continue
             if func.id not in _NAMED or keyword.arg not in _ASSUMPTIONS \
                     or not isinstance(keyword.value, ast.Constant) \
                     or not isinstance(keyword.value.value, bool):
