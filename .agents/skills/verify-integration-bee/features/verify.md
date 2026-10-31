@@ -2,7 +2,7 @@
 
 `verify` runs `verify/run.sh`. The run checks the pack and rejects one corrupted drill answer. It does not write learner state.
 
-Record the sha256 of `.agents/skills/verify-integration-bee/features/verify.md` and of `verify/run.sh` in `$IB_EVIDENCE` before the transcript counts. Recompute both from the bytes just read. `verify/e_false_pass_check.py` is part of that run.
+Record the sha256 of `.agents/skills/verify-integration-bee/features/verify.md`, of the verify command string, and of the inputs `verify/run.sh` and `verify/e_false_pass_check.py` in `$IB_EVIDENCE/binding.txt`. Recompute those hashes from the bytes just read. If one differs, the transcript does not count.
 
 ## Sub-features
 

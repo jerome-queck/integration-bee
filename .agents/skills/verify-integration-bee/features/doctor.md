@@ -2,7 +2,7 @@
 
 Doctor reports whether this checkout can run. It does not write tracker files.
 
-Record the sha256 of `.agents/skills/verify-integration-bee/features/doctor.md` and of the doctor command in `$IB_EVIDENCE` before the transcript counts. Recompute both from the bytes just read.
+Record the sha256 of `.agents/skills/verify-integration-bee/features/doctor.md`, of the doctor command string, and of the inputs `sources/sha256sums` and `past/inventory.json` in `$IB_EVIDENCE/binding.txt`. Recompute those hashes from the bytes just read. If one differs, the transcript does not count.
 
 ## Sub-features
 

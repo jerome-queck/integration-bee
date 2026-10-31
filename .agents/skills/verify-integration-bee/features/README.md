@@ -17,7 +17,7 @@ Read this index, then follow one feature file. The operator is the companion age
 - `--format json` is the stable output for a recorded result.
 - `practice list`, `drills list`, and `problems list` print a text table when the format is text. The first line is `count=<n>`. A `--limit` that cuts the rows adds `shown=<k>`. The next line is a tab-separated header. `problems show` and `problems select` stay JSON either way.
 - Redirect stdout and stderr into `$IB_EVIDENCE`. Record the CLI exit code from that process. A pipe into `tee` reports `tee`'s status.
-- Bind that transcript to source text and inputs. Record the sha256 of this file, of the feature file, and of the command string plus each input file. A transcript whose hashes do not match a fresh read does not count.
+- Bind that transcript to source text and inputs. Write `$IB_EVIDENCE/binding.txt` with the sha256 of `.agents/skills/verify-integration-bee/SKILL.md`, of this file, of the feature file, of the command string, and of each input file that feature names. Recompute the hashes after the drive. A transcript whose hashes differ does not count.
 
 ## Proof and skip reporting
 

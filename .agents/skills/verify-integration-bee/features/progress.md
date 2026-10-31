@@ -2,7 +2,7 @@
 
 Progress stores ticks, misses, mocks, journal notes, and the study streak. `progress show` reads ticks, attempts, due reviews, the streak, and weak topics.
 
-Record the sha256 of `.agents/skills/verify-integration-bee/features/progress.md` and of each progress command in `$IB_EVIDENCE` before the transcript counts. Recompute both from the bytes just read.
+Record the sha256 of `.agents/skills/verify-integration-bee/features/progress.md`, of each progress command string, and of `trackers/catalog.json` in `$IB_EVIDENCE/binding.txt`. Recompute those hashes from the bytes just read. If one differs, the transcript does not count.
 
 ## Sub-features
 

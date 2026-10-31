@@ -2,7 +2,7 @@
 
 The companion sends one JSON turn. The CLI teaches, marks a photo extract, opens a mock, places an aptitude probe, confirms a skip, and sets full coverage.
 
-Record the sha256 of `.agents/skills/verify-integration-bee/features/turn.md` and of the turn JSON in `$IB_EVIDENCE` before the transcript counts. Recompute both from the bytes just read.
+Record the sha256 of `.agents/skills/verify-integration-bee/features/turn.md`, of the turn command string, of the turn JSON, and of `problems/records.jsonl` and `trackers/catalog.json` in `$IB_EVIDENCE/binding.txt`. Recompute those hashes from the bytes just read. If one differs, the transcript does not count.
 
 ## Sub-features
 
