@@ -8,6 +8,7 @@ import pack_gate
 import pack_grid
 import pack_multiplicative
 import problem_catalog
+import safe_expr
 import sample_certificates
 import sympy as sp
 import yaml
@@ -462,18 +463,19 @@ def _mark_namespace():
 
 
 def parse_expr(text: str):
-    return sp.sympify(text, locals=_mark_namespace())
+    return safe_expr.safe_sympify(text, _mark_namespace())
 
 
 def _drop_abs(expr):
     return expr.replace(sp.Abs, lambda arg: arg)
 
 
-def expressions_match(answer: str, submitted: str, indefinite: bool, variable: str = "x") -> bool:
+def expressions_match(answer: str, submitted, indefinite: bool, variable: str = "x") -> bool:
     ns = _mark_namespace()
     ns[variable] = sp.Symbol(variable, real=True)
-    ans = sp.sympify(pack_answer_contracts.infinity_text(answer), locals=ns)
-    got = sp.sympify(pack_answer_contracts.infinity_text(submitted), locals=ns)
+    ans = safe_expr.safe_sympify(pack_answer_contracts.infinity_text(answer), ns)
+    got = submitted if isinstance(submitted, sp.Basic) else safe_expr.safe_sympify(
+        pack_answer_contracts.infinity_text(submitted), ns)
     if not isinstance(ans, sp.Expr) or not isinstance(got, sp.Expr):
         return False
     if ans in (sp.oo, -sp.oo) or got in (sp.oo, -sp.oo):
@@ -515,7 +517,7 @@ def answer_matches(row: dict, submitted: str) -> bool:
         ns = _mark_namespace()
         ns[variable] = sp.Symbol(variable, real=True)
         factor = sp.sympify(row["sympy_expr"], locals=ns)
-        candidate = sp.sympify(submitted, locals=ns)
+        candidate = safe_expr.safe_sympify(submitted, ns)
         return pack_multiplicative.answer_ok(factor, candidate, ns[variable])
     if row.get("source") == problem_catalog.SAMPLE_SOURCE:
         variable = row.get("variable", "x")
@@ -541,8 +543,7 @@ def answer_matches(row: dict, submitted: str) -> bool:
             ns[variable] = symbol
             ns.update({item.name: item for item in parameter.free_symbols})
             ns["s"] = parameter
-            candidate = sp.sympify(submitted, locals=ns)
-            submitted = sp.srepr(candidate)
+            submitted = safe_expr.safe_sympify(submitted, ns)
     return expressions_match(row["answer_sympy"], submitted, _indefinite(row), row.get("variable", "x"))
 
 

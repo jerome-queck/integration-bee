@@ -1,0 +1,172 @@
+"""Restricted expression grammar for text that reaches SymPy (audit F1).
+
+sympify() runs Python eval on its input, so a learner answer such as
+``__import__('os').system('...')`` used to execute code. Every
+learner-facing parse goes through safe_sympify(), which accepts only:
+numbers, + - * / ** ^ and unary signs, parentheses, names from the
+caller's namespace (or short symbol names), and calls to functions in
+that namespace. Anything else raises UnsafeExpression before eval.
+"""
+from __future__ import annotations
+
+import ast
+import builtins
+import re
+
+import sympy as sp
+
+MAX_LEN = 8000  # stored srepr rows reach ~3900 characters
+MAX_LITERAL_EXPONENT = 10000  # stored rows use x**2011 and 2010**2012
+_SYMBOL = re.compile(r"[A-Za-z][A-Za-z0-9]{0,2}\Z")
+_BINOPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, ast.BitAnd, ast.BitOr)
+_COMPARE = (ast.Lt, ast.LtE, ast.Gt, ast.GtE)
+_UNARY = (ast.UAdd, ast.USub)
+_IDENT = re.compile(r"[A-Za-z][A-Za-z0-9_]{0,30}\Z")
+# Symbol names in stored srepr rows include limit directions and labels like "I=J".
+_SYMBOL_NAME = re.compile(r"[A-Za-z0-9+\-=][A-Za-z0-9_+\-=]{0,29}\Z")
+_LIMIT_DIRS = {"+", "-", "+-"}
+_NUMERIC = re.compile(r"[-+]?[0-9]+(\.[0-9]*)?([eE][-+]?[0-9]+)?\Z")
+# Constructors that take a name or a decimal as their first string argument.
+_NAMED = {"Symbol", "Dummy", "Wild", "Function"}
+_DECIMAL = {"Float", "Integer", "Rational"}
+from sympy.core.assumptions import _assume_defined
+_ASSUMPTIONS = set(_assume_defined) | {"commutative"}
+_HELPERS = {"sqrt", "root", "cbrt", "exp", "log", "ln", "Abs", "re", "im", "conjugate"}
+
+
+def _sympy_constants() -> dict:
+    """Public SymPy singletons such as pi, Catalan, EulerGamma, oo, true."""
+    return {name: obj for name in dir(sp) if not name.startswith("_")
+            for obj in [getattr(sp, name)] if isinstance(obj, sp.Basic)}
+
+
+def _builtin_callables() -> dict:
+    """SymPy expression classes and plain math helpers, nothing that parses or does I/O."""
+    out = {}
+    for name in dir(sp):
+        if name.startswith("_"):
+            continue
+        obj = getattr(sp, name)
+        if name in _HELPERS or (isinstance(obj, type) and issubclass(obj, sp.Basic)) \
+                or isinstance(obj, sp.FunctionClass):
+            out[name] = obj
+    return out
+
+
+SYMPY_CALLABLES = _builtin_callables()
+SYMPY_CALLABLES["ExprCondPair"] = sp.functions.elementary.piecewise.ExprCondPair
+SYMPY_CONSTANTS = _sympy_constants()
+# sympify resolves bare names through builtins too; none of them may appear.
+_BUILTIN_NAMES = set(vars(builtins)) - set(SYMPY_CALLABLES) - set(SYMPY_CONSTANTS)
+
+
+def _literal_only(node) -> bool:
+    return not any(isinstance(n, (ast.Name, ast.Call)) for n in ast.walk(node))
+
+
+class UnsafeExpression(ValueError):
+    pass
+
+
+def _check(node, names: dict) -> None:
+    if isinstance(node, ast.Expression):
+        return _check(node.body, names)
+    if isinstance(node, ast.Constant):
+        value = node.value
+        if not isinstance(value, (bool, int, float)):
+            raise UnsafeExpression(f"literal not allowed: {value!r}")
+        # Exact rationals in stored rows have 100+ digit literals; size only matters as an
+        # exponent, which the Pow rule below bounds.
+        return None
+    if isinstance(node, ast.Tuple):
+        for item in node.elts:
+            _check(item, names)
+        return None
+    if isinstance(node, ast.Compare) and all(isinstance(op, _COMPARE) for op in node.ops):
+        _check(node.left, names)
+        for item in node.comparators:
+            _check(item, names)
+        return None
+    if isinstance(node, ast.Name):
+        if node.id.startswith("_"):
+            raise UnsafeExpression(f"name not allowed: {node.id}")
+        if node.id in _BUILTIN_NAMES and node.id not in names:
+            raise UnsafeExpression(f"name not allowed: {node.id}")
+        if node.id in names or node.id in SYMPY_CALLABLES or node.id in SYMPY_CONSTANTS \
+                or _SYMBOL.match(node.id) or _IDENT.match(node.id):
+            return None
+        raise UnsafeExpression(f"unknown name: {node.id}")
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, _UNARY):
+        return _check(node.operand, names)
+    if isinstance(node, ast.BinOp) and isinstance(node.op, _BINOPS):
+        if isinstance(node.op, ast.Pow):
+            right = node.right
+            if isinstance(right, ast.UnaryOp):
+                right = right.operand
+            if isinstance(right, ast.Constant) and not isinstance(right.value, (int, float)):
+                raise UnsafeExpression("exponent must be a number")
+            if isinstance(right, ast.Constant) and abs(right.value) > MAX_LITERAL_EXPONENT:
+                raise UnsafeExpression("exponent too large")
+            if _literal_only(node.left) and _literal_only(right) and any(
+                    isinstance(n, ast.BinOp) and isinstance(n.op, ast.Pow) for n in ast.walk(right)):
+                raise UnsafeExpression("stacked numeric power")
+        _check(node.left, names)
+        return _check(node.right, names)
+    if isinstance(node, ast.Call):
+        func = node.func
+        if isinstance(func, ast.Call) and isinstance(func.func, ast.Name) \
+                and func.func.id == "Function":
+            # Function('f')(x): an undefined function applied to checked arguments.
+            _check(func, names)
+            if node.keywords:
+                raise UnsafeExpression("keyword arguments not allowed")
+            for arg in node.args:
+                _check(arg, names)
+            return None
+        if not isinstance(func, ast.Name) or func.id.startswith("_"):
+            raise UnsafeExpression("only namespace functions may be called")
+        target = names.get(func.id, SYMPY_CALLABLES.get(func.id))
+        if not callable(target) or (func.id not in names and func.id not in SYMPY_CALLABLES):
+            raise UnsafeExpression("only namespace functions may be called")
+        for keyword in node.keywords:
+            if func.id == "Limit" and keyword.arg == "dir" and isinstance(keyword.value, ast.Constant) \
+                    and keyword.value.value in _LIMIT_DIRS:
+                continue
+            if keyword.arg == "evaluate" and func.id in {"Eq", "Ne", "Add", "Mul", "Pow"} and isinstance(keyword.value, ast.Constant) \
+                    and isinstance(keyword.value.value, bool):
+                continue
+            if func.id not in _NAMED or keyword.arg not in _ASSUMPTIONS \
+                    or not isinstance(keyword.value, ast.Constant) \
+                    or not isinstance(keyword.value.value, bool):
+                raise UnsafeExpression("keyword arguments not allowed")
+        for index, arg in enumerate(node.args):
+            if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                if index == 0 and func.id in _NAMED and (_IDENT.match(arg.value) if func.id == "Function"
+                                                         else _SYMBOL_NAME.match(arg.value)):
+                    continue
+                if func.id in _DECIMAL and _NUMERIC.match(arg.value):
+                    continue
+                raise UnsafeExpression(f"string not allowed: {arg.value!r}")
+            _check(arg, names)
+        return None
+    raise UnsafeExpression(f"syntax not allowed: {type(node).__name__}")
+
+
+def validate(text: str, names: dict) -> str:
+    """Return normalised text (``^`` -> ``**``) or raise UnsafeExpression."""
+    if not isinstance(text, str):
+        raise UnsafeExpression("expression must be text")
+    if len(text) > MAX_LEN:
+        raise UnsafeExpression("expression too long")
+    normalised = text.replace("^", "**").replace("\N{MINUS SIGN}", "-")
+    try:
+        tree = ast.parse(normalised.strip(), mode="eval")
+    except SyntaxError as exc:
+        raise sp.SympifyError(text, exc) from None
+    _check(tree, names)
+    return normalised
+
+
+def safe_sympify(text: str, locals: dict):
+    """sympify() restricted to the grammar above."""
+    return sp.sympify(validate(text, locals), locals=locals)

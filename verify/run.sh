@@ -118,6 +118,9 @@ echo "== gap index =="
 echo "== cli behavior =="
 "$PY" "$ROOT/scripts/check_cli_behavior.py" || fail=1
 
+echo "== safe expression grammar (audit F1) =="
+"$PY" "$ROOT/verify/safe_expr_check.py" || fail=1
+
 echo "== turn contract =="
 "$PY" "$ROOT/verify/turn_contract_check.py" || fail=1
 
