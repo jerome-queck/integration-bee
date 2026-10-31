@@ -653,7 +653,11 @@ def _even_power(expr) -> bool:
     if not isinstance(expr, sp.Pow):
         return False
     base, exponent = expr.as_base_exp()
-    if getattr(base, "is_real", None) is not True:
+    # cot(t) on a real t is extended real: real off its poles, and the poles and
+    # zeros of a non-constant base are a null set. (I*t)**2 is still refused.
+    if getattr(base, "is_extended_real", None) is not True:
+        return False
+    if not base.free_symbols and getattr(base, "is_zero", None) is not False:
         return False
     return bool(
         getattr(exponent, "is_integer", False)

@@ -94,6 +94,12 @@ def test_arctan_square() -> int:
     kept = sp.simplify(pack_gate._fold_inverse_complements(sp.atan(real**2) + sp.atan(1 / real**2)))
     if kept != sp.pi / 2:
         return fail("real square lost the positive arctangent complement")
+    # cot(t)**2 for real t is real off its poles (R1-2020-Q27 needs this).
+    pole = sp.simplify(pack_gate._fold_inverse_complements(sp.atan(sp.cot(real) ** 2) + sp.atan(1 / sp.cot(real) ** 2)))
+    if pole != sp.pi / 2:
+        return fail("extended-real square lost the positive arctangent complement")
+    if pack_gate._even_power(sp.Pow(sp.S(0), 2, evaluate=False)) or pack_gate._even_power((sp.I * real) ** 2):
+        return fail("zero or imaginary base counted as a positive square")
     return ok("complex-square arctan sign")
 
 
