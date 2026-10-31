@@ -11,3 +11,5 @@
 An empty turn during `mock_open` continues that mock. A second `mock-start` keeps the open pack. `mock-finish` on `turn apply` and on `progress` refuses while phase is `awaiting_answer`, `aptitude`, or `proposing`. A mock problem in phase `mock_awaiting` still ends with the paper.
 
 `doctor` still reports `IB_DATA_DIR` and ignores `--data-dir`.
+
+A mock turn accepts `cold` only as a bool. The string `"false"` does not open a cold mock. `year` must be an integer year of a Round 1 paper on disk; 1900 does not fall through to another paper. `score` and `out_of` must be integers, and a JSON bool is not an integer. `missed` must be a list of ids. A string is not split into characters. `problems list --year` rejects a year that is not in the catalog. Tracker rows that are numbers, or mock sessions that are not a list of objects, exit 2. A skill tick may still be a status string. None of these cases prints a traceback.

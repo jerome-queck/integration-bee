@@ -59,7 +59,14 @@ def ensure_packages(py: Path) -> None:
 
 
 def smoke(py: Path) -> None:
-    run([str(py), "-c", "import sympy, yaml, mpmath; print('sympy', sympy.__version__)"])
+    run(
+        [
+            str(py),
+            "-c",
+            "import sympy, yaml, mpmath, tzdata; from zoneinfo import ZoneInfo; "
+            "ZoneInfo('Asia/Singapore'); print('sympy', sympy.__version__)",
+        ]
+    )
     run([str(py), str(ROOT / "scripts" / "control-integration-bee"), "doctor"])
 
 
