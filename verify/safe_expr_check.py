@@ -35,9 +35,15 @@ PAYLOADS = [
     "9**9**9**9",
     "10**100000",
     "S('1')",
-    "Symbol('x')",
+    "Symbol('__import__')",
+    "Function('os.system')(x)",
+    "Symbol('k', __class__=True)",
+    "Symbol('k', integer='yes')",
+    "sympify('x')",
+    "S('x')",
+    "Float('nan; import os')",
 ]
-GOOD = {"x**2/2 + C": True, "x^3/3": True, "sin(x)+cos(x)": True, "-log(Abs(x))": True,
+GOOD = {"Symbol('x', real=True)**2 + Integer(1)": True, "Float('2.5')*x": True, "x**2/2 + C": True, "x^3/3": True, "sin(x)+cos(x)": True, "-log(Abs(x))": True,
         "pi/2": True, "sqrt(2)*E": True, "Rational(1,2)": True, "a*b": True}
 
 fail = 0

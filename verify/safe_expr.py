@@ -14,12 +14,36 @@ import re
 
 import sympy as sp
 
-MAX_LEN = 400
+MAX_LEN = 8000  # stored srepr rows reach ~3900 characters
 MAX_NUMBER = 10**9
 MAX_LITERAL_EXPONENT = 1000
 _SYMBOL = re.compile(r"[A-Za-z][A-Za-z0-9]{0,2}\Z")
 _BINOPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow)
 _UNARY = (ast.UAdd, ast.USub)
+_IDENT = re.compile(r"[A-Za-z][A-Za-z0-9_]{0,30}\Z")
+_NUMERIC = re.compile(r"[-+]?[0-9]+(\.[0-9]*)?([eE][-+]?[0-9]+)?\Z")
+# Constructors that take a name or a decimal as their first string argument.
+_NAMED = {"Symbol", "Dummy", "Wild", "Function"}
+_DECIMAL = {"Float", "Integer", "Rational"}
+from sympy.core.assumptions import _assume_defined
+_ASSUMPTIONS = set(_assume_defined) | {"commutative"}
+_HELPERS = {"sqrt", "root", "cbrt", "exp", "log", "ln", "Abs", "re", "im", "conjugate"}
+
+
+def _builtin_callables() -> dict:
+    """SymPy expression classes and plain math helpers, nothing that parses or does I/O."""
+    out = {}
+    for name in dir(sp):
+        if name.startswith("_"):
+            continue
+        obj = getattr(sp, name)
+        if name in _HELPERS or (isinstance(obj, type) and issubclass(obj, sp.Basic)) \
+                or isinstance(obj, sp.FunctionClass):
+            out[name] = obj
+    return out
+
+
+SYMPY_CALLABLES = _builtin_callables()
 
 
 class UnsafeExpression(ValueError):
@@ -39,7 +63,7 @@ def _check(node, names: dict) -> None:
     if isinstance(node, ast.Name):
         if node.id.startswith("_"):
             raise UnsafeExpression(f"name not allowed: {node.id}")
-        if node.id in names or _SYMBOL.match(node.id):
+        if node.id in names or node.id in SYMPY_CALLABLES or _SYMBOL.match(node.id):
             return None
         raise UnsafeExpression(f"unknown name: {node.id}")
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, _UNARY):
@@ -58,12 +82,23 @@ def _check(node, names: dict) -> None:
         return _check(node.right, names)
     if isinstance(node, ast.Call):
         func = node.func
-        if not isinstance(func, ast.Name) or func.id.startswith("_") \
-                or not callable(names.get(func.id)):
+        if not isinstance(func, ast.Name) or func.id.startswith("_"):
             raise UnsafeExpression("only namespace functions may be called")
-        if node.keywords:
-            raise UnsafeExpression("keyword arguments not allowed")
-        for arg in node.args:
+        target = names.get(func.id, SYMPY_CALLABLES.get(func.id))
+        if not callable(target) or (func.id not in names and func.id not in SYMPY_CALLABLES):
+            raise UnsafeExpression("only namespace functions may be called")
+        for keyword in node.keywords:
+            if func.id not in _NAMED or keyword.arg not in _ASSUMPTIONS \
+                    or not isinstance(keyword.value, ast.Constant) \
+                    or not isinstance(keyword.value.value, bool):
+                raise UnsafeExpression("keyword arguments not allowed")
+        for index, arg in enumerate(node.args):
+            if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                if index == 0 and func.id in _NAMED and _IDENT.match(arg.value):
+                    continue
+                if func.id in _DECIMAL and _NUMERIC.match(arg.value):
+                    continue
+                raise UnsafeExpression(f"string not allowed: {arg.value!r}")
             _check(arg, names)
         return None
     raise UnsafeExpression(f"syntax not allowed: {type(node).__name__}")
