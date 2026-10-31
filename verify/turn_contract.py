@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import re
+
 import check_math
 import gap_index
 import model
@@ -470,7 +472,66 @@ def _drop_abs(expr):
     return expr.replace(sp.Abs, lambda arg: arg)
 
 
-def expressions_match(answer: str, submitted, indefinite: bool, variable: str = "x") -> bool:
+_GRADING_ASSUMPTIONS = re.compile(r"grading-assumptions:\s*([^.\n]*)")
+
+
+def grading_assumptions(row: dict | None) -> dict:
+    """Parameter assumptions the row states, excluding the integration variable.
+
+    A note clause ``grading-assumptions: a>0, b>0`` is the statement. Symbols
+    in ``answer_sympy`` that already carry a sign assumption are included by
+    ``expressions_match``. The integration variable is not rewritten: that
+    would accept ``x**2/2`` as an antiderivative of ``Abs(x)``.
+    """
+    if not isinstance(row, dict):
+        return {}
+    notes = str(row.get("notes") or "")
+    found = _GRADING_ASSUMPTIONS.search(notes)
+    if found is None:
+        return {}
+    variable = row.get("variable") or "x"
+    stated = {}
+    for token in found.group(1).split(","):
+        matched = re.fullmatch(r"\s*([A-Za-z][A-Za-z0-9_]*)\s*>\s*0\s*", token)
+        if matched is None:
+            continue
+        name = matched.group(1)
+        if name == variable:
+            continue
+        stated[name] = sp.Symbol(name, positive=True)
+    return stated
+
+
+def _parameter_assumptions(expr, variable: str) -> dict:
+    stated = {}
+    for sym in getattr(expr, "free_symbols", ()):
+        if sym.name == variable:
+            continue
+        if sym.is_positive or sym.is_nonnegative or sym.is_negative:
+            stated[sym.name] = sym
+    return stated
+
+
+def _equal_under(got, ans, assumptions: dict) -> bool:
+    if not assumptions:
+        return False
+
+    def apply(expr):
+        repl = {}
+        for sym in expr.free_symbols:
+            stated = assumptions.get(sym.name)
+            if stated is not None and sym != stated:
+                repl[sym] = stated
+        return sp.refine(expr.xreplace(repl))
+
+    try:
+        return sp.simplify(apply(got) - apply(ans)) == 0
+    except Exception:
+        return False
+
+
+def expressions_match(answer: str, submitted, indefinite: bool, variable: str = "x",
+                      assumptions: dict | None = None) -> bool:
     ns = _mark_namespace()
     ns[variable] = sp.Symbol(variable, real=True)
     ans = safe_expr.safe_sympify(pack_answer_contracts.infinity_text(answer), ns)
@@ -483,6 +544,13 @@ def expressions_match(answer: str, submitted, indefinite: bool, variable: str = 
     if ans.has(sp.nan, sp.zoo) or got.has(sp.nan, sp.zoo):
         return False
     if sp.simplify(got - ans) == 0:
+        return True
+    stated = _parameter_assumptions(ans, variable)
+    if assumptions:
+        for name, sym in assumptions.items():
+            if name != variable:
+                stated[name] = sym
+    if _equal_under(got, ans, stated):
         return True
     if not indefinite:
         return False
@@ -544,7 +612,10 @@ def answer_matches(row: dict, submitted: str) -> bool:
             ns.update({item.name: item for item in parameter.free_symbols})
             ns["s"] = parameter
             submitted = safe_expr.safe_sympify(submitted, ns)
-    return expressions_match(row["answer_sympy"], submitted, _indefinite(row), row.get("variable", "x"))
+    return expressions_match(
+        row["answer_sympy"], submitted, _indefinite(row), row.get("variable", "x"),
+        grading_assumptions(row),
+    )
 
 
 def grade_problem(

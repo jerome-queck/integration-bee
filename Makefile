@@ -1,4 +1,16 @@
-PYTHON ?= python3
+# After scripts/setup.py, .venv is the interpreter. A command-line PYTHON= still wins.
+ifeq ($(OS),Windows_NT)
+_VENV_PY := $(CURDIR)/.venv/Scripts/python.exe
+else
+_VENV_PY := $(CURDIR)/.venv/bin/python
+endif
+ifneq ($(origin PYTHON),command line)
+ifeq ($(wildcard $(_VENV_PY)),)
+PYTHON := python3
+else
+PYTHON := $(_VENV_PY)
+endif
+endif
 export PYTHONPATH := $(CURDIR)/scripts
 
 .PHONY: check hooks ci docs agents structure templates invariants mutations verify doctor latex formal sanity

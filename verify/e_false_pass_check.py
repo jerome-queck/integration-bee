@@ -30,6 +30,108 @@ def ok(message: str) -> int:
     return 0
 
 
+def test_pack_gate_abs_primitive() -> int:
+    import pack_gate
+
+    if pack_gate.proven("indefinite", "Abs(x)", None, "x**2/2", "x"):
+        return fail("pack_gate.proven accepted x**2/2 as a primitive of Abs(x)")
+    if not pack_gate.proven("indefinite", "Abs(x)", None, "x*Abs(x)/2", "x"):
+        return fail("pack_gate.proven rejected x*Abs(x)/2")
+    return ok("pack_gate primitive of |x|")
+
+
+def test_worked_log_square_step() -> int:
+    import sympy as sp
+
+    import yang_worked_check as ywc
+
+    negative = {"kind": "definite", "limits": ["-2", "-1"], "variable": "x"}
+    try:
+        ywc.run_step("REGRESS", ("eq", "log(x**2)", "2*log(x)"), sp.Integer(1), negative)
+    except AssertionError:
+        pass
+    else:
+        return fail("run_step accepted log(x**2) = 2*log(x) on [-2, -1]")
+    positive = {"kind": "definite", "limits": ["1", "2"], "variable": "x"}
+    try:
+        ywc.run_step("REGRESS", ("eq", "log(x**2)", "2*log(x)"), sp.Integer(1), positive)
+    except AssertionError:
+        return fail("run_step rejected log(x**2) = 2*log(x) on [1, 2]")
+    return ok("run_step log square respects the interval")
+
+
+def test_logs_equivalent_square() -> int:
+    import sympy as sp
+
+    import pack_gate
+
+    real = sp.Symbol("x", real=True)
+    if pack_gate._logs_equivalent(sp.log(real**2), 2 * sp.log(real)):
+        return fail("_logs_equivalent accepted log(x**2) = 2*log(x) for real x")
+    positive = sp.Symbol("p", positive=True)
+    if not pack_gate._logs_equivalent(sp.log(positive**2), 2 * sp.log(positive)):
+        return fail("_logs_equivalent rejected log(p**2) = 2*log(p) for positive p")
+    return ok("_logs_equivalent log square")
+
+
+def test_grader_stated_assumptions() -> int:
+    import json
+
+    import turn_contract
+
+    rows = {}
+    for line in (ROOT / "problems" / "records.jsonl").read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            row = json.loads(line)
+            rows[row["id"]] = row
+    q32 = rows["R1-2021-Q32"]
+    q27 = rows["R1-2021-Q27"]
+    if "grading-assumptions:" not in q32["notes"] or "grading-assumptions:" not in q27["notes"]:
+        return fail("Q27 or Q32 does not state grading assumptions")
+    if not turn_contract.answer_matches(q32, "pi*(b-a)/2"):
+        return fail("grader rejected pi*(b-a)/2 for Q32 under a>0, b>0")
+    if not turn_contract.answer_matches(q32, "-pi*Abs(a)/2 + pi*Abs(b)/2"):
+        return fail("grader rejected the stored Q32 value")
+    if turn_contract.answer_matches(q32, "pi*(a-b)/2"):
+        return fail("grader accepted the negated Q32 value")
+    if not turn_contract.answer_matches(q27, "pi*exp(-a*b)/(2*b)"):
+        return fail("grader rejected pi*exp(-a*b)/(2*b) for Q27 under a>0, b>0")
+    if not turn_contract.answer_matches(q27, "pi*exp(-Abs(a*b))/(2*Abs(b))"):
+        return fail("grader rejected the stored Q27 value")
+    if turn_contract.answer_matches(q27, "pi*exp(a*b)/(2*b)"):
+        return fail("grader accepted the sign-flipped Q27 value")
+    bare = dict(q32)
+    bare["notes"] = "Real parameters: pi*(Abs(b)-Abs(a))/2."
+    if turn_contract.answer_matches(bare, "pi*(b-a)/2"):
+        return fail("grader assumed positivity the row did not state")
+    return ok("grader uses stated assumptions")
+
+
+def test_numeric_fallback_tol() -> int:
+    import check_math
+
+    loose = {
+        "id": "REGRESS-TOL",
+        "kind": "definite",
+        "sympy_expr": "1",
+        "answer_sympy": "1 + Rational(1, 2000000)",
+        "limits": ["0", "1"],
+    }
+    try:
+        check_math.check_drill(loose)
+    except AssertionError:
+        pass
+    else:
+        return fail("numeric fallback accepted an answer off by 5e-7")
+    exact = dict(loose)
+    exact["answer_sympy"] = "1"
+    try:
+        check_math.check_drill(exact)
+    except AssertionError as exc:
+        return fail(f"numeric fallback rejected the exact value: {exc}")
+    return ok("numeric fallback rejects 5e-7")
+
+
 def test_primitive_abs() -> int:
     import sympy as sp
 
@@ -154,10 +256,22 @@ def test_display() -> int:
             "answer_sympy": "x",
             "kind": "definite",
         },
+        "abs-mixed": {
+            "answer_plain": "pi*exp(-a*b)/(2*b)",
+            "answer_sympy": "pi*exp(-Abs(a*b))/(2*Abs(b))",
+            "kind": "definite",
+        },
     }
     for name, row in rows.items():
         if not plain.check_row(row):
             return fail(f"display checker accepted {name}")
+    kept = {
+        "answer_plain": "pi*exp(-Abs(a*b))/(2*Abs(b))",
+        "answer_sympy": "pi*exp(-Abs(a*b))/(2*Abs(b))",
+        "kind": "definite",
+    }
+    if plain.check_row(kept):
+        return fail("display checker rejected the absolute-value spelling")
     return ok("display checker")
 
 
@@ -303,6 +417,11 @@ def test_empty_notes() -> int:
     return ok("empty pack and Yang notes")
 
 CASES = {
+    "pack-gate-abs": test_pack_gate_abs_primitive,
+    "worked-log-square-step": test_worked_log_square_step,
+    "logs-equivalent-square": test_logs_equivalent_square,
+    "grader-assumptions": test_grader_stated_assumptions,
+    "numeric-fallback": test_numeric_fallback_tol,
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
     "zero-log-square": test_zero_log_square,
