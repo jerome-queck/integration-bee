@@ -15,10 +15,10 @@ import re
 import sympy as sp
 
 MAX_LEN = 8000  # stored srepr rows reach ~3900 characters
-MAX_NUMBER = 10**9
 MAX_LITERAL_EXPONENT = 1000
 _SYMBOL = re.compile(r"[A-Za-z][A-Za-z0-9]{0,2}\Z")
-_BINOPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow)
+_BINOPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow, ast.BitAnd, ast.BitOr)
+_COMPARE = (ast.Lt, ast.LtE, ast.Gt, ast.GtE)
 _UNARY = (ast.UAdd, ast.USub)
 _IDENT = re.compile(r"[A-Za-z][A-Za-z0-9_]{0,30}\Z")
 _NUMERIC = re.compile(r"[-+]?[0-9]+(\.[0-9]*)?([eE][-+]?[0-9]+)?\Z")
@@ -55,10 +55,19 @@ def _check(node, names: dict) -> None:
         return _check(node.body, names)
     if isinstance(node, ast.Constant):
         value = node.value
-        if isinstance(value, bool) or not isinstance(value, (int, float)):
+        if not isinstance(value, (bool, int, float)):
             raise UnsafeExpression(f"literal not allowed: {value!r}")
-        if abs(value) > MAX_NUMBER:
-            raise UnsafeExpression("number too large")
+        # Exact rationals in stored rows have 100+ digit literals; size only matters as an
+        # exponent, which the Pow rule below bounds.
+        return None
+    if isinstance(node, ast.Tuple):
+        for item in node.elts:
+            _check(item, names)
+        return None
+    if isinstance(node, ast.Compare) and all(isinstance(op, _COMPARE) for op in node.ops):
+        _check(node.left, names)
+        for item in node.comparators:
+            _check(item, names)
         return None
     if isinstance(node, ast.Name):
         if node.id.startswith("_"):
@@ -73,6 +82,8 @@ def _check(node, names: dict) -> None:
             right = node.right
             if isinstance(right, ast.UnaryOp):
                 right = right.operand
+            if isinstance(right, ast.Constant) and not isinstance(right.value, (int, float)):
+                raise UnsafeExpression("exponent must be a number")
             if isinstance(right, ast.Constant) and abs(right.value) > MAX_LITERAL_EXPONENT:
                 raise UnsafeExpression("exponent too large")
             if isinstance(node.left, ast.Constant) and isinstance(right, ast.BinOp) \
