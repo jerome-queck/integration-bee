@@ -93,6 +93,14 @@ def read_json(directory: Path, name: str) -> dict:
         die(f"{name}.json did not parse: {exc}", 2)
     if not isinstance(doc, dict):
         die(f"{name}.json must be an object", 2)
+    if name == "attempts":
+        _object_list(doc.get("items"), "attempts items")
+    elif name == "mocks":
+        _object_list(doc.get("sessions"), "mocks sessions")
+    elif name == "heatmap":
+        _topic_rows(doc.get("topics"))
+    elif name == "skill-ticks":
+        _tick_rows(doc.get("ticks"))
     return doc
 
 
@@ -185,6 +193,99 @@ def emit(payload, fmt: str) -> None:
 def die(msg: str, code: int = 1) -> None:
     print(msg, file=sys.stderr)
     raise SystemExit(code)
+
+
+def _object_list(value, label: str) -> None:
+    if value is None:
+        return
+    if not isinstance(value, list) or any(not isinstance(item, dict) for item in value):
+        die(f"{label} must be a list of objects", 2)
+
+
+def _tick_rows(value) -> None:
+    if value is None:
+        return
+    if not isinstance(value, dict):
+        die("skill ticks must be an object", 2)
+    for node, row in value.items():
+        if isinstance(row, (dict, str)):
+            continue
+        die(f"skill tick {node} must be an object", 2)
+
+
+def _topic_rows(value) -> None:
+    if value is None:
+        return
+    if not isinstance(value, dict) or any(not isinstance(row, dict) for row in value.values()):
+        die("heatmap topics must be objects", 2)
+
+
+def tick_status(row) -> str | None:
+    if row is None or isinstance(row, str):
+        return row
+    if isinstance(row, dict):
+        status = row.get("status")
+        if status is not None and not isinstance(status, str):
+            die("skill tick status must be a string", 2)
+        return status
+    die("skill tick must be an object", 2)
+
+
+def parse_bool(value, label: str) -> bool:
+    if not isinstance(value, bool):
+        die(f"{label} must be a bool", 2)
+    return value
+
+
+def parse_int(value, label: str) -> int:
+    if isinstance(value, bool) or not isinstance(value, int):
+        die(f"{label} must be an integer", 2)
+    return value
+
+
+def parse_year(value):
+    if value in (None, ""):
+        return None
+    if isinstance(value, str) and value.strip().isdigit():
+        return int(value.strip())
+    if isinstance(value, bool) or not isinstance(value, int):
+        die("year must be an integer", 2)
+    return value
+
+
+def parse_mock_id(value) -> str | None:
+    if value in (None, ""):
+        return None
+    if not isinstance(value, str):
+        die("mock id must be a string", 2)
+    return value
+
+
+def parse_missed(value) -> list[str]:
+    if value in (None, "", []):
+        return []
+    if not isinstance(value, list):
+        die("missed must be a list of problem ids", 2)
+    found = []
+    for item in value:
+        if not isinstance(item, str) or item == "":
+            die("missed must be a list of problem ids", 2)
+        found.append(item)
+    return found
+
+
+def cold_flag(body: dict) -> bool:
+    if "cold" not in body or body.get("cold") is None:
+        return False
+    return parse_bool(body.get("cold"), "cold")
+
+
+def refuse_unknown_year(rows: list[dict], year) -> None:
+    if year in (None, ""):
+        return
+    known = {str(row.get("year")) for row in rows if row.get("year") not in (None, "")}
+    if str(year).strip() not in known:
+        die(f"unknown year {year}", 2)
 
 
 def take_limit(rows: list, limit: int) -> list:
@@ -484,7 +585,7 @@ def cmd_practice_next(args) -> int:
         for node in catalog():
             if node.get("gate") != "round1":
                 continue
-            status = (ticks.get(node["id"]) or {}).get("status")
+            status = tick_status(ticks.get(node["id"]))
             if model.coach_queue_done(status, full):
                 continue
             unit = node.get("unit")
@@ -565,7 +666,9 @@ def problem_spec(args) -> dict:
 
 def cmd_problems_list(args) -> int:
     spec = problem_spec(args)
-    rows = problem_catalog.matching(load_problem_rows(), spec)
+    loaded = load_problem_rows()
+    refuse_unknown_year(loaded, spec.get("year"))
+    rows = problem_catalog.matching(loaded, spec)
     shown = take_limit(rows, args.limit)
     views = [problem_catalog.index_view(row) for row in shown]
     if args.format == "json":
@@ -591,7 +694,9 @@ def cmd_problems_select(args) -> int:
     spec = problem_spec(args)
     if not any(spec.values()):
         die("select needs a filter", 2)
-    rows = problem_catalog.matching(load_problem_rows(), spec)
+    loaded = load_problem_rows()
+    refuse_unknown_year(loaded, spec.get("year"))
+    rows = problem_catalog.matching(loaded, spec)
     if not rows:
         die("unknown problem")
     if len(rows) != 1:
@@ -637,7 +742,7 @@ def cmd_progress_show(args) -> int:
     for node in catalog():
         if node.get("gate") != "round1":
             continue
-        status = (ticks["ticks"].get(node["id"]) or {}).get("status")
+        status = tick_status(ticks["ticks"].get(node["id"]))
         if not model.coach_queue_done(status, full):
             nxt = node["id"]
             break
@@ -997,19 +1102,19 @@ def start_mock_record(directory: Path, body: dict, pack: str, out_of: int, year)
     reason = model.mock_block_reason(
         ticks["ticks"],
         [node["id"] for node in catalog() if node.get("gate") == "round1"],
-        bool(body.get("cold")),
+        cold_flag(body),
     )
     if reason:
         die(reason, 2)
     mocks = read_json(directory, "mocks")
     session = {
-        "id": body.get("id") or now_iso(),
+        "id": parse_mock_id(body.get("id")) or now_iso(),
         "started": now_iso(),
         "ended": None,
         "score": None,
         "out_of": out_of,
         "missed": [],
-        "cold": bool(body.get("cold")),
+        "cold": cold_flag(body),
         "pack": pack,
         "year": year,
     }
@@ -1023,17 +1128,29 @@ def start_mock_record(directory: Path, body: dict, pack: str, out_of: int, year)
 
 
 def describe_pack(pack: str, year, out_of_request) -> tuple[int, int, list, object]:
+    if not isinstance(pack, str):
+        die(f"unknown pack {pack}", 2)
     mock01, papers = turn_sources()
     if pack == "mock01":
-        out_of = int(out_of_request or len(mock01) or 30)
+        if out_of_request in (None, ""):
+            out_of = len(mock01) or 30
+        else:
+            out_of = parse_int(out_of_request, "out_of")
         problems = [{"id": row["id"], "source": row.get("source")} for row in mock01]
         return out_of, 120, problems, None
     if pack == "pdf-round1":
         views = turn_contract.paper_on_disk(papers, lambda rel: (ROOT / rel).is_file())
-        chosen = next((row for row in views if year and row["year"] == int(year)), None)
+        year_n = parse_year(year)
+        if year_n is None:
+            chosen = views[0] if views else None
+        else:
+            chosen = next((row for row in views if row["year"] == year_n), None)
         if chosen is None:
-            chosen = views[0]
-        out_of = int(out_of_request or chosen["count"])
+            die(f"unknown year {year_n}", 2)
+        if out_of_request in (None, ""):
+            out_of = int(chosen["count"])
+        else:
+            out_of = parse_int(out_of_request, "out_of")
         return out_of, chosen["duration_minutes"], [chosen], chosen["year"]
     die(f"unknown pack {pack}", 2)
 
@@ -1125,25 +1242,35 @@ def cmd_turn_mock_finish(args, body: dict) -> int:
     learner = load_session(read_json(directory, "session"))
     if body.get("score") is None or not body.get("id"):
         die("mock-finish needs id and score", 2)
+    mock_id = parse_mock_id(body.get("id"))
+    score = parse_int(body.get("score"), "score")
+    missed = parse_missed(body.get("missed"))
     phase = learner.get("phase")
     if phase in {"awaiting_answer", "aptitude"}:
         die("an integral is still open", 2)
     if phase == "proposing":
         die("confirm the skip offer first", 2)
-    if phase in {"mock_open", "mock_awaiting"} and learner.get("mock_id") not in (None, body["id"]):
+    if phase in {"mock_open", "mock_awaiting"} and learner.get("mock_id") not in (None, mock_id):
         die(f"open mock is {learner.get('mock_id')}", 2)
     mocks = read_json(directory, "mocks")
     found = None
     for session in mocks["sessions"]:
-        if session.get("id") == body["id"]:
+        if session.get("id") == mock_id:
             found = session
             break
     if found is None:
-        die(f"unknown mock {body['id']}")
-    found["score"] = body["score"]
-    found["out_of"] = int(body.get("out_of") or found.get("out_of") or 30)
+        die(f"unknown mock {mock_id}")
+    requested_out = body.get("out_of")
+    if requested_out in (None, ""):
+        out_of = found.get("out_of") or 30
+        if isinstance(out_of, bool) or not isinstance(out_of, int):
+            die("out_of must be an integer", 2)
+    else:
+        out_of = parse_int(requested_out, "out_of")
+    found["score"] = score
+    found["out_of"] = out_of
     found["ended"] = now_iso()
-    found["missed"] = list(body.get("missed") or [])
+    found["missed"] = missed
     err = model.mock_session_problem(found)
     if err:
         die(err)

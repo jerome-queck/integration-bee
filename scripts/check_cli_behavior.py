@@ -511,6 +511,125 @@ def main() -> int:
             detail(bad),
         )
 
+    with tempfile.TemporaryDirectory(prefix="ib-cli-validate-") as tmp:
+        data = Path(tmp)
+        cold_text = turn(data, {"kind": "mock-start", "cold": "false", "id": "c-false"})
+        check(
+            cold_text.returncode == 2
+            and "cold must be a bool" in cold_text.stderr
+            and "Traceback" not in cold_text.stderr
+            and not (data / "mocks.json").exists(),
+            "cold string false does not open a mock",
+            detail(cold_text),
+        )
+        year = turn(data, {"kind": "mock-start", "cold": True, "id": "y1900", "pack": "pdf-round1", "year": 1900})
+        check(
+            year.returncode == 2
+            and "unknown year 1900" in year.stderr
+            and "Traceback" not in year.stderr
+            and not (data / "mocks.json").exists(),
+            "year 1900 does not select a paper",
+            detail(year),
+        )
+        listed = run(["problems", "list", "--year", "1900", "--format", "json"], data)
+        check(
+            listed.returncode == 2 and "unknown year 1900" in listed.stderr and "Traceback" not in listed.stderr,
+            "problems list rejects year 1900",
+            detail(listed),
+        )
+        numeric = turn(data, {"kind": "mock-start", "cold": True, "id": "num", "out_of": True})
+        check(
+            numeric.returncode == 2
+            and "out_of must be an integer" in numeric.stderr
+            and "Traceback" not in numeric.stderr
+            and not (data / "mocks.json").exists(),
+            "bool out_of does not traceback",
+            detail(numeric),
+        )
+        bad_year = turn(data, {"kind": "mock-start", "cold": True, "id": "word", "pack": "pdf-round1", "year": "nope"})
+        check(
+            bad_year.returncode == 2
+            and "year must be an integer" in bad_year.stderr
+            and "Traceback" not in bad_year.stderr,
+            "a non-numeric year does not traceback",
+            detail(bad_year),
+        )
+        opened = turn(data, {"kind": "mock-start", "cold": True, "id": "m1"})
+        check(opened.returncode == 0, "validation mock opens", detail(opened))
+        boolean = turn(data, {"kind": "mock-finish", "id": "m1", "score": True, "out_of": 30})
+        stored = json.loads((data / "mocks.json").read_text())
+        check(
+            boolean.returncode == 2
+            and "score must be an integer" in boolean.stderr
+            and "Traceback" not in boolean.stderr
+            and stored["sessions"][0]["score"] is None,
+            "bool score is refused",
+            detail(boolean),
+        )
+        split = turn(data, {"kind": "mock-finish", "id": "m1", "score": 1, "out_of": 30, "missed": "SAMPLE-Q01"})
+        stored = json.loads((data / "mocks.json").read_text())
+        check(
+            split.returncode == 2
+            and "missed must be a list of problem ids" in split.stderr
+            and "Traceback" not in split.stderr
+            and stored["sessions"][0]["score"] is None
+            and stored["sessions"][0]["missed"] == [],
+            "a missed string is not split into characters",
+            detail(split),
+        )
+
+    with tempfile.TemporaryDirectory(prefix="ib-cli-shape-") as tmp:
+        data = Path(tmp)
+        (data / "skill-ticks.json").write_text(
+            json.dumps({"schema": "integration-bee-skill-ticks/v1", "ticks": {"basic-integration": "solid"}})
+        )
+        shown = run(["progress", "show", "--format", "json"], data)
+        check(
+            shown.returncode == 0 and "Traceback" not in shown.stderr,
+            "a string skill tick does not raise AttributeError",
+            detail(shown),
+        )
+        (data / "skill-ticks.json").write_text(
+            json.dumps({"schema": "integration-bee-skill-ticks/v1", "ticks": {"basic-integration": 1}})
+        )
+        broken = run(["progress", "show", "--format", "json"], data)
+        check(
+            broken.returncode == 2
+            and "skill tick basic-integration must be an object" in broken.stderr
+            and "Traceback" not in broken.stderr,
+            "a numeric skill tick is refused",
+            detail(broken),
+        )
+        (data / "skill-ticks.json").unlink()
+        (data / "heatmap.json").write_text(json.dumps({"schema": "integration-bee-heatmap/v1", "topics": {"x": 1}}))
+        heat = run(["progress", "show", "--format", "json"], data)
+        check(
+            heat.returncode == 2
+            and "heatmap topics must be objects" in heat.stderr
+            and "Traceback" not in heat.stderr,
+            "a numeric heatmap row is refused",
+            detail(heat),
+        )
+        (data / "heatmap.json").unlink()
+        (data / "attempts.json").write_text(json.dumps({"schema": "integration-bee-attempts/v1", "items": [1]}))
+        attempts = run(["progress", "show", "--format", "json"], data)
+        check(
+            attempts.returncode == 2
+            and "attempts items must be a list of objects" in attempts.stderr
+            and "Traceback" not in attempts.stderr,
+            "a numeric attempt is refused",
+            detail(attempts),
+        )
+        (data / "mocks.json").write_text(json.dumps({"schema": "integration-bee-mocks/v1", "sessions": {"id": "x"}}))
+        finish = run(["progress", "mock-finish", "--id", "x", "--score", "1", "--format", "json"], data)
+        check(
+            finish.returncode == 2
+            and "mocks sessions must be a list of objects" in finish.stderr
+            and "Traceback" not in finish.stderr,
+            "a mocks object is refused",
+            detail(finish),
+        )
+
     ignored = subprocess.run(
         ["git", "check-ignore", "-q", "--no-index", "trackers/live/submissions/default/photo.png"],
         cwd=ROOT,
