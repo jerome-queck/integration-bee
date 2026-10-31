@@ -11,12 +11,12 @@ The printed integral is
 
 ## Solution
 
-The printed radical is a cube root of \(x-2024\), in the denominator. Let \(u=x-2024\). Then \(\int u^{-1/3}\,du=\frac32(x-2024)^{2/3}\).
+The printed radical is the real reciprocal cube root of \(x-2024\), which is \(\operatorname{sign}(x-2024)/|x-2024|^{1/3}\) for \(x\neq 2024\). Let \(u=x-2024\). The antiderivative is \(\frac32|x-2024|^{2/3}\).
 
 ## Final answer
 
-\[\frac32(x-2024)^{2/3}.\]
+\[\frac32|x-2024|^{2/3}.\]
 
 ## SymPy self-check
 
-`verify/pack_gate.py` proves this indefinite integral by differentiation. The catalog stores `sympy_expr` `(x - 2024)**(-1/3)` and `answer_sympy` `3*(x - 2024)**(2/3)/2`. `make check` re-proves that stored pair. An additive constant differentiates to zero, so it is the same antiderivative.
+`verify/pack_gate.py` proves this indefinite integral by differentiation. The catalog stores `sympy_expr` `sign(x - 2024)/Abs(x - 2024)**(1/3)` and `answer_sympy` `3*Abs(x - 2024)**(2/3)/2`. `make check` re-proves that stored pair.

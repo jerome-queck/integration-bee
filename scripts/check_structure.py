@@ -3,6 +3,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+import yaml
+
 from generate_agents_md import ENFORCERS, ROOT
 
 fail = 0
@@ -51,6 +53,18 @@ if ignored(yang):
 if not (ROOT / yang).is_file():
     print("FAIL Yang PDF missing from the tree")
     fail = 1
+
+for path in sorted((ROOT / "units").glob("[0-9][0-9]-*/meta.yaml")):
+    rel = path.relative_to(ROOT)
+    try:
+        doc = yaml.safe_load(path.read_text())
+    except yaml.YAMLError as exc:
+        print(f"FAIL {rel} did not parse: {exc}")
+        fail = 1
+        continue
+    if not isinstance(doc, dict) or not isinstance(doc.get("title"), str) or not doc["title"].strip():
+        print(f"FAIL {rel} needs a title")
+        fail = 1
 
 skill = ROOT / ".cursor/skills/formal-verify-integration-bee/SKILL.md"
 text = skill.read_text()

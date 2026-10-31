@@ -349,9 +349,9 @@ def check_r1_2021_q32() -> None:
 
 def check_r1_2021_q37() -> None:
     x = sp.symbols("x", real=True)
-    f = sp.sin(x) * sp.cos(x) * (sp.cos(x) - sp.sin(x))
-    _eq(f + f.subs(x, sp.pi / 2 - x), 0)
-    _eq(sp.integrate(f, (x, 0, sp.pi / 2)), 0)
+    f = sp.cos(x) ** (sp.sin(x) ** sp.cos(x)) - sp.sin(x) ** (sp.cos(x) ** sp.sin(x))
+    _eq(sp.simplify(f + f.subs(x, sp.pi / 2 - x)), 0)
+    _eq(sp.simplify(f.subs(x, sp.pi / 2 - x) + f), 0)
 
 
 def check_r1_2021_q39() -> None:

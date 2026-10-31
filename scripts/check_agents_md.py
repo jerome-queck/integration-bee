@@ -67,7 +67,7 @@ def missing_scenarios(rows: list[tuple[str, str]], root: Path) -> list[str]:
 HARNESS_HEADINGS = ("Codex", "Claude", "Cursor")
 
 SECTION_MARKERS = (
-    "python3 -m pip install sympy pyyaml",
+    "python3 -m pip install -r requirements.txt",
     "git clone https://github.com/jerome-queck/integration-bee.git",
     "scripts/control-integration-bee doctor",
     "sudo apt-get install -y latexmk texlive-latex-recommended texlive-fonts-recommended default-jre-headless",

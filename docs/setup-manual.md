@@ -1,6 +1,8 @@
 # Manual setup
 
-The quick path is `python3 scripts/setup.py` (Windows: `py scripts\setup.py`); see the [setup skill](../.agents/skills/setup-integration-bee/SKILL.md). It creates `.venv/` and installs the pinned packages in `requirements.txt` (SymPy 1.14.0, mpmath 1.3.0, PyYAML 6.0.3). This page is the full manual path, including the TeX, Java, and pstack steps that maintainers need for `make check`.
+The quick path is `python3 scripts/setup.py` (Windows: `py scripts\setup.py`); see the [setup skill](../.agents/skills/setup-integration-bee/SKILL.md). It creates `.venv/` and installs the pinned packages in `requirements.txt` (SymPy 1.14.0, mpmath 1.3.0, PyYAML 6.0.3, tzdata 2026.6). This page is the full manual path, including the TeX, Java, and pstack steps that maintainers need for `make check`.
+
+tzdata is pinned because the CLI clock is `Asia/Singapore`, and Windows Python does not ship the timezone database. `sources/fetch.sh` and `verify/formal/run.sh` call `sha256sum`. macOS does not ship that command; install GNU coreutils so `sha256sum` is on PATH. The verify timeouts use `signal.SIGALRM`, which Windows Python does not provide, so a full `make check` is the Linux and macOS run.
 
 ## One skill text
 
@@ -23,15 +25,12 @@ Install the Codex CLI and confirm that `codex` runs.
 
 Install Python 3.11 or newer. CI uses Python 3.12.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
-
-Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+Clone the pack and install the pinned packages from `requirements.txt`. The CLI is `scripts/control-integration-bee` in the clone.
 
 ```bash
 git clone https://github.com/jerome-queck/integration-bee.git
 cd integration-bee
+python3 -m pip install -r requirements.txt
 scripts/control-integration-bee doctor
 ```
 
@@ -65,15 +64,12 @@ Install Claude Code 2.1.292 or later and confirm that `claude` runs.
 
 Install Python 3.11 or newer. CI uses Python 3.12.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
-
-Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+Clone the pack and install the pinned packages from `requirements.txt`. The CLI is `scripts/control-integration-bee` in the clone.
 
 ```bash
 git clone https://github.com/jerome-queck/integration-bee.git
 cd integration-bee
+python3 -m pip install -r requirements.txt
 scripts/control-integration-bee doctor
 ```
 
@@ -109,15 +105,12 @@ Install Cursor. Open this repository as the project folder.
 
 Install Python 3.11 or newer. CI uses Python 3.12.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
-
-Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+Clone the pack and install the pinned packages from `requirements.txt`. The CLI is `scripts/control-integration-bee` in the clone.
 
 ```bash
 git clone https://github.com/jerome-queck/integration-bee.git
 cd integration-bee
+python3 -m pip install -r requirements.txt
 scripts/control-integration-bee doctor
 ```
 
@@ -145,7 +138,7 @@ When the pack names a pstack skill, open `skills/<skill-name>/SKILL.md` in that 
 
 People changing this pack use the checks below. Learners do not.
 
-1. Follow the Getting started by harness section above for Codex, Claude, or Cursor. That section installs Python, SymPy, PyYAML (`python3 -m pip install sympy pyyaml`), the TeX and Java packages, and the pstack plugin.
+1. Follow the Getting started by harness section above for Codex, Claude, or Cursor. That section installs Python and the pinned packages (`python3 -m pip install -r requirements.txt`), the TeX and Java packages, and the pstack plugin.
 2. Point Git at the drift hook once with `make hooks`.
 3. Run `make check` before a pull request. CI runs the same command. Details are in `AGENTS.md`.
 4. The unpacked contest PDFs and the site PDFs are committed reference copies under `sources/past/` and `sources/`. The contest list is `past/inventory.json`. Do not commit `Resource_pack.zip`.
@@ -153,5 +146,6 @@ People changing this pack use the checks below. Learners do not.
 6. The Yang Topics Guide, 2nd edition, is `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`. Attribution is in `sources/user/README.md`.
 7. Contest, Yang, and sample problems are `problems/records.jsonl`. `problems list` hides answers. A mark still goes through `turn apply`. Sample worked notes are `solutions/sample/`.
 8. `scripts/recover_pack_math.py` rereads the committed Round 1, Round 2, and Round 3 PDFs and rewrites a row only when SymPy proves the layout reading. `--write` is the whole catalog. Rows that do not prove stay `manual` or `unchecked`. PyMuPDF is required for that script. `make check` re-proves stored rows and does not open the PDFs.
+9. `scripts/build_yang_ch3_to_ch6.py` is retired. Running it exits 2 and does not rewrite units, drills, or indexes. The old generator called unrestricted `sympify` and accepted a numeric shortcut.
 
 Syllabus links are in `syllabus-map.md`. The skill tree is `skill-tree.md`.

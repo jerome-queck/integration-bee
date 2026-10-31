@@ -23,10 +23,10 @@ King's substitution \(x\mapsto \pi/2-x\) replaces \(\tan x\) by \(\cot x\). Clea
 \int_{0}^{\pi/2}\frac{2\tan^{3/2}x-\tan x+\sqrt{\tan x}}{1+\tan^{3/2}x}\,dx.
 \]
 
-The average of the two numerators is \(2(1+\tan^{3/2}x)\), so the average integrand is \(1\). Therefore
+The sum of the two numerators is \(2(1+\tan^{3/2}x)\), so the sum of the integrands is \(2\). Therefore
 
 \[
-I=\frac12\int_{0}^{\pi/2}1\,dx=\frac{\pi}{2}.
+2I=\int_{0}^{\pi/2}2\,dx=\pi,\qquad I=\frac{\pi}{2}.
 \]
 
 The answer slide prints \(\pi/2\).

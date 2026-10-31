@@ -727,7 +727,7 @@ SPECS: dict[str, dict] = {
         ],
     },
     "YANG-1.4-P05": {
-        "final": "log(x + exp(x) + 1)",
+        "final": "log(Abs(x + exp(x) + 1))",
         "lines": [
             (
                 "The numerator of (exp(x) + 1)/(x + exp(x) + 1) is the derivative of the denominator.",
@@ -740,7 +740,7 @@ SPECS: dict[str, dict] = {
         ],
         "steps": [
             ("diff_of", "x + exp(x) + 1", "exp(x) + 1"),
-            ("diff", "log(x + exp(x) + 1)"),
+            ("diff", "log(Abs(x + exp(x) + 1))"),
         ],
     },
     "YANG-1.4-P06": {
@@ -869,7 +869,7 @@ SPECS: dict[str, dict] = {
         ],
     },
     "YANG-1.4-P14": {
-        "final": "log(log(exp(x) - 1))",
+        "final": "log(Abs(log(exp(x) - 1)))",
         "lines": [
             (
                 "Substitution u = log(exp(x) - 1). The integrand exp(x)/((exp(x) - 1)*log(exp(x) - 1)) becomes 1/u.",
@@ -877,7 +877,7 @@ SPECS: dict[str, dict] = {
             ),
         ],
         "steps": [
-            ("diff", "log(log(exp(x) - 1))"),
+            ("diff", "log(Abs(log(exp(x) - 1)))"),
         ],
     },
     "YANG-1.4-P15": {
@@ -957,7 +957,7 @@ SPECS: dict[str, dict] = {
         ],
     },
     "YANG-1.5-P01": {
-        "final": "x - log(cos(x))",
+        "final": "x - log(Abs(cos(x)))",
         "lines": [
             (
                 "Split the quotient. (sin(x) + cos(x))/cos(x) = tan(x) + 1.",
@@ -966,8 +966,8 @@ SPECS: dict[str, dict] = {
         ],
         "steps": [
             ("eq", "(sin(x) + cos(x))/cos(x)", "tan(x) + 1"),
-            ("diff_of", "x - log(cos(x))", "tan(x) + 1"),
-            ("diff", "x - log(cos(x))"),
+            ("diff_of", "x - log(Abs(cos(x)))", "tan(x) + 1"),
+            ("diff", "x - log(Abs(cos(x)))"),
         ],
     },
     "YANG-1.5-P02": {
@@ -1047,7 +1047,7 @@ SPECS: dict[str, dict] = {
         ],
     },
     "YANG-1.5-P08": {
-        "final": "-log(csc(x) + 1)",
+        "final": "-log(Abs(csc(x) + 1))",
         "lines": [
             (
                 "Substitution u = csc(x). Then cot(x)*csc(x)/(csc(x) + 1) leads to -1/(u + 1).",
@@ -1055,11 +1055,11 @@ SPECS: dict[str, dict] = {
             ),
         ],
         "steps": [
-            ("diff", "-log(csc(x) + 1)"),
+            ("diff", "-log(Abs(csc(x) + 1))"),
         ],
     },
     "YANG-1.5-P09": {
-        "final": "-log(sin(x) + cos(x))",
+        "final": "-log(Abs(sin(x) + cos(x)))",
         "lines": [
             (
                 "The numerator of (sin(x) - cos(x))/(sin(x) + cos(x)) is the negative derivative of the denominator.",
@@ -1067,7 +1067,7 @@ SPECS: dict[str, dict] = {
             ),
         ],
         "steps": [
-            ("diff", "-log(sin(x) + cos(x))"),
+            ("diff", "-log(Abs(sin(x) + cos(x)))"),
         ],
     },
     "YANG-1.5-P10": {
@@ -1195,7 +1195,7 @@ SPECS: dict[str, dict] = {
         ],
     },
     "YANG-1.5-P19": {
-        "final": "-log(sin(2*x))",
+        "final": "-log(Abs(sin(2*x)))",
         "lines": [
             (
                 "Difference of squares. (-csc(x) + sec(x))*(csc(x) + sec(x))/(tan(x) + cot(x)) = -2*cot(2*x).",
@@ -1208,8 +1208,8 @@ SPECS: dict[str, dict] = {
                 "(-csc(x) + sec(x))*(csc(x) + sec(x))/(tan(x) + cot(x))",
                 "-2*cot(2*x)",
             ),
-            ("diff_of", "-log(sin(2*x))", "-2*cot(2*x)"),
-            ("diff", "-log(sin(2*x))"),
+            ("diff_of", "-log(Abs(sin(2*x)))", "-2*cot(2*x)"),
+            ("diff", "-log(Abs(sin(2*x)))"),
         ],
     },
     "YANG-1.5-P20": {
@@ -1280,16 +1280,16 @@ SPECS: dict[str, dict] = {
         ],
     },
     "YANG-1.6-P05": {
-        "final": "x*tan(x) + log(cos(x))",
+        "final": "x*tan(x) + log(Abs(cos(x)))",
         "lines": [
             (
-                "Integrate by parts, differentiating x. The remaining integral of tan(x) has antiderivative -log(cos(x)).",
+                "Integrate by parts, differentiating x. The remaining integral of tan(x) has antiderivative -log(Abs(cos(x))).",
                 r"Integrate by parts, differentiating \(x\). The remaining integral of \(\tan x\) has antiderivative \(-\log(\cos x)\).",
             ),
         ],
         "steps": [
-            ("diff_of", "-log(cos(x))", "tan(x)"),
-            ("diff", "x*tan(x) + log(cos(x))"),
+            ("diff_of", "-log(Abs(cos(x)))", "tan(x)"),
+            ("diff", "x*tan(x) + log(Abs(cos(x)))"),
         ],
     },
     "YANG-1.6-P06": {
@@ -2300,15 +2300,15 @@ _add(
 
 _add(
     'YANG-1.15-P15',
-    'x/2 + log(tan(2*x) + sec(2*x))/4',
+    'x/2 + log(Abs(tan(2*x) + sec(2*x)))/4',
     [('2*cos(x)**2 - 1 equals cos(2*x), so cos(x)**2/(2*cos(x)**2 - 1) equals 1/2 + sec(2*x)/2.',
   '\\(2\\cos^{2}x-1\\) equals \\(\\cos 2x\\), so \\(\\cos^{2}x/(2\\cos^{2}x-1)\\) equals '
   '\\(1/2+\\sec(2x)/2\\).'),
- ('The antiderivative is x/2 + log(tan(2*x) + sec(2*x))/4.',
+ ('The antiderivative is x/2 + log(Abs(tan(2*x) + sec(2*x)))/4.',
   'The antiderivative is \\(x/2+\\log(\\tan 2x+\\sec 2x)/4\\).')],
     [('eq', '2*cos(x)**2 - 1', 'cos(2*x)'),
  ('eq', 'cos(x)**2/(2*cos(x)**2 - 1)', '1/2 + sec(2*x)/2'),
- ('diff', 'x/2 + log(tan(2*x) + sec(2*x))/4')],
+ ('diff', 'x/2 + log(Abs(tan(2*x) + sec(2*x)))/4')],
 )
 
 _add(
@@ -2345,26 +2345,26 @@ _add(
 
 _add(
     'YANG-1.15-P18',
-    'log(cos(x)) + tan(x)**2/2',
+    'log(Abs(cos(x))) + tan(x)**2/2',
     [('tan(x)**3 equals sec(x)**2*tan(x) - tan(x).',
   '\\(\\tan^{3}x\\) equals \\(\\sec^{2}x\\tan x-\\tan x\\).'),
- ('The antiderivative is log(cos(x)) + tan(x)**2/2.',
+ ('The antiderivative is log(Abs(cos(x))) + tan(x)**2/2.',
   'The antiderivative is \\(\\log(\\cos x)+\\tan^{2}(x)/2\\).')],
-    [('eq', 'tan(x)**3', 'sec(x)**2*tan(x) - tan(x)'), ('diff', 'log(cos(x)) + tan(x)**2/2')],
+    [('eq', 'tan(x)**3', 'sec(x)**2*tan(x) - tan(x)'), ('diff', 'log(Abs(cos(x))) + tan(x)**2/2')],
 )
 
 _add(
     'YANG-1.15-P19',
-    'log(4*sin(x) - cos(x))',
+    'log(Abs(4*sin(x) - cos(x)))',
     [('(4*cot(x) + 1)/(4 - cot(x)) equals (sin(x) + 4*cos(x))/(4*sin(x) - cos(x)).',
   '\\((4\\cot x+1)/(4-\\cot x)\\) equals \\((\\sin x+4\\cos x)/(4\\sin x-\\cos x)\\).'),
  ('The derivative of 4*sin(x) - cos(x) is 4*cos(x) + sin(x), which is the numerator.',
   'The derivative of \\(4\\sin x-\\cos x\\) is \\(4\\cos x+\\sin x\\), which is the numerator.'),
- ('The antiderivative is log(4*sin(x) - cos(x)).',
+ ('The antiderivative is log(Abs(4*sin(x) - cos(x))).',
   'The antiderivative is \\(\\log(4\\sin x-\\cos x)\\).')],
     [('eq', '(4*cot(x) + 1)/(4 - cot(x))', '(sin(x) + 4*cos(x))/(4*sin(x) - cos(x))'),
  ('diff_of', '4*sin(x) - cos(x)', '4*cos(x) + sin(x)'),
- ('diff', 'log(4*sin(x) - cos(x))')],
+ ('diff', 'log(Abs(4*sin(x) - cos(x)))')],
 )
 
 _add(
@@ -2612,16 +2612,16 @@ _add(
 
 _add(
     'YANG-1.20-P06',
-    '24*x/25 + 7*log(4*sin(x) + 3*cos(x))/25',
+    '24*x/25 + 7*log(Abs(4*sin(x) + 3*cos(x)))/25',
     [('The derivative of 4*sin(x) + 3*cos(x) is 4*cos(x) - 3*sin(x).',
   'The derivative of \\(4\\sin x+3\\cos x\\) is \\(4\\cos x-3\\sin x\\).'),
  ('(7/25)*(4*cos(x) - 3*sin(x)) + (24/25)*(4*sin(x) + 3*cos(x)) equals 3*sin(x) + 4*cos(x).',
   '\\((7/25)(4\\cos x-3\\sin x)+(24/25)(4\\sin x+3\\cos x)\\) equals \\(3\\sin x+4\\cos x\\).'),
- ('The antiderivative is 24*x/25 + 7*log(4*sin(x) + 3*cos(x))/25.',
+ ('The antiderivative is 24*x/25 + 7*log(Abs(4*sin(x) + 3*cos(x)))/25.',
   'The antiderivative is \\(24x/25+7\\log(4\\sin x+3\\cos x)/25\\).')],
     [('diff_of', '4*sin(x) + 3*cos(x)', '4*cos(x) - 3*sin(x)'),
  ('eq', '(7/25)*(4*cos(x) - 3*sin(x)) + (24/25)*(4*sin(x) + 3*cos(x))', '3*sin(x) + 4*cos(x)'),
- ('diff', '24*x/25 + 7*log(4*sin(x) + 3*cos(x))/25')],
+ ('diff', '24*x/25 + 7*log(Abs(4*sin(x) + 3*cos(x)))/25')],
 )
 
 _add(
@@ -2770,7 +2770,7 @@ _add(
     "(2*x - 1)*(48*x**2 - 6*x - 9)/(112*Abs(2*x - 1)**(2/3))",
     [
         (
-            "Read (2*x - 1)**(1/3) as the real cube root, which is (2*x - 1)/Abs(2*x - 1)**(2/3) for x != 1/2. Forced substitution u = 2*x - 1, so x = (u + 1)/2 and dx = du/2. For x > 1/2 the antiderivative in u is 3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16.",
+            "Read (2*x - 1)**(1/3) as the real cube root, which is (2*x - 1)/Abs(2*x - 1)**(2/3) for x != 1/2. Forced substitution u = 2*x - 1, so x = (u + 1)/2 and dx = du/2. For x > 1/2 the antiderivative in u is 3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16. Its derivative is x*(2*x - 1)**(1/3).",
             r"Read \((2x-1)^{1/3}\) as the real cube root, which is \((2x-1)/|2x-1|^{2/3}\) for \(x\neq 1/2\). Forced substitution \(u=2x-1\), so \(x=(u+1)/2\) and \(dx=du/2\). For \(x>1/2\) the antiderivative in \(u\) is \(\frac{3}{28}(2x-1)^{7/3}+\frac{3}{16}(2x-1)^{4/3}\).",
         ),
         (
@@ -2779,7 +2779,7 @@ _add(
         ),
     ],
     [
-        ("diff", "3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16"),
+        ("diff_of", "3*(2*x - 1)**(7/3)/28 + 3*(2*x - 1)**(4/3)/16", "x*(2*x - 1)**(1/3)"),
         ("eq", "3*x**2/7 - 3*x/56 - 9/112", "(48*x**2 - 6*x - 9)/112"),
         ("diff", "(2*x - 1)*(48*x**2 - 6*x - 9)/(112*Abs(2*x - 1)**(2/3))"),
     ],
@@ -6595,6 +6595,12 @@ def _s27_check_6_7_p03(row, x):
     family = (x**n - 1) / sp.log(x)
     _s27_same(family.subs(n, 10), integrand, row["id"] + " printed case")
     _s27_same(sp.diff(family, n), x**n, row["id"] + " parameter derivative")
+    # Chart (0,1) by x=exp(-u), u>0. Then x^n = exp(-n*u) decreases from 1,
+    # so |x^n| <= 1 on (0,1) for n>0, and 1 is integrable there.
+    u = sp.symbols("u", positive=True)
+    _s27_same(sp.exp(-u)**n, sp.exp(-n*u), row["id"] + " unit chart")
+    _s27_same(sp.diff(sp.exp(-n*u), u) + n*sp.exp(-n*u), 0, row["id"] + " decreasing chart")
+    _s27_same(sp.limit(sp.exp(-n*u), u, 0), 1, row["id"] + " chart starts at 1")
     moment = sp.integrate(x**n, (x, 0, 1))
     _s27_same(moment, 1 / (n + 1), row["id"] + " power integral")
     _s27_same(sp.diff(sp.log(n + 1), n), 1 / (n + 1), row["id"] + " logarithm derivative")
