@@ -463,14 +463,51 @@ def _exponential_limit(integrand, answer, symbol, lo, hi) -> bool:
     return _same(value, goal)
 
 
+def _odd_part_converges(odd, symbol, lo, hi) -> bool:
+    """True when the odd part is absolutely integrable on [-h, h], h finite.
+
+    It must be continuous on (0, h) and keep one sign there. Then the integral
+    of |odd| on (0, h) is |integral of odd|, so a finite value proves
+    convergence. 1/x fails: its integral on (0, 1) is infinite.
+    """
+    if not (lo.is_finite and hi.is_finite) or not _zero(lo + hi) or not hi.is_positive:
+        return False
+    try:
+        from sympy.calculus.util import continuous_domain, function_range
+        half = sp.Interval.open(0, hi)
+        if not half.is_subset(continuous_domain(odd, symbol, half)) is True:
+            return False
+        span = function_range(odd, symbol, half)
+        if not (span.is_subset(sp.Interval(0, sp.oo)) is True
+                or span.is_subset(sp.Interval(-sp.oo, 0)) is True):
+            return False
+    except Exception:
+        return False
+    value = _integrate_fast(odd, symbol, 0, hi)
+    return value is not None and _closed(value) and bool(value.is_finite)
+
+
 def _principal_value_only(integrand, symbol, lo, hi) -> bool:
     """The even part is the Cauchy principal value when the odd part does not converge.
 
     Averaging f(x) and f(-x) turns 1/x on [-1, 1] into 0. The improper integral
     does not exist, so that value is not a proof.
     """
+    # A finite interval on which the integrand is continuous gives a proper
+    # integral, so there is no principal value to separate. Skip |f| there.
+    lo, hi = sp.sympify(lo), sp.sympify(hi)
+    if lo.is_finite and hi.is_finite:
+        try:
+            from sympy.calculus.util import continuous_domain
+            span = sp.Interval(lo, hi)
+            if span.is_subset(continuous_domain(integrand, symbol, span)) is True:
+                return False
+        except Exception:
+            pass
     odd = sp.simplify((integrand - integrand.subs(symbol, -symbol)) / 2)
     if not _closed(odd) or _zero(odd):
+        return False
+    if _odd_part_converges(odd, symbol, lo, hi):
         return False
     absolute = _integrate_fast(sp.Abs(integrand), symbol, lo, hi)
     # An unevaluated or timed-out absolute integral is not proof of divergence.
