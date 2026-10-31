@@ -42,6 +42,19 @@ def _match(left, right) -> bool:
     return _zero(sp.expand(left - right))
 
 
+def _same(left, right) -> bool:
+    """Structural equality after expand.
+
+    A miss must not call simplify. indefinite_ok runs this screen on every
+    indefinite row, and simplify of a high power such as x**2024*exp(x**2024)
+    blows the ordinary proof timeout.
+    """
+    try:
+        return sp.expand(left) == sp.expand(right)
+    except Exception:
+        return False
+
+
 def _generic_zero(expr) -> bool:
     """The unchanged pack-gate zero test, used on a smooth piece."""
     import pack_gate
@@ -115,7 +128,7 @@ def _cos_nonnegative_on_half_turn() -> bool:
 
 
 def _sqrt_cos_integrand(integrand, symbol) -> bool:
-    return _match(integrand, sp.sqrt(1 + sp.cos(symbol)))
+    return _same(integrand, sp.sqrt(1 + sp.cos(symbol)))
 
 
 def _sqrt_piece_slope(symbol, index):
@@ -243,7 +256,7 @@ def holds(answer, integrand, symbol) -> bool | None:
             return False
         return None
     atan_integrand = 1 / (1 + 8 * sp.cos(symbol) ** 2)
-    if _match(integrand, atan_integrand):
+    if _same(integrand, atan_integrand):
         smooth = sp.atan(sp.tan(symbol) / 3) / 3
         if not _generic_zero(sp.diff(smooth, symbol) - atan_integrand):
             return False
@@ -262,7 +275,7 @@ def holds(answer, integrand, symbol) -> bool | None:
             return False
         return None
     sample_log = 1 / (symbol * (1 + sp.sin(sp.log(symbol)) ** 2))
-    if _match(integrand, sample_log):
+    if _same(integrand, sample_log):
         smooth = sp.sqrt(2) * sp.atan(sp.sqrt(2) * sp.tan(sp.log(symbol))) / 2
         if not _generic_zero(sp.diff(smooth, symbol) - sample_log):
             return False
@@ -281,7 +294,7 @@ def holds(answer, integrand, symbol) -> bool | None:
             return False
         return None
     sample_sine = 1 / (2 + sp.sin(symbol))
-    if _match(integrand, sample_sine):
+    if _same(integrand, sample_sine):
         smooth = 2 * sp.sqrt(3) * sp.atan(2 * sp.sqrt(3) * sp.tan(symbol / 2) / 3 + sp.sqrt(3) / 3) / 3
         if not _generic_zero(sp.diff(smooth, symbol) - sample_sine):
             return False
@@ -300,7 +313,7 @@ def holds(answer, integrand, symbol) -> bool | None:
             return False
         return None
     radical = sp.sqrt(symbol**2 + 6 * symbol + 9) * sp.exp(symbol / 2)
-    if _match(integrand, radical):
+    if _same(integrand, radical):
         if isinstance(answer, sp.Piecewise):
             return _exp_piecewise_holds(answer, symbol)
         jumped = _limits_differ(answer, symbol, -3)
