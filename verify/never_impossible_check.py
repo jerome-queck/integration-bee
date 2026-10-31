@@ -2,7 +2,8 @@
 """Reject pack records and worked notes that call a problem impossible.
 
 Scope is the prose fields agents set on problems/records.jsonl, plus markdown
-under solutions/pack and solutions/sample. Policy docs are not read. A negation
+under solutions/pack, solutions/sample, and solutions/yang. An empty note is a
+finding. Policy docs are not read. A negation
 earlier in the same sentence ("do not mark impossible", "not impossible",
 "does not claim … impossible") is not a hit. Defer, sticky, and verify: manual
 are not hits.
@@ -16,7 +17,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
-NOTE_DIRS = ("solutions/pack", "solutions/sample")
+NOTE_DIRS = ("solutions/pack", "solutions/sample", "solutions/yang")
 PROSE_FIELDS = frozenset({
     "notes",
     "display_note",
@@ -224,6 +225,9 @@ def scan(rows: list[dict], notes: list[tuple[str, str]]) -> list[str]:
             for phrase in claims(text):
                 findings.append(f"problems/records.jsonl {ident} {field}: {phrase}")
     for path, text in notes:
+        if not str(text).strip():
+            findings.append(f"{path}: empty note")
+            continue
         for phrase in claims(text):
             findings.append(f"{path}: {phrase}")
     return findings
@@ -276,7 +280,11 @@ def main() -> int:
         return 1
     pack = sum(1 for path, _text in notes if path.startswith("solutions/pack/"))
     sample = sum(1 for path, _text in notes if path.startswith("solutions/sample/"))
-    print(f"PASS never-impossible ({len(rows)} records, {pack} pack notes, {sample} sample notes)")
+    yang = sum(1 for path, _text in notes if path.startswith("solutions/yang/"))
+    print(
+        f"PASS never-impossible ({len(rows)} records, {pack} pack notes, "
+        f"{sample} sample notes, {yang} yang notes)"
+    )
     return 0
 
 
