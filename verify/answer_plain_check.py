@@ -34,7 +34,9 @@ FUNCS = [(r"\b(sin|cos|tan|cot|sec|csc|sinh|cosh|tanh)\s*(?:−|-)\s*1\b", r"a\1
          (r"\barc(sin|cos|tan|cot|sec|csc)\b", r"a\1"), (r"\bln\b", "log")]
 # A display written in a parameter the symbolic fields re-encode; each is cited in the row notes.
 DISPLAY_BINDINGS = {"SAMPLE-Q08": {"s": "1 + sigma + I*tau"}}  # notes: "s=1+sigma+i*tau"
-POINTS = (sp.Rational(13, 10), sp.Rational(27, 10), sp.Rational(7, 4))
+# Mixed signs. All-positive samples make Abs(a) and a agree, so a display
+# without the absolute value matches a canonical answer that has one.
+POINTS = (sp.Rational(13, 10), sp.Rational(-27, 10), sp.Rational(7, 4))
 INT_POINTS = (2, 3, 1)
 
 

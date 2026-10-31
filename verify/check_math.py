@@ -62,6 +62,11 @@ def load_all_drills(paths: list[Path] | None = None) -> list[dict]:
     return out
 
 
+# Looser than this, the quadrature fallback accepts an answer the symbolic
+# numeric check already refused. 5e-7 sits between the old 1e-6 and this bound.
+NUMERIC_FALLBACK_TOL = 1e-8
+
+
 def numeric_close(a, b, tol: float = 1e-7) -> bool:
     try:
         diff = complex(sp.N(sp.simplify(a - b)))
@@ -195,7 +200,7 @@ def check_drill(d: dict) -> None:
         try:
             nval = sp.N(sp.Integral(expr, (x, lo, hi)))
             nans = sp.N(ans)
-            if abs(complex(nval - nans)) < 1e-6:
+            if abs(complex(nval - nans)) < NUMERIC_FALLBACK_TOL:
                 return
         except Exception as e:
             raise AssertionError(f"{d['id']}: numeric fallback failed: {e}") from e

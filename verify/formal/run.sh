@@ -2,6 +2,8 @@
 # TLC 1.7.4 on the learner-session specs, then the tracker repro.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+PY="$ROOT/.venv/bin/python"
+if [[ ! -x "$PY" ]]; then PY="python3"; fi
 FORMAL="$ROOT/verify/formal"
 CACHE="$FORMAL/.cache"
 JAR="${TLA2TOOLS:-$CACHE/tla2tools.jar}"
@@ -96,5 +98,5 @@ expect_chart() {
 expect_chart "$FORMAL/charts/session-flow.mmd" "$FORMAL/SessionFlow.tla"
 expect_chart "$FORMAL/charts/tracker-writes.mmd" "$FORMAL/TrackerWrites.tla"
 
-python3 "$FORMAL/repro_tracker.py"
+"$PY" "$FORMAL/repro_tracker.py"
 echo "PASS formal"

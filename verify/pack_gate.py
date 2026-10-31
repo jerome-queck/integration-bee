@@ -52,9 +52,14 @@ a damped (t-sin t)/t**2 integral, a sine-square substitution, the Wallis
 product, an artanh series reduced to the Wallis integral, and a Chebyshev
 reduction. A reciprocal power that clears to a rational function is integrated
 directly. (cos(a x)-cos(b x))/x**2 on [0, ∞) reduces by parts to the Dirichlet
-integral, for positive a and b. A logarithm of an absolute value differentiates as the logarithm
-of its argument. An indefinite answer is also accepted when its derivative
-matches the integrand for a positive variable. Further checked forms are a
+integral. For a nonzero real coefficient the substitution u = |k| x scales that
+value by |k|; a zero coefficient is handled separately and contributes 0.
+A logarithm of an absolute value differentiates as the logarithm
+of its argument. An indefinite answer is accepted when its derivative
+matches the integrand, including the sign(u)/Abs(u) form of the derivative of
+log|u|. A match that appears only for a positive variable is kept when sampled
+real points on both sides of 0 agree, and rejected when they do not: x**2/2
+is not an antiderivative of Abs(x). Further checked forms are a
 complement of two square-root logarithms on [2, 4], a fifth power of a
 cosine-sine mean on [0, π/2], a root-exponential reflection on [-π/2, π/2],
 1/(1+|cos x|) on [0, 2π], a shifted square-root logarithm reduced to a gamma
@@ -1135,10 +1140,48 @@ def _antiderivative(answer, integrand, variable: str) -> bool:
     delta = sp.diff(answer, symbol) - integrand
     if _zero(delta):
         return True
-    positive = sp.Symbol(variable, positive=True)
-    if _zero(delta.subs(symbol, positive)):
+    # Same rewrite as check_math.is_antiderivative: sign(u)/Abs(u) becomes 1/u.
+    # A bare positive substitution is not this test. x**2/2 versus Abs(x) survives
+    # it and is rejected below.
+    try:
+        if _zero(check_math._without_abs_sign(delta)):
+            return True
+    except Exception:
+        pass
+    if _positive_domain_derivative(answer, integrand, symbol):
         return True
     return _radical_branch(answer, integrand, symbol)
+
+
+def _positive_domain_derivative(answer, integrand, symbol) -> bool:
+    """Derivative match for x>0, kept only when real samples agree.
+
+    Some antiderivatives, such as R1-2021-Q09, simplify only after x is
+    positive, and the integrand is not real for x<0. Substituting a positive
+    symbol by itself also accepts x**2/2 for Abs(x). That pair is real at
+    x=-1 and the two sides differ there, so the sample rejects it.
+    """
+    positive = sp.Symbol(symbol.name, positive=True)
+    delta = sp.diff(answer, symbol) - integrand
+    if not _zero(delta.subs(symbol, positive)):
+        return False
+    slope = sp.diff(answer, symbol)
+    for point in (
+        sp.Integer(-2), sp.Integer(-1), sp.Rational(-1, 2),
+        sp.Rational(1, 2), sp.Integer(1), sp.Integer(2),
+    ):
+        try:
+            left = complex(sp.N(integrand.subs(symbol, point), 25))
+            right = complex(sp.N(slope.subs(symbol, point), 25))
+        except Exception:
+            continue
+        if abs(left.imag) > 1e-8 or abs(right.imag) > 1e-8:
+            continue
+        if abs(left.real) > 1e12 or abs(right.real) > 1e12:
+            continue
+        if abs(left - right) > 1e-6 * (1 + abs(left)):
+            return False
+    return True
 
 
 _FACT_CACHE: dict = {}
@@ -1151,19 +1194,28 @@ def _fact(key: str, builder):
 
 
 def _logs_equivalent(left, right) -> bool:
+    """Logarithms agree when the difference is 0 without forcing a branch.
+
+    expand_log(force=True) turns log(x**2) - 2*log(x) into 0 for real x < 0,
+    where the two sides differ by 2*pi*I. Without force, a split is used only
+    when each base is proved positive. log(y)+log(1/y) is cancelled only for
+    a positive y.
+    """
     delta = left - right
     if _zero(delta):
         return True
     try:
-        if sp.simplify(sp.expand_log(delta, force=True)) == 0:
+        if sp.simplify(sp.expand_log(delta)) == 0:
             return True
     except Exception:
         pass
     try:
         simplified = sp.simplify(delta)
         for free in simplified.free_symbols:
+            if getattr(free, "is_positive", None) is not True:
+                continue
             pair = sp.log(free) + sp.log(1 / free)
-            if sp.expand_log(pair, force=True) == 0 and sp.simplify(simplified.subs(pair, 0)) == 0:
+            if sp.expand_log(pair) == 0 and sp.simplify(simplified.subs(pair, 0)) == 0:
                 return True
         return _exp_one_implies_zero(simplified)
     except Exception:
@@ -1456,7 +1508,20 @@ def _log_reciprocal_unit(integrand, symbol, lo, hi):
         return None
     target = sp.log(symbol + 1 / symbol) / (symbol + 1 / symbol)
     rewritten = symbol * (sp.log(1 + symbol**2) - sp.log(symbol)) / (1 + symbol**2)
-    if not _logs_equivalent(integrand, target) or not _logs_equivalent(target, rewritten):
+    if not _logs_equivalent(integrand, target):
+        return None
+    # On (0, 1) the variable is positive, so log(x + 1/x) = log(1+x**2) - log(x).
+    # That is the positive-symbol identity, used only after the range check.
+    try:
+        from sympy.calculus.util import function_range
+
+        values = function_range(symbol, symbol, sp.Interval.open(lo, hi))
+    except Exception:
+        return None
+    if values.is_subset(sp.Interval.open(0, sp.oo)) is not True:
+        return None
+    positive = sp.Symbol(symbol.name, positive=True)
+    if not _zero((target - rewritten).subs(symbol, positive)):
         return None
     try:
         first = sp.integrate(symbol * sp.log(1 + symbol**2) / (1 + symbol**2), (symbol, 0, 1))
@@ -2327,22 +2392,39 @@ def _constant_log_span(integrand, symbol, lo, hi):
 
 
 def _cosine_over_square(integrand, symbol, lo, hi):
-    """∫_0^∞ (cos(a x)-cos(b x))/x**2 dx = π(b-a)/2 for a>0 and b>0.
+    """∫_0^∞ (cos(a x)-cos(b x))/x**2 dx = π(|b|-|a|)/2 for real a, b.
 
-    Parts moves the integral to ∫ (b sin(b x)-a sin(a x))/x dx. Each term is
-    the Dirichlet integral after x → c x. The Laplace transform of sin identifies
-    ∫_0^∞ sin(t)/t dt with π/2: its s-derivative is -1/(s²+1), and the value
-    vanishes as s→∞ because |sin t|≤t.
+    Parts moves a positive coefficient to the Dirichlet integral. For a nonzero
+    real k, u = |k| x multiplies ∫_0^∞ (1-cos u)/u**2 du by |k|. A zero
+    coefficient is not that substitution: cos(0·x) = 1, the integrand is 0,
+    and the term contributes 0.
     """
-    if not (_zero(lo) and hi == sp.oo) or not integrand.has(sp.cos):
+    if not (_zero(lo) and hi == sp.oo):
+        return None
+    if integrand != 0 and not getattr(integrand, "has", lambda *_: False)(sp.cos):
         return None
     coeff_a = sp.Wild("A", exclude=[symbol])
     coeff_b = sp.Wild("B", exclude=[symbol])
     matched = integrand.match((sp.cos(coeff_a * symbol) - sp.cos(coeff_b * symbol)) / symbol**2)
-    if not matched:
-        return None
-    first = matched[coeff_a]
-    second = matched[coeff_b]
+    if matched:
+        first = matched[coeff_a]
+        second = matched[coeff_b]
+    else:
+        # cos(0*x) simplifies to 1, so a zero coefficient never reaches the
+        # two-cosine pattern. Match that simplified integrand explicitly.
+        zero_second = integrand.match((1 - sp.cos(coeff_b * symbol)) / symbol**2)
+        zero_first = integrand.match((sp.cos(coeff_a * symbol) - 1) / symbol**2)
+        if zero_second:
+            first = sp.Integer(0)
+            second = zero_second[coeff_b]
+        elif zero_first:
+            first = zero_first[coeff_a]
+            second = sp.Integer(0)
+        elif integrand == 0:
+            first = sp.Integer(0)
+            second = sp.Integer(0)
+        else:
+            return None
     if first.has(symbol) or second.has(symbol):
         return None
 
@@ -2363,9 +2445,7 @@ def _cosine_over_square(integrand, symbol, lo, hi):
             _zero(sp.sin(scale * (old / scale)) / (old / scale) * (1 / scale) - sp.sin(old) / old),
             "scale",
         )
-        # Real coefficients: cos is even, so cos(c*x) = cos(|c|*x), and the
-        # positive case covers c != 0. A zero coefficient makes that cosine 1;
-        # the same parts steps hold with a = 0 and contribute nothing.
+        # Positive representative of a negative coefficient: cos is even.
         c = sp.Symbol("_c", positive=True)
         _require(_zero(sp.cos(-c * x) - sp.cos(c * x)), "cos-even")
         _require(_zero(sp.Abs(-c) - c) and _zero(sp.Abs(c) - c), "abs-sign")
@@ -2373,19 +2453,62 @@ def _cosine_over_square(integrand, symbol, lo, hi):
         _require(_zero(sp.diff(flat, x) - b * sp.sin(b * x)), "parts-diff-zero")
         _require(_zero(sp.limit(flat / x, x, 0)), "parts-zero-zero")
         _require(_zero(sp.limit(flat / x, x, sp.oo)), "parts-inf-zero")
+        # u = |k| x. sign(k)**2 = 1, so sign(k) is ±1, and cos(sign(k)*u) = cos(u).
+        # The Jacobian is checked for a positive scale, then identified with |k|.
+        # k = 0 never enters this substitution: the integrand is identically 0.
+        real_k = sp.Symbol("_k", real=True, nonzero=True)
+        angle = sp.Symbol("_t", real=True)
+        _require(_zero(sp.cos(-angle) - sp.cos(angle)), "cos-even-real")
+        _require(_zero(real_k - sp.sign(real_k) * sp.Abs(real_k)), "sign-abs")
+        _require(_zero(sp.sign(real_k) ** 2 - 1), "sign-square")
+        _require(_zero(sp.cos(-old) - sp.cos(old)), "cos-even-unit")
+        _require(sp.Abs(real_k).is_positive is True, "abs-positive")
+        _require(_zero(real_k * x - sp.sign(real_k) * (sp.Abs(real_k) * x)), "factor-kx")
+        abs_scale = sp.Symbol("_m", positive=True)
+        jacobian = (1 - sp.cos(abs_scale * (old / abs_scale))) / (old / abs_scale) ** 2 * (
+            1 / abs_scale
+        )
+        _require(
+            _zero(sp.simplify(jacobian - abs_scale * (1 - sp.cos(old)) / old**2)),
+            "abs-scale",
+        )
+        zero = sp.Integer(0)
+        _require(_zero(sp.cos(zero * x) - 1), "cos-zero")
+        _require(_zero((1 - sp.cos(zero * x)) / x**2), "zero-integrand")
+        _require(_zero(sp.integrate(zero, (x, 0, sp.oo))), "zero-integral")
+        _require(_zero(sp.Abs(zero)), "abs-zero")
+        real_a = sp.Symbol("_ra", real=True)
+        real_b = sp.Symbol("_rb", real=True)
+        _require(
+            _zero(
+                (sp.cos(real_a * x) - sp.cos(real_b * x))
+                - ((1 - sp.cos(real_b * x)) - (1 - sp.cos(real_a * x)))
+            ),
+            "split-cos",
+        )
         return True
 
     if _fact("cosine-over-square", build) is not True:
         return None
-    if first.is_positive and second.is_positive:
-        return sp.simplify(sp.pi * (second - first) / 2)
     if first.is_extended_real is False or second.is_extended_real is False:
         return None
-    # A coefficient with unknown assumptions is real whenever the integral
-    # exists. For a non-real c, |cos(c x)| grows like exp(|Im c| x)/2, and the
-    # difference stays integrable on (0, oo) only when a = ±b. Then both
-    # sides are 0, since |a| = |b|.
-    return sp.pi * (sp.Abs(second) - sp.Abs(first)) / 2
+
+    def half_line(coeff):
+        """π|k|/2. A zero coefficient returns 0 and does not divide by |k|."""
+        if coeff == 0 or getattr(coeff, "is_zero", None) is True:
+            return sp.Integer(0)
+        if getattr(coeff, "is_positive", None) is True:
+            return sp.pi * coeff / 2
+        if getattr(coeff, "is_negative", None) is True:
+            return sp.pi * (-coeff) / 2
+        return sp.pi * sp.Abs(coeff) / 2
+
+    # A symbol with no sign assumption is the catalog case. The integrand
+    # exists for real a, b, and the value is π(|b|-|a|)/2, including when a
+    # coefficient is 0. For a non-real c, |cos(c x)| grows like exp(|Im c| x)/2,
+    # and the difference stays integrable on (0, oo) only when a = ±b. Then
+    # both sides are 0, since |a| = |b|.
+    return sp.simplify(half_line(second) - half_line(first))
 
 
 def _dirichlet_half():

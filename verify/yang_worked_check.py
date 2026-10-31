@@ -4134,12 +4134,13 @@ def closed_zero(expr) -> bool:
 
 
 def same(left, right) -> bool:
-    delta = left - right
-    if closed_zero(delta):
-        return True
-    symbol = pack_gate.namespace("x")["x"]
-    positive = sp.Symbol("x", positive=True)
-    return closed_zero(delta.subs(symbol, positive))
+    """Identical as real expressions. A positive substitution is not a proof.
+
+    log(x**2) = 2*log(x) becomes 0 after x is replaced by a positive symbol,
+    and it is false on (-2, -1). Interval log splits are run_step's job, after
+    this check refuses the identity.
+    """
+    return closed_zero(left - right)
 
 
 def diff_ok(antiderivative, integrand) -> bool:
@@ -5457,10 +5458,44 @@ def _s111_symbol():
 
 
 def _s111_same(left, right) -> bool:
-    if pack_gate._zero(left - right):
-        return True
-    positive = sp.Symbol("x", positive=True)
-    return pack_gate._zero((left - right).subs(_s111_symbol(), positive))
+    """Identical as real expressions. A positive substitution is not a proof."""
+    return pack_gate._zero(left - right)
+
+
+def _s111_sqrt_quotient(left, right) -> bool:
+    """sqrt(p/q) = sqrt(p)/sqrt(q) when p and q are positive on (0, 1).
+
+    The identity is checked on dummy positive symbols. The factors in this
+    step must themselves be positive on (0, 1). Replacing every x by a
+    positive symbol is not used.
+    """
+    symbol = _s111_symbol()
+    num = sp.Wild("n")
+    den = sp.Wild("d")
+    left_match = left.match(sp.sqrt(num / den))
+    right_match = right.match(sp.sqrt(num) / sp.sqrt(den))
+    if left_match is None or right_match is None:
+        return False
+    if left_match[num] != right_match[num] or left_match[den] != right_match[den]:
+        return False
+    positive_n, positive_d = sp.symbols("_pn _pd", positive=True)
+    if not pack_gate._zero(
+        sp.sqrt(positive_n / positive_d) - sp.sqrt(positive_n) / sp.sqrt(positive_d)
+    ):
+        return False
+    try:
+        from sympy.calculus.util import function_range
+
+        span = sp.Interval.open(0, 1)
+        for factor in (left_match[num], left_match[den]):
+            if factor.free_symbols - {symbol}:
+                return False
+            values = function_range(factor, symbol, span)
+            if values.is_subset(sp.Interval.open(0, sp.oo)) is not True:
+                return False
+    except Exception:
+        return False
+    return True
 
 
 def _s111_diff_ok(antiderivative, integrand) -> bool:
@@ -5582,7 +5617,9 @@ def _s111_run_step(ident: str, step: tuple, integrand) -> None:
             raise AssertionError(f"{ident} derivative {step[1]} vs {step[2]}")
         return
     if kind == "eq":
-        if not _s111_same(_s111_parse(step[1]), _s111_parse(step[2])):
+        left = _s111_parse(step[1])
+        right = _s111_parse(step[2])
+        if not _s111_same(left, right) and not _s111_sqrt_quotient(left, right):
             raise AssertionError(f"{ident} equality {step[1]} vs {step[2]}")
         return
     if kind == "odd":

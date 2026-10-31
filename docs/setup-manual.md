@@ -1,6 +1,6 @@
 # Manual setup
 
-The quick path is `python3 scripts/setup.py` (Windows: `py scripts\setup.py`); see the [setup skill](../.agents/skills/setup-integration-bee/SKILL.md). It creates `.venv/` and installs the pinned packages in `requirements.txt` (SymPy 1.14.0, mpmath 1.3.0, PyYAML 6.0.3, tzdata 2026.6). This page is the full manual path, including the TeX, Java, and pstack steps that maintainers need for `make check`.
+The quick path is `python3 scripts/setup.py` (Windows: `py scripts\setup.py`); see the [setup skill](../.agents/skills/setup-integration-bee/SKILL.md). It creates `.venv/` and installs the pinned packages in `requirements.txt` (SymPy 1.14.0, mpmath 1.3.0, PyYAML 6.0.3, tzdata 2026.6). After that script, `make` and `verify/formal/run.sh` run `.venv`'s Python when that interpreter is present. `make PYTHON=...` still selects another interpreter, and a checkout with no virtualenv still uses `python3`. This page is the full manual path, including the TeX, Java, and pstack steps that maintainers need for `make check`.
 
 tzdata is pinned because the CLI clock is `Asia/Singapore`, and Windows Python does not ship the timezone database. `sources/fetch.sh` and `verify/formal/run.sh` call `sha256sum`. macOS does not ship that command; install GNU coreutils so `sha256sum` is on PATH. The verify timeouts use `signal.SIGALRM`, which Windows Python does not provide, so a full `make check` is the Linux and macOS run.
 
