@@ -43,7 +43,11 @@ Follow `features/README.md` in this skill directory. Drive one feature file end 
 
 ## Evidence
 
-Save the command, stdout, stderr, and exit code under `$IB_EVIDENCE`. The proof is the action plus the stored state. For a recorded attempt, `progress show` must mention the drill id after `practice check`.
+A transcript counts only when it is bound to the bytes that produced it.
+
+Hash every source file read for the drive, including `.agents/skills/verify-integration-bee/SKILL.md` and the feature file under `.agents/skills/verify-integration-bee/features/`. Hash the command string and each input file that command reads. Write those sha256 lines to `$IB_EVIDENCE` before trusting the transcript. Recompute the hashes from the same bytes. If a source hash or an input hash differs, the transcript does not count. Do not reuse a transcript whose input hash differs.
+
+Also save the command, stdout, stderr, and exit code under `$IB_EVIDENCE`. The proof is the action plus the stored state. For a recorded attempt, `progress show` must mention the drill id after `practice check`.
 
 ## Cleanup
 

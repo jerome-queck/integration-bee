@@ -2,6 +2,8 @@
 
 Practice serves a drill without the answer, then records a SymPy check.
 
+Record the sha256 of `.agents/skills/verify-integration-bee/features/practice.md` and of each practice command in `$IB_EVIDENCE` before the transcript counts. Recompute both from the bytes just read.
+
 ## Sub-features
 
 - `practice-list` lists drills and hides `answer_display`.

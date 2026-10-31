@@ -2,6 +2,8 @@
 
 Progress stores ticks, misses, mocks, journal notes, and the study streak. `progress show` reads ticks, attempts, due reviews, the streak, and weak topics.
 
+Record the sha256 of `.agents/skills/verify-integration-bee/features/progress.md` and of each progress command in `$IB_EVIDENCE` before the transcript counts. Recompute both from the bytes just read.
+
 ## Sub-features
 
 - `progress-tick` sets `basic-integration` to `learning`.

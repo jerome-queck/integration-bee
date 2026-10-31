@@ -41,6 +41,8 @@ python3 verify/invariants.py --expect-fail sticky-stored-strength
 
 The plain command exits 0 on the real tree. Each `--expect-fail` exits 0 only when the planted break is caught.
 
+Bind each of those runs to the bytes it read. Record the sha256 of `.agents/skills/formal-verify-integration-bee/SKILL.md`, of `verify/model.py`, and of the command string in `$IB_EVIDENCE`. A result counts only when a fresh hash of those bytes matches. Do not reuse a transcript whose input hash differs. Move `last_confirmed` only under the rule below; a matching evidence hash does not by itself move that line.
+
 | Predicate | File |
 |---|---|
 | `unit01_problem`, `concept_gap` | `verify/model.py`, called from `verify/unit_order_check.py` |
@@ -63,7 +65,7 @@ Run both from the repo root.
 make formal
 ```
 
-That is `bash verify/formal/run.sh`. It downloads TLC 1.7.4 into `verify/formal/.cache/` when the jar is missing, checks the pinned sha256, and needs Java 11 or newer. CI installs `default-jre-headless` before `make check`.
+That is `bash verify/formal/run.sh`. It downloads TLC 1.7.4 into `verify/formal/.cache/` when the jar is missing, checks the pinned sha256, and needs Java 11 or newer. CI installs `default-jre-headless` before `make check`. Record the sha256 of `verify/formal/SessionFlow.tla`, `verify/formal/TrackerWrites.tla`, `verify/formal/SessionFlow.cfg`, and `verify/formal/TrackerWrites.cfg` next to the command hash. A TLC transcript does not count when any of those hashes differ from a fresh read.
 
 ### Properties that hold
 
