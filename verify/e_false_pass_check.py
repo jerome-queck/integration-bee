@@ -248,6 +248,17 @@ def test_inventory_ci() -> int:
         return fail(f"real inventory rejected: {all_rounds_check.inventory_problem(real)}")
     return ok("inventory and CI comments")
 
+
+def test_empty_notes() -> int:
+    import never_impossible_check as notes
+
+    planted = [(f"solutions/pack/empty-{i}.md", "") for i in range(549)]
+    planted += [(f"solutions/yang/empty-{i}.md", "") for i in range(3)]
+    found = notes.scan([], planted)
+    if not found:
+        return fail("549 empty pack notes and 3 empty Yang notes passed")
+    return ok("empty pack and Yang notes")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
@@ -261,6 +272,7 @@ CASES = {
     "sanity-real": test_sanity_real,
     "confirm125-id": test_confirm125,
     "inventory-ci": test_inventory_ci,
+    "empty-notes": test_empty_notes,
 }
 
 
