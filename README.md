@@ -15,15 +15,70 @@ You chat with an AI coach. It finds what you already know, teaches what you don'
 - ✅ **The checker**: SymPy proves every stored answer, and `make check` runs on every change.
 - 🤖 **The coach**: an agent skill that teaches, drills, and marks, and remembers your progress.
 
-## 🗺️ How it fits together
+## 🗺️ Your journey
+
+<p align="center"><img src="docs/images/journey/journey.png" width="880" alt="Statechart of the learner journey: clone the repo, the agent runs setup, a placement drill, the coach marks your working, you pick what to skip, lessons, real contest integrals, gaps captured and retaught, a mock exam, and Round 1 ready"></p>
+
+Clone, let your agent set up, find your level, then loop through lessons and real contest integrals. Every miss becomes a captured gap that the coach reteaches, until the mock exam says you're Round 1 ready. Source: [journey.mmd](docs/images/journey/journey.mmd) ([how it's made](docs/images/journey/README.md)).
+
+<details>
+<summary>Mermaid source of the chart</summary>
 
 ```mermaid
-flowchart TD
-    You([🙋 You]) --> Coach[🤖 Coach agent]
-    Coach --> CLI[⚙️ Pack CLI]
-    CLI --> Problems[(📚 Contest pack + 📖 Yang set)]
-    Checker[✅ Checker] -. proves answers .-> Problems
+---
+title: "Your Integration Bee journey"
+---
+stateDiagram-v2
+  state "Legend" as legend {
+    lg0: Get set up
+    lg1: Find your level
+    lg2: Practise
+    lg3: Learn
+    lg4: Prove it
+  }
+  class lg0 blue
+  class lg1 purple
+  class lg2 teal
+  class lg3 yellow
+  class lg4 pink
+  s0: #128229; Repo cloned
+  s1: #129302; Agent runs setup
+  s2: #127919; Placement drill
+  s3: #9997;#65039; Coach marks your working
+  s4: #9197;#65039; You pick what to skip
+  s5: #128214; Lesson from the notes
+  s6: #8747; Real contest integral
+  s7: #129513; Gap captured
+  s8: #9201;#65039; Mock exam
+  s9: #127942; Round 1 ready
+  [*] --> s0
+  s0 --> s1: you paste the setup prompt
+  s1 --> s2: setup prints READY
+  s2 --> s3: you send your working
+  s3 --> s2: one more probe
+  s3 --> s4: coach offers skips
+  s4 --> s5: you confirm
+  s5 --> s6: you try one
+  s6 --> s3: you send your working
+  s3 --> s6: correct: next integral
+  s3 --> s7: a miss shows a gap
+  s3 --> s8: every Round 1 node solid
+  s7 --> s5: coach reteaches it
+  s8 --> s7: the mock finds a gap
+  s8 --> s9: you pass
+  class s0 blue
+  class s1 blue
+  class s2 purple
+  class s3 teal
+  class s4 purple
+  class s5 yellow
+  class s6 teal
+  class s7 yellow
+  class s8 pink
+  class s9 pink
 ```
+
+</details>
 
 More detail: [docs/architecture.md](docs/architecture.md).
 

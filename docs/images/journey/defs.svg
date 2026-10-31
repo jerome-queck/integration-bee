@@ -1,0 +1,8 @@
+<defs>
+<filter id="pshadow" x="-20%" y="-30%" width="140%" height="170%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#1d1b2f" flood-opacity="0.28"/></filter>
+<linearGradient id="gblue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4facfe"/><stop offset="1" stop-color="#2d6cdf"/></linearGradient>
+<linearGradient id="gpurple" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a66bff"/><stop offset="1" stop-color="#6a3de8"/></linearGradient>
+<linearGradient id="gteal" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2ed3b7"/><stop offset="1" stop-color="#0e9488"/></linearGradient>
+<linearGradient id="gyellow" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe066"/><stop offset="1" stop-color="#ffb627"/></linearGradient>
+<linearGradient id="gpink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7eb3"/><stop offset="1" stop-color="#e5386f"/></linearGradient>
+</defs>

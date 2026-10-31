@@ -1,0 +1,12 @@
+.pele { --pele-bg:#fffdf7; --pele-fg:#1d1b2f; --pele-muted:#5b5875; --pele-line:#7a6ff0; --pele-surface:#fff7e0; --pele-surface-alt:#fff1c9; --pele-border:#f2c94c; }
+.pele .pele-title { font-size: 26px; font-weight: 800; fill: #1d1b2f; }
+.pele .pele-edges path { stroke-width: 2.4px; }
+.pele .pele-edge-labels text { font-weight: 600; fill: #3b3561; }
+.pele .pele-state rect { stroke-width: 0; filter: url(#pshadow); rx: 14px; }
+.pele .pele-state text { font-weight: 700; fill: #ffffff; }
+.pele .blue rect { fill: url(#gblue); }
+.pele .purple rect { fill: url(#gpurple); }
+.pele .teal rect { fill: url(#gteal); }
+.pele .yellow rect { fill: url(#gyellow); }
+.pele .yellow text { fill: #3d2a00; }
+.pele .pink rect { fill: url(#gpink); }
