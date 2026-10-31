@@ -16,17 +16,17 @@
 The solutions PDF uses the Weierstrass substitution \(t=\tan(x/2)\), so \(\sin x=2t/(1+t^2)\) and \(dx=2\,dt/(1+t^2)\). The integral becomes
 
 \[
-\int \frac{dt}{(t+1/2)^2+3/4}=\frac{2}{\sqrt{3}}\arctan\left(\frac{2t+1}{\sqrt{3}}\right)+C.
+\int \frac{dt}{(t+1/2)^2+3/4}=\frac{2}{\sqrt{3}}\arctan\left(\frac{2t+1}{\sqrt{3}}\right).
 \]
 
-Restoring \(t\) gives the printed answer.
+The substitution is valid on each interval between consecutive odd multiples of \(\pi\). At each of those points the printed formula jumps by \(-2\pi/\sqrt{3}\). The integrand is continuous and positive, and its integral over a period of length \(2\pi\) is \(2\pi/\sqrt{3}\). Adding \((2\pi/\sqrt{3})\lfloor(x+\pi)/(2\pi)\rfloor\) removes the jump. The answers PDF prints the formula without that step.
 
 ## Final answer
 
 \[
-\frac{2}{\sqrt{3}}\arctan\left(\frac{2\tan(x/2)+1}{\sqrt{3}}\right)+C.
+\frac{2}{\sqrt{3}}\arctan\left(\frac{2\tan(x/2)+1}{\sqrt{3}}\right)+\frac{2\pi}{\sqrt{3}}\left\lfloor\frac{x}{2\pi}+\frac12\right\rfloor.
 \]
 
 ## SymPy self-check
 
-`solutions/sample_self_check.py` differentiates the stored antiderivative through the pack gate and recovers \(1/(2+\sin x)\).
+`verify/piecewise_primitive.py` differentiates the smooth piece by the ordinary derivative test and checks the joins at odd multiples of \(\pi\).

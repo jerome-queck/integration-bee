@@ -13,14 +13,17 @@
 
 ## Solution
 
-The radicand is \(e^{x}(x+3)^{2}\). Because \(e^{x/2}>0\), \(\sqrt{e^{x}(x+3)^{2}}=e^{x/2}\sqrt{(x+3)^{2}}\). Set \(s=\sqrt{x^{2}+6x+9}\) and integrate \(e^{x/2}s\) by parts. The resulting quotient is \(2(x^{2}+4x+3)e^{x/2}/s\), which is \(2(x+1)e^{x/2}\) on \(x>-3\) and \(-2(x+1)e^{x/2}\) on \(x<-3\). Either one-sided expression misses the other side. The quotient matches the printed integrand on both.
+The radicand is \(e^{x}(x+3)^{2}\). Because \(e^{x/2}>0\), the integrand is \(e^{x/2}|x+3|\). On \(x\ge -3\) the antiderivative \((2x+2)e^{x/2}\) has derivative \(e^{x/2}(x+3)\). On \(x<-3\) the antiderivative \((-2x-2)e^{x/2}\) has derivative \(-e^{x/2}(x+3)\). Those pieces differ by \(8e^{-3/2}\) at \(x=-3\). Subtracting that constant on the left piece makes the two values equal, so the primitive is continuous.
 
 ## Final answer
 
 \[
-\frac{2(x^{2}+4x+3)e^{x/2}}{\sqrt{x^{2}+6x+9}}.
+\begin{cases}
+(2x+2)e^{x/2} & x\ge -3,\\
+(-2x-2)e^{x/2}-8e^{-3/2} & x<-3.
+\end{cases}
 \]
 
 ## SymPy self-check
 
-`verify/catalog_check.py` re-proves the stored row through `verify/pack_gate.py`. The stored integrand is `sqrt(x**2 + 6*x + 9)*exp(x/2)`. The stored answer is `2*x**2*exp(x/2)/sqrt(x**2 + 6*x + 9) + 8*x*exp(x/2)/sqrt(x**2 + 6*x + 9) + 6*exp(x/2)/sqrt(x**2 + 6*x + 9)`. SymPy simplifies the derivative of that answer minus the integrand to 0. The same call is an indefinite derivative check, not a numeric comparison.
+`verify/piecewise_primitive.py` differentiates each piece by the ordinary derivative test and checks that both pieces equal \(-4e^{-3/2}\) at \(x=-3\). The quotient \(2(x^{2}+4x+3)e^{x/2}/\sqrt{x^{2}+6x+9}\) jumps there, so it is not the stored primitive.

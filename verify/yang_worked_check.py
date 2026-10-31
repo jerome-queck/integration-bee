@@ -18,6 +18,7 @@ from pathlib import Path
 import sympy as sp
 
 import pack_gate
+import piecewise_primitive
 
 ROOT = Path(__file__).resolve().parent.parent
 RECORDS = ROOT / "problems" / "records.jsonl"
@@ -1467,23 +1468,23 @@ SPECS: dict[str, dict] = {
         ],
     },
     "YANG-1.6-P19": {
-        "final": "2*x**2*exp(x/2)/sqrt(x**2 + 6*x + 9) + 8*x*exp(x/2)/sqrt(x**2 + 6*x + 9) + 6*exp(x/2)/sqrt(x**2 + 6*x + 9)",
+        "final": "Piecewise(((2*x + 2)*exp(x/2), x >= -3), ((-2*x - 2)*exp(x/2) - 8*exp(-3/2), True))",
         "lines": [
             (
-                "On x > -3 the antiderivative 2*(x + 1)*exp(x/2) has derivative exp(x/2)*(x + 3). The two-sided quotient is 2*(x**2 + 4*x + 3)*exp(x/2)/sqrt(x**2 + 6*x + 9).",
-                r"On \(x>-3\) the antiderivative \(2(x+1)e^{x/2}\) has derivative \(e^{x/2}(x+3)\). The two-sided quotient is \(2(x^{2}+4x+3)e^{x/2}/\sqrt{x^{2}+6x+9}\).",
+                "sqrt(x**2 + 6*x + 9) = Abs(x + 3). On x >= -3 the antiderivative (2*x + 2)*exp(x/2) has derivative exp(x/2)*(x + 3).",
+                r"\(\sqrt{x^{2}+6x+9}=|x+3|\). On \(x\ge -3\) the antiderivative \((2x+2)e^{x/2}\) has derivative \(e^{x/2}(x+3)\).",
+            ),
+            (
+                "On x < -3 the antiderivative (-2*x - 2)*exp(x/2) has derivative -exp(x/2)*(x + 3). Subtracting 8*exp(-3/2) makes the pieces meet at x = -3.",
+                r"On \(x<-3\) the antiderivative \((-2x-2)e^{x/2}\) has derivative \(-e^{x/2}(x+3)\). Subtracting \(8e^{-3/2}\) makes the pieces meet at \(x=-3\).",
             ),
         ],
         "steps": [
-            ("diff_of", "2*(x + 1)*exp(x/2)", "exp(x/2)*(x + 3)"),
+            ("diff_of", "(2*x + 2)*exp(x/2)", "exp(x/2)*(x + 3)"),
+            ("diff_of", "(-2*x - 2)*exp(x/2)", "-exp(x/2)*(x + 3)"),
             (
-                "eq",
-                "2*(x**2 + 4*x + 3)*exp(x/2)/sqrt(x**2 + 6*x + 9)",
-                "2*x**2*exp(x/2)/sqrt(x**2 + 6*x + 9) + 8*x*exp(x/2)/sqrt(x**2 + 6*x + 9) + 6*exp(x/2)/sqrt(x**2 + 6*x + 9)",
-            ),
-            (
-                "diff",
-                "2*x**2*exp(x/2)/sqrt(x**2 + 6*x + 9) + 8*x*exp(x/2)/sqrt(x**2 + 6*x + 9) + 6*exp(x/2)/sqrt(x**2 + 6*x + 9)",
+                "continuous",
+                "Piecewise(((2*x + 2)*exp(x/2), x >= -3), ((-2*x - 2)*exp(x/2) - 8*exp(-3/2), True))",
             ),
         ],
     },
@@ -2175,27 +2176,28 @@ _add(
 
 _add(
     "YANG-1.15-P08",
-    "2*sin(x)/sqrt(cos(x) + 1)",
+    "2*(-1)**floor(x/(2*pi) + 1/2)*sqrt(2)*sin(x/2) + 4*sqrt(2)*floor(x/(2*pi) + 1/2)",
     [
         (
-            "Half-angle: 1 + cos(x) = 2*cos(x/2)**2, so sqrt(1 + cos(x)) = sqrt(2)*Abs(cos(x/2)). The integrand is not sqrt(2)*cos(x/2) where cos(x/2) < 0.",
-            r"Half-angle: \(1+\cos x=2\cos^{2}(x/2)\), so \(\sqrt{1+\cos x}=\sqrt{2}|\cos(x/2)|\). The integrand is not \(\sqrt{2}\cos(x/2)\) where \(\cos(x/2)<0\).",
+            "Half-angle: 1 + cos(x) = 2*cos(x/2)**2, so sqrt(1 + cos(x)) = sqrt(2)*Abs(cos(x/2)).",
+            r"Half-angle: \(1+\cos x=2\cos^{2}(x/2)\), so \(\sqrt{1+\cos x}=\sqrt{2}|\cos(x/2)|\).",
         ),
         (
-            "On each interval the antiderivative is 2*sqrt(2)*sign(cos(x/2))*sin(x/2). Since sin(x) = 2*sin(x/2)*cos(x/2), that equals 2*sin(x)/sqrt(cos(x) + 1) (the squares (2*sin(x)/sqrt(cos(x) + 1))**2 and (2*sqrt(2)*sin(x/2))**2 agree and the signs match), valid for every x with cos(x/2) != 0.",
-            r"On each interval the antiderivative is \(2\sqrt{2}\operatorname{sgn}(\cos(x/2))\sin(x/2)\). Since \(\sin x=2\sin(x/2)\cos(x/2)\), that equals \(2\sin x/\sqrt{1+\cos x}\) (the squares agree and the signs match), valid for every \(x\) with \(\cos(x/2)\neq 0\).",
+            "Where cos(x/2) >= 0, 2*sqrt(2)*sin(x/2) has derivative sqrt(2)*cos(x/2). The factor (-1)**floor(x/(2*pi) + 1/2) carries that sign onto every later piece.",
+            r"Where \(\cos(x/2)\ge 0\), \(2\sqrt{2}\sin(x/2)\) has derivative \(\sqrt{2}\cos(x/2)\). The factor \((-1)^{\lfloor x/(2\pi)+1/2\rfloor}\) carries that sign onto every later piece.",
         ),
         (
-            "The derivative of 2*sin(x)/sqrt(cos(x) + 1) is sqrt(1 + cos(x)). The antiderivative is 2*sin(x)/sqrt(cos(x) + 1).",
-            r"The derivative of \(2\sin x/\sqrt{1+\cos x}\) is \(\sqrt{1+\cos x}\). The antiderivative is \(2\sin x/\sqrt{1+\cos x}\).",
+            "Adding 4*sqrt(2)*floor(x/(2*pi) + 1/2) cancels the jump of -4*sqrt(2) at each odd multiple of pi.",
+            r"Adding \(4\sqrt{2}\lfloor x/(2\pi)+1/2\rfloor\) cancels the jump of \(-4\sqrt{2}\) at each odd multiple of \(\pi\).",
         ),
     ],
     [
         ("eq", "1 + cos(x)", "2*cos(x/2)**2"),
-        ("eq", "sin(x)", "2*sin(x/2)*cos(x/2)"),
-        ("eq", "(2*sin(x)/sqrt(cos(x) + 1))**2", "(2*sqrt(2)*sin(x/2))**2"),
-        ("diff_of", "2*sin(x)/sqrt(cos(x) + 1)", "sqrt(1 + cos(x))"),
-        ("diff", "2*sin(x)/sqrt(cos(x) + 1)"),
+        ("diff_of", "2*sqrt(2)*sin(x/2)", "sqrt(2)*cos(x/2)"),
+        (
+            "continuous",
+            "2*(-1)**floor(x/(2*pi) + 1/2)*sqrt(2)*sin(x/2) + 4*sqrt(2)*floor(x/(2*pi) + 1/2)",
+        ),
     ],
 )
 
@@ -3740,27 +3742,28 @@ _add(
 
 _add(
     "YANG-2.6-P01",
-    "2*sin(x)/sqrt(cos(x) + 1)",
+    "2*(-1)**floor(x/(2*pi) + 1/2)*sqrt(2)*sin(x/2) + 4*sqrt(2)*floor(x/(2*pi) + 1/2)",
     [
         (
-            "Half-angle: 1 + cos(x) = 2*cos(x/2)**2, so sqrt(1 + cos(x)) = sqrt(2)*Abs(cos(x/2)). The integrand is not sqrt(2)*cos(x/2) where cos(x/2) < 0.",
-            r"Half-angle: \(1+\cos x=2\cos^{2}(x/2)\), so \(\sqrt{1+\cos x}=\sqrt{2}|\cos(x/2)|\). The integrand is not \(\sqrt{2}\cos(x/2)\) where \(\cos(x/2)<0\).",
+            "Half-angle: 1 + cos(x) = 2*cos(x/2)**2, so sqrt(1 + cos(x)) = sqrt(2)*Abs(cos(x/2)).",
+            r"Half-angle: \(1+\cos x=2\cos^{2}(x/2)\), so \(\sqrt{1+\cos x}=\sqrt{2}|\cos(x/2)|\).",
         ),
         (
-            "On each interval the antiderivative is 2*sqrt(2)*sign(cos(x/2))*sin(x/2). Since sin(x) = 2*sin(x/2)*cos(x/2), that equals 2*sin(x)/sqrt(cos(x) + 1) (the squares (2*sin(x)/sqrt(cos(x) + 1))**2 and (2*sqrt(2)*sin(x/2))**2 agree and the signs match), valid for every x with cos(x/2) != 0.",
-            r"On each interval the antiderivative is \(2\sqrt{2}\operatorname{sgn}(\cos(x/2))\sin(x/2)\). Since \(\sin x=2\sin(x/2)\cos(x/2)\), that equals \(2\sin x/\sqrt{1+\cos x}\) (the squares agree and the signs match), valid for every \(x\) with \(\cos(x/2)\neq 0\).",
+            "Where cos(x/2) >= 0, 2*sqrt(2)*sin(x/2) has derivative sqrt(2)*cos(x/2). The factor (-1)**floor(x/(2*pi) + 1/2) carries that sign onto every later piece.",
+            r"Where \(\cos(x/2)\ge 0\), \(2\sqrt{2}\sin(x/2)\) has derivative \(\sqrt{2}\cos(x/2)\). The factor \((-1)^{\lfloor x/(2\pi)+1/2\rfloor}\) carries that sign onto every later piece.",
         ),
         (
-            "The derivative of 2*sin(x)/sqrt(cos(x) + 1) is sqrt(1 + cos(x)). The antiderivative is 2*sin(x)/sqrt(cos(x) + 1).",
-            r"The derivative of \(2\sin x/\sqrt{1+\cos x}\) is \(\sqrt{1+\cos x}\). The antiderivative is \(2\sin x/\sqrt{1+\cos x}\).",
+            "Adding 4*sqrt(2)*floor(x/(2*pi) + 1/2) cancels the jump of -4*sqrt(2) at each odd multiple of pi.",
+            r"Adding \(4\sqrt{2}\lfloor x/(2\pi)+1/2\rfloor\) cancels the jump of \(-4\sqrt{2}\) at each odd multiple of \(\pi\).",
         ),
     ],
     [
         ("eq", "1 + cos(x)", "2*cos(x/2)**2"),
-        ("eq", "sin(x)", "2*sin(x/2)*cos(x/2)"),
-        ("eq", "(2*sin(x)/sqrt(cos(x) + 1))**2", "(2*sqrt(2)*sin(x/2))**2"),
-        ("diff_of", "2*sin(x)/sqrt(cos(x) + 1)", "sqrt(1 + cos(x))"),
-        ("diff", "2*sin(x)/sqrt(cos(x) + 1)"),
+        ("diff_of", "2*sqrt(2)*sin(x/2)", "sqrt(2)*cos(x/2)"),
+        (
+            "continuous",
+            "2*(-1)**floor(x/(2*pi) + 1/2)*sqrt(2)*sin(x/2) + 4*sqrt(2)*floor(x/(2*pi) + 1/2)",
+        ),
     ],
 )
 
@@ -3914,21 +3917,26 @@ _add(
 
 _add(
     "YANG-2.6-P09",
-    "atan(tan(x)/3)/3",
+    "atan(tan(x)/3)/3 + pi*floor(x/pi + 1/2)/3",
     [
         (
             "The derivative of atan(tan(x)/3) is 3/(1 + 8*cos(x)**2).",
             r"The derivative of \(\arctan(\tan(x)/3)\) is \(3/(1+8\cos^{2}x)\).",
         ),
         (
-            "Dividing by 3 gives (3/(1 + 8*cos(x)**2))/3 = 1/(8*cos(x)**2 + 1).",
-            r"Dividing by 3 gives \((3/(1+8\cos^{2}x))/3=1/(8\cos^{2}x+1)\).",
+            "Dividing by 3 gives (3/(1 + 8*cos(x)**2))/3 = 1/(8*cos(x)**2 + 1). The formula atan(tan(x)/3)/3 jumps by -pi/3 at every odd multiple of pi/2.",
+            r"Dividing by 3 gives \((3/(1+8\cos^{2}x))/3=1/(8\cos^{2}x+1)\). The formula \(\arctan(\tan(x)/3)/3\) jumps by \(-\pi/3\) at every odd multiple of \(\pi/2\).",
+        ),
+        (
+            "Adding pi*floor(x/pi + 1/2)/3 cancels that jump. On each piece between the poles the floor is constant, so the ordinary derivative is unchanged.",
+            r"Adding \(\pi\lfloor x/\pi+1/2\rfloor/3\) cancels that jump. On each piece between the poles the floor is constant, so the ordinary derivative is unchanged.",
         ),
     ],
     [
         ("diff_of", "atan(tan(x)/3)", "3/(1 + 8*cos(x)**2)"),
         ("eq", "(3/(1 + 8*cos(x)**2))/3", "1/(8*cos(x)**2 + 1)"),
         ("diff", "atan(tan(x)/3)/3"),
+        ("continuous", "atan(tan(x)/3)/3 + pi*floor(x/pi + 1/2)/3"),
     ],
 )
 
@@ -4480,6 +4488,11 @@ def run_step(ident: str, step: tuple, integrand, row: dict | None = None, spec: 
         if not same(got, parse(step[4])):
             raise AssertionError(f"{ident} minimum {got}")
         return
+    if kind == "continuous":
+        symbol = pack_gate.namespace("x")["x"]
+        if piecewise_primitive.holds(parse(step[1]), integrand, symbol) is not True:
+            raise AssertionError(f"{ident} continuous primitive")
+        return
     raise AssertionError(f"{ident} unknown step {kind}")
 
 
@@ -4489,6 +4502,8 @@ def proves_final(spec: dict) -> bool:
         if step[0] in {"diff", "branch", "sqrt_branch"} and fold(step[1]) == final:
             return True
         if step[0] == "pieces":
+            return True
+        if step[0] == "continuous" and fold(step[1]) == final:
             return True
         if step[0] in {"limit", "ends", "area", "reflect", "half", "sum"} and fold(step[-1]) == final:
             return True
@@ -4560,6 +4575,17 @@ def write_rows(rows: list[dict]) -> None:
 
 
 def _main_core(argv: list[str]) -> int:
+    try:
+        piecewise_primitive.must_fail()
+        evidence = piecewise_primitive.numeric_evidence()
+    except AssertionError as exc:
+        print(f"FAIL piecewise primitive {exc}", file=sys.stderr)
+        return 1
+    print(
+        "PASS piecewise primitives ("
+        + ", ".join(f"{ident} {evidence[ident]}" for ident in evidence)
+        + ")"
+    )
     reject_wrong_derivative()
     rows = load_rows()
     chosen = section_rows(rows)
