@@ -61,6 +61,8 @@ Unit 11 stores the sibling \(\int_0^{\pi/2}\sin x/(\sin x+\cos x)\,dx=\pi/4\) as
 
 Queen's rule, in the usual contest wording, is this identity on \([0,a]\) with \(u=a-x\). King's rule is the same identity on \([a,b]\). There is one identity. Unit 10 writes it.
 
+The log-sine evaluation in `units/10-inverse-kings/teaching.tex`, \(\int_0^{\pi/2}\ln(\sin x)\,dx=-(\pi/2)\ln 2\), is a derivation. It is not `U10-D01` through `U10-D08`. Do not mark that writeup as a unit 10 drill. `U35-D06` and `U36-D02` are later ids for the same integrand. They are not unit 10 drills.
+
 ## Faded step
 
 For \(\int_0^1 x/(x+1)\,dx\), the reflection \(x\mapsto 1-x\) produces \((1-x)/(2-x)\), and the two integrands do not add to a constant. Compute the integral directly. It is \(1-\ln 2\). The faded lesson is the test, which this integrand fails. `U10-D05` is the drill where the learner writes the reflected integrand and then adds.

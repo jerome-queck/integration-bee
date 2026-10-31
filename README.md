@@ -11,8 +11,8 @@ You chat with an AI coach. It finds what you already know, teaches what you don'
 ## ✨ What's inside
 
 - 📚 **The pack**: past contest problems from Rounds 1–3, each with a checked answer and a solution note.
-- 📖 **The Yang set**: every problem from the Yang Topics Guide (2nd edition), with worked solutions.
-- ✅ **The checker**: SymPy proves every stored answer, and `make check` runs on every change.
+- 📖 **The Yang set**: integral rows from the Yang Topics Guide (2nd edition), with worked notes. `YANG-1.14-P10` is a formula and is not graded. Inventory section 4.3 has no unit.
+- ✅ **The checker**: `make check` re-checks each stored `verify: sympy` answer. It does not grade an unchecked row, and a note can keep a printed mark the gate did not accept.
 - 🤖 **The coach**: an agent skill that teaches, drills, and marks, and remembers your progress.
 
 ## 🗺️ How it fits together
@@ -22,7 +22,7 @@ flowchart TD
     You([🙋 You]) --> Coach[🤖 Coach agent]
     Coach --> CLI[⚙️ Pack CLI]
     CLI --> Problems[(📚 Contest pack + 📖 Yang set)]
-    Checker[✅ Checker] -. proves answers .-> Problems
+    Checker[✅ Checker] -. checks sympy rows .-> Problems
 ```
 
 More detail: [docs/architecture.md](docs/architecture.md).

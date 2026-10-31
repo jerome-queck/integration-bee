@@ -141,7 +141,7 @@ Send `{"kind":"empty"}`. Ask with `say`.
 
 ## First session
 
-Send `{"kind":"aptitude"}`. The first integral is a unit drill. Show `drill.latex` and do not show an answer. The learner sends written working. Mark it with the existing mark turn. `source` is `photo` or `typed`. A correct mark opens one contest row in `problems`. `answer_plain` is absent. Compare the written answer with `problems show` only after they answer, then send `verdict`. Do not send that integrand to SymPy.
+Send `{"kind":"aptitude"}`. The first integral is a unit drill. Show `drill.latex` and do not show an answer. The learner sends written working. Mark it with the existing mark turn. `source` is `photo` or `typed`. A correct mark opens one contest row, `R1-2022-MIT-TB-Q01`. That row is `verify: sympy`. Send `extract.final_answer` and do not send `verdict`. The CLI grades the printed integral as `1`. A verdict does not override a wrong expression.
 
 ## Skip offer
 
