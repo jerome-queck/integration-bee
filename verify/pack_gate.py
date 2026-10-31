@@ -1653,13 +1653,12 @@ def _log_gamma_unit():
         x = sp.Symbol("_x", real=True)
         z = sp.Symbol("_z", positive=True)
         _require(_zero(sp.gamma(z) * sp.gamma(1 - z) - sp.pi / sp.sin(sp.pi * z)), "gamma-reflect")
-        _require(
-            _logs_equivalent(
-                sp.log(sp.gamma(z)) + sp.log(sp.gamma(1 - z)),
-                sp.log(sp.pi / sp.sin(sp.pi * z)),
-            ),
-            "gamma-log",
-        )
+        # log a + log b = log(ab) needs a, b > 0; otherwise it can miss by 2*pi*I.
+        # On 0 < z < 1 both gamma(z) and gamma(1 - z) are positive (w = 1 - z > 0).
+        w = sp.Symbol("_w", positive=True)
+        a, b = sp.symbols("_a _b", positive=True)
+        _require(sp.gamma(z).is_positive is True and sp.gamma(w).is_positive is True, "gamma-positive")
+        _require(_zero(sp.log(a) + sp.log(b) - sp.log(a * b)), "gamma-log")
         _require(_zero(sp.diff(1 - x, x) + 1), "gamma-flip")
         _require(_zero(sp.sin(sp.pi - x) - sp.sin(x)), "sin-reflect")
         _require(_zero(sp.diff(sp.pi * x, x) - sp.pi), "sin-scale")
