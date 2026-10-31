@@ -71,15 +71,72 @@ def numeric_close(a, b, tol: float = 1e-7) -> bool:
 
 
 def _without_abs_sign(expr):
-    expr = expr.replace(sp.Abs, lambda value: value)
-    expr = expr.replace(sp.sign, lambda _value: sp.Integer(1))
-    return expr
+    """Rewrite the derivative of log|u| without deleting every absolute value.
+
+    sign(u)/Abs(u) becomes 1/u, including inside a larger product. For a real
+    factor, sign(v)**2 is 1 and log(v/sign(v)) is log(v) on the positive
+    branch where log|log v| is defined. A bare Abs, as in x - Abs(x), stays.
+    """
+
+    def walk(node):
+        if not isinstance(node, sp.Basic) or not node.args:
+            return node
+        node = node.func(*[walk(arg) for arg in node.args])
+        if (
+            isinstance(node, sp.Pow)
+            and node.exp == 2
+            and getattr(node.base, "func", None) == sp.sign
+            and getattr(node.base.args[0], "is_real", None) is True
+        ):
+            return sp.Integer(1)
+        if isinstance(node, sp.log):
+            factors = list(sp.Mul.make_args(node.args[0]))
+            if len(factors) == 2:
+                left, right = factors
+
+                def over_sign(num, den) -> bool:
+                    return bool(
+                        den.func == sp.Pow
+                        and den.exp == -1
+                        and den.base.func == sp.sign
+                        and den.base.args[0] == num
+                        and getattr(num, "is_real", None) is True
+                    )
+
+                if over_sign(left, right):
+                    return sp.log(left)
+                if over_sign(right, left):
+                    return sp.log(right)
+        if not isinstance(node, sp.Mul):
+            return node
+        args = list(node.args)
+        used: set[int] = set()
+        extra = []
+        for i, arg in enumerate(args):
+            if getattr(arg, "func", None) != sp.sign or i in used:
+                continue
+            base = arg.args[0]
+            inverse = sp.Pow(sp.Abs(base), -1)
+            for j, other in enumerate(args):
+                if j == i or j in used:
+                    continue
+                if other == inverse:
+                    used.add(i)
+                    used.add(j)
+                    extra.append(1 / base)
+                    break
+        if not used:
+            return node
+        kept = [arg for i, arg in enumerate(args) if i not in used]
+        return sp.Mul(*kept, *extra)
+
+    return walk(expr)
 
 
 def is_antiderivative(candidate, integrand) -> bool:
     """log|u| and log(u) share a derivative where both are defined. SymPy's
-    derivative of log(Abs(u)) keeps sign and Abs, so those factors are
-    removed only after differentiation.
+    derivative of log(Abs(u)) keeps sign(u)/Abs(u), so that quotient is
+    rewritten to 1/u only after differentiation.
     """
     x = NS["x"]
     delta = sp.diff(candidate, x) - integrand
@@ -158,6 +215,8 @@ def known_good_spotchecks() -> None:
     assert not is_antiderivative(sp.exp(x), 1 / (x * sp.log(x)))
     assert not is_antiderivative(sp.log(sp.Abs(x)) * sp.sign(x), 1 / x)
     assert not is_antiderivative(3 * sp.log(sp.Abs(x)), 1 / x)
+    assert not is_antiderivative(x**2 / 2, sp.Abs(x))
+    assert is_antiderivative(x * sp.Abs(x) / 2, sp.Abs(x))
     pf = 1 / (x**2 - 1)
     assert is_antiderivative(sp.log(x - 1) / 2 - sp.log(x + 1) / 2, pf)
     assert is_antiderivative(sp.Rational(1, 2) * sp.log(sp.Abs((x - 1) / (x + 1))), pf)
