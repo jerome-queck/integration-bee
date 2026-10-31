@@ -17,7 +17,7 @@ Let \(z=\sqrt{x+\sqrt{x+\cdots}}\) and \(y=\sqrt{x-\sqrt{x-\cdots}}\), taking th
 \[
 z=\frac{1+\sqrt{1+4x}}{2},\qquad y=\frac{-1+\sqrt{1+4x}}{2}.
 \]
-These satisfy \(x/z=y\). The integrand is identically \(0\), and the integral is \(0\). The solutions PDF reduces the same two radicals to a difference that cancels. The mark scheme prints \(0\).
+These algebraic values satisfy \(x/z=y\). The plus nest converges for \(x\ge 0\). The minus nest's iteration converges only for \(x>3/4\); on \([0,3/4]\) the iteration diverges, and the graded integrand is this closed form, which is identically \(0\). The integral of that closed form is \(0\). The mark scheme prints \(0\).
 
 ## Final answer
 

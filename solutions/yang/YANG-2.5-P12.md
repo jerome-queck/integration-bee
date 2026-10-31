@@ -20,11 +20,11 @@ Integrate by parts with u = arcsec(x). For x > 1 the remaining integral is (1/3)
 ## Final answer
 
 \[
-\frac{x^{3} \operatorname{asec}{\left(x \right)}}{3} - \frac{x \sqrt{x^{2} - 1}}{6} - \frac{\log{\left(x + \sqrt{x^{2} - 1} \right)}}{6}.
+\frac{x^{3} \operatorname{asec} x}{3} - \frac{|x|\sqrt{x^{2}-1}}{6} - \frac{\log\bigl(|x|+\sqrt{x^{2}-1}\bigr)}{6}.
 \]
 
 The catalog omits a constant of integration.
 
 ## SymPy self-check
 
-`sympy_expr` is `x**2*asec(x)`. `answer_sympy` is `x**3*asec(x)/3 - x*sqrt(x**2 - 1)/6 - log(x + sqrt(x**2 - 1))/6`. `verify/pack_gate.py` differentiates that antiderivative and recovers the integrand. `make check` re-proves the stored row.
+`sympy_expr` is `x**2*asec(x)`. `answer_sympy` is `x**3*asec(x)/3 - Abs(x)*sqrt(x**2 - 1)/6 - log(Abs(x) + sqrt(x**2 - 1))/6`. `verify/pack_gate.py` differentiates that antiderivative and recovers the integrand. `make check` re-proves the stored row.

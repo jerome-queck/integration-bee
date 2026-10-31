@@ -22,13 +22,15 @@ I=\int\frac{\cos x}{\sin x+\cos x}\,dx,\qquad J=\int\frac{\sin x}{\sin x+\cos x}
 Then \(I+J=x+C\) and \(I-J=\ln(\sin x+\cos x)+C\), so
 
 \[
-I=\frac12\bigl(x+\ln(\sin x+\cos x)\bigr)+C.
+I=\frac12\bigl(x+\ln|\sin x+\cos x|\bigr)+C.
 \]
+
+The answers PDF prints the logarithm without the absolute value. That expression is non-real on intervals where \(\sin x+\cos x<0\), while the integrand is real. The catalog stores the absolute value.
 
 ## Final answer
 
 \[
-\frac12\bigl(x+\ln(\sin x+\cos x)\bigr)+C.
+\frac12\bigl(x+\ln|\sin x+\cos x|\bigr)+C.
 \]
 
 ## SymPy self-check

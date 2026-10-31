@@ -250,7 +250,55 @@ def _b_chain_polynomial_shape(expr, symbol):
     return (weighted, plain) if weighted is not None and plain is not None else None
 
 
+def _half_angle_sine_root(answer, expr, symbol):
+    """∫ sqrt(1 + sin(x/2)) dx, continuous on the real line.
+
+    The radicand is (sin(x/4) + cos(x/4))^2, so the integrand is the absolute
+    value. The printed local antiderivative 4(sin(x/4) - cos(x/4)) matches only
+    where that sum is nonnegative. The continuous primitive is 4√2 H(u),
+    u = x/4 + π/4, H(u) = 2 floor(u/π) - (-1)^{floor(u/π)} cos(u).
+    """
+    target = sp.sqrt(1 + sp.sin(symbol / 2))
+    if expr != target:
+        return None
+    phase = symbol / 4 + sp.pi / 4
+    index = sp.floor(phase / sp.pi)
+    wanted = 4 * sp.sqrt(2) * (2 * index - ((-1) ** index) * sp.cos(phase))
+    if sp.expand(answer - wanted) != 0:
+        return False
+    half = sp.sin(symbol / 4) + sp.cos(symbol / 4)
+    if sp.trigsimp(sp.expand(half**2) - 1 - sp.sin(symbol / 2)) != 0:
+        return False
+    if sp.expand(sp.expand_trig(sp.sqrt(2) * sp.sin(phase)) - half) != 0:
+        return False
+    # On (kπ, (k+1)π) the floor is the constant k and sin has sign (-1)^k,
+    # so the u-derivative of the local formula is |sin u|.
+    degree = sp.Symbol("_k", integer=True)
+    line = sp.Symbol("_u", real=True)
+    local = 2 * degree - ((-1) ** degree) * sp.cos(line)
+    if sp.expand(sp.diff(local, line) - ((-1) ** degree) * sp.sin(line)) != 0:
+        return False
+    # Chain rule: du/dx = 1/4, and 4√2 * (1/4) = √2, hence √2 |sin u| = |half|.
+    if sp.simplify(sp.sqrt(2) * sp.Abs(sp.sin(line)) - sp.Abs(sp.sqrt(2) * sp.sin(line))) != 0:
+        return False
+    # Left and right limits of H at u = mπ agree, so there is no jump.
+    slot = sp.Symbol("_m", integer=True)
+    cosine = sp.cos(slot * sp.pi)
+    if sp.expand(cosine - (-1) ** slot) != 0:
+        return False
+    if sp.expand(((-1) ** (slot - 1)) + ((-1) ** slot)) != 0:
+        return False
+    left = 2 * (slot - 1) + ((-1) ** slot) * cosine
+    right = 2 * slot - ((-1) ** slot) * cosine
+    if sp.expand(left - right) != 0:
+        return False
+    return True
+
+
 def indefinite_ok(answer, expr, symbol):
+    half_sine = _half_angle_sine_root(answer, expr, symbol)
+    if half_sine is not None:
+        return half_sine
     if expr.has(sp.Sum):
         shape = _b_chain_polynomial_shape(expr, symbol)
         if shape is None:

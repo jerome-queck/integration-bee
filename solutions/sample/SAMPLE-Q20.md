@@ -16,8 +16,10 @@
 The solutions PDF factors \(e^x\) from the numerator and sets \(u=e^x\):
 
 \[
-\int \frac{u^3+u^2}{u^2+1}\,du=\int u\,du+\int 1\,du-\int \frac{du}{u^2+1}.
+\int \frac{u^3+u^2}{u^2+1}\,du=\int\Bigl(u+1-\frac{u+1}{u^2+1}\Bigr)\,du=\int\Bigl(u+1-\frac{u}{u^2+1}-\frac{1}{u^2+1}\Bigr)\,du.
 \]
+
+The printed step that drops only \(1/(u^2+1)\) omits \(u/(u^2+1)\). Integrating the corrected quotient gives \(u^2/2+u-\frac12\log(u^2+1)-\arctan u\). With \(u=e^x\) this matches the catalog antiderivative up to a constant. The printed secant form equals that antiderivative plus \(1/2\).
 
 The remaining rational piece is handled with \(u=\tan v\). The printed antiderivative is
 

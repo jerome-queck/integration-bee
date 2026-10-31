@@ -216,8 +216,8 @@ def _sqrt_linear_fraction(integrand, x, lo, hi):
 def _arctangent_complement(integrand, x, lo, hi):
     """∫_0^1 dx/((1+x**2)sqrt(1-x**2)) = pi/(2*sqrt(2)).
 
-    The antiderivative's two-sided limit at 1 is the negative of the left-hand
-    limit, so the evaluation uses dir='-'.
+    The integrand is real on [-1, 1]. Only the left-hand limit of the
+    antiderivative exists at 1, and that limit is pi/(2*sqrt(2)).
     """
     target = 1 / ((1 + x**2) * sp.sqrt(1 - x**2))
     if integrand != target or lo != 0 or hi != 1:

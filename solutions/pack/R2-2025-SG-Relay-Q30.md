@@ -17,7 +17,7 @@ For \(0<a<2\),
 \[
 \int_{0}^{\infty}x^{a-1}\sin x\,dx=\Gamma(a)\sin\frac{\pi a}{2}=\frac{\Gamma(a+1)}{a}\sin\frac{\pi a}{2}.
 \]
-The right-hand side extends through \(a=0\) with value \(\pi/2\), which is \(\int_{0}^{\infty}\sin x/x\,dx\). Differentiating in \(a\) and then setting \(a=0\) inserts a factor \(\ln x\) and produces
+The strip \(0<a<2\) is open at \(0\). Differentiate \(I(a)=\Gamma(a)\sin(\pi a/2)\) on \((0,2)\). On each compact subinterval the derivative \(x^{a-1}\sin x\log x\) is dominated by an integrable function, so differentiation under the integral is valid there. The boundary value is the limit \(\lim_{a\downarrow 0} I'(a)\), not a derivative taken at \(a=0\). That limit is
 \[
 -\frac{\pi\gamma}{2},
 \]
