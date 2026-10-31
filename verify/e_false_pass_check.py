@@ -96,12 +96,34 @@ def test_arctan_square() -> int:
         return fail("real square lost the positive arctangent complement")
     return ok("complex-square arctan sign")
 
+
+def test_display() -> int:
+    import answer_plain_check as plain
+
+    points = plain.POINTS
+    vanish = f"(x-({points[0]}))*(x-({points[1]}))*(x-({points[2]}))"
+    rows = {
+        "blank": {"answer_plain": "   ", "answer_sympy": "1", "kind": "definite"},
+        "1=2": {"answer_plain": "1=2", "answer_sympy": "1", "kind": "definite"},
+        "a+b": {"answer_plain": "a + b", "answer_sympy": "2*a", "kind": "definite"},
+        "sample-point": {
+            "answer_plain": f"x + {vanish}",
+            "answer_sympy": "x",
+            "kind": "definite",
+        },
+    }
+    for name, row in rows.items():
+        if not plain.check_row(row):
+            return fail(f"display checker accepted {name}")
+    return ok("display checker")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
     "symmetry-pv": test_symmetry_pv,
     "floor-cell": test_floor_cell,
     "arctan-square": test_arctan_square,
+    "display": test_display,
 }
 
 
