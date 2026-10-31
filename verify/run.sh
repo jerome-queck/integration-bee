@@ -124,5 +124,8 @@ echo "== safe expression grammar (audit F1) =="
 echo "== turn contract =="
 "$PY" "$ROOT/verify/turn_contract_check.py" || fail=1
 
+echo "== finding E false-pass regressions =="
+"$PY" "$ROOT/verify/e_false_pass_check.py" || fail=1
+
 if [[ "$fail" -ne 0 ]]; then echo "FAIL integration-bee verify"; exit 1; fi
 echo "PASS integration-bee verify (multi-unit gates)"
