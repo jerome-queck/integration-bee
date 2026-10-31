@@ -15,16 +15,16 @@ The practice list prints the integral and does not print a final. This note deri
 
 ## Solution
 
-Use 1 + cos(x) = 2 cos(x/2)^2. Where cos(x/2) > 0 the integrand is sqrt(2) cos(x/2). The gate accepts the antiderivative because its squared derivative matches and the two sides agree at x = 0.
+Use \(1+\cos x=2\cos^2(x/2)\), so the integrand is \(\sqrt{2}\,|\cos(x/2)|\). The catalog antiderivative `2*sin(x)/sqrt(cos(x) + 1)` equals \(2\sqrt{2}\sin(x/2)\operatorname{sign}(\cos(x/2))\) between the odd multiples of \(\pi\), and it jumps by \(-4\sqrt{2}\) at each of those points. The local formula \(2\sqrt{2}\sin(x/2)\) matches only where \(\cos(x/2)>0\).
 
 ## Final answer
 
 \[
-2 \sqrt{2} \sin{\left(\frac{x}{2} \right)}.
+\frac{2\sin x}{\sqrt{1+\cos x}}.
 \]
 
 The catalog omits a constant of integration.
 
 ## SymPy self-check
 
-`sympy_expr` is `sqrt(cos(x) + 1)`. `answer_sympy` is `2*sqrt(2)*sin(x/2)`. `verify/pack_gate.py` differentiates that antiderivative and recovers the integrand. `make check` re-proves the stored row.
+`sympy_expr` is `sqrt(cos(x) + 1)`. `answer_sympy` is `2*sin(x)/sqrt(cos(x) + 1)`. `verify/pack_gate.py` differentiates that antiderivative and recovers the integrand. `make check` re-proves the stored row.
