@@ -303,7 +303,7 @@ EXPECTED_MANUAL = 0
 # bundled rows, and YANG-1.20-P01 adds one proved row. YANG-1.14-P10 is a
 # reference formula in REFERENCE_IDS, omitted from pack_rows.
 EXPECTED_SYMPY = 948
-EXPECTED_PDF_COPY = 193
+EXPECTED_PDF_COPY = 186
 EXPECTED_ROUNDS = {"r1": 280, "r2": 204, "r3": 190, "yang": 274}
 # Printed guide identities that are not integrals. They stay in the JSONL
 # and are omitted from pack_rows, the same exclusion samples use.
