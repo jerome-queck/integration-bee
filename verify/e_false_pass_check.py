@@ -42,8 +42,24 @@ def test_primitive_abs() -> int:
         return fail("primitive of |x|: the real primitive was rejected")
     return ok("primitive of |x|")
 
+
+def test_exp_2pii() -> int:
+    import sympy as sp
+
+    import pack_gate
+
+    if pack_gate._logs_equivalent(sp.Integer(0), 2 * sp.pi * sp.I):
+        return fail("exp shortcut accepted a difference of 2*pi*I")
+    x = sp.symbols("x", positive=True)
+    if pack_gate._log_identity(sp.log(x), sp.log(x) + 2 * sp.pi * sp.I):
+        return fail("exp shortcut accepted log(x) and log(x)+2*pi*I")
+    if not pack_gate._logs_equivalent(sp.log(x) - sp.log(x + 1), sp.log(x / (x + 1))):
+        return fail("exp shortcut rejected a real logarithm identity")
+    return ok("exp shortcut 2*pi*I")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
+    "exp-2pii": test_exp_2pii,
 }
 
 
