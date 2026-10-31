@@ -41,6 +41,8 @@ python3 verify/invariants.py --expect-fail sticky-stored-strength
 
 The plain command exits 0 on the real tree. Each `--expect-fail` exits 0 only when the planted break is caught.
 
+Bind each of those runs with the evidence block under Learner session model. The inputs are `.agents/skills/formal-verify-integration-bee/SKILL.md`, `verify/model.py`, and the command string. A result counts only when a fresh hash of those bytes matches `$IB_EVIDENCE/binding.txt`. Do not reuse a transcript whose input hash differs. Move `last_confirmed` only under the rule below; a matching evidence hash does not by itself move that line.
+
 | Predicate | File |
 |---|---|
 | `unit01_problem`, `concept_gap` | `verify/model.py`, called from `verify/unit_order_check.py` |
@@ -64,6 +66,24 @@ make formal
 ```
 
 That is `bash verify/formal/run.sh`. It downloads TLC 1.7.4 into `verify/formal/.cache/` when the jar is missing, checks the pinned sha256, and needs Java 11 or newer. CI installs `default-jre-headless` before `make check`.
+
+A formal transcript counts only when `$IB_EVIDENCE/binding.txt` matches a fresh hash of the source text and of the inputs. `IB_CMD` is the exact command string. When the command is one planted break, set `IB_CFG` to that config under `verify/formal/` and include it in the block. From the repository root:
+
+```bash
+{
+  sha256sum .agents/skills/formal-verify-integration-bee/SKILL.md
+  sha256sum verify/model.py
+  sha256sum verify/formal/run.sh
+  sha256sum verify/formal/SessionFlow.tla
+  sha256sum verify/formal/TrackerWrites.tla
+  sha256sum verify/formal/SessionFlow.cfg
+  sha256sum verify/formal/TrackerWrites.cfg
+  if [ -n "${IB_CFG:-}" ]; then sha256sum "$IB_CFG"; fi
+  printf '%s\n' "$IB_CMD" | sha256sum
+} | tee "$IB_EVIDENCE/binding.txt"
+```
+
+Recompute the block after the run. If the skill hash, a spec hash, a config hash, or the command hash differs, the transcript does not count. Do not reuse a transcript whose input hash differs. Move `last_confirmed` and the blob lines only under the rules below.
 
 ### Properties that hold
 

@@ -77,7 +77,10 @@ def _quad(func, a, b) -> mp.mpf:
 
 
 def _near(got, target, tol) -> None:
-    err = abs(mp.mpf(got) - mp.mpf(target))
+    got_v, target_v = mp.mpf(got), mp.mpf(target)
+    if not (mp.isfinite(got_v) and mp.isfinite(target_v)):
+        raise AssertionError(f"non-finite comparison {got} vs {target}")
+    err = abs(got_v - target_v)
     if err >= tol:
         raise AssertionError(f"{got} vs {target}, err {err}")
 

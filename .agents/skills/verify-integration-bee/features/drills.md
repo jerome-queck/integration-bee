@@ -2,6 +2,8 @@
 
 `drills list` returns ids and includes the display answer. `practice list` does not.
 
+Record the sha256 of `.agents/skills/verify-integration-bee/features/drills.md`, of the drills command string, and of `verify/drills_unit1.json` in `$IB_EVIDENCE/binding.txt`. Recompute those hashes from the bytes just read. If one differs, the transcript does not count.
+
 ## Sub-features
 
 - `drills-unit` lists Unit 01 and includes `answer_display`.

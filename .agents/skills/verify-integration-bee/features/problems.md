@@ -2,6 +2,8 @@
 
 The contest catalog lists resource-pack and Yang integrals. List and select hide answers. Show prints the stored cite.
 
+Record the sha256 of `.agents/skills/verify-integration-bee/features/problems.md`, of each problems command string, and of `problems/records.jsonl` in `$IB_EVIDENCE/binding.txt`. Recompute those hashes from the bytes just read. If one differs, the transcript does not count.
+
 ## Sub-features
 
 - `problems-round` lists Round 1 ids and hides answers.

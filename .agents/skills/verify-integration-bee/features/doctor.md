@@ -2,6 +2,8 @@
 
 Doctor reports whether this checkout can run. It does not write tracker files.
 
+Record the sha256 of `.agents/skills/verify-integration-bee/features/doctor.md`, of the doctor command string, and of the inputs `sources/sha256sums` and `past/inventory.json` in `$IB_EVIDENCE/binding.txt`. Recompute those hashes from the bytes just read. If one differs, the transcript does not count.
+
 ## Sub-features
 
 - `doctor-ready` prints `READY integration-bee` and exits 0 when the Yang PDF, the 36 numbered unit directories, a drill file for each of those directories, the 300-drill feed, and SymPy are present.

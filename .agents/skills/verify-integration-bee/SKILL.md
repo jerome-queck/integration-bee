@@ -43,7 +43,22 @@ Follow `features/README.md` in this skill directory. Drive one feature file end 
 
 ## Evidence
 
-Save the command, stdout, stderr, and exit code under `$IB_EVIDENCE`. The proof is the action plus the stored state. For a recorded attempt, `progress show` must mention the drill id after `practice check`.
+A transcript counts only when `$IB_EVIDENCE/binding.txt` matches a fresh hash of the source text and of the inputs.
+
+`FEATURE` is the feature stem: `doctor`, `drills`, `practice`, `problems`, `progress`, `turn`, or `verify`. `IB_CMD` is the exact command string. `IB_INPUTS` is the input files that feature names. From the repository root, before the drive:
+
+```bash
+{
+  sha256sum .agents/skills/verify-integration-bee/SKILL.md
+  sha256sum ".agents/skills/verify-integration-bee/features/${FEATURE}.md"
+  printf '%s\n' "$IB_CMD" | sha256sum
+  sha256sum $IB_INPUTS
+} | tee "$IB_EVIDENCE/binding.txt"
+```
+
+After the drive, run the same block and compare it with `$IB_EVIDENCE/binding.txt`. If the skill hash, the feature hash, the command hash, or an input hash differs, the transcript does not count. Do not reuse a transcript whose input hash differs.
+
+Also save the command, stdout, stderr, and exit code under `$IB_EVIDENCE`. The proof is the action plus the stored state. For a recorded attempt, `progress show` must mention the drill id after `practice check`.
 
 ## Cleanup
 

@@ -2,9 +2,11 @@
 
 `verify` runs `verify/run.sh`. The run checks the pack and rejects one corrupted drill answer. It does not write learner state.
 
+Record the sha256 of `.agents/skills/verify-integration-bee/features/verify.md`, of the verify command string, and of the inputs `verify/run.sh` and `verify/e_false_pass_check.py` in `$IB_EVIDENCE/binding.txt`. Recompute those hashes from the bytes just read. If one differs, the transcript does not count.
+
 ## Sub-features
 
-- `verify-pass` exits 0 when the source files, the 36 unit shapes, Yang 1.1–1.20 in the syllabus map, unit order, the 300 drill answers, the past-paper indexes, the sample answers and worked notes, the Yang practice-seed smoke, the round PDFs, the problem catalog, the Yang worked-step checks, the never-impossible lint, the gap index, the CLI behavior checks, and the turn contract all pass.
+- `verify-pass` exits 0 when the source files, the 36 unit shapes, Yang 1.1–1.20 in the syllabus map, unit order, the 300 drill answers, the past-paper indexes, the sample answers and worked notes, the Yang practice-seed smoke, the round PDFs, the problem catalog, the Yang worked-step checks, the never-impossible lint, the finding E false-pass regressions, the gap index, the CLI behavior checks, and the turn contract all pass.
 - `verify-mutation` prints a math failure for the corrupted answer, then records that the failure happened.
 
 ## How to get to it (user POV)

@@ -320,7 +320,10 @@ def _zero(expr) -> bool:
         makers.append(lambda value: sp.powdenest(value, force=True))
         makers.append(sp.sqrtdenest)
     if has(sp.log):
-        makers.append(lambda value: sp.expand_log(value, force=True))
+        # No force=True: log(x**2) = 2*log(x) fails for real x < 0. Without
+        # force, expand_log splits a log only when the symbol assumptions
+        # prove each base positive.
+        makers.append(sp.expand_log)
         makers.append(lambda value: value.rewrite(sp.log))
     if has(sp.sin) or has(sp.cos) or has(sp.tan) or has(sp.exp):
         makers.append(sp.expand_trig)
@@ -339,13 +342,53 @@ def _zero(expr) -> bool:
     return False
 
 
+def _exp_one_implies_zero(delta, exp_is_one: bool = False) -> bool:
+    """exp(z) == 1 proves z == 0 only when z is not 2*pi*I*k for a nonzero integer k.
+
+    exp_is_one says the caller already reduced exp(z) to exactly 1. Then a real z,
+    or a constant z with |z| < 1 (a nonzero 2*pi*I*k has modulus at least 2*pi), is 0.
+    """
+    if exp_is_one:
+        if getattr(delta, "is_real", None) is True:
+            return True
+        if not getattr(delta, "free_symbols", {1}):
+            try:
+                return bool(abs(sp.N(delta, 50)) < 1)
+            except Exception:
+                return False
+    try:
+        simplified = sp.simplify(delta)
+    except Exception:
+        return False
+    if simplified == 0:
+        return True
+    try:
+        periods = sp.simplify(simplified / (2 * sp.pi * sp.I))
+    except Exception:
+        return False
+    if getattr(periods, "is_integer", None) is True:
+        return False
+    if getattr(simplified, "is_real", None) is True:
+        try:
+            return sp.simplify(sp.exp(simplified)) == 1
+        except Exception:
+            return False
+    return False
+
+
 def _log_identity(left, right) -> bool:
-    """Two log forms can be equal when their exponential ratio denests to 1."""
+    """Two log forms can be equal when their exponential ratio denests to 1.
+
+    A ratio of 1 is not enough: exp(2*pi*I*k) is 1 for every integer k.
+    """
     if not (left.has(sp.log) or right.has(sp.log)):
         return False
-    ratio = sp.exp(left - right)
+    delta = left - right
+    ratio = sp.exp(delta)
     reduced = sp.simplify(sp.sqrtdenest(sp.powdenest(sp.expand(ratio), force=True)))
-    return reduced == 1
+    if reduced != 1:
+        return False
+    return _exp_one_implies_zero(delta, exp_is_one=True)
 
 
 def _same(left, right) -> bool:
@@ -423,6 +466,64 @@ def _exponential_limit(integrand, answer, symbol, lo, hi) -> bool:
     return _same(value, goal)
 
 
+def _odd_part_converges(odd, symbol, lo, hi) -> bool:
+    """True when the odd part is absolutely integrable on [-h, h], h finite.
+
+    It must be continuous on (0, h) and keep one sign there. Then the integral
+    of |odd| on (0, h) is |integral of odd|, so a finite value proves
+    convergence. 1/x fails: its integral on (0, 1) is infinite.
+    """
+    if not (lo.is_finite and hi.is_finite) or not _zero(lo + hi) or not hi.is_positive:
+        return False
+    try:
+        from sympy.calculus.util import continuous_domain, function_range
+        half = sp.Interval.open(0, hi)
+        # On (0, h) the variable is positive. Substituting a positive symbol
+        # resolves Abs, sign and Piecewise branches that hold only at x <= 0.
+        inside = sp.Symbol("_pv_t", positive=True)
+        odd = sp.simplify(sp.piecewise_fold(odd.subs(symbol, inside))).subs(inside, symbol)
+        if not half.is_subset(continuous_domain(odd, symbol, half)) is True:
+            return False
+        span = function_range(odd, symbol, half)
+        if not (span.is_subset(sp.Interval(0, sp.oo)) is True
+                or span.is_subset(sp.Interval(-sp.oo, 0)) is True):
+            return False
+    except Exception:
+        return False
+    value = _integrate_fast(odd, symbol, 0, hi)
+    return value is not None and _closed(value) and bool(value.is_finite)
+
+
+def _principal_value_only(integrand, symbol, lo, hi) -> bool:
+    """The even part is the Cauchy principal value when the odd part does not converge.
+
+    Averaging f(x) and f(-x) turns 1/x on [-1, 1] into 0. The improper integral
+    does not exist, so that value is not a proof.
+    """
+    # A finite interval on which the integrand is continuous gives a proper
+    # integral, so there is no principal value to separate. Skip |f| there.
+    lo, hi = sp.sympify(lo), sp.sympify(hi)
+    if lo.is_finite and hi.is_finite:
+        try:
+            from sympy.calculus.util import continuous_domain
+            span = sp.Interval(lo, hi)
+            if span.is_subset(continuous_domain(integrand, symbol, span)) is True:
+                return False
+        except Exception:
+            pass
+    odd = sp.simplify((integrand - integrand.subs(symbol, -symbol)) / 2)
+    if not _closed(odd) or _zero(odd):
+        return False
+    if _odd_part_converges(odd, symbol, lo, hi):
+        return False
+    absolute = _integrate_fast(sp.Abs(integrand), symbol, lo, hi)
+    # An unevaluated or timed-out absolute integral is not proof of divergence.
+    # 1/x on [-1, 1] evaluates to a form that still contains infinity.
+    if absolute is None or not _closed(absolute):
+        return False
+    return bool(absolute.has(sp.oo, -sp.oo, sp.zoo, sp.nan))
+
+
 def _reduced_integrals(integrand, symbol, lo, hi):
     """Algebraic identities SymPy can check. Each item is a candidate value."""
     # x**2023 makes the reflection simplify blow the proof budget. Rows with a
@@ -431,7 +532,7 @@ def _reduced_integrals(integrand, symbol, lo, hi):
     if _large_integer_power(integrand):
         return []
     found = []
-    if lo == -hi or _zero(lo + hi):
+    if (lo == -hi or _zero(lo + hi)) and not _principal_value_only(integrand, symbol, lo, hi):
         half = sp.simplify((integrand + integrand.subs(symbol, -symbol)) / 2)
         if _closed(half) and _easier(half, integrand):
             fast = _integrate_fast(half, symbol, lo, hi)
@@ -485,6 +586,17 @@ def _floor_sum(integrand, symbol, lo, hi):
         return None
     total = sp.summation(piece, (step, 0, sp.oo))
     if not _closed(total):
+        return None
+    # A full cell can sum to 0 while the integral on [0, oo) still fails to
+    # exist, because the mass on [n, n+1/2] need not tend to 0.
+    half = sp.integrate(body, (symbol, step, step + sp.Rational(1, 2)))
+    if not _closed(half):
+        return None
+    try:
+        tail = sp.limit(half, step, sp.oo)
+    except Exception:
+        return None
+    if tail != 0:
         return None
     return total
 
@@ -596,7 +708,13 @@ def _easier(new, old) -> bool:
 def _even_power(expr) -> bool:
     if not isinstance(expr, sp.Pow):
         return False
-    _base, exponent = expr.as_base_exp()
+    base, exponent = expr.as_base_exp()
+    # cot(t) on a real t is extended real: real off its poles, and the poles and
+    # zeros of a non-constant base are a null set. (I*t)**2 is still refused.
+    if getattr(base, "is_extended_real", None) is not True:
+        return False
+    if not base.free_symbols and getattr(base, "is_zero", None) is not False:
+        return False
     return bool(
         getattr(exponent, "is_integer", False)
         and getattr(exponent, "is_even", False)
@@ -605,7 +723,7 @@ def _even_power(expr) -> bool:
 
 
 def _complement_arg_positive(arg, symbol=None, lo=None, hi=None) -> bool:
-    """atan(a)+atan(1/a)=pi/2 needs a>0. Squares are positive off a null set.
+    """atan(a)+atan(1/a)=pi/2 needs a>0. A square of a real base is positive off a null set.
 
     On [0, pi/4], c*(tan(x)+d) with c>0 and d>0 is positive because tan is.
     """
@@ -1047,7 +1165,7 @@ def _logs_equivalent(left, right) -> bool:
             pair = sp.log(free) + sp.log(1 / free)
             if sp.expand_log(pair, force=True) == 0 and sp.simplify(simplified.subs(pair, 0)) == 0:
                 return True
-        return sp.simplify(sp.exp(simplified)) == 1
+        return _exp_one_implies_zero(simplified)
     except Exception:
         return False
 
@@ -1591,13 +1709,12 @@ def _log_gamma_unit():
         x = sp.Symbol("_x", real=True)
         z = sp.Symbol("_z", positive=True)
         _require(_zero(sp.gamma(z) * sp.gamma(1 - z) - sp.pi / sp.sin(sp.pi * z)), "gamma-reflect")
-        _require(
-            _logs_equivalent(
-                sp.log(sp.gamma(z)) + sp.log(sp.gamma(1 - z)),
-                sp.log(sp.pi / sp.sin(sp.pi * z)),
-            ),
-            "gamma-log",
-        )
+        # log a + log b = log(ab) needs a, b > 0; otherwise it can miss by 2*pi*I.
+        # On 0 < z < 1 both gamma(z) and gamma(1 - z) are positive (w = 1 - z > 0).
+        w = sp.Symbol("_w", positive=True)
+        a, b = sp.symbols("_a _b", positive=True)
+        _require(sp.gamma(z).is_positive is True and sp.gamma(w).is_positive is True, "gamma-positive")
+        _require(_zero(sp.log(a) + sp.log(b) - sp.log(a * b)), "gamma-log")
         _require(_zero(sp.diff(1 - x, x) + 1), "gamma-flip")
         _require(_zero(sp.sin(sp.pi - x) - sp.sin(x)), "sin-reflect")
         _require(_zero(sp.diff(sp.pi * x, x) - sp.pi), "sin-scale")
@@ -1669,7 +1786,13 @@ def _sin_log_gamma(integrand, symbol, lo, hi):
         w = sp.Symbol("_w", real=True)
         _require(_zero(sp.diff(sp.cos(x), x) + sp.sin(x)), "cos-diff")
         _require(_zero(sp.sin(x) ** 2 - (1 - sp.cos(x) ** 2)), "sin-square")
-        _require(_zero(sp.log(sp.sin(x) ** 2) - 2 * sp.log(sp.sin(x))), "sin-log")
+        # log(s**2) = 2*log(s) needs s > 0; it fails for real s < 0. The sine
+        # here is sin(pi*x) for x in (0, 1), positive on (0, pi).
+        from sympy.calculus.util import function_range
+        sin_range = function_range(sp.sin(x), x, sp.Interval.open(0, sp.pi))
+        _require(sin_range.is_subset(sp.Interval.open(0, sp.oo)) is True, "sin-positive")
+        s_pos = sp.Symbol("_s", positive=True)
+        _require(_zero(sp.log(s_pos**2) - 2 * sp.log(s_pos)), "sin-log")
         left = -(1 - w) * sp.log(1 - w) - w
         right = (1 + w) * sp.log(1 + w) - w
         _require(_zero(sp.diff(left, w) - sp.log(1 - w)), "log-minus")
@@ -1811,8 +1934,16 @@ def _cot_log_sec(integrand, symbol, lo, hi):
     def build():
         x = sp.Symbol("_x", real=True)
         u = sp.Symbol("_u", positive=True)
-        _require(_logs_equivalent(sp.log(sp.sec(x)), -sp.log(sp.cos(x))), "sec-log")
-        _require(_zero(sp.log(sp.cos(x) ** 2) - 2 * sp.log(sp.cos(x))), "cos-log")
+        # log(1/c) = -log(c) needs c > 0; for real x it can be off by 2*pi*I.
+        # cos is positive on (0, pi/2), so prove the identity for a positive c.
+        c = sp.Symbol("_c", positive=True)
+        from sympy.calculus.util import function_range
+        cos_range = function_range(sp.cos(x), x, sp.Interval.open(0, sp.pi / 2))
+        _require(cos_range.is_subset(sp.Interval.open(0, sp.oo)) is True, "cos-positive")
+        _require(_zero(sp.sec(x) - 1 / sp.cos(x)), "sec-recip")
+        _require(_zero(sp.log(1 / c) + sp.log(c)), "sec-log")
+        # Same positive c: log(c**2) = 2*log(c) fails for real c < 0.
+        _require(_zero(sp.log(c**2) - 2 * sp.log(c)), "cos-log")
         _require(_zero(sp.cos(x) ** 2 - (1 - sp.sin(x) ** 2)), "cos-square")
         _require(_zero(sp.diff(sp.sin(x), x) - sp.cos(x)), "sin-diff")
         _require(_zero(sp.sin(0)) and _zero(sp.sin(sp.pi / 2) - 1), "sin-ends")
@@ -2232,11 +2363,29 @@ def _cosine_over_square(integrand, symbol, lo, hi):
             _zero(sp.sin(scale * (old / scale)) / (old / scale) * (1 / scale) - sp.sin(old) / old),
             "scale",
         )
+        # Real coefficients: cos is even, so cos(c*x) = cos(|c|*x), and the
+        # positive case covers c != 0. A zero coefficient makes that cosine 1;
+        # the same parts steps hold with a = 0 and contribute nothing.
+        c = sp.Symbol("_c", positive=True)
+        _require(_zero(sp.cos(-c * x) - sp.cos(c * x)), "cos-even")
+        _require(_zero(sp.Abs(-c) - c) and _zero(sp.Abs(c) - c), "abs-sign")
+        flat = 1 - sp.cos(b * x)
+        _require(_zero(sp.diff(flat, x) - b * sp.sin(b * x)), "parts-diff-zero")
+        _require(_zero(sp.limit(flat / x, x, 0)), "parts-zero-zero")
+        _require(_zero(sp.limit(flat / x, x, sp.oo)), "parts-inf-zero")
         return True
 
     if _fact("cosine-over-square", build) is not True:
         return None
-    return sp.simplify(sp.pi * (second - first) / 2)
+    if first.is_positive and second.is_positive:
+        return sp.simplify(sp.pi * (second - first) / 2)
+    if first.is_extended_real is False or second.is_extended_real is False:
+        return None
+    # A coefficient with unknown assumptions is real whenever the integral
+    # exists. For a non-real c, |cos(c x)| grows like exp(|Im c| x)/2, and the
+    # difference stays integrable on (0, oo) only when a = ±b. Then both
+    # sides are 0, since |a| = |b|.
+    return sp.pi * (sp.Abs(second) - sp.Abs(first)) / 2
 
 
 def _dirichlet_half():
@@ -3145,6 +3294,16 @@ def _arcsec_exp_ray(integrand, symbol, lo, hi):
     if not _zero(sp.simplify(claimed - 2 * sp.sin(u))):
         return None
     slope = sp.diff(sp.asec(sec), u).subs(sp.Abs(sp.sin(u)), sp.sin(u))
+    # d/du asec(sec u) has sqrt(1 - cos(u)**2) = |sin u|. On (0, π/2) sin u > 0,
+    # so that root is sin u; prove the sign on the interval rather than force it.
+    from sympy.calculus.util import function_range
+    root = sp.sqrt(1 - 1 / sec**2)
+    if not _zero(root**2 - sp.sin(u) ** 2):
+        return None
+    sin_range = function_range(sp.sin(u), u, sp.Interval.open(0, sp.pi / 2))
+    if sin_range.is_subset(sp.Interval.open(0, sp.oo)) is not True:
+        return None
+    slope = slope.subs(root, sp.sin(u))
     if not _zero(sp.simplify(slope - 1)):
         return None
     if not _zero(sp.asec(sp.sec(sp.pi / 4)) - sp.pi / 4):
