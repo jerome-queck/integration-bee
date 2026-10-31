@@ -15,15 +15,11 @@ You chat with an AI coach. It finds what you already know, teaches what you don'
 - ✅ **The checker**: SymPy proves every stored answer, and `make check` runs on every change.
 - 🤖 **The coach**: an agent skill that teaches, drills, and marks, and remembers your progress.
 
-## 🗺️ How it fits together
+## 🗺️ Your journey
 
-```mermaid
-flowchart TD
-    You([🙋 You]) --> Coach[🤖 Coach agent]
-    Coach --> CLI[⚙️ Pack CLI]
-    CLI --> Problems[(📚 Contest pack + 📖 Yang set)]
-    Checker[✅ Checker] -. proves answers .-> Problems
-```
+<p align="center"><img src="docs/images/journey/journey.png" width="880" alt="Statechart of the learner journey: clone the repo, the agent runs setup, a placement drill, the coach marks your working, you pick what to skip, lessons, real contest integrals, gaps captured and retaught, a mock exam, and Round 1 ready"></p>
+
+Clone, let your agent set up, find your level, then loop through lessons and real contest integrals. Every miss becomes a captured gap that the coach reteaches, until the mock exam says you're Round 1 ready. Source: [journey.mmd](docs/images/journey/journey.mmd) ([how it's made](docs/images/journey/README.md)).
 
 More detail: [docs/architecture.md](docs/architecture.md).
 

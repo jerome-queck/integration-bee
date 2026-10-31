@@ -1,0 +1,51 @@
+---
+title: "Your Integration Bee journey"
+---
+stateDiagram-v2
+  state "Legend" as legend {
+    lg0: Get set up
+    lg1: Find your level
+    lg2: Practise
+    lg3: Learn
+    lg4: Prove it
+  }
+  class lg0 blue
+  class lg1 purple
+  class lg2 teal
+  class lg3 yellow
+  class lg4 pink
+  s0: #128229; Repo cloned
+  s1: #129302; Agent runs setup
+  s2: #127919; Placement drill
+  s3: #9997;#65039; Coach marks your working
+  s4: #9197;#65039; You pick what to skip
+  s5: #128214; Lesson from the notes
+  s6: #8747; Real contest integral
+  s7: #129513; Gap captured
+  s8: #9201;#65039; Mock exam
+  s9: #127942; Round 1 ready
+  [*] --> s0
+  s0 --> s1: you paste the setup prompt
+  s1 --> s2: setup prints READY
+  s2 --> s3: you send your working
+  s3 --> s2: one more probe
+  s3 --> s4: coach offers skips
+  s4 --> s5: you confirm
+  s5 --> s6: you try one
+  s6 --> s3: you send your working
+  s3 --> s6: correct: next integral
+  s3 --> s7: a miss shows a gap
+  s3 --> s8: every Round 1 node solid
+  s7 --> s5: coach reteaches it
+  s8 --> s7: the mock finds a gap
+  s8 --> s9: you pass
+  class s0 blue
+  class s1 blue
+  class s2 purple
+  class s3 teal
+  class s4 purple
+  class s5 yellow
+  class s6 teal
+  class s7 yellow
+  class s8 pink
+  class s9 pink
