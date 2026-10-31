@@ -67,10 +67,24 @@ def test_symmetry_pv() -> int:
         return fail("symmetry reduction accepted the Cauchy principal value of 1/x on [-1, 1]")
     return ok("symmetry PV 1/x")
 
+
+def test_floor_cell() -> int:
+    import sympy as sp
+
+    import pack_gate
+
+    x = pack_gate.namespace("x")["x"]
+    integrand = sp.sign(x - sp.floor(x) - sp.Rational(1, 2))
+    got = pack_gate._floor_sum(integrand, x, 0, sp.oo)
+    if got == 0:
+        return fail("floor whole-cell sum accepted a non-convergent integral as 0")
+    return ok("floor whole-cell sum")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
     "symmetry-pv": test_symmetry_pv,
+    "floor-cell": test_floor_cell,
 }
 
 
