@@ -6,7 +6,7 @@ Solutions PDF: `sources/UK_University_integration_bee_sample_problems_solutions.
 Hints: `sources/Virtual_integration_competition_sample_hints.pdf`
 
 Technique tags map to `syllabus-map.md` (Yang + official syllabus).  
-**Answers below are cited from the answers PDF** (page reading, 2026-10-25), except SAMPLE-Q15. That printed final has the wrong arctan sign. The catalog grades the corrected antiderivative. Do not invent the others.
+**Answers below are cited from the answers PDF** (page reading, 2026-10-25), except SAMPLE-Q15, SAMPLE-Q14, and SAMPLE-Q16. SAMPLE-Q15's printed final has the wrong arctan sign. SAMPLE-Q14 and SAMPLE-Q16 print a local antiderivative that jumps; the catalog stores the continuous primitive. Do not invent the others.
 
 | Id | Sketch (from problems PDF) | Technique tags | Yang | Answers PDF (cite) | verify |
 |---|---|---|---|---|---|
@@ -23,9 +23,9 @@ Technique tags map to `syllabus-map.md` (Yang + official syllabus).
 | SAMPLE-Q11 | ∫ dx/(1+tan x) | trig-identities | yang:1.5 | ½(x+ln(sin x+cos x))+C | sympy |
 | SAMPLE-Q12 | ∫ √(tan x) / sin(2x) dx | reverse-product / trig | yang:1.13, yang:1.5 | √(tan x) (+C) | sympy |
 | SAMPLE-Q13 | ∫ dx/(1+e^x) | basic-exp | yang:1.4 | −ln(1+e^{−x}) (+C) | sympy |
-| SAMPLE-Q14 | ∫ dx /(x(1+sin²(ln x))) | intermediate-u-sub | yang:1.11 | (1/√2) arctan(√2 tan(ln x))+C | sympy |
+| SAMPLE-Q14 | ∫ dx /(x(1+sin²(ln x))) | intermediate-u-sub | yang:1.11 | continuous primitive; PDF prints (1/√2) arctan(√2 tan(ln x))+C | sympy |
 | SAMPLE-Q15 | ∫ dx/(x³+1) | partial-fractions | yang:1.8 | corrected antiderivative (printed final has the wrong arctan sign) | sympy |
-| SAMPLE-Q16 | ∫ dx/(2+sin x) | weierstrass | yang:1.16 | (2/√3) arctan((2tan(x/2)+1)/√3)+C | sympy |
+| SAMPLE-Q16 | ∫ dx/(2+sin x) | weierstrass | yang:1.16 | continuous primitive; PDF prints (2/√3) arctan((2tan(x/2)+1)/√3)+C | sympy |
 | SAMPLE-Q17 | ∫ x^(1/ln x) dx | rewrite-exponent | — | answers sheet `ex+c` means e·x + C | sympy |
 | SAMPLE-Q18 | ∫ dx/(1−sin x) | trig-identities | yang:1.5, yang:1.15 | sec x + tan x + C | sympy |
 | SAMPLE-Q19 | ∫ x √((1−x²)/(1+x²)) dx | trig-sub | yang:1.7 | ½(sin(arccos(x²))−arccos(x²))+C (PDF) | sympy |

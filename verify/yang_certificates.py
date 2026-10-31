@@ -824,8 +824,15 @@ def indefinite_ok(answer, integrand, symbol):
     """Return True for a checked Yang antiderivative, False on a bad final, None on a miss.
 
     Lane L5 covers the sign-split radicals. Lane L7 covers the §2.6 nested
-    radical and the elliptic antiderivative. A miss leaves the ordinary derivative check.
+    radical and the elliptic antiderivative. A continuous floor or Piecewise
+    primitive is accepted only by verify/piecewise_primitive.py. A miss leaves
+    the ordinary derivative check.
     """
+    import piecewise_primitive
+
+    continuous = piecewise_primitive.catalog_verdict(answer, integrand, symbol)
+    if continuous is not None:
+        return continuous
     for builder in (_csc_radical, _sec_tan_radical, _nested_sec_square, _linear_trig_radical):
         verdict = builder(answer, integrand, symbol)
         if verdict is not None:

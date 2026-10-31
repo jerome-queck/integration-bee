@@ -222,13 +222,13 @@ ROWS = [
         "kind": "indefinite",
         "verify": "sympy",
         "integrand": "1/(x*(1+sin(log(x))**2))",
-        "answer": "atan(sqrt(2)*tan(log(x)))/sqrt(2)",
+        "answer": "sqrt(2)*atan(sqrt(2)*tan(log(x)))/2 + sqrt(2)*pi*floor(log(x)/pi + 1/2)/2",
         "integrand_plain": "∫ dx/(x (1 + sin(ln x)^2))",
-        "answer_plain": "(1/√2) arctan(√2 tan(ln x)) + C",
+        "answer_plain": "sqrt(2)*atan(sqrt(2)*tan(log(x)))/2 + sqrt(2)*pi*floor(log(x)/pi + 1/2)/2",
         "technique_tags": ["intermediate-u-sub"],
         "yang": ["yang:1.11"],
         "answer_source_pdf": ANSWERS,
-        "note": "Answers PDF prints (1/√2) arctan(√2 tan(ln x)) + c.",
+        "note": "Answers PDF prints (1/√2) arctan(√2 tan(ln x)) + c. That formula jumps by -pi/sqrt(2) where ln x = (k+1/2)*pi. The catalog stores the continuous primitive.",
     },
     {
         "id": "SAMPLE-Q15",
@@ -252,13 +252,13 @@ ROWS = [
         "kind": "indefinite",
         "verify": "sympy",
         "integrand": "1/(2+sin(x))",
-        "answer": "(2/sqrt(3))*atan((2*tan(x/2)+1)/sqrt(3))",
+        "answer": "2*sqrt(3)*atan(2*sqrt(3)*tan(x/2)/3 + sqrt(3)/3)/3 + 2*sqrt(3)*pi*floor(x/(2*pi) + 1/2)/3",
         "integrand_plain": "∫ dx/(2+sin x)",
-        "answer_plain": "(2/√3) arctan((2 tan(x/2) + 1)/√3) + C",
+        "answer_plain": "2*sqrt(3)*atan(2*sqrt(3)*tan(x/2)/3 + sqrt(3)/3)/3 + 2*sqrt(3)*pi*floor(x/(2*pi) + 1/2)/3",
         "technique_tags": ["weierstrass"],
         "yang": ["yang:1.16"],
         "answer_source_pdf": ANSWERS,
-        "note": "Answers PDF prints (2/√3) arctan((2 tan(x/2)+1)/√3) + c.",
+        "note": "Answers PDF prints (2/√3) arctan((2 tan(x/2)+1)/√3) + c. That formula jumps by -2*pi/sqrt(3) at odd multiples of pi. The catalog stores the continuous primitive.",
     },
     {
         "id": "SAMPLE-Q17",
@@ -560,6 +560,9 @@ def check_q19() -> None:
 
 
 def check() -> None:
+    import piecewise_primitive
+
+    piecewise_primitive.must_fail()
     if [row["id"] for row in ROWS] != [f"SAMPLE-Q{i:02d}" for i in range(1, 21)]:
         raise AssertionError("sample table ids")
     records = problem_catalog.load_records()

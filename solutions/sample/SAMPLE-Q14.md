@@ -22,15 +22,17 @@ The solutions PDF sets \(u=\ln x\), so \(du=dx/x\), and the integral becomes
 A further substitution \(v=\tan u\) gives
 
 \[
-\int \frac{dv}{1+2v^2}=\frac{1}{\sqrt{2}}\arctan(\sqrt{2}\,v)+C=\frac{1}{\sqrt{2}}\arctan\bigl(\sqrt{2}\tan(\ln x)\bigr)+C.
+\int \frac{dv}{1+2v^2}=\frac{1}{\sqrt{2}}\arctan(\sqrt{2}\,v).
 \]
+
+That formula is valid on each interval between consecutive odd multiples of \(\pi/2\) in \(u\). At each of those points it jumps by \(-\pi/\sqrt{2}\). The integrand in \(u\) is positive and integrates to \(\pi/\sqrt{2}\) over every period of length \(\pi\). Adding \((\pi/\sqrt{2})\lfloor u/\pi+1/2\rfloor\) removes the jump. Restoring \(u=\ln x\) gives the continuous primitive. The answers PDF prints the formula without that step.
 
 ## Final answer
 
 \[
-\frac{1}{\sqrt{2}}\arctan\bigl(\sqrt{2}\tan(\ln x)\bigr)+C.
+\frac{1}{\sqrt{2}}\arctan\bigl(\sqrt{2}\tan(\ln x)\bigr)+\frac{\pi}{\sqrt{2}}\left\lfloor\frac{\ln x}{\pi}+\frac12\right\rfloor.
 \]
 
 ## SymPy self-check
 
-`solutions/sample_self_check.py` differentiates the stored antiderivative through the pack gate and recovers the integrand.
+`verify/piecewise_primitive.py` differentiates the smooth piece by the ordinary derivative test and checks the joins at \(x=\exp((k+1/2)\pi)\).
