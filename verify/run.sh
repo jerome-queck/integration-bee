@@ -86,6 +86,8 @@ wc -l /tmp/ibe_practice.out
 echo "== all_rounds_check (Resource pack r1|r2|r3) =="
 "$PY" "$ROOT/verify/all_rounds_check.py" || fail=1
 
+echo "== drills.md tables (audit D) =="
+"$PY" "$ROOT/verify/drills_md_table_check.py" || fail=1
 echo "== problem catalog =="
 "$PY" "$ROOT/verify/catalog_check.py" || fail=1
 echo "== yang worked steps =="
