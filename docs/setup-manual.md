@@ -146,5 +146,6 @@ People changing this pack use the checks below. Learners do not.
 6. The Yang Topics Guide, 2nd edition, is `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`. Attribution is in `sources/user/README.md`.
 7. Contest, Yang, and sample problems are `problems/records.jsonl`. `problems list` hides answers. A mark still goes through `turn apply`. Sample worked notes are `solutions/sample/`.
 8. `scripts/recover_pack_math.py` rereads the committed Round 1, Round 2, and Round 3 PDFs and rewrites a row only when SymPy proves the layout reading. `--write` is the whole catalog. Rows that do not prove stay `manual` or `unchecked`. PyMuPDF is required for that script. `make check` re-proves stored rows and does not open the PDFs.
+9. `scripts/build_yang_ch3_to_ch6.py` is retired. Running it exits 2 and does not rewrite units, drills, or indexes. The old generator called unrestricted `sympify` and accepted a numeric shortcut.
 
 Syllabus links are in `syllabus-map.md`. The skill tree is `skill-tree.md`.
