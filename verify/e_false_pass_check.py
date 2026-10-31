@@ -208,6 +208,46 @@ def test_confirm125() -> int:
         return fail("confirm125 rejected the stored expression for its id")
     return ok("confirm125 expression binding")
 
+
+def test_inventory_ci() -> int:
+    spec = importlib.util.spec_from_file_location("check_ci", ROOT / "scripts" / "check_ci.py")
+    if spec is None or spec.loader is None:
+        return fail("could not load scripts/check_ci.py")
+    check_ci = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(check_ci)
+    if check_ci.workflow_runs_make_check("# run: make check\n"):
+        return fail("CI comment was treated as a make check step")
+    import all_rounds_check
+
+    if not hasattr(all_rounds_check, "inventory_problem"):
+        return fail("empty inventory, invalid status, and schema are not checked")
+    if not all_rounds_check.inventory_problem({"artifacts": [], "counts": {}}):
+        return fail("empty inventory accepted")
+    invalid_status = {
+        "artifacts": [
+            {
+                "round": "r1",
+                "year": "2020",
+                "region": None,
+                "file": "a.pdf",
+                "path": "sources/past/a.pdf",
+                "bytes": 1,
+                "role": "problems",
+                "present": "missing",
+                "source": "x",
+            }
+        ],
+        "counts": {"total_pdfs": 1, "by_round": {"r1": 1, "r2": 0, "r3": 0}},
+    }
+    if not all_rounds_check.inventory_problem(invalid_status):
+        return fail("invalid inventory status accepted")
+    if not all_rounds_check.inventory_problem({"artifacts": [{"present": True}], "counts": {}}):
+        return fail("inventory schema accepted a row with missing fields")
+    real = json.loads((ROOT / "past" / "inventory.json").read_text(encoding="utf-8"))
+    if all_rounds_check.inventory_problem(real):
+        return fail(f"real inventory rejected: {all_rounds_check.inventory_problem(real)}")
+    return ok("inventory and CI comments")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
@@ -220,6 +260,7 @@ CASES = {
     "near-nan": test_near_nan,
     "sanity-real": test_sanity_real,
     "confirm125-id": test_confirm125,
+    "inventory-ci": test_inventory_ci,
 }
 
 
