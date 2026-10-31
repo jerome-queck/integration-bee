@@ -54,12 +54,15 @@ reduction. A reciprocal power that clears to a rational function is integrated
 directly. (cos(a x)-cos(b x))/x**2 on [0, ∞) reduces by parts to the Dirichlet
 integral. For a nonzero real coefficient the substitution u = |k| x scales that
 value by |k|; a zero coefficient is handled separately and contributes 0.
+A coefficient that is not known to be real is refused.
 A logarithm of an absolute value differentiates as the logarithm
 of its argument. An indefinite answer is accepted when its derivative
 matches the integrand, including the sign(u)/Abs(u) form of the derivative of
 log|u|. A match that appears only for a positive variable is kept when sampled
 real points on both sides of 0 agree, and rejected when they do not: x**2/2
-is not an antiderivative of Abs(x). Further checked forms are a
+is not an antiderivative of Abs(x). The samples add seeded irrational and
+rational points on both signs. Agreement only at zeros is not acceptance.
+simplify(derivative - integrand) == 0 is accepted on its own. Further checked forms are a
 complement of two square-root logarithms on [2, 4], a fifth power of a
 cosine-sine mean on [0, π/2], a root-exponential reflection on [-π/2, π/2],
 1/(1+|cos x|) on [0, 2π], a shifted square-root logarithm reduced to a gamma
@@ -175,6 +178,7 @@ not a proof.
 from __future__ import annotations
 
 import multiprocessing as mp
+import random
 
 import safe_expr
 import sympy as sp
@@ -1153,23 +1157,57 @@ def _antiderivative(answer, integrand, variable: str) -> bool:
     return _radical_branch(answer, integrand, symbol)
 
 
+def _derivative_samples():
+    """Probes on both sides of 0, including points off the six rational roots.
+
+    ±1/2, ±1, and ±2 are the roots of one degree-6 polynomial. A numeric
+    check that stops there accepts 0 for an integrand that vanishes on
+    exactly those roots. The extra points are irrational, or drawn from a
+    fixed seed, so the set does not change between runs.
+    """
+    fixed = (
+        sp.Integer(-2), sp.Integer(-1), sp.Rational(-1, 2),
+        sp.Rational(1, 2), sp.Integer(1), sp.Integer(2),
+    )
+    irrational = (
+        -sp.sqrt(2), sp.sqrt(2),
+        -sp.pi, sp.pi,
+        -sp.E, sp.E,
+        -sp.sqrt(3), sp.sqrt(3),
+        -sp.sqrt(5) / 2, sp.sqrt(5) / 2,
+    )
+    rng = random.Random(1169)
+    seeded = []
+    for _ in range(6):
+        point = sp.Rational(rng.randrange(1, 40), rng.randrange(1, 17))
+        seeded.append(point)
+        seeded.append(-point)
+    return fixed + irrational + tuple(seeded)
+
+
 def _positive_domain_derivative(answer, integrand, symbol) -> bool:
-    """Derivative match for x>0, kept only when real samples agree.
+    """Derivative match for x>0, kept only when it is an identity or real samples agree.
 
     Some antiderivatives, such as R1-2021-Q09, simplify only after x is
     positive, and the integrand is not real for x<0. Substituting a positive
     symbol by itself also accepts x**2/2 for Abs(x). That pair is real at
     x=-1 and the two sides differ there, so the sample rejects it.
+    simplify(derivative - integrand) == 0 is a proof. Numeric agreement is
+    not: samples where both sides are zero do not count, and the probes
+    include seeded points on both signs.
     """
     positive = sp.Symbol(symbol.name, positive=True)
     delta = sp.diff(answer, symbol) - integrand
     if not _zero(delta.subs(symbol, positive)):
         return False
     slope = sp.diff(answer, symbol)
-    for point in (
-        sp.Integer(-2), sp.Integer(-1), sp.Rational(-1, 2),
-        sp.Rational(1, 2), sp.Integer(1), sp.Integer(2),
-    ):
+    try:
+        if sp.simplify(slope - integrand) == 0:
+            return True
+    except Exception:
+        pass
+    saw_nonzero = False
+    for point in _derivative_samples():
         try:
             left = complex(sp.N(integrand.subs(symbol, point), 25))
             right = complex(sp.N(slope.subs(symbol, point), 25))
@@ -1181,7 +1219,10 @@ def _positive_domain_derivative(answer, integrand, symbol) -> bool:
             continue
         if abs(left - right) > 1e-6 * (1 + abs(left)):
             return False
-    return True
+        if abs(left) <= 1e-8 and abs(right) <= 1e-8:
+            continue
+        saw_nonzero = True
+    return saw_nonzero
 
 
 _FACT_CACHE: dict = {}
@@ -2391,13 +2432,27 @@ def _constant_log_span(integrand, symbol, lo, hi):
     return sp.simplify((hi - lo) * sp.Rational(1, 2))
 
 
+def _known_real_coefficient(coeff) -> bool:
+    """0, or a coefficient SymPy knows is real.
+
+    A bare symbol has no reality assumption. positive, negative, real, and
+    other stated assumptions that imply an extended-real value all count.
+    """
+    if coeff == 0 or getattr(coeff, "is_zero", None) is True:
+        return True
+    if getattr(coeff, "is_extended_real", None) is True:
+        return True
+    return getattr(coeff, "is_real", None) is True
+
+
 def _cosine_over_square(integrand, symbol, lo, hi):
     """∫_0^∞ (cos(a x)-cos(b x))/x**2 dx = π(|b|-|a|)/2 for real a, b.
 
     Parts moves a positive coefficient to the Dirichlet integral. For a nonzero
     real k, u = |k| x multiplies ∫_0^∞ (1-cos u)/u**2 du by |k|. A zero
     coefficient is not that substitution: cos(0·x) = 1, the integrand is 0,
-    and the term contributes 0.
+    and the term contributes 0. A coefficient that is not known to be real
+    is refused: the formula is not π|a|/2 for a general complex a.
     """
     if not (_zero(lo) and hi == sp.oo):
         return None
@@ -2490,25 +2545,34 @@ def _cosine_over_square(integrand, symbol, lo, hi):
 
     if _fact("cosine-over-square", build) is not True:
         return None
-    if first.is_extended_real is False or second.is_extended_real is False:
+    # π|k|/2 needs a real k. A bare symbol, and a symbol only assumed complex,
+    # are not known to be real: |cos(c x)| grows like exp(|Im c| x)/2 and the
+    # integral need not converge. Zero, positive, and negative coefficients
+    # are real. The catalog states a>0, b>0; that positive reading is proved
+    # by rewriting the parameters, not by returning Abs for an unassumed symbol.
+    if not _known_real_coefficient(first) or not _known_real_coefficient(second):
         return None
 
     def half_line(coeff):
-        """π|k|/2. A zero coefficient returns 0 and does not divide by |k|."""
+        """π|k|/2. A zero coefficient returns 0 and does not divide by |k|.
+
+        Abs is returned only when k is known real and its sign is not.
+        """
         if coeff == 0 or getattr(coeff, "is_zero", None) is True:
             return sp.Integer(0)
         if getattr(coeff, "is_positive", None) is True:
             return sp.pi * coeff / 2
         if getattr(coeff, "is_negative", None) is True:
             return sp.pi * (-coeff) / 2
+        if not _known_real_coefficient(coeff):
+            return None
         return sp.pi * sp.Abs(coeff) / 2
 
-    # A symbol with no sign assumption is the catalog case. The integrand
-    # exists for real a, b, and the value is π(|b|-|a|)/2, including when a
-    # coefficient is 0. For a non-real c, |cos(c x)| grows like exp(|Im c| x)/2,
-    # and the difference stays integrable on (0, oo) only when a = ±b. Then
-    # both sides are 0, since |a| = |b|.
-    return sp.simplify(half_line(second) - half_line(first))
+    left = half_line(second)
+    right = half_line(first)
+    if left is None or right is None:
+        return None
+    return sp.simplify(left - right)
 
 
 def _dirichlet_half():

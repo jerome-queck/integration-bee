@@ -62,12 +62,13 @@ def load_all_drills(paths: list[Path] | None = None) -> list[dict]:
     return out
 
 
-# Looser than this, the quadrature fallback accepts an answer the symbolic
-# numeric check already refused. 5e-7 sits between the old 1e-6 and this bound.
+# The quadrature fallback must not be looser than numeric_close, or it
+# accepts an answer the symbolic comparison already refused. 5e-8 sits
+# between the previous 1e-7 bound and this one. Real drills match far inside it.
 NUMERIC_FALLBACK_TOL = 1e-8
 
 
-def numeric_close(a, b, tol: float = 1e-7) -> bool:
+def numeric_close(a, b, tol: float = 1e-8) -> bool:
     try:
         diff = complex(sp.N(sp.simplify(a - b)))
         return abs(diff) < tol
