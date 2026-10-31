@@ -78,6 +78,23 @@ def test_zero_log_square() -> int:
     return ok("_zero log square on real x")
 
 
+def test_worked_log_split_domain() -> int:
+    import sympy as sp
+
+    import pack_gate
+    import yang_worked_check as ywc
+
+    x = pack_gate.namespace("x")["x"]
+    left, right = sp.log(x**2), 2 * sp.log(x)
+    negative = {"kind": "definite", "limits": ["-2", "-1"], "variable": "x"}
+    if ywc._log_split_on_interval(left, right, negative):
+        return fail("worked check split log(x**2) = 2*log(x) on (-2, -1)")
+    positive = {"kind": "definite", "limits": ["1", "2"], "variable": "x"}
+    if not ywc._log_split_on_interval(left, right, positive):
+        return fail("worked check rejected log(x**2) = 2*log(x) on (1, 2)")
+    return ok("worked-step log split needs positive bases")
+
+
 def test_symmetry_pv() -> int:
     import pack_gate
 
@@ -289,6 +306,7 @@ CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
     "zero-log-square": test_zero_log_square,
+    "worked-log-split": test_worked_log_split_domain,
     "symmetry-pv": test_symmetry_pv,
     "floor-cell": test_floor_cell,
     "arctan-square": test_arctan_square,

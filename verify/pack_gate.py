@@ -478,6 +478,10 @@ def _odd_part_converges(odd, symbol, lo, hi) -> bool:
     try:
         from sympy.calculus.util import continuous_domain, function_range
         half = sp.Interval.open(0, hi)
+        # On (0, h) the variable is positive. Substituting a positive symbol
+        # resolves Abs, sign and Piecewise branches that hold only at x <= 0.
+        inside = sp.Symbol("_pv_t", positive=True)
+        odd = sp.simplify(sp.piecewise_fold(odd.subs(symbol, inside))).subs(inside, symbol)
         if not half.is_subset(continuous_domain(odd, symbol, half)) is True:
             return False
         span = function_range(odd, symbol, half)
@@ -2359,11 +2363,29 @@ def _cosine_over_square(integrand, symbol, lo, hi):
             _zero(sp.sin(scale * (old / scale)) / (old / scale) * (1 / scale) - sp.sin(old) / old),
             "scale",
         )
+        # Real coefficients: cos is even, so cos(c*x) = cos(|c|*x), and the
+        # positive case covers c != 0. A zero coefficient makes that cosine 1;
+        # the same parts steps hold with a = 0 and contribute nothing.
+        c = sp.Symbol("_c", positive=True)
+        _require(_zero(sp.cos(-c * x) - sp.cos(c * x)), "cos-even")
+        _require(_zero(sp.Abs(-c) - c) and _zero(sp.Abs(c) - c), "abs-sign")
+        flat = 1 - sp.cos(b * x)
+        _require(_zero(sp.diff(flat, x) - b * sp.sin(b * x)), "parts-diff-zero")
+        _require(_zero(sp.limit(flat / x, x, 0)), "parts-zero-zero")
+        _require(_zero(sp.limit(flat / x, x, sp.oo)), "parts-inf-zero")
         return True
 
     if _fact("cosine-over-square", build) is not True:
         return None
-    return sp.simplify(sp.pi * (second - first) / 2)
+    if first.is_positive and second.is_positive:
+        return sp.simplify(sp.pi * (second - first) / 2)
+    if first.is_extended_real is False or second.is_extended_real is False:
+        return None
+    # A coefficient with unknown assumptions is real whenever the integral
+    # exists. For a non-real c, |cos(c x)| grows like exp(|Im c| x)/2, and the
+    # difference stays integrable on (0, oo) only when a = ±b. Then both
+    # sides are 0, since |a| = |b|.
+    return sp.pi * (sp.Abs(second) - sp.Abs(first)) / 2
 
 
 def _dirichlet_half():

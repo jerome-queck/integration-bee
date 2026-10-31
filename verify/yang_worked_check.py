@@ -4311,6 +4311,60 @@ def _end(primitive, symbol, text: str, side: str):
     return _at(primitive, symbol, text, side)
 
 
+def _log_bases(expr):
+    """The Mul and Pow bases inside every log argument of expr."""
+    bases = set()
+    for item in expr.atoms(sp.log):
+        stack = [item.args[0]]
+        while stack:
+            part = stack.pop()
+            if isinstance(part, sp.Mul):
+                stack.extend(part.args)
+            elif isinstance(part, sp.Pow):
+                stack.append(part.base)
+            elif not part.is_number:
+                bases.add(part)
+            elif part.is_positive is not True:
+                bases.add(part)
+    return bases
+
+
+def _log_split_on_interval(left, right, row: dict | None) -> bool:
+    """True when left = right after splitting logs whose bases are positive.
+
+    log(p*q) = log(p) + log(q) and log(p**k) = k*log(p) hold for p, q > 0.
+    They can fail by 2*pi*I otherwise. Each base must be proved positive on
+    the row's open interval before expand_log(force=True) is used.
+    """
+    if not row or row.get("kind") != "definite":
+        return False
+    limits = row.get("limits") or []
+    if len(limits) != 2:
+        return False
+    variable = row.get("variable") or "x"
+    symbol = pack_gate.namespace(variable)[variable]
+    try:
+        from sympy.calculus.util import function_range
+        lo = pack_gate._parse(str(limits[0]), variable)
+        hi = pack_gate._parse(str(limits[1]), variable)
+        span = sp.Interval.open(lo, hi)
+        bases = _log_bases(left) | _log_bases(right)
+        if not bases:
+            return False
+        for base in bases:
+            if base.free_symbols - {symbol}:
+                return False
+            if base.is_number:
+                return False
+            values = function_range(base, symbol, span)
+            if values.is_subset(sp.Interval.open(0, sp.oo)) is not True:
+                return False
+        gap = sp.expand_log(left - right, force=True)
+    except Exception:
+        return False
+    return closed_zero(gap)
+
+
 def _equal_on_interval(left, right, row: dict | None) -> bool:
     """True when left and right agree on a definite row's open interval.
 
@@ -4363,7 +4417,8 @@ def run_step(ident: str, step: tuple, integrand, row: dict | None = None, spec: 
             raise AssertionError(f"{ident} numeric tautology {step[1]} = {step[2]}")
         left = parse(step[1])
         right = parse(step[2])
-        if not same(left, right) and not _equal_on_interval(left, right, row):
+        if not same(left, right) and not _equal_on_interval(left, right, row) \
+                and not _log_split_on_interval(left, right, row):
             raise AssertionError(f"{ident} equality {step[1]} vs {step[2]}")
         return
     if kind == "odd":
