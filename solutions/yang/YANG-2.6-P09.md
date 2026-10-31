@@ -5,7 +5,7 @@
 
 ## Status: derived final
 
-The practice list prints the integral and does not print a final. This note derives one. `verify/pack_gate.py` accepts it. Worked source: derived in this note.
+The practice list prints the integral and does not print a final. This note derives one. Worked source: derived in this note.
 
 ## Problem
 
@@ -15,16 +15,16 @@ The practice list prints the integral and does not print a final. This note deri
 
 ## Solution
 
-Rewrite the denominator as 5 + 4 cos(2x). The tangent half-angle substitution produces arctan(tan(x)/3)/3 on (-π/2, π/2).
+The derivative of \(\arctan(\tan(x)/3)/3\) is \(1/(1+8\cos^2 x)\) on every interval between consecutive odd multiples of \(\pi/2\). At each of those points \(\tan x\) changes from \(+\infty\) to \(-\infty\), and the arctangent formula jumps by \(-\pi/3\). The integrand is continuous and positive, and its integral over one period of length \(\pi\) is \(\pi/3\). Adding \(\pi\lfloor x/\pi+1/2\rfloor/3\) cancels the jump. On each open piece the floor is constant, so the ordinary derivative is the integrand.
 
 ## Final answer
 
 \[
-\frac{\operatorname{atan}{\left(\frac{\tan{\left(x \right)}}{3} \right)}}{3}.
+\frac{1}{3}\arctan\bigl(\tan(x)/3\bigr)+\frac{\pi}{3}\left\lfloor\frac{x}{\pi}+\frac12\right\rfloor.
 \]
 
 The catalog omits a constant of integration.
 
 ## SymPy self-check
 
-`sympy_expr` is `1/(8*cos(x)**2 + 1)`. `answer_sympy` is `atan(tan(x)/3)/3`. `verify/pack_gate.py` differentiates that antiderivative and recovers the integrand. `make check` re-proves the stored row.
+`verify/piecewise_primitive.py` runs the ordinary derivative test on \(\arctan(\tan(x)/3)/3\) and checks that the left and right limits of the corrected formula agree at \(x=\pi/2\), then at every later join by the period \(\pi\).

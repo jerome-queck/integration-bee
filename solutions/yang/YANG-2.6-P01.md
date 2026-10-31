@@ -5,7 +5,7 @@
 
 ## Status: derived final
 
-The practice list prints the integral and does not print a final. This note derives one. `verify/pack_gate.py` accepts it. Worked source: derived in this note.
+The practice list prints the integral and does not print a final. This note derives one. Worked source: derived in this note.
 
 ## Problem
 
@@ -15,16 +15,16 @@ The practice list prints the integral and does not print a final. This note deri
 
 ## Solution
 
-Use \(1+\cos x=2\cos^2(x/2)\), so the integrand is \(\sqrt{2}\,|\cos(x/2)|\). The catalog antiderivative `2*sin(x)/sqrt(cos(x) + 1)` equals \(2\sqrt{2}\sin(x/2)\operatorname{sign}(\cos(x/2))\) between the odd multiples of \(\pi\), and it jumps by \(-4\sqrt{2}\) at each of those points. The local formula \(2\sqrt{2}\sin(x/2)\) matches only where \(\cos(x/2)>0\).
+Use \(1+\cos x=2\cos^2(x/2)\), so the integrand is \(\sqrt{2}\,|\cos(x/2)|\). On the piece where \(\lfloor x/(2\pi)+1/2\rfloor=k\), the derivative of \(2\sqrt{2}(-1)^k\sin(x/2)\) is the integrand. The expression \(2\sin x/\sqrt{1+\cos x}\) matches that piece between odd multiples of \(\pi\) and jumps by \(-4\sqrt{2}\) at each of them. The stored antiderivative adds \(4\sqrt{2}\lfloor x/(2\pi)+1/2\rfloor\), so the left and right limits agree.
 
 ## Final answer
 
 \[
-\frac{2\sin x}{\sqrt{1+\cos x}}.
+2(-1)^{\lfloor x/(2\pi)+1/2\rfloor}\sqrt{2}\sin(x/2)+4\sqrt{2}\lfloor x/(2\pi)+1/2\rfloor.
 \]
 
 The catalog omits a constant of integration.
 
 ## SymPy self-check
 
-`sympy_expr` is `sqrt(cos(x) + 1)`. `answer_sympy` is `2*sin(x)/sqrt(cos(x) + 1)`. `verify/pack_gate.py` differentiates that antiderivative and recovers the integrand. `make check` re-proves the stored row.
+`verify/piecewise_primitive.py` checks the piece derivative and the joins. `verify/pack_gate.py` still differentiates the smooth piece \(2\sqrt{2}\sin(x/2)\) by the ordinary derivative test.
