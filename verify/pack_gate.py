@@ -339,8 +339,20 @@ def _zero(expr) -> bool:
     return False
 
 
-def _exp_one_implies_zero(delta) -> bool:
-    """exp(z) == 1 proves z == 0 only when z is not 2*pi*I*k for a nonzero integer k."""
+def _exp_one_implies_zero(delta, exp_is_one: bool = False) -> bool:
+    """exp(z) == 1 proves z == 0 only when z is not 2*pi*I*k for a nonzero integer k.
+
+    exp_is_one says the caller already reduced exp(z) to exactly 1. Then a real z,
+    or a constant z with |z| < 1 (a nonzero 2*pi*I*k has modulus at least 2*pi), is 0.
+    """
+    if exp_is_one:
+        if getattr(delta, "is_real", None) is True:
+            return True
+        if not getattr(delta, "free_symbols", {1}):
+            try:
+                return bool(abs(sp.N(delta, 50)) < 1)
+            except Exception:
+                return False
     try:
         simplified = sp.simplify(delta)
     except Exception:
@@ -373,7 +385,7 @@ def _log_identity(left, right) -> bool:
     reduced = sp.simplify(sp.sqrtdenest(sp.powdenest(sp.expand(ratio), force=True)))
     if reduced != 1:
         return False
-    return _exp_one_implies_zero(delta)
+    return _exp_one_implies_zero(delta, exp_is_one=True)
 
 
 def _same(left, right) -> bool:

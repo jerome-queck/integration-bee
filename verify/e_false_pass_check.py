@@ -55,6 +55,10 @@ def test_exp_2pii() -> int:
         return fail("exp shortcut accepted log(x) and log(x)+2*pi*I")
     if not pack_gate._logs_equivalent(sp.log(x) - sp.log(x + 1), sp.log(x / (x + 1))):
         return fail("exp shortcut rejected a real logarithm identity")
+    if pack_gate._log_identity(sp.log(3), sp.log(3) + 2 * sp.pi * sp.I):
+        return fail("exp shortcut accepted constants log(3) and log(3)+2*pi*I")
+    if not pack_gate._log_identity(sp.log(2) / 2 + sp.log(sp.Rational(3, 2)) / 2, sp.log(sp.sqrt(3))):
+        return fail("exp shortcut rejected a real constant logarithm identity")
     return ok("exp shortcut 2*pi*I")
 
 
