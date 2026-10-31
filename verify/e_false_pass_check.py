@@ -187,6 +187,27 @@ def test_sanity_real() -> int:
         return fail("solution_sanity confirmed an answer whose imaginary part is 1")
     return ok("solution_sanity real-part only")
 
+
+def test_confirm125() -> int:
+    import confirm125
+
+    rows = {}
+    for line in (ROOT / "problems" / "records.jsonl").read_text(encoding="utf-8").splitlines():
+        if line.strip():
+            row = json.loads(line)
+            rows[row["id"]] = row
+    ident = "R1-2020-Q16"
+    swapped = dict(rows[ident])
+    swapped["sympy_expr"] = "0"
+    rejected = False
+    if hasattr(confirm125, "rejects_unbound_expression"):
+        rejected = bool(confirm125.rejects_unbound_expression(ident, swapped))
+    if not rejected:
+        return fail("confirm125 accepted an id-keyed check after sympy_expr was replaced")
+    if confirm125.rejects_unbound_expression(ident, rows[ident]):
+        return fail("confirm125 rejected the stored expression for its id")
+    return ok("confirm125 expression binding")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
@@ -198,6 +219,7 @@ CASES = {
     "worked-999": test_worked_999,
     "near-nan": test_near_nan,
     "sanity-real": test_sanity_real,
+    "confirm125-id": test_confirm125,
 }
 
 
