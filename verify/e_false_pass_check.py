@@ -166,6 +166,27 @@ def test_near_nan() -> int:
         return fail("_near accepted NaN in " + ", ".join(accepted))
     return ok("seven _near reject NaN")
 
+
+def test_sanity_real() -> int:
+    import sympy as sp
+
+    import solution_sanity
+
+    x = sp.symbols("x", real=True)
+    status, _why, _free = solution_sanity.definite(
+        {
+            "kind": "definite",
+            "variable": "x",
+            "sympy_expr": "1",
+            "answer_sympy": "1+I",
+            "limits": ["0", "1"],
+        },
+        x,
+    )
+    if status == "CONFIRMED":
+        return fail("solution_sanity confirmed an answer whose imaginary part is 1")
+    return ok("solution_sanity real-part only")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
@@ -176,6 +197,7 @@ CASES = {
     "yang-sampler": test_yang_sampler,
     "worked-999": test_worked_999,
     "near-nan": test_near_nan,
+    "sanity-real": test_sanity_real,
 }
 
 
