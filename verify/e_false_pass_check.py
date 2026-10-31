@@ -57,9 +57,20 @@ def test_exp_2pii() -> int:
         return fail("exp shortcut rejected a real logarithm identity")
     return ok("exp shortcut 2*pi*I")
 
+
+def test_symmetry_pv() -> int:
+    import pack_gate
+
+    x = pack_gate.namespace("x")["x"]
+    values = pack_gate._reduced_integrals(1 / x, x, -1, 1)
+    if any(value == 0 for value in values):
+        return fail("symmetry reduction accepted the Cauchy principal value of 1/x on [-1, 1]")
+    return ok("symmetry PV 1/x")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
+    "symmetry-pv": test_symmetry_pv,
 }
 
 
