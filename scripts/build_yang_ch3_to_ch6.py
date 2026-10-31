@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import multiprocessing as mp
 import re
+import sys
 import traceback
 from pathlib import Path
 
@@ -14,7 +15,15 @@ ROOT = Path(__file__).resolve().parents[1]
 UNITS = ROOT / "units"
 VERIFY = ROOT / "verify"
 AUDIT = ROOT / ".audit"
-AUDIT.mkdir(exist_ok=True)
+
+
+def _retired() -> None:
+    print(
+        "build_yang_ch3_to_ch6 is retired and does not rewrite units, drills, or indexes. "
+        "The old generator called unrestricted sympify and accepted a numeric shortcut.",
+        file=sys.stderr,
+    )
+    raise SystemExit(2)
 
 NS = {
     "x": sp.symbols("x", real=True),
@@ -55,6 +64,7 @@ def _worker(payload, q):
 
 
 def verify_timeout(d: dict, timeout: float = 12.0) -> None:
+    _retired()
     if d.get("verify_mode") == "numeric":
         expr = sp.sympify(d["sympy_expr"], locals=NS)
         ans = sp.sympify(d["answer_sympy"], locals=NS)
@@ -102,6 +112,7 @@ def mk(id_, tech, yang, kind, latex, se, hint, limits=None, ans=None, disp=None,
 
 
 def write_unit(meta, drills):
+    _retired()
     uid, order = meta["uid"], meta["order"]
     udir = UNITS / uid
     udir.mkdir(parents=True, exist_ok=True)
@@ -229,6 +240,7 @@ def keep(drills):
 
 
 def build_all():
+    _retired()
     log_rows = []
     specs = []
 
@@ -829,6 +841,7 @@ def build_all():
 
 
 def update_indexes(specs, log_rows):
+    _retired()
     # units README
     readme = UNITS / "README.md"
     text = readme.read_text()
@@ -983,6 +996,7 @@ def update_indexes(specs, log_rows):
 
 
 def main():
+    _retired()
     mp.set_start_method("spawn", force=True)
     print("Building catalog (timeout-verified)...", flush=True)
     specs, log_rows = build_all()

@@ -1,8 +1,10 @@
 # Worked solutions
 
-These notes record printed finals and worked readings. They do not change `problems/records.jsonl` or any verify flag. At tip `770c6e4` every resource-pack catalog row is `verify: sympy` (674 SymPy / 0 manual / 0 unchecked). The index below lists 81 of those notes. `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, and `YANG-1.3-Ex03` are `verify: sympy`. Lane L1 also proves `YANG-1.1-P01`–`P06` and `YANG-1.2-P01`–`P20`. Lane L2 proves `YANG-1.4-P01`–`P18` and `YANG-1.5-P01`–`P20`. Lane L3 proves `YANG-1.6-P01`–`P20` and `YANG-1.7-P01`–`P10`. Lane L6 proves `YANG-2.3-P01`–`P18` and `YANG-2.4-P01`–`P12`. Lane L7 proves `YANG-2.5-P01`–`P18` and `YANG-2.6-P01`–`P16`. Lane L4 proves `YANG-1.8-P01`–`P17` and `YANG-1.11-P01`–`P20`. Lane L8 proves the checked rows in sections 2.7, 3.4, 3.8, 4.4, 4.6, 6.1, and 6.7. Lane L5 proves 38 rows in §§1.12, 1.15, 1.17, 1.18, and 1.20. The §1.9 split proves `YANG-1.9-P01a`–`P01c` and `YANG-1.9-P04a`–`P04b`, and the §1.20 page image proves `YANG-1.20-P01`. `YANG-1.14-P10` is a reference formula excluded from the pack. No Yang pack row stays `unchecked`.
+These notes record the graded final. They do not change `problems/records.jsonl` or any verify flag. Where a printed mark disagrees with the gate, the note keeps both, and the catalog grades the gate-accepted value. A note is not a claim that the printed mark and the graded final are the same number. The resource pack is 674 `verify: sympy` rows (0 manual, 0 unchecked). The index below lists 81 of the older pack notes. Later pack notes live beside them under `solutions/pack/`.
 
-Each pack final is the value printed in the cited answers PDF or solutions PDF. Where a worked PDF and an answers PDF print equivalent antiderivatives, the note records both and the constant relating them. Yang notes for `YANG-1.3-Ex01` and `YANG-1.3-Ex03` copy finals the guide prints. Lane L4 adds derived notes for the proved §1.8 and §1.11 practice rows. Those list items print no final. The catalog grade is the pack-gate value. Other Yang rows are left without a final.
+The lane notes below are provenance for who first stored a gate-accepted final. They are not a claim that every Yang problem in the guide is in this index, or that every final was printed in a PDF. `YANG-1.3-Ex01`, `YANG-1.3-Ex02`, and `YANG-1.3-Ex03` are `verify: sympy`. Lane L1 stored `YANG-1.1-P01`–`P06` and `YANG-1.2-P01`–`P20`. Lane L2 stored `YANG-1.4-P01`–`P18` and `YANG-1.5-P01`–`P20`. Lane L3 stored `YANG-1.6-P01`–`P20` and `YANG-1.7-P01`–`P10`. Lane L6 stored `YANG-2.3-P01`–`P18` and `YANG-2.4-P01`–`P12`. Lane L7 stored `YANG-2.5-P01`–`P18` and `YANG-2.6-P01`–`P16`. Lane L4 stored `YANG-1.8-P01`–`P17` and `YANG-1.11-P01`–`P20`. Lane L8 stored the checked rows in sections 2.7, 3.4, 3.8, 4.4, 4.6, 6.1, and 6.7. Lane L5 stored 38 rows in §§1.12, 1.15, 1.17, 1.18, and 1.20. The §1.9 split stored `YANG-1.9-P01a`–`P01c` and `YANG-1.9-P04a`–`P04b`, and the §1.20 page image stored `YANG-1.20-P01`. `YANG-1.14-P10` is a reference formula, `verify: unchecked`, and is not an integral row. Yang integral rows are `verify: sympy`. Practice lists that print no final store the antiderivative the gate accepted.
+
+Where a worked PDF and an answers PDF print equivalent antiderivatives, the note records both and the constant relating them. Yang notes for `YANG-1.3-Ex01` and `YANG-1.3-Ex03` copy finals the guide prints. The §1.8 and §1.11 practice lists print no final. The catalog grade for those rows is the pack-gate value.
 
 Re-run the machine notes with:
 
@@ -106,7 +108,7 @@ python3 solutions/self_check.py
 | YANG-1.3-Ex02 | \(2\) | [yang/YANG-1.3-Ex02.md](yang/YANG-1.3-Ex02.md) |
 | YANG-1.3-Ex03 | \(2\tan^{-1}(3)\) | [yang/YANG-1.3-Ex03.md](yang/YANG-1.3-Ex03.md) |
 
-Lane L4 derived notes are `solutions/yang/YANG-1.8-P01.md` through `YANG-1.8-P17.md` and `solutions/yang/YANG-1.11-P01.md` through `YANG-1.11-P20.md`. Each header says the printed answer is absent.
+Derived notes for the §1.8 and §1.11 practice rows are `solutions/yang/YANG-1.8-P01.md` through `YANG-1.8-P17.md` and `solutions/yang/YANG-1.11-P01.md` through `YANG-1.11-P20.md`. Those lists print no final. The catalog grade is the value the gate accepted.
 
 ## Sample
 

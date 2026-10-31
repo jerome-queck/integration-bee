@@ -172,3 +172,5 @@ The learner talks to the [companion](../../.agents/skills/integration-bee-compan
 - Confirm teaching deferred is 0 in the [concept map](../../pedagogy/concept-map.md): 63 ready concept nodes and 9 indexes. `floor`, `dutis`, `vector-calc`, `beta`, `zeta`, `euler-mascheroni`, and `catalan` are ready. They stay unticked until a learner has evidence and are not Round 1 requirements. Units 01–36 and their 300 drills remain the teaching path.
 
 The PR body carries the run-specific READY line and check summary. The owner re-runs pstack and `make check` before deciding whether to merge. K's documentation PR did not merge I's encodes or J's bulk OCR; later handoffs landed on their own. The release condition at tip `770c6e4` is the checklist above.
+
+Handoff F's checker still prints `5 source deferrals`. That count is stale. `DEFERRED` in `verify/pack_handoff_f_check.py` is empty, and those rows are not left manual. Teaching deferred is 0. The five optional recognition cards are ready oral lessons, not deferrals.

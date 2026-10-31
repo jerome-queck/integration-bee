@@ -27,15 +27,12 @@ Install the Codex CLI and confirm that `codex` runs.
 
 Install Python 3.11 or newer. CI uses Python 3.12.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
-
-Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+Clone the pack and install the pinned packages from `requirements.txt`. The CLI is `scripts/control-integration-bee` in the clone.
 
 ```bash
 git clone https://github.com/jerome-queck/integration-bee.git
 cd integration-bee
+python3 -m pip install -r requirements.txt
 scripts/control-integration-bee doctor
 ```
 
@@ -69,15 +66,12 @@ Install Claude Code 2.1.292 or later and confirm that `claude` runs.
 
 Install Python 3.11 or newer. CI uses Python 3.12.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
-
-Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+Clone the pack and install the pinned packages from `requirements.txt`. The CLI is `scripts/control-integration-bee` in the clone.
 
 ```bash
 git clone https://github.com/jerome-queck/integration-bee.git
 cd integration-bee
+python3 -m pip install -r requirements.txt
 scripts/control-integration-bee doctor
 ```
 
@@ -113,15 +107,12 @@ Install Cursor. Open this repository as the project folder.
 
 Install Python 3.11 or newer. CI uses Python 3.12.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
-
-Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+Clone the pack and install the pinned packages from `requirements.txt`. The CLI is `scripts/control-integration-bee` in the clone.
 
 ```bash
 git clone https://github.com/jerome-queck/integration-bee.git
 cd integration-bee
+python3 -m pip install -r requirements.txt
 scripts/control-integration-bee doctor
 ```
 
@@ -150,7 +141,7 @@ Send `{"kind":"empty"}`. Ask with `say`.
 
 ## First session
 
-Send `{"kind":"aptitude"}`. The first integral is a unit drill. Show `drill.latex` and do not show an answer. The learner sends written working. Mark it with the existing mark turn. `source` is `photo` or `typed`. A correct mark opens one contest row in `problems`. `answer_plain` is absent. Compare the written answer with `problems show` only after they answer, then send `verdict`. Do not send that integrand to SymPy.
+Send `{"kind":"aptitude"}`. The first integral is a unit drill. Show `drill.latex` and do not show an answer. The learner sends written working. Mark it with the existing mark turn. `source` is `photo` or `typed`. A correct mark opens one contest row, `R1-2022-MIT-TB-Q01`. That row is `verify: sympy`. Send `extract.final_answer` and do not send `verdict`. The CLI grades the printed integral as `1`. A verdict does not override a wrong expression.
 
 ## Skip offer
 
