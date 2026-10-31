@@ -10,7 +10,7 @@ import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "verify"))
@@ -19,7 +19,10 @@ import model  # noqa: E402
 import problem_catalog  # noqa: E402
 import turn_contract  # noqa: E402
 
-TZ = ZoneInfo("Asia/Singapore")
+try:
+    TZ = ZoneInfo("Asia/Singapore")
+except ZoneInfoNotFoundError:
+    TZ = None
 COMMANDS = [
     {"path": "doctor", "summary": "Report whether this checkout can run."},
     {"path": "practice list", "summary": "List drills without answers."},
@@ -44,11 +47,18 @@ COMMANDS = [
 HELP = {row["path"]: row["summary"] for row in COMMANDS}
 
 
+def require_tz() -> None:
+    if TZ is None:
+        die("Asia/Singapore timezone data is missing. Install tzdata from requirements.txt.", 2)
+
+
 def now_iso() -> str:
+    require_tz()
     return datetime.now(TZ).replace(microsecond=0).isoformat()
 
 
 def today():
+    require_tz()
     return datetime.now(TZ).date()
 
 
@@ -506,10 +516,11 @@ def reference_pdf_status() -> str:
 
 
 def cmd_doctor(fmt: str) -> int:
+    require_tz()
     try:
         import sympy
     except ImportError:
-        die("sympy missing. python3 -m pip install sympy")
+        die("sympy missing. python3 -m pip install -r requirements.txt")
     yang = ROOT / "sources" / "user" / "Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf"
     units = sorted(p for p in (ROOT / "units").glob("[0-9][0-9]-*") if p.is_dir())
     drills = load_drills()

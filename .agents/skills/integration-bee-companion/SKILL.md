@@ -27,15 +27,12 @@ Install the Codex CLI and confirm that `codex` runs.
 
 Install Python 3.11 or newer. CI uses Python 3.12.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
-
-Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+Clone the pack and install the pinned packages from `requirements.txt`. The CLI is `scripts/control-integration-bee` in the clone.
 
 ```bash
 git clone https://github.com/jerome-queck/integration-bee.git
 cd integration-bee
+python3 -m pip install -r requirements.txt
 scripts/control-integration-bee doctor
 ```
 
@@ -69,15 +66,12 @@ Install Claude Code 2.1.292 or later and confirm that `claude` runs.
 
 Install Python 3.11 or newer. CI uses Python 3.12.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
-
-Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+Clone the pack and install the pinned packages from `requirements.txt`. The CLI is `scripts/control-integration-bee` in the clone.
 
 ```bash
 git clone https://github.com/jerome-queck/integration-bee.git
 cd integration-bee
+python3 -m pip install -r requirements.txt
 scripts/control-integration-bee doctor
 ```
 
@@ -113,15 +107,12 @@ Install Cursor. Open this repository as the project folder.
 
 Install Python 3.11 or newer. CI uses Python 3.12.
 
-```bash
-python3 -m pip install sympy pyyaml
-```
-
-Clone the pack and run the companion CLI. The CLI is `scripts/control-integration-bee` in the clone.
+Clone the pack and install the pinned packages from `requirements.txt`. The CLI is `scripts/control-integration-bee` in the clone.
 
 ```bash
 git clone https://github.com/jerome-queck/integration-bee.git
 cd integration-bee
+python3 -m pip install -r requirements.txt
 scripts/control-integration-bee doctor
 ```
 
