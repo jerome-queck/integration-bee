@@ -53,7 +53,7 @@ problems:
     source: sample
   - id: SAMPLE-Q17
     source: sample
-    note: "PDF answer suspect — mark ln|ln x|+C as correct"
+    note: "PDF answer suspect — x^(1/ln x) = e, so mark e*x+C as correct and ln|ln x|+C as wrong"
   - id: SAMPLE-Q18
     source: sample
   - id: SAMPLE-Q19

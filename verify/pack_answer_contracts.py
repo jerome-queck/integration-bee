@@ -11,6 +11,7 @@ from __future__ import annotations
 import ast
 import re
 
+import safe_expr
 import sympy as sp
 
 import pack_handoff_f_domain
@@ -74,7 +75,7 @@ def parse_answer(kind, text, namespace):
             return sp.Symbol(compact)
         # Well-formed numeric proxies are wrong answers. Malformed text is
         # a parse error, which the turn contract must not record as a miss.
-        return sp.sympify(text, locals=ns)
+        return safe_expr.safe_sympify(text, ns)
     if kind == "function":
         match = re.fullmatch(r"\s*f\s*\(\s*x\s*\)\s*=\s*(.+)", text, re.S)
         if match:
@@ -83,7 +84,7 @@ def parse_answer(kind, text, namespace):
         ns["C"] = sp.Symbol("C", positive=True)
     if kind == "domain":
         ns["n"] = sp.Symbol("n", real=True)
-    return sp.sympify(infinity_text(text), locals=ns)
+    return safe_expr.safe_sympify(infinity_text(text), ns)
 
 
 def _closed_scalar(value):

@@ -162,7 +162,6 @@ def check(rows):
 def _check_section_26(rows, x):
     specs = (
         ("YANG-2.6-P10", "indefinite", []),
-        ("YANG-2.6-P12", "indefinite", []),
         ("YANG-2.6-P14", "definite", ["0", "pi/4"]),
     )
     for ident, kind, limits in specs:
@@ -175,7 +174,9 @@ def _check_section_26(rows, x):
         require(not pack_gate.proven(kind, row["sympy_expr"], pair, "0", "x"),
                 ident + " rejects 0")
     nested = pack_gate._parse(rows["YANG-2.6-P10"]["sympy_expr"], "x")
-    radical = pack_gate._parse(rows["YANG-2.6-P12"]["sympy_expr"], "x")
+    # Audit A1: YANG-2.6-P12 prints sqrt(3)*sin(x) + cos(x) with no radical, so the
+    # elliptic certificate is exercised on the radical itself, not on a row.
+    radical = pack_gate._parse("1/sqrt(3*sin(x) + cos(x))", "x")
     quarter = pack_gate._parse(rows["YANG-2.6-P14"]["sympy_expr"], "x")
     require(yang_certificates.indefinite_ok(sp.Integer(0), nested, x) is False,
             "nested radical rejects a zero final")

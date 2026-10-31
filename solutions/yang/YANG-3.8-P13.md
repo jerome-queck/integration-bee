@@ -1,28 +1,30 @@
 # YANG-3.8-P13
 
 - Guide: `sources/user/Integration_Bee_Topics_Guide_Yang_2nd_Ed.pdf`, Yang §3.8 Speed Bashing, practice item 13, printed p. 68 (PDF p. 69).
+- Printed answer: absent.
+- Worked source: derived in this note.
+- Transcription: corrected from the page image after audit A1 (31 Oct 2026).
 
 ## Problem
 
-∫_0^9 e sqrt(1+sqrt(x)) dx
+∫_0^{9} e^{√(1+√x)} dx
 
 \[
-e \sqrt{\sqrt{x} + 1}
+e^{\sqrt{\sqrt{x} + 1}}
 \]
 
 ## Solution
 
-Put \(u=\sqrt{x}\) and then \(w=1+u\). The integral is
-\[
-2e\int_1^4(w^{3/2}-w^{1/2})\,dw=2e\Bigl[\frac25 w^{5/2}-\frac23 w^{3/2}\Bigr]_1^4=\frac{232e}{15}.
-\]
+Substitute x = u², then u = w² − 1. The integral becomes ∫_1^2 4(w³ − w)e^w dw. An antiderivative of (w³ − w)e^w is (w³ − 3w² + 5w − 5)e^w, which is e² at w = 2 and −2e at w = 1. The value is 4e² + 8e.
 
 ## Final answer
 
 \[
-\frac{232 e}{15}
+8 e + 4 e^{2}
 \]
+
+Stored `answer_sympy`: `4*exp(2) + 8*E`.
 
 ## SymPy self-check
 
-The catalog row is `verify: sympy`. `sympy_expr` is `E*sqrt(sqrt(x) + 1)`, `answer_sympy` is `232*E/15`, and `limits` is `['0', '9']`. `verify/pack_gate.py` proves it by an antiderivative derivative or by exact definite evaluation.
+`verify/yang_worked_check.py` checks both substitutions, the antiderivative and the endpoint values exactly. The value was also re-checked with mpmath at 40 digits.

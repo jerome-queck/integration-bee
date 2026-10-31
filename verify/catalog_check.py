@@ -116,6 +116,10 @@ def drive() -> int:
         sample_doc = json.loads(shown_sample.stdout)
         check(sample_doc["verify"] == "sympy" and sample_doc["answer_sympy"] == "E*x", "SAMPLE-Q17 grades e*x")
         check("x^(1/ln x)" in sample_doc["integrand_plain"], "SAMPLE-Q17 shows the power")
+        mock_meta = (ROOT / "past" / "mocks" / "mock01-meta.yaml").read_text(encoding="utf-8")
+        q17_note = mock_meta.split("id: SAMPLE-Q17", 1)[1].split("- id:", 1)[0]
+        check("mark e*x+C as correct" in q17_note and "ln|ln x|+C as correct" not in q17_note,
+              "mock01 SAMPLE-Q17 note marks e*x+C (audit A8)")
         selected_sample = run_cli(data, ["problems", "select", "--id", "SAMPLE-Q05", "--format", "json"])
         check(selected_sample.returncode == 0, "sample select exit")
         selected_doc = json.loads(selected_sample.stdout)

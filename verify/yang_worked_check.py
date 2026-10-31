@@ -3984,37 +3984,25 @@ _add(
 
 _add(
     "YANG-2.6-P12",
-    "2**(1/4)*5**(3/4)*elliptic_f(2*atan(sqrt(tan(x/2 + atan(1/3)/2))), 1/2)/5",
+    "log(Abs(tan(x/2 + pi/12)))/2",
     [
         (
-            "Phase shift: 3*sin(x) + cos(x) = sqrt(10)*sin(x + atan(1/3)).",
-            r"Phase shift: \(3\sin x+\cos x=\sqrt{10}\sin(x+\arctan(1/3))\).",
+            "Phase shift: sqrt(3)*sin(x) + cos(x) = 2*sin(x + pi/6).",
+            r"Phase shift: \(\sqrt3\sin x+\cos x=2\sin(x+\pi/6)\).",
         ),
         (
-            "In s, the derivative of sqrt(2)*elliptic_f(2*atan(s), 1/2) times ((1 + s**4)/2)/(2*s) equals 1/sqrt(2*s**2/(1 + s**4)).",
-            r"In \(s\), the derivative of \(\sqrt{2}F(2\arctan s\mid 1/2)\) times \(((1+s^{4})/2)/(2s)\) equals \(1/\sqrt{2s^{2}/(1+s^{4})}\).",
+            "An antiderivative of 1/sin(x) is log(Abs(tan(x/2))).",
+            r"An antiderivative of \(1/\sin x\) is \(\log|\tan(x/2)|\).",
         ),
         (
-            "s = sqrt(tan(theta/2)) has that theta derivative, and 2*s**2/(1 + s**4) equals sin(theta).",
-            r"\(s=\sqrt{\tan(\theta/2)}\) has that \(\theta\) derivative, and \(2s^{2}/(1+s^{4})\) equals \(\sin\theta\).",
-        ),
-        (
-            "Scale by 10**(-1/4) and set theta = x + atan(1/3). The composed antiderivative is the stored answer.",
-            r"Scale by \(10^{-1/4}\) and set \(\theta=x+\arctan(1/3)\). The composed antiderivative is the stored answer.",
+            "Shift by pi/6 and halve: the antiderivative is log(Abs(tan(x/2 + pi/12)))/2.",
+            r"Shift by \(\pi/6\) and halve: the antiderivative is \(\tfrac12\log|\tan(x/2+\pi/12)|\).",
         ),
     ],
     [
-        (
-            "elliptic",
-            "sqrt(10)*sin(x + atan(1/3))",
-            "3*sin(x) + cos(x)",
-            "sqrt(2)*elliptic_f(2*atan(s), 1/2)",
-            "((1 + s**4)/2)/(2*s)",
-            "2*s**2/(1 + s**4)",
-            "sqrt(tan(theta/2))",
-            "10**(-1/4)",
-            "2**(1/4)*5**(3/4)*elliptic_f(2*atan(sqrt(tan(x/2 + atan(1/3)/2))), 1/2)/5",
-        ),
+        ("eq", "sqrt(3)*sin(x) + cos(x)", "2*sin(x + pi/6)"),
+        ("diff_of", "log(Abs(tan(x/2)))", "1/sin(x)"),
+        ("diff", "log(Abs(tan(x/2 + pi/12)))/2"),
     ],
 )
 
@@ -4675,31 +4663,22 @@ _s111__add(
 )
 _s111__add(
     "YANG-1.11-P04",
-    "2*x**(3/2)/3 + 2*sqrt(x) + x + 2*log(Abs(sqrt(x) - 1))",
+    "2*(x + 2)*sqrt(x - 1)/3",
     [
         (
-            "Substitution u = sqrt(x). The derivative of sqrt(x) is 1/(2*sqrt(x)).",
-            r"Substitution \(u=\sqrt{x}\).",
+            "Write x = (x - 1) + 1, so x/sqrt(x - 1) = sqrt(x - 1) + 1/sqrt(x - 1).",
+            r"Write \(x=(x-1)+1\), so \(x/\sqrt{x-1}=\sqrt{x-1}+1/\sqrt{x-1}\).",
         ),
         (
-            "Then x/(sqrt(x) - 1) = 2*sqrt(x)**3/(sqrt(x) - 1)*(1/(2*sqrt(x))). Polynomial division gives sqrt(x)**3/(sqrt(x) - 1) = sqrt(x)**2 + sqrt(x) + 1 + 1/(sqrt(x) - 1).",
-            r"Divide \(u^{3}/(u-1)\) to get \(u^{2}+u+1+1/(u-1)\).",
-        ),
-        (
-            "Termwise integration gives 2*(sqrt(x)**3/3 + sqrt(x)**2/2 + sqrt(x) + log(Abs(sqrt(x) - 1))) = 2*x**(3/2)/3 + 2*sqrt(x) + x + 2*log(Abs(sqrt(x) - 1)).",
-            r"The antiderivative is \(\frac{2}{3}x^{3/2}+x+2\sqrt{x}+2\log|\sqrt{x}-1|\).",
+            "Termwise integration gives 2*(x - 1)**(3/2)/3 + 2*sqrt(x - 1) = 2*(x + 2)*sqrt(x - 1)/3.",
+            r"Termwise integration gives \(\tfrac23(x-1)^{3/2}+2\sqrt{x-1}=\tfrac23(x+2)\sqrt{x-1}\).",
         ),
     ],
     [
-        ("diff_of", "sqrt(x)", "1/(2*sqrt(x))"),
-        ("eq", "x/(sqrt(x) - 1)", "2*sqrt(x)**3/(sqrt(x) - 1)*(1/(2*sqrt(x)))"),
-        ("eq", "sqrt(x)**3/(sqrt(x) - 1)", "sqrt(x)**2 + sqrt(x) + 1 + 1/(sqrt(x) - 1)"),
-        (
-            "eq",
-            "2*(sqrt(x)**3/3 + sqrt(x)**2/2 + sqrt(x) + log(Abs(sqrt(x) - 1)))",
-            "2*x**(3/2)/3 + 2*sqrt(x) + x + 2*log(Abs(sqrt(x) - 1))",
-        ),
-        ("diff", "2*x**(3/2)/3 + 2*sqrt(x) + x + 2*log(Abs(sqrt(x) - 1))"),
+        ("eq", "x/sqrt(x - 1)", "sqrt(x - 1) + 1/sqrt(x - 1)"),
+        ("diff_of", "2*(x - 1)**(3/2)/3 + 2*sqrt(x - 1)", "sqrt(x - 1) + 1/sqrt(x - 1)"),
+        ("eq", "2*(x - 1)**(3/2)/3 + 2*sqrt(x - 1)", "2*(x + 2)*sqrt(x - 1)/3"),
+        ("diff", "2*(x + 2)*sqrt(x - 1)/3"),
     ],
 )
 _s111__add(
@@ -6434,15 +6413,22 @@ def _s27_check_3_8_p10(row, x):
 
 
 def _s27_check_3_8_p11(row, x):
-    """Arctangent antiderivative of 1/(e**x + e**(-(x+1))) on [0, infinity)."""
+    """u = e**x, partial fractions, arctangent primitive on [1, infinity) (audit A1)."""
     _s27_require(row["limits"] == ["0", "oo"], row["id"] + " limits")
     integrand = _s27_integrand_of(row)
-    primitive = sp.sqrt(sp.E) * sp.atan(sp.exp(x) * sp.sqrt(sp.E))
-    _s27_same(sp.diff(primitive, x), integrand, row["id"] + " derivative")
-    upper = sp.limit(primitive, x, sp.oo)
-    lower = primitive.subs(x, 0)
-    value = sp.simplify(upper - lower)
-    _s27_same(value, sp.sqrt(sp.E) * (sp.pi / 2 - sp.atan(sp.sqrt(sp.E))), row["id"] + " endpoints")
+    _s27_same(integrand, 1 / (sp.exp(x) + 1 / (sp.exp(x) + 1)), row["id"] + " printed form")
+    u = sp.symbols("u", positive=True)
+    after_u = integrand.subs(x, sp.log(u)) / u
+    rational = (u + 1) / (u * (u**2 + u + 1))
+    _s27_same(sp.simplify(after_u - rational), 0, row["id"] + " u integrand")
+    split = 1 / u - u / (u**2 + u + 1)
+    _s27_same(sp.simplify(rational - split), 0, row["id"] + " partial fractions")
+    primitive = sp.log(u) - sp.log(u**2 + u + 1) / 2 + sp.atan((2 * u + 1) / sp.sqrt(3)) / sp.sqrt(3)
+    _s27_same(sp.simplify(sp.diff(primitive, u) - split), 0, row["id"] + " antiderivative")
+    upper = sp.limit(primitive, u, sp.oo)
+    _s27_same(upper, sp.pi / (2 * sp.sqrt(3)), row["id"] + " upper limit")
+    value = sp.simplify(upper - primitive.subs(u, 1))
+    _s27_same(value, sp.log(3) / 2 + sp.sqrt(3) * sp.pi / 18, row["id"] + " endpoints")
     _s27_require_answer(value, row, row["id"] + " stored value")
 
 
@@ -6474,23 +6460,22 @@ def _s27_check_3_8_p12(row, x):
 
 
 def _s27_check_3_8_p13(row, x):
-    """Constant factor e, then two square-root substitutions, on [0, 9]."""
+    """x = u**2 then u = w**2 - 1 for exp(sqrt(1 + sqrt(x))) on [0, 9] (audit A1)."""
     _s27_require(row["limits"] == ["0", "9"], row["id"] + " limits")
     integrand = _s27_integrand_of(row)
-    _s27_same(integrand, sp.E * sp.sqrt(1 + sp.sqrt(x)), row["id"] + " constant factor")
+    _s27_same(integrand, sp.exp(sp.sqrt(1 + sp.sqrt(x))), row["id"] + " printed form")
     u = sp.symbols("u", positive=True)
     _s27_same(sp.diff(u**2, u), 2 * u, row["id"] + " u jacobian")
     after_u = integrand.subs(x, u**2) * (2 * u)
-    _s27_same(sp.simplify(after_u - 2 * sp.E * u * sp.sqrt(1 + u)), 0, row["id"] + " u integrand")
+    _s27_same(sp.simplify(after_u - 2 * u * sp.exp(sp.sqrt(1 + u))), 0, row["id"] + " u integrand")
     w = sp.symbols("w", positive=True)
-    _s27_same(sp.diff(w - 1, w), 1, row["id"] + " w jacobian")
-    after_w = after_u.subs(u, w - 1)
-    _s27_same(sp.simplify(after_w - 2 * sp.E * (w ** sp.Rational(3, 2) - w ** sp.Rational(1, 2))), 0, row["id"] + " w integrand")
-    primitive = sp.Rational(2, 5) * w ** sp.Rational(5, 2) - sp.Rational(2, 3) * w ** sp.Rational(3, 2)
-    _s27_same(sp.diff(primitive, w), w ** sp.Rational(3, 2) - w ** sp.Rational(1, 2), row["id"] + " antiderivative")
-    span = sp.simplify(primitive.subs(w, 4) - primitive.subs(w, 1))
-    value = sp.simplify(2 * sp.E * span)
-    _s27_same(value, 232 * sp.E / 15, row["id"] + " endpoints")
+    _s27_same(sp.diff(w**2 - 1, w), 2 * w, row["id"] + " w jacobian")
+    after_w = after_u.subs(u, w**2 - 1) * (2 * w)
+    _s27_same(sp.simplify(after_w - 4 * (w**3 - w) * sp.exp(w)), 0, row["id"] + " w integrand")
+    primitive = (w**3 - 3 * w**2 + 5 * w - 5) * sp.exp(w)
+    _s27_same(sp.simplify(sp.diff(primitive, w) - (w**3 - w) * sp.exp(w)), 0, row["id"] + " antiderivative")
+    value = sp.expand(4 * (primitive.subs(w, 2) - primitive.subs(w, 1)))
+    _s27_same(value, 4 * sp.exp(2) + 8 * sp.E, row["id"] + " endpoints")
     _s27_require_answer(value, row, row["id"] + " stored value")
 
 
