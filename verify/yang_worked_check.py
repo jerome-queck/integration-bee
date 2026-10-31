@@ -4320,6 +4320,10 @@ def run_step(ident: str, step: tuple, integrand, row: dict | None = None, spec: 
             raise AssertionError(f"{ident} derivative in {variable}")
         return
     if kind == "eq":
+        left_text = str(step[1]).strip()
+        right_text = str(step[2]).strip()
+        if left_text == right_text and left_text.lstrip("-").isdigit():
+            raise AssertionError(f"{ident} numeric tautology {step[1]} = {step[2]}")
         if not same(parse(step[1]), parse(step[2])):
             raise AssertionError(f"{ident} equality {step[1]} vs {step[2]}")
         return
@@ -6760,6 +6764,7 @@ def real_domain_failures(row: dict) -> list[str]:
     step = sp.Float(REAL_STEP, 40)
     tol = sp.Float(REAL_TOL)
     bad = []
+    valid = 0
     for text in REAL_POINTS:
         point = sp.Float(text, 40)
         value = _real_number(integrand.subs(symbol, point), 30)
@@ -6768,10 +6773,13 @@ def real_domain_failures(row: dict) -> list[str]:
         real, imag = value.as_real_imag()
         if abs(imag) > sp.Float("1e-20"):
             continue
+        valid += 1
         upper = _real_number(answer.subs(symbol, point + step), 40)
         lower = _real_number(answer.subs(symbol, point - step), 40)
         if upper is None or lower is None or abs((upper - lower) / (2 * step) - real) > tol * (1 + abs(real)):
             bad.append(text)
+    if valid == 0:
+        return ["no-valid-sample"]
     return bad
 
 
