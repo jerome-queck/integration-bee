@@ -320,7 +320,10 @@ def _zero(expr) -> bool:
         makers.append(lambda value: sp.powdenest(value, force=True))
         makers.append(sp.sqrtdenest)
     if has(sp.log):
-        makers.append(lambda value: sp.expand_log(value, force=True))
+        # No force=True: log(x**2) = 2*log(x) fails for real x < 0. Without
+        # force, expand_log splits a log only when the symbol assumptions
+        # prove each base positive.
+        makers.append(sp.expand_log)
         makers.append(lambda value: value.rewrite(sp.log))
     if has(sp.sin) or has(sp.cos) or has(sp.tan) or has(sp.exp):
         makers.append(sp.expand_trig)
@@ -1779,7 +1782,13 @@ def _sin_log_gamma(integrand, symbol, lo, hi):
         w = sp.Symbol("_w", real=True)
         _require(_zero(sp.diff(sp.cos(x), x) + sp.sin(x)), "cos-diff")
         _require(_zero(sp.sin(x) ** 2 - (1 - sp.cos(x) ** 2)), "sin-square")
-        _require(_zero(sp.log(sp.sin(x) ** 2) - 2 * sp.log(sp.sin(x))), "sin-log")
+        # log(s**2) = 2*log(s) needs s > 0; it fails for real s < 0. The sine
+        # here is sin(pi*x) for x in (0, 1), positive on (0, pi).
+        from sympy.calculus.util import function_range
+        sin_range = function_range(sp.sin(x), x, sp.Interval.open(0, sp.pi))
+        _require(sin_range.is_subset(sp.Interval.open(0, sp.oo)) is True, "sin-positive")
+        s_pos = sp.Symbol("_s", positive=True)
+        _require(_zero(sp.log(s_pos**2) - 2 * sp.log(s_pos)), "sin-log")
         left = -(1 - w) * sp.log(1 - w) - w
         right = (1 + w) * sp.log(1 + w) - w
         _require(_zero(sp.diff(left, w) - sp.log(1 - w)), "log-minus")
@@ -1929,7 +1938,8 @@ def _cot_log_sec(integrand, symbol, lo, hi):
         _require(cos_range.is_subset(sp.Interval.open(0, sp.oo)) is True, "cos-positive")
         _require(_zero(sp.sec(x) - 1 / sp.cos(x)), "sec-recip")
         _require(_zero(sp.log(1 / c) + sp.log(c)), "sec-log")
-        _require(_zero(sp.log(sp.cos(x) ** 2) - 2 * sp.log(sp.cos(x))), "cos-log")
+        # Same positive c: log(c**2) = 2*log(c) fails for real c < 0.
+        _require(_zero(sp.log(c**2) - 2 * sp.log(c)), "cos-log")
         _require(_zero(sp.cos(x) ** 2 - (1 - sp.sin(x) ** 2)), "cos-square")
         _require(_zero(sp.diff(sp.sin(x), x) - sp.cos(x)), "sin-diff")
         _require(_zero(sp.sin(0)) and _zero(sp.sin(sp.pi / 2) - 1), "sin-ends")

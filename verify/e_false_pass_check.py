@@ -62,6 +62,22 @@ def test_exp_2pii() -> int:
     return ok("exp shortcut 2*pi*I")
 
 
+def test_zero_log_square() -> int:
+    import sympy as sp
+
+    import pack_gate
+
+    # log(x**2) = 2*log(x) is false for real x < 0: at x = -1 the left side
+    # is 0 and the right side is 2*pi*I.
+    x = sp.Symbol("x", real=True)
+    if pack_gate._zero(sp.log(x**2) - 2 * sp.log(x)):
+        return fail("_zero accepted log(x**2) = 2*log(x) for real x")
+    p = sp.Symbol("p", positive=True)
+    if not pack_gate._zero(sp.log(p**2) - 2 * sp.log(p)):
+        return fail("_zero rejected log(p**2) = 2*log(p) for positive p")
+    return ok("_zero log square on real x")
+
+
 def test_symmetry_pv() -> int:
     import pack_gate
 
@@ -272,6 +288,7 @@ def test_empty_notes() -> int:
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
+    "zero-log-square": test_zero_log_square,
     "symmetry-pv": test_symmetry_pv,
     "floor-cell": test_floor_cell,
     "arctan-square": test_arctan_square,
