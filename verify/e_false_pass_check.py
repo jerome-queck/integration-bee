@@ -117,6 +117,17 @@ def test_display() -> int:
             return fail(f"display checker accepted {name}")
     return ok("display checker")
 
+
+def test_yang_sampler() -> int:
+    import yang_worked_check as yang
+
+    bad = yang.real_domain_failures(
+        {"variable": "x", "sympy_expr": "log(-1-x**2)", "answer_sympy": "999"}
+    )
+    if not bad:
+        return fail("Yang sampler accepted zero valid samples")
+    return ok("Yang sampler zero valid samples")
+
 CASES = {
     "primitive-abs": test_primitive_abs,
     "exp-2pii": test_exp_2pii,
@@ -124,6 +135,7 @@ CASES = {
     "floor-cell": test_floor_cell,
     "arctan-square": test_arctan_square,
     "display": test_display,
+    "yang-sampler": test_yang_sampler,
 }
 
 
