@@ -64,10 +64,13 @@ log|u|. A match that appears only for a positive variable is kept when sampled
 real points on both sides of 0 agree, and rejected when they do not: x**2/2
 is not an antiderivative of Abs(x). The samples add seeded irrational and
 rational points on both signs. Agreement only at zeros is not acceptance.
-The relative band is about 1e-6 wide, and the zero cutoff is 1e-8. A wrong
-zero used to agree with an integrand between those scales. A sample whose
-float magnitude exceeds 1e12 is compared at the working precision instead of
-being dropped. simplify(derivative - integrand) == 0 is accepted on its own. Further checked forms are a
+Every sample is compared by one rule on 25-digit complex values: a real
+side against a non-real side rejects (up to a whole 2*pi*I log branch); a
+sample non-real on both sides is outside the real domain and quiet; both
+sides within 1e-8 of zero are quiet;
+exactly one side at zero rejects; otherwise the difference must be within
+1e-6 of the larger magnitude, so small values of opposite sign never agree.
+A spike that vanishes at every probe point is a known limit (docs/KNOWN_LIMITS.md). simplify(derivative - integrand) == 0 is accepted on its own. Further checked forms are a
 complement of two square-root logarithms on [2, 4], a fifth power of a
 cosine-sine mean on [0, π/2], a root-exponential reflection on [-π/2, π/2],
 1/(1+|cos x|) on [0, 2π], a shifted square-root logarithm reduced to a gamma
@@ -449,10 +452,25 @@ def _king_constant(integrand, symbol, lo, hi):
     return sp.simplify(total * (hi - lo) / 2)
 
 
+def _may_assume(sym) -> bool:
+    """Whether a certificate may give sym a sign assumption.
+
+    A bare parameter carries no assumption yet, and a real finite symbol
+    only gains a sign. Any other declaration (extended_real, complex,
+    imaginary, infinite, ...) is the row's statement and is kept: making an
+    extended-real a positive dropped the infinite case and accepted
+    pi*Abs(a)/2 for (1-cos(a*x))/x**2.
+    """
+    declared = {k: v for k, v in getattr(sym, "assumptions0", {}).items() if k != "commutative"}
+    if not declared:
+        return True
+    return getattr(sym, "is_real", None) is True and getattr(sym, "is_finite", None) is True
+
+
 def _positive_parameters(expr, symbol):
     repl = {}
     for free in expr.free_symbols:
-        if free == symbol or free.is_number:
+        if free == symbol or free.is_number or not _may_assume(free):
             continue
         repl[free] = sp.Symbol(str(free), positive=True)
     return expr.subs(repl) if repl else expr
@@ -1199,12 +1217,8 @@ def _positive_domain_derivative(answer, integrand, symbol) -> bool:
     x=-1 and the two sides differ there, so the sample rejects it.
     simplify(derivative - integrand) == 0 is a proof. Numeric agreement is
     not: samples where both sides are zero do not count, and the probes
-    include seeded points on both signs. The relative tolerance is
-    1e-6*(1+|integrand|), so its absolute floor is about 1e-6, while a sample
-    is called zero only at 1e-8. A wrong zero therefore agrees with an
-    integrand between those scales. That pair is rejected. A sample above
-    1e12 is not dropped: float conversion is past the cutoff, and the same
-    comparison is repeated on the 25-digit values.
+    include seeded points on both signs. Each sample goes through
+    _compare_sample.
     """
     positive = sp.Symbol(symbol.name, positive=True)
     delta = sp.diff(answer, symbol) - integrand
@@ -1217,89 +1231,82 @@ def _positive_domain_derivative(answer, integrand, symbol) -> bool:
     except Exception:
         pass
     saw_nonzero = False
+    log_branch = integrand.has(sp.log) or slope.has(sp.log)
     for point in _derivative_samples():
         try:
             left_hp = sp.N(integrand.subs(symbol, point), 25)
             right_hp = sp.N(slope.subs(symbol, point), 25)
         except Exception:
             continue
-        try:
-            left = complex(left_hp)
-            right = complex(right_hp)
-        except Exception:
-            left = right = None
-        if (
-            left is None
-            or right is None
-            or abs(left.real) > 1e12
-            or abs(right.real) > 1e12
-        ):
-            # A non-real sample is still ignored. Overflow is not: float
-            # conversion past 1e12 used to drop the point, which accepted
-            # x**2/2 for an integrand that is huge on x<0.
-            if left is not None and right is not None and (
-                abs(left.imag) > 1e-8 or abs(right.imag) > 1e-8
-            ):
-                continue
-            compared = _compare_large_sample(left_hp, right_hp)
-            if compared == "reject":
-                return False
-            if compared == "nonzero":
-                saw_nonzero = True
-            continue
-        if abs(left.imag) > 1e-8 or abs(right.imag) > 1e-8:
-            continue
-        tolerance = 1e-6 * (1 + abs(left))
-        difference = abs(left - right)
-        if difference > tolerance:
+        verdict = _compare_sample(left_hp, right_hp, log_branch)
+        if verdict == "reject":
             return False
-        # NaN is not a real comparison. asec(x) at x=1 is one such probe:
-        # the integrand is 0 and the differentiated closed form is undefined.
-        # Treating that pair as the 1e-8 gap rejected YANG-2.5-P12.
-        if difference != difference or abs(left) != abs(left) or abs(right) != abs(right):
-            continue
-        # One side inside the zero cutoff and the other still inside the
-        # relative band is the gap between 1e-8 and about 1e-6. A wrong zero
-        # used to pass there.
-        left_zero = abs(left) <= 1e-8
-        right_zero = abs(right) <= 1e-8
-        if left_zero and right_zero:
-            continue
-        if left_zero != right_zero and max(abs(left), abs(right)) <= tolerance:
-            return False
-        saw_nonzero = True
+        if verdict == "nonzero":
+            saw_nonzero = True
     return saw_nonzero
 
 
-def _compare_large_sample(left_hp, right_hp) -> str:
-    """Compare a sample whose float magnitude exceeds 1e12.
+def _compare_sample(left_hp, right_hp, log_branch: bool = False) -> str:
+    """One rule for every sample, on 25-digit complex values.
 
-    Returns "nonzero" when the 25-digit values agree and the sample counts,
-    "quiet" when they agree but both sit on the zero cutoff, and "reject"
-    when they differ or are not finite. Dropping the sample accepted x**2/2
-    for an integrand that is huge on one side of 0.
+    Returns "skip" when either side is undefined (NaN, such as asec(x) at
+    x=1 for YANG-2.5-P12), "quiet" when the sample says nothing, "nonzero"
+    when the sides agree, and "reject" otherwise.
+
+    Reality must match. A real side against a non-real side rejects:
+    x+(1-sign(x))*I, x+(1-sign(x))*log(x) and x+(1-sign(x))*(10**20+I/10**8)
+    are not x on x<0. The one exception is a logarithm's branch: when either
+    side has log, a gap of a whole multiple of 2*pi*I is the same value
+    (R1-2022-MIT-TB-Q23: -2*log(2*x)+log(x**2) is -2*log(2)-2*pi*I on x<0).
+    When both sides are non-real the sample is outside the real domain of
+    the integral, where branch choices (R1-2021-Q09, R3-2024-Chainlink-G1-Q03,
+    YANG-2.5-P14) make the values incomparable. It is quiet: it neither
+    rejects nor counts as agreement.
+
+    For the rest, both sides within 1e-8 of zero are quiet, exactly one side
+    at zero rejects, and otherwise the difference must be within 1e-6 of the
+    larger magnitude. There is no absolute floor, so 1e-7 and -1e-7 do not
+    agree. An infinite value against a finite one rejects.
     """
     try:
-        left_real = sp.re(left_hp)
-        right_real = sp.re(right_hp)
-        left_imag = sp.im(left_hp)
-        right_imag = sp.im(right_hp)
+        left = sp.N(left_hp, 25)
+        right = sp.N(right_hp, 25)
+    except Exception:
+        return "skip"
+    if left.has(sp.nan) or right.has(sp.nan):
+        return "skip"
+    if not (left.is_number and right.is_number):
+        return "reject"
+    if left.is_finite is not True or right.is_finite is not True:
+        if left.has(sp.zoo, sp.oo, -sp.oo) and right.has(sp.zoo, sp.oo, -sp.oo):
+            return "skip"
+        return "reject"
+    cut = sp.Float("1e-8")
+    try:
+        left_complex = abs(sp.im(left)) > cut
+        right_complex = abs(sp.im(right)) > cut
+        if left_complex and right_complex:
+            return "quiet"
+        if left_complex != right_complex:
+            gap = sp.im(right - left)
+            turns = sp.Integer(round(float(gap) / (2 * float(sp.pi))))
+            if not log_branch or turns == 0:
+                return "reject"
+            left = left + 2 * sp.pi * sp.I * turns
+        left_size = sp.Abs(left).evalf(25)
+        right_size = sp.Abs(right).evalf(25)
+        difference = sp.Abs(left - right).evalf(25)
     except Exception:
         return "reject"
-    parts = (left_real, right_real, left_imag, right_imag)
-    if any(getattr(part, "is_finite", None) is not True for part in parts):
+    if not all(getattr(v, "is_Float", False) or v == 0 for v in (left_size, right_size, difference)):
         return "reject"
-    if abs(left_imag) > sp.Float("1e-8") or abs(right_imag) > sp.Float("1e-8"):
-        return "reject"
-    difference = abs(left_real - right_real)
-    tolerance = sp.Float("1e-6") * (1 + abs(left_real))
-    if difference > tolerance:
-        return "reject"
-    left_zero = abs(left_real) <= sp.Float("1e-8")
-    right_zero = abs(right_real) <= sp.Float("1e-8")
+    left_zero = left_size <= cut
+    right_zero = right_size <= cut
     if left_zero and right_zero:
         return "quiet"
-    if left_zero != right_zero and max(abs(left_real), abs(right_real)) <= tolerance:
+    if left_zero != right_zero:
+        return "reject"
+    if difference > sp.Float("1e-6") * max(left_size, right_size):
         return "reject"
     return "nonzero"
 
@@ -2606,7 +2613,7 @@ def _apply_stated(coeff, assumptions: dict):
     repl = {}
     for sym in coeff.free_symbols:
         stated = assumptions.get(getattr(sym, "name", None))
-        if stated is not None and stated != sym:
+        if stated is not None and stated != sym and _may_assume(sym):
             repl[sym] = stated
     return coeff.xreplace(repl) if repl else coeff
 
