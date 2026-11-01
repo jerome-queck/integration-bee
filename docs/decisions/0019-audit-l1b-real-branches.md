@@ -35,7 +35,7 @@ Central-difference error at dps 50, step `1e-16`: `x=-8` gives `1.3e-35`; `x=-4`
 | R1-2021-Q37 | nested towers, integral `0` | quad on `[0, pi/2]` at dps 40: `2.1e-43` |
 | R1-2021-Q12 | `pi/(2*sin(pi*n/2)*gamma(n))` | `n=1` quadosc error `0` against `pi/2`. The gamma ratio `gammasimp` simplifies to `1`, and the limit at `n=1` is `pi/2`. |
 | R1-2021-Q27 | `pi*exp(-Abs(a*b))/(2*Abs(b))` | dps 50 quadosc: `(1,2)`, `(-1,2)`, `(1,-2)`, `(0.5,1)` error `0`; `(-3,-4)` error `9.0e-55` |
-| R1-2021-Q32 | `pi*(Abs(b)-Abs(a))/2` | `∫_0^∞ (1-cos u)/u^2 du` equals `pi/2` with error `1.3e-34` at dps 60 (smooth head plus sine-integral tail). The gate checks the substitution `u=|k|x` for nonzero real `k`, and a zero coefficient separately, before it returns `π(|b|-|a|)/2`. A coefficient that is not known to be real is refused unless the row states that it is positive. |
+| R1-2021-Q32 | `pi*(Abs(b)-Abs(a))/2` | `∫_0^∞ (1-cos u)/u^2 du` equals `pi/2` with error `1.3e-34` at dps 60 (smooth head plus sine-integral tail). The gate checks the substitution `u=|k|x` for nonzero real finite `k`, and a zero coefficient separately, before it returns `π(|b|-|a|)/2`. A coefficient that is not known to be real and finite is refused unless the row states that it is positive. Infinity and a symbol that is only extended-real are refused. |
 | R2-2022-Relay-Q04 | `pi/(2*Abs(a)*sqrt(a**2-1))` | dps 40: `a=2` and `a=-3` error `0`; `a=1.2` error `2.3e-41` |
 | R1-2021-Q21 | printed formula kept | convention only: real for `|a|<pi/2`, `a!=0` |
 
