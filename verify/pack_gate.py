@@ -54,8 +54,9 @@ reduction. A reciprocal power that clears to a rational function is integrated
 directly. (cos(a x)-cos(b x))/x**2 on [0, ∞) reduces by parts to the Dirichlet
 integral. For a nonzero real coefficient the substitution u = |k| x scales that
 value by |k|; a zero coefficient is handled separately and contributes 0.
-A coefficient that is not known to be real is refused, unless the row states
-that it is positive.
+A coefficient that is not known to be real and finite is refused, unless the
+row states that it is positive. An extended-real value may be infinite, so
+that flag is not enough.
 A logarithm of an absolute value differentiates as the logarithm
 of its argument. An indefinite answer is accepted when its derivative
 matches the integrand, including the sign(u)/Abs(u) form of the derivative of
@@ -63,7 +64,10 @@ log|u|. A match that appears only for a positive variable is kept when sampled
 real points on both sides of 0 agree, and rejected when they do not: x**2/2
 is not an antiderivative of Abs(x). The samples add seeded irrational and
 rational points on both signs. Agreement only at zeros is not acceptance.
-simplify(derivative - integrand) == 0 is accepted on its own. Further checked forms are a
+The relative band is about 1e-6 wide, and the zero cutoff is 1e-8. A wrong
+zero used to agree with an integrand between those scales. A sample whose
+float magnitude exceeds 1e12 is compared at the working precision instead of
+being dropped. simplify(derivative - integrand) == 0 is accepted on its own. Further checked forms are a
 complement of two square-root logarithms on [2, 4], a fifth power of a
 cosine-sine mean on [0, π/2], a root-exponential reflection on [-π/2, π/2],
 1/(1+|cos x|) on [0, 2π], a shifted square-root logarithm reduced to a gamma
@@ -1195,7 +1199,12 @@ def _positive_domain_derivative(answer, integrand, symbol) -> bool:
     x=-1 and the two sides differ there, so the sample rejects it.
     simplify(derivative - integrand) == 0 is a proof. Numeric agreement is
     not: samples where both sides are zero do not count, and the probes
-    include seeded points on both signs.
+    include seeded points on both signs. The relative tolerance is
+    1e-6*(1+|integrand|), so its absolute floor is about 1e-6, while a sample
+    is called zero only at 1e-8. A wrong zero therefore agrees with an
+    integrand between those scales. That pair is rejected. A sample above
+    1e12 is not dropped: float conversion is past the cutoff, and the same
+    comparison is repeated on the 25-digit values.
     """
     positive = sp.Symbol(symbol.name, positive=True)
     delta = sp.diff(answer, symbol) - integrand
@@ -1210,20 +1219,89 @@ def _positive_domain_derivative(answer, integrand, symbol) -> bool:
     saw_nonzero = False
     for point in _derivative_samples():
         try:
-            left = complex(sp.N(integrand.subs(symbol, point), 25))
-            right = complex(sp.N(slope.subs(symbol, point), 25))
+            left_hp = sp.N(integrand.subs(symbol, point), 25)
+            right_hp = sp.N(slope.subs(symbol, point), 25)
         except Exception:
+            continue
+        try:
+            left = complex(left_hp)
+            right = complex(right_hp)
+        except Exception:
+            left = right = None
+        if (
+            left is None
+            or right is None
+            or abs(left.real) > 1e12
+            or abs(right.real) > 1e12
+        ):
+            # A non-real sample is still ignored. Overflow is not: float
+            # conversion past 1e12 used to drop the point, which accepted
+            # x**2/2 for an integrand that is huge on x<0.
+            if left is not None and right is not None and (
+                abs(left.imag) > 1e-8 or abs(right.imag) > 1e-8
+            ):
+                continue
+            compared = _compare_large_sample(left_hp, right_hp)
+            if compared == "reject":
+                return False
+            if compared == "nonzero":
+                saw_nonzero = True
             continue
         if abs(left.imag) > 1e-8 or abs(right.imag) > 1e-8:
             continue
-        if abs(left.real) > 1e12 or abs(right.real) > 1e12:
-            continue
-        if abs(left - right) > 1e-6 * (1 + abs(left)):
+        tolerance = 1e-6 * (1 + abs(left))
+        difference = abs(left - right)
+        if difference > tolerance:
             return False
-        if abs(left) <= 1e-8 and abs(right) <= 1e-8:
+        # NaN is not a real comparison. asec(x) at x=1 is one such probe:
+        # the integrand is 0 and the differentiated closed form is undefined.
+        # Treating that pair as the 1e-8 gap rejected YANG-2.5-P12.
+        if difference != difference or abs(left) != abs(left) or abs(right) != abs(right):
             continue
+        # One side inside the zero cutoff and the other still inside the
+        # relative band is the gap between 1e-8 and about 1e-6. A wrong zero
+        # used to pass there.
+        left_zero = abs(left) <= 1e-8
+        right_zero = abs(right) <= 1e-8
+        if left_zero and right_zero:
+            continue
+        if left_zero != right_zero and max(abs(left), abs(right)) <= tolerance:
+            return False
         saw_nonzero = True
     return saw_nonzero
+
+
+def _compare_large_sample(left_hp, right_hp) -> str:
+    """Compare a sample whose float magnitude exceeds 1e12.
+
+    Returns "nonzero" when the 25-digit values agree and the sample counts,
+    "quiet" when they agree but both sit on the zero cutoff, and "reject"
+    when they differ or are not finite. Dropping the sample accepted x**2/2
+    for an integrand that is huge on one side of 0.
+    """
+    try:
+        left_real = sp.re(left_hp)
+        right_real = sp.re(right_hp)
+        left_imag = sp.im(left_hp)
+        right_imag = sp.im(right_hp)
+    except Exception:
+        return "reject"
+    parts = (left_real, right_real, left_imag, right_imag)
+    if any(getattr(part, "is_finite", None) is not True for part in parts):
+        return "reject"
+    if abs(left_imag) > sp.Float("1e-8") or abs(right_imag) > sp.Float("1e-8"):
+        return "reject"
+    difference = abs(left_real - right_real)
+    tolerance = sp.Float("1e-6") * (1 + abs(left_real))
+    if difference > tolerance:
+        return "reject"
+    left_zero = abs(left_real) <= sp.Float("1e-8")
+    right_zero = abs(right_real) <= sp.Float("1e-8")
+    if left_zero and right_zero:
+        return "quiet"
+    if left_zero != right_zero and max(abs(left_real), abs(right_real)) <= tolerance:
+        return "reject"
+    return "nonzero"
 
 
 _FACT_CACHE: dict = {}
@@ -2534,16 +2612,17 @@ def _apply_stated(coeff, assumptions: dict):
 
 
 def _known_real_coefficient(coeff) -> bool:
-    """0, or a coefficient SymPy knows is real.
+    """0, or a coefficient SymPy knows is real and finite.
 
-    A bare symbol has no reality assumption. positive, negative, real, and
-    other stated assumptions that imply an extended-real value all count.
+    A bare symbol has no reality assumption. positive, negative, and real
+    assumptions count. extended_real includes infinity, so it does not.
     """
     if coeff == 0 or getattr(coeff, "is_zero", None) is True:
         return True
-    if getattr(coeff, "is_extended_real", None) is True:
-        return True
-    return getattr(coeff, "is_real", None) is True
+    return (
+        getattr(coeff, "is_real", None) is True
+        and getattr(coeff, "is_finite", None) is True
+    )
 
 
 def _cosine_over_square(integrand, symbol, lo, hi, assumptions=None):
@@ -2553,9 +2632,10 @@ def _cosine_over_square(integrand, symbol, lo, hi, assumptions=None):
     real k, u = |k| x multiplies ∫_0^∞ (1-cos u)/u**2 du by |k|. A zero
     coefficient is not that substitution: cos(0·x) = 1, the integrand is 0,
     and the term contributes 0. A coefficient that is not known to be real
-    is refused, unless the row states that it is positive (grading-assumptions
-    or a positive symbol already on the row). The formula is not π|a|/2 for
-    a general complex a.
+    and finite is refused, unless the row states that it is positive
+    (grading-assumptions or a positive symbol already on the row). Infinity
+    and a symbol that is only extended-real are not real. The formula is not
+    π|a|/2 for a general complex a.
     """
     if not (_zero(lo) and hi == sp.oo):
         return None
@@ -2648,11 +2728,12 @@ def _cosine_over_square(integrand, symbol, lo, hi, assumptions=None):
 
     if _fact("cosine-over-square", build) is not True:
         return None
-    # π|k|/2 needs a real k. A bare symbol, and a symbol only assumed complex,
-    # are not known to be real: |cos(c x)| grows like exp(|Im c| x)/2 and the
-    # integral need not converge. A catalog row that states a>0, b>0 supplies
-    # that assumption before this check. The value is still π|k|/2, which
-    # matches the stored absolute-value answer without a second integration.
+    # π|k|/2 needs a real finite k. A bare symbol, a symbol only assumed
+    # complex, and an extended-real value that may be infinite are refused:
+    # |cos(c x)| grows like exp(|Im c| x)/2 and the integral need not converge.
+    # A catalog row that states a>0, b>0 supplies that assumption before this
+    # check. The value is still π|k|/2, which matches the stored absolute-value
+    # answer without a second integration.
     checked_first, checked_second = first, second
     if not _known_real_coefficient(first) or not _known_real_coefficient(second):
         stated = assumptions if assumptions is not None else _proof_stated_assumptions()

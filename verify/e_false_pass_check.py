@@ -88,6 +88,105 @@ def test_indefinite_sample_zeros() -> int:
     return ok("indefinite samples do not pass on zeros")
 
 
+def test_indefinite_tolerance_gap() -> int:
+    import json
+
+    import sympy as sp
+
+    import pack_gate
+
+    x = pack_gate.namespace("x")["x"]
+    # (1-sign(x))/2000000 is 0 for x>0 and 1e-6 for x<0. The relative band
+    # is 1e-6*(1+|left|), so the difference from 0 fits inside it, while
+    # 1e-6 still clears the 1e-8 zero cutoff.
+    if pack_gate.proven("indefinite", "(1-sign(x))/2000000", None, "0", "x"):
+        return fail("pack_gate.proven accepted 0 for (1-sign(x))/2000000")
+    integrand = (1 - sp.sign(x)) / 2000000
+    if pack_gate._positive_domain_derivative(sp.Integer(0), integrand, x):
+        return fail("tolerance gap accepted 0 for (1-sign(x))/2000000")
+    if not pack_gate._positive_domain_derivative(x**2 / 2, x, x):
+        return fail("tolerance gap rejected x**2/2 for x")
+    q09 = None
+    for line in (ROOT / "problems" / "records.jsonl").read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        row = json.loads(line)
+        if row["id"] == "R1-2021-Q09":
+            q09 = row
+            break
+    if q09 is None:
+        return fail("R1-2021-Q09 missing")
+    q09_integrand = pack_gate._parse(q09["sympy_expr"], "x")
+    q09_answer = pack_gate._answer_expr(q09["answer_sympy"], "x", allow_constant=True)
+    if not pack_gate._positive_domain_derivative(q09_answer, q09_integrand, x):
+        return fail("tolerance gap rejected R1-2021-Q09")
+    return ok("relative band does not hide a wrong zero")
+
+
+def test_indefinite_overflow_sample() -> int:
+    import sympy as sp
+
+    import pack_gate
+
+    x = pack_gate.namespace("x")["x"]
+    spiked = "x+(1-sign(x))*10**20"
+    if pack_gate.proven("indefinite", spiked, None, "x**2/2", "x"):
+        return fail("pack_gate.proven accepted x**2/2 for x+(1-sign(x))*10**20")
+    integrand = x + (1 - sp.sign(x)) * sp.Integer(10) ** 20
+    if pack_gate._positive_domain_derivative(x**2 / 2, integrand, x):
+        return fail("overflow sample accepted x**2/2 for x+(1-sign(x))*10**20")
+    if not pack_gate.proven("indefinite", "10**20*x", None, "10**20*x**2/2", "x"):
+        return fail("large-sample compare rejected 10**20*x**2/2")
+    # Heaviside(x**2, 1) is 1, so the derivative matches at every probe, but
+    # simplify does not cancel it. The values sit above 1e12, so this is the
+    # high-precision sample path rather than the identity short-circuit.
+    scale = sp.Integer(10) ** 20
+    huge = scale * x * sp.Heaviside(x**2, 1)
+    huge_answer = scale * x**2 / 2
+    if sp.simplify(sp.diff(huge_answer, x) - huge) == 0:
+        return fail("Heaviside probe collapsed; it no longer exercises the large-sample path")
+    if not pack_gate._positive_domain_derivative(huge_answer, huge, x):
+        return fail("large-sample compare rejected a matching factor of 10**20")
+    return ok("an overflow sample is compared, not skipped")
+
+
+def test_q32_extended_real() -> int:
+    import sympy as sp
+
+    import pack_gate
+
+    x = pack_gate.namespace("x")["x"]
+
+    def one_sided(coeff):
+        return pack_gate._cosine_over_square((1 - sp.cos(coeff * x)) / x**2, x, 0, sp.oo)
+
+    extended = sp.Symbol("a", extended_real=True)
+    got = one_sided(extended)
+    if got is not None and (
+        got == sp.pi * sp.Abs(extended) / 2
+        or sp.simplify(got - sp.pi * sp.Abs(extended) / 2) == 0
+    ):
+        return fail("Q32 certificate accepted pi*Abs(a)/2 for an extended-real coefficient")
+    if got is not None:
+        return fail(f"Q32 certificate returned {got} for an extended-real coefficient")
+    if pack_gate._known_real_coefficient(extended):
+        return fail("_known_real_coefficient accepted an extended-real symbol")
+    infinite = one_sided(sp.oo)
+    if infinite is not None:
+        return fail(f"Q32 certificate accepted an infinite coefficient: {infinite}")
+    if pack_gate._known_real_coefficient(sp.oo):
+        return fail("_known_real_coefficient accepted infinity")
+    real = sp.symbols("ar", real=True)
+    got = one_sided(real)
+    if got is None or sp.simplify(got - sp.pi * sp.Abs(real) / 2) != 0:
+        return fail("Q32 certificate rejected a finite real coefficient")
+    finite_extended = sp.Symbol("af", extended_real=True, finite=True)
+    got = one_sided(finite_extended)
+    if got is None or sp.simplify(got - sp.pi * sp.Abs(finite_extended) / 2) != 0:
+        return fail("Q32 certificate rejected a finite extended-real coefficient")
+    return ok("Q32 coefficient must be real and finite")
+
+
 def test_q32_real_coeff() -> int:
     import sympy as sp
 
@@ -532,7 +631,10 @@ def test_empty_notes() -> int:
 CASES = {
     "pack-gate-abs": test_pack_gate_abs_primitive,
     "indefinite-sample-zeros": test_indefinite_sample_zeros,
+    "indefinite-tolerance-gap": test_indefinite_tolerance_gap,
+    "indefinite-overflow-sample": test_indefinite_overflow_sample,
     "q32-real-coeff": test_q32_real_coeff,
+    "q32-extended-real": test_q32_extended_real,
     "worked-log-square-step": test_worked_log_square_step,
     "logs-equivalent-square": test_logs_equivalent_square,
     "grader-assumptions": test_grader_stated_assumptions,
