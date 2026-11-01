@@ -628,7 +628,61 @@ def test_empty_notes() -> int:
         return fail("549 empty pack notes and 3 empty Yang notes passed")
     return ok("empty pack and Yang notes")
 
+
+def test_indefinite_nonreal_sample() -> int:
+    import pack_gate
+
+    # 1-sign(x) is 0 for x>0 and 2 for x<0, so each integrand equals x only
+    # on x>0. On x<0 the integrand is non-real, and such a sample used to be
+    # skipped instead of compared.
+    status = 0
+    for integrand in (
+        "x+(1-sign(x))*I",
+        "x+(1-sign(x))*log(x)",
+        "x+(1-sign(x))*(10**20+I/10**8)",
+        "x+(1-sign(x))*pi*I",
+    ):
+        if pack_gate.proven("indefinite", integrand, None, "x**2/2", "x"):
+            status = fail(f"pack_gate.proven accepted x**2/2 for {integrand}")
+    if status:
+        return status
+    if not pack_gate.proven("indefinite", "-2*log(2*x)+log(x**2)", None, "-2*x*log(2)", "x"):
+        return fail("non-real sample rule rejected a log branch shift of 2*pi*I")
+    if not pack_gate.proven("indefinite", "x", None, "x**2/2", "x"):
+        return fail("non-real sample rule rejected x**2/2 for x")
+    return ok("a non-real sample is compared, not skipped")
+
+
+def test_indefinite_small_opposite() -> int:
+    import pack_gate
+
+    # sign(x)/10**7 and 1/10**7 are both under the 1e-6 absolute floor but
+    # differ by 2e-7 on x<0, with opposite signs.
+    if pack_gate.proven("indefinite", "sign(x)/10000000", None, "x/10000000", "x"):
+        return fail("pack_gate.proven accepted x/10000000 for sign(x)/10000000")
+    if not pack_gate.proven("indefinite", "1/10000000", None, "x/10000000", "x"):
+        return fail("small-value rule rejected x/10000000 for 1/10000000")
+    return ok("small nonzero samples are compared relatively")
+
+
+def test_positive_fallback_extended_real() -> int:
+    import pack_gate
+
+    integrand = "(1-cos(Symbol('a',extended_real=True)*x))/x**2"
+    answer = "pi*Abs(Symbol('a',extended_real=True))/2"
+    if pack_gate.proven("definite", integrand, ["0", "oo"], answer, "x"):
+        return fail("positive-parameter fallback accepted pi*Abs(a)/2 for extended-real a")
+    if not pack_gate.proven(
+        "definite", "(1-cos(Symbol('a',real=True)*x))/x**2", ["0", "oo"],
+        "pi*Abs(Symbol('a',real=True))/2", "x"
+    ):
+        return fail("positive-parameter fallback rejected a finite real coefficient")
+    return ok("assumptions never override a symbol declared non-real")
+
 CASES = {
+    "indefinite-nonreal-sample": test_indefinite_nonreal_sample,
+    "indefinite-small-opposite": test_indefinite_small_opposite,
+    "positive-fallback-extended-real": test_positive_fallback_extended_real,
     "pack-gate-abs": test_pack_gate_abs_primitive,
     "indefinite-sample-zeros": test_indefinite_sample_zeros,
     "indefinite-tolerance-gap": test_indefinite_tolerance_gap,
